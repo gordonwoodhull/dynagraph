@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 // so as not to mess with callbacks, this is iterators returning *both* node and edge
 // the edge was followed to get to the node, unless the traversal didn't follow an edge to get there.

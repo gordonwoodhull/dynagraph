@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 #define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
 #define RADIANS(deg)	((deg)/180.0 * PI)

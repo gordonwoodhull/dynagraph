@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include "common/BoostLGraph.h"

@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 #ifndef stringsIn_h
 #define stringsIn_h

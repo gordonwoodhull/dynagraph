@@ -9,6 +9,10 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 extern int solve3(double coeff[4], double roots[3]);

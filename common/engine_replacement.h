@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 // To replace a layout engine, re-insert everything into a new engine and delete the old
 // These functions manipulate the queue to make it look like everything just moved

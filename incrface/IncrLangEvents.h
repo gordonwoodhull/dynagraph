@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 struct IncrLangEvents {
 	virtual DString dinotype() = 0; // returns "layout" "abstract" etc so xlators etc can downcast

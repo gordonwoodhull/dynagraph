@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 extern DString g_NLPNames[5]; // in stringsOut.cpp
 NodeLabelAlignment string2nlp(DString s) {

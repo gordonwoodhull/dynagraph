@@ -9,6 +9,10 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 extern void emitChanges(std::ostream &os,ChangeQueue &Q,const char *view);

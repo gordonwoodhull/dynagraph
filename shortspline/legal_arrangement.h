@@ -9,6 +9,10 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 int Plegal_arrangement( Ppoly_t	**polys, int	n_polys);

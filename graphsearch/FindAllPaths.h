@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 template<class G>
 void findAllPaths(G &top,G &a,G &b,bool followOuts,bool followIns,bool firstOnly,int limit,G &ret) {

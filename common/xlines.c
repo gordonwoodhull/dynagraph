@@ -47,7 +47,11 @@
  *    representation.  It will need to be modified for other  *
  *    number systems.                                         *
  *                                                            *
- **************************************************************/
+ *****                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
+**********************************************************/
+
 
 #define SAME_SIGNS(a,b)  ((a >= 0.0) == (b >= 0.0))
 
@@ -114,7 +118,7 @@ double
          SAME_SIGNS( r1, r2 ))
         return ( DONT_INTERSECT );
 
-    /* Line segments intersect: compute intersection point. 
+    /* Line segments intersect: compute intersection point.
      */
 
     denom = a1 * b2 - a2 * b1;

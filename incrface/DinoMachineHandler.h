@@ -9,7 +9,11 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
+*                                                         *
+*               This version available from               *
+*                   http://dynagraph.org                  *
 **********************************************************/
+
 
 // act like a string graph but adjust the real thing too
 struct DinoMachineHandler : AbsGraphHandler<DinoMachine> {
