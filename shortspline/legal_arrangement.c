@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include <stdlib.h>
 #include "simple.h"
@@ -17,7 +22,7 @@ use it without violating AT&T's intellectual property rights. */
 static void
 sgnarea(l,m,i) struct vertex *l,*m; int i[];
 	/* find the sign of the area of each of the triangles
-		formed by adding a vertex of m to l	
+		formed by adding a vertex of m to l
 	also find the sign of their product	*/
 {	float a,b,c,d,e,f,g,h,t;
 	a = l->pos.x; b = l->pos.y;
@@ -34,18 +39,18 @@ float f,g,h;
 {	if((f==g)||(g==h)) return(0); return((f<g)?(g<h?1:-1): (h<g?1:-1)); }
 static int
 online(l,m,i)	/* determine if vertex i of line m is on line l	*/
-struct vertex *l,*m; 
+struct vertex *l,*m;
 int i;
 {	struct position a,b,c;
 	a = l->pos; b = after(l)->pos; c = (i == 0) ? m->pos : after(m)->pos ;
-	return((a.x == b.x) ? ((a.x == c.x) && (-1 != between(a.y,c.y,b.y))) : 
+	return((a.x == b.x) ? ((a.x == c.x) && (-1 != between(a.y,c.y,b.y))) :
 			between(a.x,c.x,b.x));
 }
 static int
 intpoint(l,m,x,y,cond)
-struct vertex *l,*m;	 
+struct vertex *l,*m;
 float *x,*y;
-int cond; /* determine point of detected intersections	*/ 
+int cond; /* determine point of detected intersections	*/
 {	struct position ls,le,ms,me,pt1,pt2;
 	float m1,m2,c1,c2;
 
@@ -56,11 +61,11 @@ int cond; /* determine point of detected intersections	*/
 	switch(cond)	{
 
 	case 3:	     /* a simple intersection        */
-		if (ls.x == le.x)   
+		if (ls.x == le.x)
 		   {  *x = ls.x; *y = me.y + SLOPE(ms,me) * (*x - me.x); }
-		else if (ms.x == me.x)   
+		else if (ms.x == me.x)
 		   {  *x = ms.x; *y = le.y + SLOPE(ls,le) * (*x - le.x); }
-		else 
+		else
 		 {  m1 = SLOPE(ms,me); m2 = SLOPE(ls,le);
 		    c1 = ms.y - (m1*ms.x); c2 = ls.y - (m2*ls.x);
 		    *x = (c2-c1)/(m1-m2); *y = ((m1*c2) -(c1*m2))/(m1-m2); }
@@ -98,8 +103,8 @@ find_intersection(struct vertex *l,
                   struct vertex *m,
                   struct intersection ilist[],
                   struct data *input)
-{       float x,y; 
-	int i[3]; 
+{       float x,y;
+	int i[3];
 	sgnarea(l,m,i);
 
 	if (i[2] > 0) return;
@@ -109,7 +114,7 @@ find_intersection(struct vertex *l,
 	    if (i[2] > 0) return;
 	    if (!intpoint(l,m,&x,&y,(i[2]<0)?3:online(m,l,ABS(i[0])))) return; }
 
-	else if (!intpoint(l,m,&x,&y,(i[0] == i[1])? 
+	else if (!intpoint(l,m,&x,&y,(i[0] == i[1])?
 		2*max(online(l,m,0),online(l,m,1)) : online(l,m,ABS(i[0]))))
 			return;
 
@@ -127,18 +132,18 @@ find_intersection(struct vertex *l,
 }
 int gt(const void *vi,const void *vj)
 
-{     /* i > j if i.x > j.x or i.x = j.x and i.y > j.y	*/ 
+{     /* i > j if i.x > j.x or i.x = j.x and i.y > j.y	*/
 	struct vertex **i = (struct vertex**)vi,**j = (struct vertex**)vj;
 	double t;
 	if ((t = (*i)->pos.x - (*j)->pos.x) != 0.) return( (t > 0.) ? 1 : -1 );
-	if ((t = (*i)->pos.y - (*j)->pos.y) == 0.) return(0); 
+	if ((t = (*i)->pos.y - (*j)->pos.y) == 0.) return(0);
 	else return( (t > 0.) ? 1 : -1 );
 }
 void find_ints(struct vertex vertex_list[],
           struct polygon* polygon_list,
           struct data *input,
           struct intersection   ilist[])
-{       
+{
 	int i,j,k;
 	struct active_edge_list all;
 	struct active_edge *new,*tempa;
@@ -148,11 +153,11 @@ void find_ints(struct vertex vertex_list[],
 	input->ninters = 0;
 	all.first = all.final = 0;	 all.number = 0;
 
-	pvertex = (struct vertex **) 
+	pvertex = (struct vertex **)
 		malloc((input->nvertices) * sizeof(struct vertex *));
 
 	for (i = 0; i < input->nvertices ; i++ )
-		pvertex[i] = vertex_list + i ;	
+		pvertex[i] = vertex_list + i ;
 
 /* sort vertices by x coordinate	*/
 	qsort(pvertex,input->nvertices,sizeof(struct vertex *),gt);
@@ -163,7 +168,7 @@ void find_ints(struct vertex vertex_list[],
 		for (k = 0 ; k < 2 ; k++ )      {/* each vertex has 2 edges*/
 			switch (gt(&pt1,&pt2))              {
 
-case -1:  /* forward edge, test and insert	*/	
+case -1:  /* forward edge, test and insert	*/
 
 	for (tempa=all.first,j=0 ; j<all.number ; j++ , tempa = tempa->next )
 		find_intersection(tempa->name,templ,ilist,input);   /* test*/
@@ -183,7 +188,7 @@ case 1:	/* backward edge, delete	*/
 		fprintf(stderr,"\n***ERROR***\n trying to delete a non line\n");
 		exit(1);			 }
 	if (all.number == 1) all.final = all.first = 0;  /* delete the line*/
-	    else if (tempa == all.first)     
+	    else if (tempa == all.first)
 		    { all.first =  all.first->next; all.first->last = 0; }
 		else if (tempa == all.final)  {
 		        all.final = all.final->last; all.final->next = 0;  }
@@ -200,7 +205,7 @@ case 1:	/* backward edge, delete	*/
 	}       /* end i for loop       */
 	free(pvertex);
 }
-int 
+int
 Plegal_arrangement( Ppoly_t	**polys, int	n_polys)	 {
 
 	int	i, j, vno, nverts, rv;
@@ -248,7 +253,7 @@ Plegal_arrangement( Ppoly_t	**polys, int	n_polys)	 {
 		if ( ((vft.x != avft.x) && (vsd.x != avsd.x)) ||
 			((vft.x == avft.x)  &&
 				!EQ_PT(vft,ilist[i]) &&
-				!EQ_PT(avft,ilist[i])) || 
+				!EQ_PT(avft,ilist[i])) ||
 			((vsd.x == avsd.x)  &&
 				!EQ_PT(vsd,ilist[i]) &&
 				!EQ_PT(avsd,ilist[i])) )  {
@@ -258,7 +263,7 @@ Plegal_arrangement( Ppoly_t	**polys, int	n_polys)	 {
 			  fprintf(stderr,"\nintersection %d at %.3lf %.3lf\n",
 				  i,ilist[i].x,ilist[i].y);
 			  fprintf(stderr,"seg#1 : (%.3lf, %.3lf) (%.3lf, %.3lf)\n"
-				  ,(double)(ilist[i].firstv->pos.x) 
+				  ,(double)(ilist[i].firstv->pos.x)
 				  ,(double)(ilist[i].firstv->pos.y)
 				  ,(double)(after(ilist[i].firstv)->pos.x)
 				  ,(double)(after(ilist[i].firstv)->pos.y));

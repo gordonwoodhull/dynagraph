@@ -1,21 +1,26 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 
 inline StrAttrs *diff_attr(StrAttrs &a1,StrAttrs &a2) {
 	StrAttrs *ret = 0;
 	for(StrAttrs::iterator i1 = a1.begin(),i2 = a2.begin(); i1!=a1.end() || i2!=a2.end();)
 		if(i1->first==i2->first) { // attr in both
-			if(i1->second!=i2->second) { 
+			if(i1->second!=i2->second) {
 				if(!ret)
 					ret = new StrAttrs;
 				(*ret)[i2->first] = i2->second;
@@ -63,7 +68,7 @@ void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
 				di2 = sg2->ndict.find(gd<Name>((*ei1)->head));
 				if(di2!=sg2->ndict.end()) {
 					h2 = di2->second;
-					if(sg2->find_edge(t2,h2)) 
+					if(sg2->find_edge(t2,h2))
                         gone = false;
 				}
 			}
@@ -72,7 +77,7 @@ void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
 		}
         for(NGraph1::node_iter ni1 = sg1->nodes().begin(),nj1; ni1!=sg1->nodes().end(); ni1 = nj1) {
             (nj1 = ni1)++;
-			if(sg2->ndict.find(gd<Name>(*ni1))==sg2->ndict.end()) 
+			if(sg2->ndict.find(gd<Name>(*ni1))==sg2->ndict.end())
 				react.del(*ni1);
         }
 	}

@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include "common/BoostLGraph.h"
 
@@ -21,7 +38,7 @@ void findShortestPaths(G &top,G &a,G &b,DString weightattr,int limit,G &ret) {
 	boost::dijkstra_shortest_paths(top,top.find(*a.nodes().begin()),PredAcc(&pred[0]),DistAcc(&dist[0]),WeightAcc(&weight[0]),IndexAcc(),
 		std::less<int>(),std::plus<int>(),std::numeric_limits<int>::max(),0,boost::dijkstra_visitor<boost::null_visitor>());
 	for(typename G::node_iter ni = b.nodes().begin(); ni!=b.nodes().end(); ++ni) {
-		typename G::Node *n = top.find(*ni),*m; 
+		typename G::Node *n = top.find(*ni),*m;
 		while((m = pred[gd<typename G::Seq>(n).id])!=n) {
 			ret.insert(top.find_edge(m,n));
 			n = m;

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "common/Dynagraph.h"
 #include "common/emitGraph.h"
@@ -33,7 +38,7 @@ void emitChanges(ostream &os,ChangeQueue &Q,const char *view) {
 		gd<StrAttrChanges>(*ni).clear();
 	}
 	for(ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni) {
-		os << "insert node " << view << " " << mquote(gd<Name>(*ni).c_str()) 
+		os << "insert node " << view << " " << mquote(gd<Name>(*ni).c_str())
 			<< " " << gd<StrAttrs2>(*ni) << endl;
 		gd<StrAttrChanges>(*ni).clear();
 	}
@@ -43,16 +48,16 @@ void emitChanges(ostream &os,ChangeQueue &Q,const char *view) {
 			<< " " << mquote(gd<Name>((*ei)->head)) << " " << gd<StrAttrs2>(*ei) << endl;
 		gd<StrAttrChanges>(*ei).clear();
 	}
-	// all things that still have StrAttrChanges are either layout-modified or had an irrelevant string changed 
+	// all things that still have StrAttrChanges are either layout-modified or had an irrelevant string changed
 	for(ni = Q.client->nodes().begin(); ni!=Q.client->nodes().end(); ++ni)
 		if(!gd<StrAttrChanges>(*ni).empty()) {
-			os << "modify node " << view << " " << mquote(gd<Name>(*ni).c_str()) 
+			os << "modify node " << view << " " << mquote(gd<Name>(*ni).c_str())
 				<< " " << gd<StrAttrs2>(*ni) << endl;
 			gd<StrAttrChanges>(*ni).clear();
 		}
 	for(ei = Q.client->edges().begin(); ei!=Q.client->edges().end(); ++ei)
 		if(!gd<StrAttrChanges>(*ei).empty()) {
-			os << "modify edge " << view << " " << mquote(gd<Name>(*ei)) 
+			os << "modify edge " << view << " " << mquote(gd<Name>(*ei))
 				<< " " << gd<StrAttrs2>(*ei) << endl;
 			gd<StrAttrChanges>(*ei).clear();
 		}

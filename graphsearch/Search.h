@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Pattern.h"
 
@@ -35,7 +40,7 @@ struct SearchStage {
 		goIn(o.goIn),goOut(o.goOut),firstOnly(o.firstOnly),shortest(o.shortest),weightattr(o.weightattr) {}
 };
 // edge names match pattern's start state name(s) or "a" or "b" for PathInquiry
-// node names match runSearch input names 
+// node names match runSearch input names
 struct NamedStage : Name,SearchStage {
 	NamedStage(const NamedStage &o) : Name(o),SearchStage(o) {}
 	NamedStage(StrGraph *parent,DString name) : Name(name),SearchStage(parent) {}
@@ -68,26 +73,26 @@ struct Search : LGraph<ADTisCDT,Nothing,NamedStage,Name> {
 };
 // exceptions
 struct StageNotFound : DGException {
-  DString name; 
+  DString name;
   StageNotFound(DString name) : DGException("search stage not found (impossible!)"),
-       name(name) {} 
+       name(name) {}
 };
 struct PatternNotThere : DGException {
   PatternNotThere() : DGException("search stage is supposed to execute a pattern, but the pattern wasn't specified") {}
 };
 struct PatternStateNotFound : DGException {
-  DString name; 
+  DString name;
   PatternStateNotFound(DString name) : DGException("input state of pattern not found"),
-       name(name) {} 
+       name(name) {}
 };
 struct UnknownAction : DGException {
   DString name; UnknownAction(DString name) : DGException("stage's action type not recognized"),
-       name(name) {} 
+       name(name) {}
 };
 struct UndefinedPattern : DGException {
-  DString name; 
+  DString name;
   UndefinedPattern(DString name) : DGException("pattern not defined"),
-       name(name) {} 
+       name(name) {}
 };
 
 }

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Dynagraph.h"
 #include "parsestr.h"
@@ -19,7 +24,7 @@ void emitGraph(std::ostream &os,G *g) {
   StrAttrs gattrs = gd<StrAttrs>(g);
   if(!gattrs.empty())
       os << "\tgraph " << gattrs << std::endl;
-  for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) 
+  for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni)
       os << '\t' << mquote(gd<Name>(*ni)) << ' ' << gd<StrAttrs>(*ni) << std::endl;
   for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
     os << '\t' << mquote(gd<Name>((*ei)->tail)) << " -> " << mquote(gd<Name>((*ei)->head)) << ' ';
@@ -59,7 +64,7 @@ void emitGraph2(std::ostream &os,G *g) {
 			nameOf[*ni] = ati->second;
 			nname = ati->second;
 		}
-		else 
+		else
 			ndict[nameOf[*ni] = nname = gd<Name>(*ni)] = *ni;
         os << '\t' << mquote(nname) << ' ' << gd<StrAttrs>(*ni) << std::endl;
 	}

@@ -1,9 +1,26 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 struct DinoSearchLookIn : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
 	StrGraph *m_source;
 	DynaView *m_dest;
-    DinoSearchLookIn(DinoInternalChanges *chain,DinoMachine::Edge *de) 
+    DinoSearchLookIn(DinoInternalChanges *chain,DinoMachine::Edge *de)
             : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
@@ -24,7 +41,7 @@ struct DinoSearchLookIn : DinoInternalChanges {
             Name target = dme.tailmap()[NEID(true,gd<Name>(*ei))].begin()->name;
             StrAttrs attrs;
             DString input = gd<StrAttrs>(*ei)["input"];
-            if(input.size()) 
+            if(input.size())
                 attrs["label"] = input;
 
             desthand->incr_ev_mod_edge(target,attrs);
@@ -62,7 +79,7 @@ struct DinoSearchLookOut : DinoInternalChanges {
 	DinoMachine::Edge *m_dinoe;
 	DynaView *m_source;
 	StrGraph *m_dest;
-    DinoSearchLookOut(DinoInternalChanges *chain,DinoMachine::Edge *de) 
+    DinoSearchLookOut(DinoInternalChanges *chain,DinoMachine::Edge *de)
             : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;

@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 #ifndef LGRAPH_CDT_H
 #define LGRAPH_CDT_H
 
@@ -72,10 +89,10 @@ struct ADTisCDT {
 	    inedge_order m_ins;
 	    outedge_order m_outs;
 	    edge_by_head_order m_outFinder; // used exclusively by find_edge(t,h)
-        node_parent(Graph *g) : 
+        node_parent(Graph *g) :
             m_ins(g->m_adtdata.m_inedgetreedisc,g->m_adtdata.m_inedgetreedict),
 	        m_outs(g->m_adtdata.m_outedgetreedisc,g->m_adtdata.m_outedgetreedict),
-	        m_outFinder(g->m_adtdata.m_headdisc,g->m_adtdata.m_headtreedict) 
+	        m_outFinder(g->m_adtdata.m_headdisc,g->m_adtdata.m_headtreedict)
         {}
     };
 };

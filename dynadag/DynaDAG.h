@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "common/Dynagraph.h"
 #include "shortspline/ObstacleAvoiderSpliner.h"
@@ -23,7 +28,7 @@ struct InternalErrorException : DGException {
 
 // future template parameters?
 #define FLEXIRANKS
- 
+
 typedef std::vector<Layout::Node*> LNodeV; // mneh
 
 // dynadag constraint graphs: basic data + debug accounting
@@ -44,7 +49,7 @@ struct NodeConstraints {
 	}
 };
 // these templates are a workaround for the circular typing problem
-// DDNode and DDEdge cannot refer to the graph made with them.  
+// DDNode and DDEdge cannot refer to the graph made with them.
 template<typename N,typename E>
 struct Chain {
 	E *first,*last;
@@ -58,7 +63,7 @@ struct Chain {
 				i = 0;
 			else {
 				assert(i);
-				i = *i->head->outs().begin(); 
+				i = *i->head->outs().begin();
 			}
 			return *this;
 		}
@@ -240,7 +245,7 @@ struct Path : Chain<N,E> {
 	bool secondOfTwo;
 	Line unclippedPath;
 	// ranking vars
-	DDCGraph::Node *weak; 
+	DDCGraph::Node *weak;
 	DDCGraph::Edge *strong;
 	Path() : weak(0),strong(0),secondOfTwo(false) {}
 };
@@ -254,9 +259,9 @@ struct NSEdgePair {
 typedef enum _UpDown {UP,DOWN} UpDown;
 typedef enum _LeftRight {LEFT=-1,RIGHT=1} LeftRight;
 struct Median {
-	double val; // value 
-	bool exists, // if defined 
-		cached; // if definition is current 
+	double val; // value
+	bool exists, // if defined
+		cached; // if definition is current
 	Median() : val(0),exists(false),cached(false) {}
 };
 template<typename N,typename E>
@@ -280,7 +285,7 @@ struct DDNodeT {
 	// mincross order w/in rank constraint
 	int orderConstraint;
 	// only used in path vnodes:
-	double actualX;	// spline intercept 
+	double actualX;	// spline intercept
 	bool actualXValid;
 
 	DDNodeT() : multi(0),rank(0),order(0),inConfig(false),actualX(0),
@@ -320,7 +325,7 @@ struct DDEdgeT {
 #define	STABILITY_FACTOR_X	100 // keep nodes near where they were
 #define BEND_WEIGHT 1000 // keep adjacent v-nodes close
 
-#define MINCROSS_PASSES 12	
+#define MINCROSS_PASSES 12
 #define NODECROSS_PENALTY 1000 // don't let anything cross nodes
 
 #pragma warning (disable : 4355)
@@ -368,7 +373,7 @@ inline const char *type(DDModel::Node *mn) {
 inline void *thing(DDModel::Node *mn) {
 	if(DDd(mn).multi)
 		return DDd(mn).multi;
-	else 
+	else
 		return DDd(*mn->ins().begin()).path;
 }
 typedef std::vector<DDModel::Node*> NodeV;
@@ -402,10 +407,10 @@ struct Crossings {
 		nodeNodeCross += c.nodeNodeCross;
 		return *this;
 	}
-}; 
+};
 Crossings uvcross(DDModel::Node *v, DDModel::Node *w, bool use_in, bool use_out);
 inline unsigned crossweight(Crossings cc) {
-  return cc.edgeEdgeCross + NODECROSS_PENALTY*cc.nodeEdgeCross + 
+  return cc.edgeEdgeCross + NODECROSS_PENALTY*cc.nodeEdgeCross +
 	  NODECROSS_PENALTY*NODECROSS_PENALTY*cc.nodeNodeCross;
 }
 inline unsigned crosslight(Crossings cc) {
@@ -469,7 +474,7 @@ struct ConseqRanks : std::vector<Rank*> {
 		sep = o.sep;
 		low = o.low;
 		high = o.high;
-		for(iterator ri = o.begin(); ri!=o.end(); ++ri) 
+		for(iterator ri = o.begin(); ri!=o.end(); ++ri)
 			push_back(new Rank(**ri));
 		return *this;
 	}
@@ -496,7 +501,7 @@ struct ConseqRanks : std::vector<Rank*> {
 		iterator ri = GetIter(r);
 		if(ri==end())
 			return 0;
-		else 
+		else
 			return *ri;
 	}
 	iterator EnsureRank(index r) {
@@ -540,7 +545,7 @@ struct ConseqRanks : std::vector<Rank*> {
 		for(iterator ri = begin(); ri!=end(); ++ri) {
 			double d = absol(y - (*ri)->yBase);
 			if(d < bestdist) {
-				bestdist = d; 
+				bestdist = d;
 				bestrank = index(ri-begin()+low);
 			}
 		}
@@ -648,7 +653,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 		iterator ri = GetIter(r);
 		if(ri==end())
 			return 0;
-		else 
+		else
 			return *ri;
 	}
 	iterator EnsureRank(index r) {
@@ -696,13 +701,13 @@ struct XGenerator {
 };
 struct Config {
 #ifdef FLEXIRANKS // pseudo-template
-	typedef FlexiRanks Ranks; 
+	typedef FlexiRanks Ranks;
 #else
 	typedef ConseqRanks Ranks;
 #endif
-	Config(DynaDAGServices *dynaDAG,DDModel &model, 
+	Config(DynaDAGServices *dynaDAG,DDModel &model,
 	       Layout *client,Layout *current,
-	       XConstraintOwner *xconOwner) : 
+	       XConstraintOwner *xconOwner) :
 	  ranking(gd<GraphGeom>(client).resolution.y,gd<GraphGeom>(client).separation.y),
 	  prevLow(INT_MAX),
 	  model(model),
@@ -871,10 +876,10 @@ private:
 };
 void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out);
 struct XSolver : XConstraintOwner {
-	XSolver(Config &config, double xRes) : 
+	XSolver(Config &config, double xRes) :
 		xScale(1.0/xRes),config(config) {}
         virtual ~XSolver() {} // to shut gcc up
-	const double xScale; 
+	const double xScale;
 	void Place(ChangeQueue &changeQ);
 	void RemoveEdgeConstraints(DDModel::Edge *e);
 	// XConstraintOwner
@@ -928,7 +933,7 @@ struct OptimizerChooser {
 */
 struct DynaDAGServer : Server,DynaDAGServices {
 	DDModel model; // client graph + virtual nodes & edges for tall nodes & edge chains
-	Config config;	// indexes layout nodes by rank and order 
+	Config config;	// indexes layout nodes by rank and order
 	Ranker ranker;
 	//OptimizerChooser optChooser;
 	Optimizer *optimizer;
@@ -942,8 +947,8 @@ struct DynaDAGServer : Server,DynaDAGServices {
 	DynaDAGServer(Layout *client,Layout *current) :
 		Server(client,current),
 		model(),
-		config(this,model,client,current,&xsolver), 
-		ranker(this,config), 
+		config(this,model,client,current,&xsolver),
+		ranker(this,config),
 		optimizer(new DotlikeOptimizer(config)),
 		xsolver(config,gd<GraphGeom>(current).resolution.x),
 		spliner(config) {}

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "PathPlan.h"
 #include "Solvers.h"
@@ -66,7 +71,7 @@ bool Route(const SegmentV &barriers, const Line &input,Segment endSlopes,Line &o
 	out.degree = 3;
 	out.push_back(input.front());
 	TnA *tnas = new TnA[input.size()];
-    if(!reallyRouteSpline(barriers, &input[0],input.size(), tnas, endSlopes,out)) // 
+    if(!reallyRouteSpline(barriers, &input[0],input.size(), tnas, endSlopes,out)) //
         return false;
 	delete [] tnas;
 
@@ -138,7 +143,7 @@ static bool reallyRouteSpline(const SegmentV &barriers,
 		splitv = (splitv1+splitv2).Norm();
 
     if(!reallyRouteSpline(barriers,inps,spliti + 1,tnas,Segment(endSlopes.a,splitv),out) ||
-		!reallyRouteSpline(barriers,&inps[spliti],inpn - spliti,tnas,Segment(splitv,endSlopes.b),out)) 
+		!reallyRouteSpline(barriers,&inps[spliti],inpn - spliti,tnas,Segment(splitv,endSlopes.b),out))
 		return false;
     return true;
 }
@@ -219,10 +224,10 @@ fprintf(stderr, "failure\n");
 
 static bool splineIsInside(const SegmentV &barriers, Coord sps[4]) {
 	double roots[4];
-    for(unsigned ei = 0; ei < barriers.size(); ei++) {            
+    for(unsigned ei = 0; ei < barriers.size(); ei++) {
 		int rootn = splineIntersectsLine(sps, barriers[ei], roots);
         if(rootn == 4)
-            continue; // return 1; 
+            continue; // return 1;
         for(int rooti = 0; rooti < rootn; rooti++) {
             if(roots[rooti] < EPSILON2 || roots[rooti] > 1 - EPSILON2)
                 continue;

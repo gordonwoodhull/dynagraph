@@ -1,14 +1,20 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
 #include "edges.h"
 
 
@@ -22,7 +28,7 @@ Edge *Edges::bisect(Site *s1, Site *s2) {
 
     newedge -> reg[0] = s1;
     newedge -> reg[1] = s2;
-    sites.ref(s1); 
+    sites.ref(s1);
     sites.ref(s2);
     newedge -> ep[0] = (Site *) 0;
     newedge -> ep[1] = (Site *) 0;
@@ -53,7 +59,7 @@ void Edges::clip_line(Edge *e) {
     Site *s1, *s2;
     double x1,x2,y1,y2;
 
-    if(e -> a == 1.0 && e ->b >= 0.0) {    
+    if(e -> a == 1.0 && e ->b >= 0.0) {
         s1 = e -> ep[1];
         s2 = e -> ep[0];
     }
@@ -79,7 +85,7 @@ void Edges::clip_line(Edge *e) {
           y1 = bounds.b;
           x1 = e -> c - e -> b * y1;
         }
-            
+
         if (s2!=(Site *)0) {
           y2 = s2->coord.y;
           if(y2<bounds.b) {
@@ -97,7 +103,7 @@ void Edges::clip_line(Edge *e) {
           x2 = e -> c - e -> b * y2;
         }
 
-        if ((x1> bounds.r && x2>bounds.r) || (x1<bounds.l&&x2<bounds.l)) 
+        if ((x1> bounds.r && x2>bounds.r) || (x1<bounds.l&&x2<bounds.l))
 			return;
         if(x1> bounds.r)
         {    x1 = bounds.r; y1 = (e -> c - x1)/e -> b;};
@@ -143,7 +149,7 @@ void Edges::clip_line(Edge *e) {
           y2 = e -> c - e -> a * x2;
         }
 
-        if ((y1> bounds.t && y2>bounds.t) || (y1<bounds.b && y2<bounds.b)) 
+        if ((y1> bounds.t && y2>bounds.t) || (y1<bounds.b && y2<bounds.b))
 			return;
         if(y1> bounds.t)
         {    y1 = bounds.t; x1 = (e -> c - y1)/e -> a;};
@@ -158,7 +164,7 @@ void Edges::clip_line(Edge *e) {
     if(e -> a == 1.0) {
         if (s1!=(Site *)0) {
           y1 = s1->coord.y;
-          if (y1 > bounds.t) 
+          if (y1 > bounds.t)
 			  return;
           else if (y1 >= bounds.b) x1 = s1->coord.x;
           else {
@@ -170,10 +176,10 @@ void Edges::clip_line(Edge *e) {
           y1 = bounds.b;
           x1 = e -> c - e -> b * y1;
         }
-            
+
         if (s2!=(Site *)0) {
           y2 = s2->coord.y;
-          if(y2<bounds.b) 
+          if(y2<bounds.b)
 			  return;
           else if (y2 <= bounds.t) x2 = s2->coord.x;
           else {
@@ -186,7 +192,7 @@ void Edges::clip_line(Edge *e) {
           x2 = e -> c - e -> b * y2;
         }
 
-        if ((x1> bounds.r && x2>bounds.r) || (x1<bounds.l&&x2<bounds.l)) 
+        if ((x1> bounds.r && x2>bounds.r) || (x1<bounds.l&&x2<bounds.l))
 			return;
         if(x1> bounds.r)
         {    x1 = bounds.r; y1 = (e -> c - x1)/e -> b;};
@@ -200,7 +206,7 @@ void Edges::clip_line(Edge *e) {
     else {
         if (s1!=(Site *)0) {
           x1 = s1->coord.x;
-          if(x1>bounds.r) 
+          if(x1>bounds.r)
 			  return;
           else if (x1 >= bounds.l) y1 = s1->coord.y;
           else {
@@ -215,7 +221,7 @@ void Edges::clip_line(Edge *e) {
 
         if (s2!=(Site *)0) {
           x2 = s2->coord.x;
-          if(x2<bounds.l) 
+          if(x2<bounds.l)
 			  return;
           else if (x2 <= bounds.r) y2 = s2->coord.y;
           else {
@@ -228,7 +234,7 @@ void Edges::clip_line(Edge *e) {
           y2 = e -> c - e -> a * x2;
         }
 
-        if ((y1> bounds.t && y2>bounds.t) || (y1<bounds.b && y2<bounds.b)) 
+        if ((y1> bounds.t && y2>bounds.t) || (y1<bounds.b && y2<bounds.b))
 			return;
         if(y1> bounds.t)
         {    y1 = bounds.t; x1 = (e -> c - y1)/e -> a;};
@@ -239,7 +245,7 @@ void Edges::clip_line(Edge *e) {
         if(y2<bounds.b)
         {    y2 = bounds.b; x2 = (e -> c - y2)/e -> a;};
     }
-#endif    
+#endif
     doSeg(e,x1,y1,x2,y2);
 #ifdef VORLINES_CLIPEDGES
 	Layout *l = infos.nodes.front().layoutN->g;

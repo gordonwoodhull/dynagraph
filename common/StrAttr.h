@@ -1,19 +1,24 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef strattr_h
 #define strattr_h
 
-// string attributes & names are not used directly by the dynagraph layout engines; 
+// string attributes & names are not used directly by the dynagraph layout engines;
 // they are used by the command-line tool to name & tag things the way dot does.
 #include "StringDict.h"
 #include "traversal.h"
@@ -91,19 +96,19 @@ struct NamedAttrs : StrAttrs,Name,Hit {
 	NamedAttrs(DString name = DString()) : Name(name) {}
 	NamedAttrs(const StrAttrs &at,DString name=DString()) : StrAttrs(at),Name(name) {}
 };
-struct DuplicateNodeName : DGException { 
-  DString name; 
-  DuplicateNodeName(DString name) : 
+struct DuplicateNodeName : DGException {
+  DString name;
+  DuplicateNodeName(DString name) :
     DGException("names of StrGraph nodes must be unique"),
     name(name)
-  {} 
+  {}
 };
-struct DuplicateEdgeName : DGException { 
-  DString name; 
-  DuplicateEdgeName(DString name) : 
+struct DuplicateEdgeName : DGException {
+  DString name;
+  DuplicateEdgeName(DString name) :
     DGException("names of StrGraph edges must be unique"),
     name(name)
-  {} 
+  {}
 };
 struct ParallelEdgesUnsupported : DGException {
 	DString name;
@@ -112,33 +117,33 @@ struct ParallelEdgesUnsupported : DGException {
 		name(name)
 	{}
 };
-struct EndNodesDontMatch : DGException { 
-  DString name; 
-  EndNodesDontMatch(DString name) : 
+struct EndNodesDontMatch : DGException {
+  DString name;
+  EndNodesDontMatch(DString name) :
     DGException("get_node on this edge with new end nodes"),
     name(name)
-  {} 
+  {}
 };
-struct NodeNotFound : DGException { 
-  DString name; 
-  NodeNotFound(DString name) : 
+struct NodeNotFound : DGException {
+  DString name;
+  NodeNotFound(DString name) :
     DGException("StrGraph::readSubgraph encountered a node not in the parent"),
     name(name)
-  {} 
+  {}
 };
-struct EdgeNotFound : DGException { 
-  DString tail,head; 
-  EdgeNotFound(DString tail,DString head) : 
+struct EdgeNotFound : DGException {
+  DString tail,head;
+  EdgeNotFound(DString tail,DString head) :
     DGException("StrGraph::readSubgraph encountered an edge not in the parent"),
     tail(tail),head(head)
-  {} 
+  {}
 };
 
 template<class GData,class NData,class EData>
 struct NamedGraph : LGraph<ADTisCDT,GData,NData,EData> {
     typedef LGraph<ADTisCDT,GData,NData,EData> Graph;
 	// as we all should know by now, deriving a class and adding a dictionary isn't all
-	// that good an idea.  this class is no exception; to make this work, gotta call 
+	// that good an idea.  this class is no exception; to make this work, gotta call
 	// oopsRefreshDictionary() before you need the ndict to work.  what's next?  LGraph events?
     typedef std::map<DString,typename Graph::Node*> NDict;
 	typedef std::map<DString,typename Graph::Edge*> EDict;
@@ -167,7 +172,7 @@ struct NamedGraph : LGraph<ADTisCDT,GData,NData,EData> {
 	}
 	std::pair<typename Graph::Edge *,bool> create_edge(typename Graph::Node *tail,typename Graph::Node *head,EData &ed) {
 		std::pair<typename Graph::Edge *,bool> ret = Graph::create_edge(tail,head,ed);
-		if(!ret.second) 
+		if(!ret.second)
 			throw ParallelEdgesUnsupported(ed);
 		else
 			enter(ed,ret.first);

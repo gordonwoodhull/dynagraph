@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include <stdio.h>
 #include <fstream>
@@ -91,7 +96,7 @@ class Wandering : public Stepper {
 	Layout::node_iter ni;
 	Layout *l;
 	Layout::Node *n;
-	Layout::Edge *e;	
+	Layout::Edge *e;
 	Layout hit;
 	Layout::Edge *next_edge(Layout::Node *n) {
 		for(Layout::outedge_iter ei = n->outs().begin(); ei!=n->outs().end();++ei)
@@ -201,9 +206,9 @@ public:
 	}
 	void Step(ChangeQueue &Q) {
 		typename Trav::V ins = *i;
-		if(ins.n) 
+		if(ins.n)
 			Q.InsNode(ins.n);
-		if(ins.e) 
+		if(ins.e)
 			Q.InsEdge(ins.e);
 		++i;
 	}
@@ -267,7 +272,7 @@ public:
 						gd<Hit>(*ei)[m_hitpos] = true;
 						return;
 					}
-					nodes.erase(nodes.begin()+i); // no new edges found so 
+					nodes.erase(nodes.begin()+i); // no new edges found so
 			}
 		}
 	}
@@ -469,7 +474,7 @@ int main(int argc, char *args[]) {
 			return 1;
 		}
 		traversal_mode = create;
-		if(args[i][2]) 
+		if(args[i][2])
 			generateN = atoi(args[i]+2);
 		else
 			generateN = 200;
@@ -649,7 +654,7 @@ int main(int argc, char *args[]) {
 			timer.Now(r_progress,"translated...\n");
 			/*
 			// give nodes some area
-			for(Layout::node_iter ni = layout.nodes().begin(); ni!=layout.nodes().end(); ++ni) 
+			for(Layout::node_iter ni = layout.nodes().begin(); ni!=layout.nodes().end(); ++ni)
 			init_node(*ni);
 			*/
 			timer.Now(r_progress,"added node boundaries.\n");
@@ -701,7 +706,7 @@ int main(int argc, char *args[]) {
 				Q.Okay(true);
 				if(reportEnabled(r_readability)) {
 					Bounds b = gd<GraphGeom>(&layout).bounds;
-					if(!b.valid) 
+					if(!b.valid)
 						b.l = b.t = b.r = b.b = 0.0;
 					loops.Field(r_readability,"left side",b.l);
 					loops.Field(r_readability,"top side",b.t);

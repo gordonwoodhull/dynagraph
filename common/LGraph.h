@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef LGRAPH_H
 #define LGRAPH_H
@@ -63,7 +68,7 @@ struct ADTisSTL {
 
 
 // LGraph graphs, nodes, and edges carry data that has been aggregated using
-// multiple inheritance.  the gd function accesses part of a graph, node, or 
+// multiple inheritance.  the gd function accesses part of a graph, node, or
 // edge's data by specifying one of the aggregated classes.
 
 template<typename D,typename GO>
@@ -109,15 +114,15 @@ DOut &igd2(GO *go) {
 struct Nothing {};
 
 // exceptions
-struct LGraphException {}; 
+struct LGraphException {};
 // when trying to use set operations with subgraphs
-struct NoCommonParent : LGraphException {}; 
+struct NoCommonParent : LGraphException {};
 struct NullPointer : LGraphException {};
 struct IteratorOutOfBounds : LGraphException {};
 // attempted to use objects from another graph
 struct WrongGraph : LGraphException {};
-// attempted to use edge with node it's not connected to  
-struct WrongNode : LGraphException {}; 
+// attempted to use edge with node it's not connected to
+struct WrongNode : LGraphException {};
 
 template<class T>
 class pseudo_seq {
@@ -143,7 +148,7 @@ struct LGraph {
 
 
 	struct Seq {
-		int seq, // these numbers keep going up 
+		int seq, // these numbers keep going up
             id; // these get recycled from erased nodes/edges to inserted (0 <= id < nodes/edges().size())
 	};
     template<typename T>
@@ -191,7 +196,7 @@ struct LGraph {
 		bool amMain() { return g->amMain(); }
 	private:
 		friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
-		Edge(LGraph *g, Node *tail, Node *head, ED2 *dat) : 
+		Edge(LGraph *g, Node *tail, Node *head, ED2 *dat) :
 		  g(g),
 		  dat(dat),
 		  tail(tail),
@@ -209,7 +214,7 @@ struct LGraph {
     typedef typename ADTPolicy<Graph>::edge_by_head_order edge_by_head_order;
     typedef typename ADTPolicy<Graph>::inedge_order::iterator inedge_iter;
 	typedef typename ADTPolicy<Graph>::outedge_order::iterator outedge_iter;
-	class nodeedge_iter { 
+	class nodeedge_iter {
 		inedge_order *m_inSeq;
 		outedge_order *m_outSeq;
 		struct itre { // eh, inefficient, but whatever.  can't do union
@@ -220,15 +225,15 @@ struct LGraph {
 			m_inSeq = 0;
 			if(m_outSeq->empty())
 				m_outSeq = 0;
-			else 
+			else
 				i.out = m_outSeq->begin();
 		}
 		friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
 		nodeedge_iter(inedge_order *ins, outedge_order *outs) : m_inSeq(ins), m_outSeq(outs) {
 			if(m_inSeq) {
-				if(m_inSeq->empty()) 
+				if(m_inSeq->empty())
 					goOut();
-				else 
+				else
 					i.in = m_inSeq->begin();
 			}
 		}
@@ -304,7 +309,7 @@ struct LGraph {
 		LGraph * const g;
 		ND2 * const dat;
 		NodeIDat idat;
-		
+
 		inedge_order &ins() {
 			return m_ins;
 		}
@@ -314,7 +319,7 @@ struct LGraph {
 		pseudo_seq<nodeedge_iter> alledges() {
 			return pseudo_seq<nodeedge_iter>(ne_iter(&m_ins,&m_outs),ne_iter(0,0));
 		};
-		
+
 		int degree() {
 			return m_ins.size() + m_outs.size();
 		}
@@ -330,7 +335,7 @@ struct LGraph {
 			return m_outs.make_iter(static_cast<outseqlink*>(e));
 		}
 	};
-	
+
 	typedef std::list<LGraph *> subgraph_list;
 	typedef typename subgraph_list::iterator subgraph_iter;
 
@@ -349,18 +354,18 @@ public:
 	LGraph * const parent;
 	GraphDatum * const dat;
 	GraphIDat idat;
-	LGraph(LGraph *parent=0) : 
+	LGraph(LGraph *parent=0) :
 	  m_nNumber(0), m_eNumber(0),
-	  parent(parent), 
+	  parent(parent),
 	  dat(parent?parent->dat:new GraphDatum)
 	{
 		if(parent)
 			parent->m_subs.push_back(this);
 	}
 	// explicit copy constructor because it's a really bad idea to do memberwise copy!
-    LGraph(const LGraph &other) : 
+    LGraph(const LGraph &other) :
 	  m_nNumber(0), m_eNumber(0),
-	  parent(other.parent), 
+	  parent(other.parent),
 	  dat(parent?parent->dat:new GraphDatum(*other.dat)) {
 		if(parent)
 			parent->m_subs.push_back(this);
@@ -477,7 +482,7 @@ public:
 		return std::make_pair(ret,true);
 	}
 	// methods available only on subgraphs
-	// the shorter, overloaded methods insert,erase,find are intended to 
+	// the shorter, overloaded methods insert,erase,find are intended to
 	// mimic std::set<> operations.  it's a little less explicit what you're doing though.
 	std::pair<Node*,bool> insert_subnode(Node *n) {
 		if(Node *found = find_nodeimage(n))
@@ -631,7 +636,7 @@ public:
 				n->idat = (*ni)->idat;
 				remember[*ni] = n;
 			}
-			for(ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni) 
+			for(ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni)
 				for(outedge_iter ei = (*ni)->m_outs.begin(); ei!=(*ni)->m_outs.end(); ++ei) {
 					Node *t = remember[(*ei)->tail],
 						*h = remember[(*ei)->head];
@@ -654,7 +659,7 @@ public:
 				erase(*ei);
 		}
 		return *this;
-	}			
+	}
 	LGraph &operator=(const LGraph &g) {
 		clear();
 		*this |= g;
@@ -673,5 +678,5 @@ public:
 		return ret;
 	}
 };
-    
+
 #endif

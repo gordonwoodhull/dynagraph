@@ -1,20 +1,25 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 namespace DynaDAG {
 
 void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out) {
-	for(Layout::node_iter ni = nodes.nodes().begin(); ni!=nodes.nodes().end(); ++ni) 
+	for(Layout::node_iter ni = nodes.nodes().begin(); ni!=nodes.nodes().end(); ++ni)
 		for(DDMultiNode::node_iter mnni = DDp(*ni)->nBegin(); mnni!=DDp(*ni)->nEnd(); ++ mnni)
 			out.push_back(*mnni);
 	int ec=0;

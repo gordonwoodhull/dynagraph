@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 template<class G>
 void findAllPaths(G &top,G &a,G &b,bool followOuts,bool followIns,bool firstOnly,int limit,G &ret) {
     ret = b;
@@ -5,7 +22,7 @@ void findAllPaths(G &top,G &a,G &b,bool followOuts,bool followIns,bool firstOnly
     BFS<G> bfs(&top,false,followIns,followOuts);
     for(typename G::node_iter ni = a.nodes().begin(); ni!=a.nodes().end(); ++ni)
         bfs.add(top.find(*ni));
-    
+
     vector<typename G::Edge*> prev;
     prev.resize(top.nodes().size(),0);
     for(bfs.start();!bfs.stopped(); ++bfs) {

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include <math.h>
 #define W_DEGREE 5
@@ -60,7 +65,7 @@ struct segsizes : std::vector<double> {
 			return;
 		for(i = 0; i<nseg; ++i) {
 			const Coord *start = ps+i*degree;
-			if(degree==1) 
+			if(degree==1)
 				at(i) = sqrt(dist(start[1],*start));
 			else if(degree==3) {
 				at(i) = 0;
@@ -87,13 +92,13 @@ struct segsizes : std::vector<double> {
 template<typename Pred>
 inline Coord bezier_find(Coord *pts,int degree,Pred &pred) {
 	double high,low;
-	if(pred(pts[0])) {// at(seg).y < at(seg+degree).y) { 
-		high = 0.0; 
-		low = 1.0; 
+	if(pred(pts[0])) {// at(seg).y < at(seg+degree).y) {
+		high = 0.0;
+		low = 1.0;
 	}
-	else  { 
-		high = 1.0; 
-		low = 0.0; 
+	else  {
+		high = 1.0;
+		low = 0.0;
 	}
 	Coord ret;
 	do {
@@ -101,9 +106,9 @@ inline Coord bezier_find(Coord *pts,int degree,Pred &pred) {
 		ret = Bezier(pts,degree,t);
 		if(pred(ret))
 			high = t;
-		else 
+		else
 			low = t;
-	} 
+	}
 	while(absol(high - low) > .01); /* should be adaptive */
 	return Position(ret);
 }
@@ -175,7 +180,7 @@ inline bool enumerate(const Coord *ray,int n,int degree,double delta,Callback &c
 			return true;
 	return false;
 }
-inline std::pair<Coord,double> close(const Coord *ray,int degree,Coord pt,double delta) { 
+inline std::pair<Coord,double> close(const Coord *ray,int degree,Coord pt,double delta) {
 	double l = 0.0, r = 1.0;
 	Coord ptl = Bezier(ray,degree,l),
 		ptr = Bezier(ray,degree,r);
@@ -210,9 +215,9 @@ inline std::pair<Coord,double> close(Coord *ps,int n,int degree,Coord pt,double 
 	// find the segment(s) to test
 	int beg;
 	bool doNext = false;
-	if(closest==0) 
+	if(closest==0)
 		beg = 0;
-	else if(closest==n-1) 
+	else if(closest==n-1)
 		beg = n-degree-1;
 	else {
 		beg = closest-degree;
@@ -249,10 +254,10 @@ inline Position lines_intersect(Segment L0, Segment L1) {
 		L1.a.x,L1.a.y,
 		L1.b.x,L1.b.y,
 		&rx, &ry);
-		
+
 	switch (code) {
 		case GEMS_COLLINEAR:	/* weird case for us */
-		case GEMS_DO_INTERSECT:	
+		case GEMS_DO_INTERSECT:
 			return Position(Coord(rx,ry));
 		default:
 		case GEMS_DONT_INTERSECT:	return Position();

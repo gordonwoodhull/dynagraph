@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "common/Dynagraph.h"
 #include "common/ag2str.h"
@@ -36,7 +41,7 @@ Inputs g_inputs;
 struct Session {
 	DString searchname;
 	Search *search;
-	int locks; 
+	int locks;
     bool changed;
 	Session() : search(0),locks(0),changed(false) {}
 };
@@ -72,7 +77,7 @@ struct emitReact {
 			<< gd<StrAttrs>(n) << endl;
 	}
 	void ins(StrGraph::Edge *e) {
-		cout << "insert edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << 
+		cout << "insert edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) <<
             " " << mquote(gd<Name>(e->tail)) << " " << mquote(gd<Name>(e->head)) << " "
 			<< gd<StrAttrs>(e) << endl;
 	}
@@ -140,7 +145,7 @@ void gs_open_graph(char *view)
 	bool hasSearch = assign_search(s);
 	cout << "open graph " << mquote(view) << ' '
 		<< g_currAttrs << endl;
-	if(hasSearch) 
+	if(hasSearch)
         run(s,view);
 }
 
@@ -162,7 +167,7 @@ void gs_mod_graph(char *view) {
 	    cout << "modify graph " << mquote(view) << ' '
 	    	<< g_currAttrs << endl;
     }
-	if(assign_search(s)) 
+	if(assign_search(s))
         run(s,view);
 }
 
@@ -198,7 +203,7 @@ extern FILE *gs_yyin;
 void gs_define_pattern() {
 	bufferGraphStream fix(gs_yyin);
 	StrGraph *sg = readStrGraph(fix.fin);
-	if(!sg) 
+	if(!sg)
 		throw ParseError();
 	Pattern &pattern = g_patterns[gd<Name>(sg)];
 	pattern.readStrGraph(*sg);

@@ -1,9 +1,26 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 // To replace a layout engine, re-insert everything into a new engine and delete the old
-// These functions manipulate the queue to make it look like everything just moved 
+// These functions manipulate the queue to make it look like everything just moved
 // instead of being re-inserted
 inline void pre_engine_replacement(Server *oldEngine,ChangeQueue &Q,Layout &oldCurrent) {
 	// remember the current - will be used in post_engine_replacement
-    oldCurrent = *Q.current; 
+    oldCurrent = *Q.current;
 	// erase old layout
 	ChangeQueue delQ(Q.client,Q.current);
 	delQ.delN = delQ.delE = *Q.current;
@@ -20,13 +37,13 @@ inline void pre_engine_replacement(Server *oldEngine,ChangeQueue &Q,Layout &oldC
     }
 }
 inline void post_engine_replacement(ChangeQueue &Q,Layout &oldCurrent) {
-    // this is kinda weird: mark all that were re-inserted into new graph "moved" 
+    // this is kinda weird: mark all that were re-inserted into new graph "moved"
     // (although there may be other changes)
     for(Layout::node_iter ni = oldCurrent.nodes().begin(); ni!=oldCurrent.nodes().end(); ++ni)
         if(Q.insN.erase(*ni)) // else it got deleted after the engine was replaced
 			Q.ModNode(*ni,DG_UPD_MOVE);
     for(Layout::graphedge_iter ei = oldCurrent.edges().begin(); ei!=oldCurrent.edges().end(); ++ei) {
-        if(Q.insE.erase(*ei)) 
+        if(Q.insE.erase(*ei))
 			Q.ModEdge(*ei,DG_UPD_MOVE);
     }
 	oldCurrent.clear();

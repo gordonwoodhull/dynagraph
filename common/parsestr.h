@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef PARSESTR_H
 #define PARSESTR_H
@@ -42,11 +47,11 @@ inline std::istream &operator>>(std::istream &in,DString &s) {
 struct ParseEOF : DGException {
     ParseEOF() : DGException("the parser encountered an end-of-file") {}
 };
-struct ParseExpected : DGException { 
-  DString expect,got; 
-  ParseExpected(DString expect,DString got) : 
+struct ParseExpected : DGException {
+  DString expect,got;
+  ParseExpected(DString expect,DString got) :
     DGException("the std::string parser didn't get what it expected"),
-       expect(expect),got(got) {} 
+       expect(expect),got(got) {}
   ParseExpected(char e,char g) : DGException("the std::string parser didn't get char it expected") {
       char buf[2];
       buf[1] = 0;
@@ -73,10 +78,10 @@ struct quote {
 };
 inline std::ostream &operator<<(std::ostream &out,quote &o) {
   out << '"';
-  if(!o.s.empty()) 
+  if(!o.s.empty())
     for(unsigned i = 0; i<o.s.length(); ++i)
       if(o.s[i]=='"') // " => \"
-	out << "\\\""; 
+	out << "\\\"";
       else if(o.s[i]=='\\') // \ => \\       .
 	out << "\\\\";
       else
@@ -92,7 +97,7 @@ inline std::istream &operator>>(std::istream &in,unquote &o) {
 	char c;
 	in >> std::ws;
 	in.get(c);
-	if(c!='"') 
+	if(c!='"')
 		throw ParseExpected('"',c);
 	o.s.erase();
 	while(1) {
@@ -113,7 +118,7 @@ NAME	{LETTER}({LETTER}|{DIGIT})*
 NUMBER	[-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+))
 ID		({NAME}|{NUMBER})
 
-absurd solution follows.  really should modernize the 
+absurd solution follows.  really should modernize the
 lexer so it'd be safe to use it here.
 */
 inline bool isletter(int C) {
@@ -185,7 +190,7 @@ inline bool needsQuotes(const C *s) {
 	// didn't work in gcc: find_first_of(s.begin(),s.end(),g_badChars,g_badChars+g_nBads)!=s.end()
 	for(const C *i=s; *i; ++i)
 		for(int i2 = 0; i2<g_nBads; ++i2)
-			if(*i==g_badChars[i2]) 
+			if(*i==g_badChars[i2])
 				return true;
 	return false;
 }

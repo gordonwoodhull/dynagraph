@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 #include "common/PathPlan.h"
@@ -148,7 +153,7 @@ void RouteBounds::term(DDModel::Edge *e,Coord t, bool start) {
 		el = bounding(e,LEFT,start?UP:DOWN,false),
 		er = bounding(e,RIGHT,start?UP:DOWN,false);
 	double edge = config.ranking.GetRank(DDd(n).rank)->yBase;
-	if(start) 
+	if(start)
 		appendQuad(l,r,el,er,t.y,edge);
 	else
 		appendQuad(el,er,l,r,edge,t.y);
@@ -223,7 +228,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoid
 				if(level==DG_SPLINELEVEL_SPLINE) {
 					PathPlan::SegmentV barriers;
 					PathPlan::PolyBarriers(PathPlan::LineV(1,region),barriers);
-					
+
 					Segment endSlopes(Coord(0.0,0.0),Coord(0.0,0.0));
 					check(PathPlan::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
@@ -252,7 +257,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoid
 			tg.pos,eg.tailClipped?&tg.region:0);
 		reverse(eg.pos.begin(),eg.pos.end());
 	}
-	else 
+	else
 		eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
 			hg.pos,eg.headClipped?&hg.region:0);
 	return true;

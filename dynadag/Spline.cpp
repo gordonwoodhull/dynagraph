@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 #include "common/PathPlan.h"
@@ -18,7 +23,7 @@ using namespace std;
 namespace DynaDAG {
 
 /*
- * return polygon for a given route 
+ * return polygon for a given route
  */
 
   /*
@@ -29,7 +34,7 @@ static bool localCrossing(DDModel::Node *v, DDModel::Node *w) {
 		DDModel::Node *vv = v,
 			*ww = w;
 		for(int i = 0; i < pathlen; i++) {
-			if(!DDd(vv).amEdgePart()) 
+			if(!DDd(vv).amEdgePart())
 				break;
 			if(!DDd(ww).amEdgePart())
 				break;
@@ -42,7 +47,7 @@ static bool localCrossing(DDModel::Node *v, DDModel::Node *w) {
 			else
 				ww = (*ww->outs().begin())->head;
 			bool vvww_order = DDd(ww).order > DDd(vv).order;
-			if(vw_order != vvww_order) 
+			if(vw_order != vvww_order)
 				return true;
 		}
 	}
@@ -71,7 +76,7 @@ double findBound(Config &config,const Bounds &bb,DDModel::Node *u, LeftRight sid
 		else
 			ret = DDd(w).cur.x - config.LeftExtent(w) - sep;
 	}
-	else 
+	else
 		ret = side==RIGHT?bb.r:bb.l;
 	return ret;
 }
@@ -117,7 +122,7 @@ void TempRoute::appendPoint(LeftRight side, Coord c) {
 	getSide(side).push_back(c);
 }
 void TempRoute::appendCurve(LeftRight side, Line &curve, double y0, double y1) {
-	if(y0 > y1) 
+	if(y0 > y1)
 		swap(y0,y1);
 	appendPoint(side,checkPos(curve.YIntersection(y0)));
 	appendPoint(side,checkPos(curve.YIntersection(y1)));
@@ -184,14 +189,14 @@ void TempRoute::termRoute(DDModel::Node *n, DDModel::Edge *e, Coord port, double
 		leftx_port = checkPos(DDd(ne).path->unclippedPath.YIntersection(port.y)).x;
 		leftx_cept = checkPos(DDd(ne).path->unclippedPath.YIntersection(y_cept)).x;
 	}
-	else 
+	else
 		leftx_port = leftx_cept = bound(n,LEFT);
 
 	if((ne = neighboringEdge(n,e,RIGHT)) && !DDd(ne).path->unclippedPath.Empty()) {
 		rightx_port = checkPos(DDd(ne).path->unclippedPath.YIntersection(port.y)).x;
 		rightx_cept = checkPos(DDd(ne).path->unclippedPath.YIntersection(y_cept)).x;
 	}
-	else 
+	else
 		rightx_port = rightx_cept = bound(n,RIGHT);
 
 	if(leftx_port > rightx_port)
@@ -254,15 +259,15 @@ void Spliner::flatEdgeRegion(DDModel::Node *tl, DDModel::Node *hd, Coord tp, Coo
 	DDModel::Node *left, *right;
 	Coord lp,rp;
 	if(DDd(tl).order < DDd(hd).order) {
-		left = tl;  
-		right = hd; 
-		lp = tp; 
+		left = tl;
+		right = hd;
+		lp = tp;
 		rp = hp;
 	}
 	else {
-		left = hd; 
-		right = tl; 
-		lp = hp; 
+		left = hd;
+		right = tl;
+		lp = hp;
 		rp = tp;
 	}
 	int n_obstacles = DDd(right).order - DDd(left).order - 1;
@@ -313,9 +318,9 @@ void Spliner::adjustPath(DDPath *path) {
 		// (used to be set in a separate pass but this makes sense)
 		DDd(*ni).actualX = x;
 		DDd(*ni).actualXValid = true;
-		if(x < lb) 
+		if(x < lb)
 			x = lb;
-		if(x > rb) 
+		if(x > rb)
 			x = rb;
 
 		/* don't move if it's too small */
@@ -363,9 +368,9 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoi
 		Coord farpt(DDd(tl).multi->pos().x + config.RightExtent(tl) + 2.0 * sep.x,
 			(tailpt.y + headpt.y) / 2.0);
 		double rb = findBound(config,gd<GraphGeom>(path->layoutE->g).bounds,tl, RIGHT);
-		if(!config.Right(tl)) 
+		if(!config.Right(tl))
 			rb += 2.0 * sep.x; /* ok to grow */
-		if(farpt.x > rb) 
+		if(farpt.x > rb)
 			farpt.x = rb;
 #ifndef DOWN_GREATER
 		Coord dy(0.0,-sep.y/2.0);
@@ -383,7 +388,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoi
 	else {
 		Line region;
 		bool adjustVNodes = false;
-		if(DDd(tl).rank == DDd(hd).rank) 
+		if(DDd(tl).rank == DDd(hd).rank)
 			flatEdgeRegion(tl,hd,tailpt,headpt,region);
 		else {
 			forwardEdgeRegion(tl,hd,path,tailpt,headpt,region);
@@ -401,13 +406,13 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoi
 				if(splineLevel==DG_SPLINELEVEL_SPLINE) {
 					PathPlan::SegmentV barriers;
 					PathPlan::PolyBarriers(PathPlan::LineV(1,region),barriers);
-					
+
 					Segment endSlopes(Coord(0.0,0.0),Coord(0.0,0.0));
 					check(PathPlan::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
 					unclipped = polylineRoute;
-				if(adjustVNodes) 
+				if(adjustVNodes)
 					adjustPath(path);
 			}
 			catch(...) {
@@ -426,7 +431,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoi
 			tg.pos,eg.tailClipped?&tg.region:0);
 		reverse(eg.pos.begin(),eg.pos.end());
 	}
-	else 
+	else
 		eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
 			hg.pos,eg.headClipped?&hg.region:0);
 	return true;

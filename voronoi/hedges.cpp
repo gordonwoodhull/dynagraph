@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "hedges.h"
 
@@ -16,7 +21,7 @@ namespace Voronoi {
 
 const Edge *DELETED = reinterpret_cast<Edge*>(-2);
 
-Halfedges::Halfedges(Sites &sites,int N) : 
+Halfedges::Halfedges(Sites &sites,int N) :
 	fhedges(ROUND(sqrt((double)N))),bottomsite(0),sites(sites) {
 	init(N);
 }
@@ -41,11 +46,11 @@ Site *Halfedges::hintersect(Halfedge *el1, Halfedge *el2) {
 		*e2 = el2 -> ELedge;
     if(!e1 || !e2)
     	return 0;
-    if(e1->reg[1] == e2->reg[1]) 
+    if(e1->reg[1] == e2->reg[1])
 		return 0;
 
     double d = e1->a * e2->b - e1->b * e2->a;
-    if (-1.0e-10<d && d<1.0e-10) 
+    if (-1.0e-10<d && d<1.0e-10)
 		return 0;
 
     Coord intr((e1->c*e2->b - e2->c*e1->b)/d,
@@ -62,7 +67,7 @@ Site *Halfedges::hintersect(Halfedge *el1, Halfedge *el2) {
 
     bool right_of_site = intr.x >= e -> reg[1] -> coord.x;
     if ((right_of_site && el -> ELpm == le) ||
-       (!right_of_site && el -> ELpm == re)) 
+       (!right_of_site && el -> ELpm == re))
 	   return 0;
 
     Site *v = sites.getsite ();
@@ -89,10 +94,10 @@ bool right_of(Halfedge *el, Coord c) {
     	dxp = c.x - topsite->coord.x;
     	fast = 0;
     	if ((!right_of_site && e->b<0.0) || (right_of_site&&e->b>=0.0) )
-    	{	above = dyp>= e->b*dxp;	
+    	{	above = dyp>= e->b*dxp;
     		fast = above;
     	}
-    	else 
+    	else
     	{	above = c.x + c.y*e->b > e-> c;
     		if(e->b<0.0) above = !above;
     		if (!above) fast = 1;
@@ -137,30 +142,30 @@ void Halfedges::insert(Halfedge *lb, Halfedge *he) {
 Halfedge *Halfedges::gethash(int b) {
     Halfedge *he;
 
-    if(b<0 || unsigned(b)>=hash.size()) 
+    if(b<0 || unsigned(b)>=hash.size())
 		return 0;
-    he = hash[b]; 
-    if(!he || he -> ELedge != DELETED) 
+    he = hash[b];
+    if(!he || he -> ELedge != DELETED)
 		return he;
 
 /* Hash table points to deleted half edge.  Patch as necessary. */
     hash[b] = 0;
-    if((he -> ELrefcnt -= 1) == 0) 
+    if((he -> ELrefcnt -= 1) == 0)
 		fhedges.free(he);
     return 0;
-}	
+}
 
 Halfedge *Halfedges::leftbnd(Coord c) {
     Halfedge *he;
 
 /* Use hash table to get close to desired halfedge */
     unsigned bucket = unsigned((c.x - range.l)/range.Width() * hash.size());
-    if(bucket<0) 
+    if(bucket<0)
 		bucket =0;
-    if(bucket>=hash.size()) 
+    if(bucket>=hash.size())
 		bucket = hash.size() - 1;
     he = gethash(bucket);
-    if(!he) 
+    if(!he)
 		for(int i=1; 1 ; i += 1) {
 			if ((he=gethash(bucket-i)) != (Halfedge *) NULL) break;
     		if ((he=gethash(bucket+i)) != (Halfedge *) NULL) break;
@@ -184,7 +189,7 @@ Halfedge *Halfedges::leftbnd(Coord c) {
     return he;
 }
 
-    
+
 /* This delete routine can't reclaim node, since pointers from hash
    table may be present.   */
 void Halfedges::erase(Halfedge *he) {
@@ -195,13 +200,13 @@ void Halfedges::erase(Halfedge *he) {
 
 
 Site *Halfedges::leftreg(Halfedge *he) {
-    if(!he -> ELedge) 
+    if(!he -> ELedge)
 		return bottomsite;
     return he -> ELedge -> reg[he -> ELpm];
 }
 
 Site *Halfedges::rightreg(Halfedge *he) {
-    if(!he -> ELedge) 
+    if(!he -> ELedge)
 		return bottomsite;
     return he -> ELedge -> reg[opp(he -> ELpm)];
 }

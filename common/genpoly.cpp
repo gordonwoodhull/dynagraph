@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "genpoly.h"
 #include "ellipse2bezier.h"
@@ -24,7 +29,7 @@ using namespace std;
 #ifndef TRUE
 #define TRUE 1
 #define FALSE (!TRUE)
-#endif 
+#endif
 
 #define MAX(a,b)	((a)>(b)?(a):(b))
 #define MIN(a,b)	((a)<(b)?(a):(b))
@@ -43,7 +48,7 @@ Coord mysincos(double rads) {
 
 /* flat side on bottom */
 void regpolygon(double size,int nsides,Line &out) {
-	
+
   double		t,theta;
   int			i;
 
@@ -71,7 +76,7 @@ static void rotate(Line &poly, double rot) {
     r = sqrt(p.x * p.x + p.y * p.y);
     theta = atan2(p.y,p.x);
     new_theta = theta + rot;
-    while(new_theta > 2.0 * M_PI) 
+    while(new_theta > 2.0 * M_PI)
       new_theta -= 2.0 * M_PI;
     while(new_theta < 0.0)
       new_theta += 2.0*M_PI;
@@ -110,18 +115,18 @@ static void skew_and_distort(Line &poly, double skew, double distortion) {
   // get the general size of poly:
   scale = hypot(poly[0].x,poly[0].y);
 
-  /* below distortion's a straight proportion, so change -1.0 to 0.5, 
+  /* below distortion's a straight proportion, so change -1.0 to 0.5,
      -2.0 to 0.333, 1.0 to 2.0, etc: */
   if(distortion<0.0)
     distortion = 1.0/(1.0-distortion);
-  else 
+  else
     distortion = 1.0 + distortion;
 
   for(i = 0; i < poly.size(); i++) {
     p = poly[i];
 
     /* idea of this is that if distortion==1, no distortion, otherwise
-       squeezes so that the top of the poly has width dist * width(bottom) 
+       squeezes so that the top of the poly has width dist * width(bottom)
 
        and skew is such that if skew == 0, no skew, otherwise top is pushed
        right of bottom by height * skew.
@@ -141,7 +146,7 @@ static void skew_and_distort(Line &poly, double skew, double distortion) {
 
 template<typename Reaction>
 static void box_and_poly(Reaction &r,Line &poly,Coord box) {
-  //  use diagonals: 
+  //  use diagonals:
   Coord half(box.x / 2.0,box.y / 2.0);
   Segment D1(Coord(-half.x,-half.y),Coord(half.x,half.y)),
     D2(Coord(-half.x,half.y),Coord(half.x,-half.y));
@@ -159,12 +164,12 @@ struct FindScaling {
   double s;
   FindScaling() : s(0.0) {}
   inline bool grok(Coord box,Position P) {
-    if(P.valid) 
+    if(P.valid)
       s = MAX(s,fabs(box.x/P.x/2.0));
     return true;
   }
 };
-/* 
+/*
  * returns the scale factor needed to fit box inside the polygon.
  * someday the "box" arg could be replaced with an arbitrary polygon.
  * Maybe polar coordinates would be more convenient here.
@@ -231,14 +236,14 @@ static void scalexy(Line &poly, Coord scale) {
 static void jostle(Lines &polys, Coord size) {
   double minx,miny,maxx,maxy,ofsx,ofsy;
   unsigned i;
-  // first poly is largest; adjust for that 
+  // first poly is largest; adjust for that
   Line &poly = polys.front();
   minx = maxx = poly[0].x;
   miny = maxy = poly[0].y;
   for(i=1;i<poly.size();i++) {
-    if(poly[i].x<minx) 
+    if(poly[i].x<minx)
       minx = poly[i].x;
-    if(poly[i].y<miny) 
+    if(poly[i].y<miny)
       miny = poly[i].y;
     if(poly[i].x>maxx)
       maxx = poly[i].x;
@@ -294,7 +299,7 @@ static Coord distance_along_line(Coord pt,double slope,double dist,bool toward) 
   /* ofs of perp line */
   ofs = pt.y - slope*pt.x;
 
-  /* this ugly thing just solves distance(pt,rv)==dist, where rv is 
+  /* this ugly thing just solves distance(pt,rv)==dist, where rv is
      constrained to fall on y = slope*x + ofs */
   a = 1.0 + sqr(slope);
   b = -2.0*pt.x + 2.0*ofs*slope - 2.0*pt.y*slope;
@@ -351,7 +356,7 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
     q = distance_along_line(midpt,n,dist,inward);
 
     b = q.y - m*q.x;
-		
+
     if(i==0) { /* save for that last calculation */
       fm = m;
       fb = b;
@@ -361,7 +366,7 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
     else {
       /* intersect y = mx + b, y = (lm)x + (lb) */
       Coord c;
-      if(leps(m-lm)) 
+      if(leps(m-lm))
 	c = (lq + q)/2.0;
       else {
 	if(m==Infinity||m==-Infinity) { // this calls out for a general line lib!
@@ -379,7 +384,7 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
       }
       assert(c.y<1e5 && c.y>-1e5);
       out.push_back(c);
-    }	
+    }
 
     lm = m;
     lb = b;
@@ -388,7 +393,7 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
   }
   /* intersect last seg with first to find first point */
   Coord c;
-  if(leps(fm-lm)) 
+  if(leps(fm-lm))
     c = (fq+lq)/2.0;
   else {
     if(fm==Infinity||fm==-Infinity) { // this calls out for a general line lib!
@@ -431,11 +436,11 @@ void genpoly(const PolyDef &arg,Lines &out) {
   int symmetric;
 
   // must specify at least one bound, no one-dimensional or negative bounds
-  if(!((arg.interior_box.x && arg.interior_box.y) || 
+  if(!((arg.interior_box.x && arg.interior_box.y) ||
        (arg.exterior_box.x && arg.exterior_box.y)) ||
-     !arg.interior_box.x != !arg.interior_box.y || 
+     !arg.interior_box.x != !arg.interior_box.y ||
      !arg.exterior_box.x != !arg.exterior_box.y ||
-     arg.interior_box.x<0.0 || arg.interior_box.y<0.0 || 
+     arg.interior_box.x<0.0 || arg.interior_box.y<0.0 ||
      arg.exterior_box.x<0.0 || arg.exterior_box.y<0.0)
     throw BadPolyBounds();
 
@@ -453,12 +458,12 @@ void genpoly(const PolyDef &arg,Lines &out) {
     if(!arg.aspect)
       throw BadPolyDef();
     // upside-down so that it will generate CW, because pathplan wants CCW but thinks up is negative
-    Rect r(-startsize,-arg.aspect*startsize,startsize,arg.aspect*startsize); 
+    Rect r(-startsize,-arg.aspect*startsize,startsize,arg.aspect*startsize);
     ellipse2bezier(r,first);
   }
   else {
     // 2-gon makes no sense
-    if(arg.sides < 3) 
+    if(arg.sides < 3)
       throw BadPolyDef();
     /* create prototype unscaled polygon */
     regpolygon(startsize,arg.sides,first);
@@ -531,12 +536,12 @@ void genpoly(const PolyDef &arg,Lines &out) {
   }
 
   // first shape will be model for rest
-  scalexy(first,scaling); 
+  scalexy(first,scaling);
 
-  // peripheries: 
+  // peripheries:
   makePeripheries(arg.peripheries,arg.perispacing,inward,out);
 
-  // now see if biggest is still smaller than arg.exterior_box 
+  // now see if biggest is still smaller than arg.exterior_box
   if(!inward && (arg.exterior_box.x || arg.exterior_box.y)) {
     Coord size = polysize(out.front());
     bool tooSmall = false;
@@ -557,7 +562,7 @@ void genpoly(const PolyDef &arg,Lines &out) {
       makePeripheries(arg.peripheries,arg.perispacing,true,out);
     }
   }
-  /* move into position: 
+  /* move into position:
      if(fits)
      jostle(*rv,arg.exterior_box);*/
 }

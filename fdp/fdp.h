@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef FDP_H
 #define FDP_H
@@ -27,9 +32,9 @@ struct FDPEdge {
 
 struct FDPNode {
 	Layout::Node *layoutN;
-    bool fixed; // true if node should not move 
-    double pos[NDIM], // new position 
-		disp[NDIM]; // incremental displacement 
+    bool fixed; // true if node should not move
+    double pos[NDIM], // new position
+		disp[NDIM]; // incremental displacement
 
 	FDPNode() : layoutN(0),fixed(false) {
 		for(int i = 0; i<NDIM; ++i)
@@ -58,18 +63,18 @@ struct FDPServer : Server,Grid::Visitor {
 	int numIters;
 	bool useComp,
 		useGrid;
-	double Width, // Width of bounding box 
-		Height,  // Height of bounding box 
-		T0,  // Initial temperature 
-		K,K2, // Edge length, squared 
-		CellSize, // Cell width and height 
+	double Width, // Width of bounding box
+		Height,  // Height of bounding box
+		T0,  // Initial temperature
+		K,K2, // Edge length, squared
+		CellSize, // Cell width and height
 		RepFactor,
 		AttFactor,
-		Afact2, // Phase 2 AttFactor 
-		Rfact2, // Phase 2 RepFactor 
-		Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node 
+		Afact2, // Phase 2 AttFactor
+		Rfact2, // Phase 2 RepFactor
+		Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node
 
-	FDPServer(Layout *client, Layout *current) : 
+	FDPServer(Layout *client, Layout *current) :
 	  Server(client,current),
 	  numIters(40),
 	  useComp(false),

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Dynagraph.h"
 #include "Transform.h"
@@ -44,7 +49,7 @@ bool transformShape(Transform *trans,Line &shape) {
 // not in the apply set should be set = "".  this adds those commands.
 void clearRemoved(const StrAttrs &current,const StrAttrs &apply,StrAttrs &ret) {
     ret = apply;
-	for(StrAttrs::const_iterator ai = current.begin(); ai!=current.end(); ++ai) 
+	for(StrAttrs::const_iterator ai = current.begin(); ai!=current.end(); ++ai)
         ret[ai->first]; // referencing will create w value blank if wasn't in apply
 }
 void ensureAttr(const StrAttrs &att,StrAttrs &A, DString name) {
@@ -69,7 +74,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
                 value = useDotDefaults?"1,5":"0.1,0.1";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).resolution;
-    
+
 		}
 		else if(name=="separation") {
 			if(value.empty())
@@ -195,7 +200,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
 		ret.regular = ai->second=="true";
     }
 	if((ai = attrs.find("sides"))!=attrs.end()) {
-        if(ai->second.empty()) 
+        if(ai->second.empty())
             ai->second = "4";
         istringstream stream(ai->second);
 	    stream >> ret.sides;
@@ -265,9 +270,9 @@ Update assureAttrs(Transform *trans,Layout::Node *n) {
 	}
 	StrAttrs::iterator ai;
 	Coord size(0,0);
-    if((ai=att.find("width"))!=att.end() && !ai->second.empty()) 
+    if((ai=att.find("width"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.x);
-	if((ai=att.find("height"))!=att.end() && !ai->second.empty()) 
+	if((ai=att.find("height"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.y);
 	if(size.x&&size.y)
 		return ret;
@@ -277,7 +282,7 @@ Update assureAttrs(Transform *trans,Layout::Node *n) {
 		if(!size.x)
 			size.x = size.y;
 	}
-	else 
+	else
 		size = trans->outSize(gd<GraphGeom>(n->g).defaultSize);
 	char buf[20];
 	sprintf(buf,"%f",size.x);

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "common/Dynagraph.h"
 #include "DynaView.h"
@@ -21,7 +26,7 @@ using namespace std;
 static StrAttrs g_currAttrs;
 DinoMachine g_dinoMachine;
 
-// this must be filled 
+// this must be filled
 // e.g. in dynagraph/main.cpp and comdg/Engine.cpp
 IncrCallbacks *g_incrCallback;
 
@@ -45,7 +50,7 @@ void incr_open_graph(const char *graph)
     // look for one already there - incr_ev_open_graph will decide if this is an error
     IncrLangEvents *h = incr_get_handler(graph);
 
-    if(!h) 
+    if(!h)
         h = g_incrCallback->incr_cb_create_handler(graph,g_currAttrs);
     if(!h)
         return;
@@ -56,29 +61,29 @@ void incr_open_graph(const char *graph)
 void incr_close_graph(const char *graph)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
-    if(h->incr_ev_close_graph()) 
+    if(h->incr_ev_close_graph())
         g_dinoMachine.erase(g_dinoMachine.ndict[graph]); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
 }
 
 void incr_mod_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_graph(g_currAttrs);
 }
 
 void incr_lock(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_lock();
 }
 
 void incr_unlock(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_unlock();
 }
@@ -86,7 +91,7 @@ void incr_unlock(const char *graph) {
 extern FILE *incr_yyin;
 void incr_segue(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     //bufferGraphStream fix(incr_yyin);
     //assert(!feof(fix.fin));
@@ -96,7 +101,7 @@ void incr_segue(const char *graph) {
     char buf[200];
     fgets(buf,200,fix.fin);
     */
-    if(!sg) 
+    if(!sg)
         fprintf(stderr,"graph read error\n");
     else
         h->incr_ev_load_strgraph(sg,true,true);
@@ -105,7 +110,7 @@ void incr_segue(const char *graph) {
 void incr_ins_node(const char *graph,const char *id)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_ins_node(id,g_currAttrs,true);
 }
@@ -113,7 +118,7 @@ void incr_ins_node(const char *graph,const char *id)
 void incr_ins_edge(const char *graph,const char *id, const char *tail, const char *head)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_ins_edge(id,tail,head,g_currAttrs);
 }
@@ -121,7 +126,7 @@ void incr_ins_edge(const char *graph,const char *id, const char *tail, const cha
 void incr_mod_node(const char *graph,const char *id)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_node(id,g_currAttrs);
 }
@@ -129,7 +134,7 @@ void incr_mod_node(const char *graph,const char *id)
 void incr_mod_edge(const char *graph,const char *id)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_edge(id,g_currAttrs);
 }
@@ -137,7 +142,7 @@ void incr_mod_edge(const char *graph,const char *id)
 void incr_del_node(const char *graph,const char *id)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_del_node(id);
 }
@@ -145,25 +150,25 @@ void incr_del_node(const char *graph,const char *id)
 void incr_del_edge(const char *graph,const char *id)
 {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_del_edge(id);
 }
 void incr_req_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_req_graph();
 }
 void incr_req_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_req_node(id);
 }
 void incr_req_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
-    if(!h) 
+    if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_req_edge(id);
 }
@@ -178,7 +183,7 @@ void incr_ful_node(const char *graph,const char *id) {
 void incr_ful_edge(const char *graph,const char *id) {
     g_incrCallback->incr_cb_fulfil_edge(graph,id,g_currAttrs);
 }
-void incr_message(const char *msg) 
+void incr_message(const char *msg)
 {
     g_incrCallback->incr_cb_message(msg);
 }

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 #include "Measurements.h"
@@ -69,7 +74,7 @@ void DynaDAGServer::CloseModelEdge(DDModel::Edge *e) {
 	model.erase_edge(e);
 }
 void DynaDAGServer::CloseChain(DDChain *chain,bool killEndNodes) {
-	if(!chain->first) 
+	if(!chain->first)
 		return;
 	DDModel::Edge *ei = chain->first;
 	DDModel::Node *ni;
@@ -99,7 +104,7 @@ void DynaDAGServer::closeLayoutNode(Layout::Node *n) {
 	ranker.RemoveLayoutNodeConstraints(m);
 	//xsolver.RemoveLayoutNodeConstraints(m);
 	CloseChain(m,true);
-	if(m->node) 
+	if(m->node)
 		CloseModelNode(m->node);
 	delete m;
 	DDp(n) = 0;
@@ -120,13 +125,13 @@ void DynaDAGServer::closeLayoutEdge(Layout::Edge *e) {
 void DynaDAGServer::executeDeletions(ChangeQueue &changeQ,Layout &extraI) {
 	for(Layout::graphedge_iter j = changeQ.delE.edges().begin(); j!=changeQ.delE.edges().end();) {
 		// if part of 2-cycle, enable the other edge
-		if(Layout::Edge *e1 = current->find_edge((*j)->head,(*j)->tail)) 
-			if(assign(DDp(e1)->secondOfTwo,false)) 
+		if(Layout::Edge *e1 = current->find_edge((*j)->head,(*j)->tail))
+			if(assign(DDp(e1)->secondOfTwo,false))
 				extraI.insert(e1);
 		Layout::Edge *e = *j++;
 		closeLayoutEdge(e);
 	}
-	for(Layout::node_iter i = changeQ.delN.nodes().begin(); i!=changeQ.delN.nodes().end(); ++i) 
+	for(Layout::node_iter i = changeQ.delN.nodes().begin(); i!=changeQ.delN.nodes().end(); ++i)
 		closeLayoutNode(*i);
 }
 // pretty aggressive (not ENOUGH)
@@ -144,7 +149,7 @@ void DynaDAGServer::findOrdererSubgraph(ChangeQueue &changeQ,Layout &outN,Layout
 			outE.insert(*ei);
 	// and all adjacent (this will add the edges off of a node that has a new or changed edge, but not the other ends of those edges)
 	outN |= outE; // nodes adjacent to edges
-	for(ni = outN.nodes().begin(); ni!=outN.nodes().end(); ++ni) // edges adjacent to nodes 
+	for(ni = outN.nodes().begin(); ni!=outN.nodes().end(); ++ni) // edges adjacent to nodes
 		for(Layout::nodeedge_iter ei = (*ni)->alledges().begin(); ei!=(*ni)->alledges().end(); ++ei)
 			outE.insert(*ei);
 	if(reportEnabled(r_dynadag)) {
@@ -160,11 +165,11 @@ void DynaDAGServer::updateBounds(ChangeQueue &changeQ) {
     if((*ri)->order.size()) {
       DDModel::Node *left = (*ri)->order.front();
       double lb = DDd(left).cur.x - config.LeftExtent(left);
-      if(!got || glb > lb) 
+      if(!got || glb > lb)
 	glb = lb;
       DDModel::Node *right = (*ri)->order.back();
       double rb = DDd(right).cur.x + config.RightExtent(right);
-      if(!got || grb < rb) 
+      if(!got || grb < rb)
 	grb = rb;
       got = true;
     }
@@ -190,7 +195,7 @@ void DynaDAGServer::findChangedNodes(ChangeQueue &changeQ) {
 			Position pos = DDp(*ni)->pos();
 			assert(pos.valid);
 			Position &p = gd<NodeGeom>(*ni).pos;
-			if(p != pos) 
+			if(p != pos)
 			{
 				if(p.valid) {
 					moved += (p-pos).Abs();
@@ -211,7 +216,7 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,ChangeQueue &changeQ) {
 	Layout::Node *tailMod = changeQ.modN.find(path->layoutE->tail),
 		*headMod = changeQ.modN.find(path->layoutE->head);
 	// check for endpoint resize or move
-	if(tailMod && igd<Update>(tailMod).flags & (DG_UPD_REGION|DG_UPD_MOVE) || 
+	if(tailMod && igd<Update>(tailMod).flags & (DG_UPD_REGION|DG_UPD_MOVE) ||
 		headMod && igd<Update>(headMod).flags & (DG_UPD_REGION|DG_UPD_MOVE))
 		return true;
 	if(!path->first) // flat or self edge
@@ -224,21 +229,21 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,ChangeQueue &changeQ) {
 		double x = DDd(n).actualX;
 		if(DDModel::Node *left = config.Left(n)) {
 			if(DDd(left).amEdgePart()) {
-				if(DDd(left).actualXValid && DDd(left).actualX + sep > x) 
+				if(DDd(left).actualXValid && DDd(left).actualX + sep > x)
 					return true;
 			}
-			else { 
-				if(DDd(left).cur.x + config.RightExtent(left) + sep > x) 
-					return true; 
+			else {
+				if(DDd(left).cur.x + config.RightExtent(left) + sep > x)
+					return true;
 			}
 		}
 		if(DDModel::Node *right = config.Right(n)) {
 			if(DDd(right).amEdgePart()) {
-				if(DDd(right).actualXValid && DDd(right).actualX - sep < x) 
+				if(DDd(right).actualXValid && DDd(right).actualX - sep < x)
 					return true;
 			}
-			else { 
-				if(DDd(right).cur.x - config.LeftExtent(right) - sep < x) 
+			else {
+				if(DDd(right).cur.x - config.LeftExtent(right) - sep < x)
 					return true;
 			}
 		}
@@ -255,12 +260,12 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 	// if a backedge (head is lower rank than tail), path->first->tail is head
 	// so we have to clip accordingly and then reverse the result (for arrowheads etc.)
 	bool reversed = DDd(DDp(head)->top()).rank<DDd(DDp(tail)->bottom()).rank;
-	if(reversed) 
+	if(reversed)
 		swap(head,tail);
 	if(!path->first) {
 		// there are three possible reasons why there's no path.
 		// redrawEdges handles self-edges and second edges of 2-cycles
-		// so we assume it's 
+		// so we assume it's
 		path->unclippedPath.push_back(DDp(tail)->pos()+eg.tailPort.pos);
 		path->unclippedPath.push_back(DDp(head)->pos()+eg.headPort.pos);
 	}
@@ -272,7 +277,7 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 	}
 	bool clipFirst = eg.headClipped,
 		clipLast = eg.tailClipped;
-	if(reversed) 
+	if(reversed)
 		swap(clipFirst,clipLast);
 	eg.pos.ClipEndpoints(path->unclippedPath,
 		gd<NodeGeom>(tail).pos,clipFirst?&gd<NodeGeom>(tail).region:0,
@@ -319,7 +324,7 @@ void DynaDAGServer::redrawEdges(ChangeQueue &changeQ,bool force) {
 		if(before!=gd<EdgeGeom>(*ei).pos)
 			changeQ.ModEdge(*ei,DG_UPD_MOVE);
 	}
-	for(ei = current->edges().begin(); ei!=current->edges().end(); ++ei) 
+	for(ei = current->edges().begin(); ei!=current->edges().end(); ++ei)
 		if(DDp(*ei)->secondOfTwo) {
 			Line before = gd<EdgeGeom>(*ei).pos;
 			Line &otherSide = gd<EdgeGeom>(current->find_edge((*ei)->head,(*ei)->tail)).pos;
@@ -348,7 +353,7 @@ void DynaDAGServer::dumpModel() {
 	if(!reportEnabled(r_modelDump))
 		return;
 	report(r_modelDump,"digraph dynagraphModel {\n");
-	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) 
+	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni)
 		report(r_modelDump,"\t\"%p\" [label=\"%p\\n%p\"];\n",*ni,*ni,DDd(*ni).multi);
 	for(DDModel::graphedge_iter ei = model.edges().begin(); ei!=model.edges().end(); ++ei)
 		report(r_modelDump,"\t\"%p\"->\"%p\" [label=\"%p\\n%p\"];\n",(*ei)->tail,(*ei)->head,*ei,DDd(*ei).path);
@@ -381,26 +386,26 @@ void DynaDAGServer::Process(ChangeQueue &changeQ) {
 	//optimizer = optChooser.choose(crossN.nodes().size()); // should prob. be no. of nodes in corresponding model subgraph
 
 	// synch model graph with changes
-	config.Update(changeQ); 
+	config.Update(changeQ);
 	loops.Field(r_dynadag,"model nodes",model.nodes().size());
 	timer.LoopPoint(r_timing,"update model graph");
 
 	// crossing optimization
-	optimizer->Reorder(*config.current,*config.current);//crossN,crossE); 
+	optimizer->Reorder(*config.current,*config.current);//crossN,crossE);
 	timer.LoopPoint(r_timing,"crossing optimization");
 
 	// find X coords
-	xsolver.Place(changeQ); 
+	xsolver.Place(changeQ);
 
 	// (with ConseqRanks, find rank Ys from node heights.)  find node Y coords from rank Ys.
-	config.SetYs(); 
+	config.SetYs();
 	timer.LoopPoint(r_timing,"optimize x coordinates");
 
 	// calculate bounding rectangle
 	updateBounds(changeQ);
-	
+
 	// find node & edge moves
-	findChangedNodes(changeQ); 
+	findChangedNodes(changeQ);
 
 	redrawEdges(changeQ,changeQ.GraphUpdateFlags()&DG_UPD_EDGESTYLE);
 	timer.LoopPoint(r_timing,"draw splines");

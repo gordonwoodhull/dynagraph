@@ -1,10 +1,27 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 struct LabelToNameTranslator : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
 	DynaView *m_source;
 	StrGraph *m_dest;
     bool m_useNodeLabels,m_useEdgeLabels;
-    LabelToNameTranslator(DinoInternalChanges *chain,DinoMachine::Edge *de,bool useNodeLabels,bool useEdgeLabels) 
+    LabelToNameTranslator(DinoInternalChanges *chain,DinoMachine::Edge *de,bool useNodeLabels,bool useEdgeLabels)
             : m_chain(chain),m_dinoe(de),m_useNodeLabels(useNodeLabels),m_useEdgeLabels(useEdgeLabels) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
@@ -87,12 +104,12 @@ struct LabelToNameTranslator : DinoInternalChanges {
                 assert(dme.tailmap()[NEID(false,ni->first)].begin()->name==newname);
                 assert(dme.headmap()[NEID(false,newname)].begin()->name==ni->first);
 			}
-			else { 
-                // not new, but label may have changed 
+			else {
+                // not new, but label may have changed
                 // or we might be able to grab name that was unavailable
 				assert(s.size()==1);
                 DString bname = s.begin()->name;
-                if(bname!=label) 
+                if(bname!=label)
                     if(!m_dest->ndict[label]) {
                         assert(dme.headmap()[NEID(false,label)].size()==0);
                         assert(dme.headmap()[NEID(false,bname)].size()==1);
@@ -142,7 +159,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
 			else { // not new, but maybe we can grab the label name
 				assert(s.size()==1);
                 DString bname = s.begin()->name;
-                if(bname!=label) 
+                if(bname!=label)
                     if(!m_dest->edict[label]) {
                         assert(dme.headmap()[NEID(true,label)].size()==0);
                         assert(dme.headmap()[NEID(true,bname)].size()==1);

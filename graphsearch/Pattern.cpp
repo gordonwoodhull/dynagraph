@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Pattern.h"
 #include <stdio.h>
@@ -33,7 +38,7 @@ istream &operator>>(istream &is,Path &pt) {
 		if(!is.eof())
 			is >> must(",");
 		is >> ws;
-	}		
+	}
 	return is;
 }
 struct DirNames : map<DString,int> {
@@ -77,7 +82,7 @@ void runPattern(queue<Match> &Q,PathsFollowed &followed,int limit,StrGraph *dest
 						dest->insert(*sei).first;
 						Q.push(Match((*pei)->head,(*sei)->head));
 					}
-					if(limit>0 && dest->nodes().size()>size_t(limit)) 
+					if(limit>0 && dest->nodes().size()>size_t(limit))
 						return;
 				}
 			if(gd<Path>(*pei).direction&matchUp)
@@ -89,14 +94,14 @@ void runPattern(queue<Match> &Q,PathsFollowed &followed,int limit,StrGraph *dest
 						dest->insert(*sei).first;
 						Q.push(Match((*pei)->head,(*sei)->tail));
 					}
-					if(limit>0 && dest->nodes().size()>size_t(limit)) 
+					if(limit>0 && dest->nodes().size()>size_t(limit))
 						return;
 				}
 		}
 	}
 }
 void matchPattern(Pattern::Node *start,StrGraph::Node *source,StrGraph *dest) {
-  //StrGraph::Node *place = 
+  //StrGraph::Node *place =
   dest->insert(source).first;
 	queue<Match> Q;
 	PathsFollowed followed;

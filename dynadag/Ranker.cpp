@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
@@ -105,13 +110,13 @@ void Ranker::moveOldNodes(ChangeQueue &changeQ) {
 			if(gd<NodeGeom>(*ni).nail & DG_NAIL_Y) {
 				if(!gd<NodeGeom>(*ni).pos.valid)
 					throw NailWithoutPos(*ni);
-				if(!n->rankFixed) 
+				if(!n->rankFixed)
 					fixNode(vn,true);
 			}
 			else if(n->rankFixed) // un-nail
 				fixNode(vn,false);
 		}
-		if(upd & DG_UPD_REGION) 
+		if(upd & DG_UPD_REGION)
 			doNodeHeight(*ni);
 	}
 }
@@ -139,7 +144,7 @@ void Ranker::stabilizePositionedNodes(ChangeQueue &changeQ) {
 				int topRank = config.ranking.MapCoordToRank(gd<NodeGeom>(*ni).BoundingBox().t);
 				cg.Stabilize(mn->topC,topRank,STABILITY_FACTOR_Y);
 			}
-			else 
+			else
 				cg.Unstabilize(mn->topC);
 		}
 }
@@ -153,7 +158,7 @@ static int dfs(Layout::Node *src, Layout::Node *dest, LNodeV &hit) {
 	DDp(src)->hit = true;
 	hit.push_back(src);
     for(Layout::outedge_iter ei = src->outs().begin(); ei!=src->outs().end(); ++ei) {
-		if(!DDp(*ei) || !DDp(*ei)->strong) 
+		if(!DDp(*ei) || !DDp(*ei)->strong)
 			continue;
         if(dfs((*ei)->head,dest,hit))
 			return true;
@@ -173,7 +178,7 @@ void Ranker::insertNewEdges(ChangeQueue &changeQ) {
 		// set up path but don't model it yet (that's config's job)
 		Layout *current = config.current;
 		DDPath *path = dynaDAG->OpenModelEdge(0,0,config.client->find(ve)).first;
-		if(ve->head == ve->tail) 
+		if(ve->head == ve->tail)
 			continue;
 		bool weak = false;
 		if(Layout::Edge *e1 = current->find_edge(ve->head,ve->tail)) {
@@ -201,11 +206,11 @@ void Ranker::insertNewEdges(ChangeQueue &changeQ) {
 /* special-case when it is easy */
 bool Ranker::simpleCase(ChangeQueue &changeQ) {
 	/* there must be no deletions */
-	if(changeQ.delN.nodes().size() || changeQ.delE.nodes().size()) 
+	if(changeQ.delN.nodes().size() || changeQ.delE.nodes().size())
 		return false;
 
 	/* there must be no mods */
-	if(changeQ.modN.nodes().size() || changeQ.modE.nodes().size()) 
+	if(changeQ.modN.nodes().size() || changeQ.modE.nodes().size())
 		return false;
 
 	/* there can only be singleton or leaf node insertions */
@@ -216,11 +221,11 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 			*possibleLeaf,
 			*other;
 		if(changeQ.insN.find(u)) {
-			possibleLeaf = u; 
+			possibleLeaf = u;
 			other = v;
 		}
 		else if(changeQ.insN.find(v)) {
-			possibleLeaf = v; 
+			possibleLeaf = v;
 			other = u;
 		}
 		else return false;	/* edge connects old nodes */
@@ -228,7 +233,7 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 		if(changeQ.insN.find(other))
 			return false;
 		/* test if new node is not a leaf */
-		if(possibleLeaf->degree() > 1) 
+		if(possibleLeaf->degree() > 1)
 			return false;
 	}
 
@@ -237,13 +242,13 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 		NodeGeom &ng = gd<NodeGeom>(*ni);
 		int newTopRank;
 		Bounds b = ng.BoundingBox();
-		if(b.valid) 
+		if(b.valid)
 #ifdef FLEXIRANKS
 			newTopRank = config.ranking.MapCoordToRank(b.t);
 #else
 			newTopRank = config.ranking.MapCoordToRank(ng.pos.y);
 #endif
-		else 
+		else
 			newTopRank = config.ranking.Low();
 
 		if(Layout::Node *u = changeQ.insE.find(*ni)) {
@@ -259,7 +264,7 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 				Layout::Edge *e = *u->outs().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
 					int r = DDd(DDp(e->head)->top()).rank - rankLength(e);
-					if(!ng.pos.valid || r < newTopRank) 
+					if(!ng.pos.valid || r < newTopRank)
 						newTopRank = r;
 				}
 			}
@@ -287,7 +292,7 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 }
 void Ranker::recomputeRanks(ChangeQueue &changeQ) {
 	/*
-	if(simpleCase(changeQ)) 
+	if(simpleCase(changeQ))
 		return;
 		*/
  	DDNS().Solve(&cg,NS::NORMALIZE|NS::RECHECK|NS::VALIDATE|NS::ATTACHATTRS);

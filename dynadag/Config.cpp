@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
@@ -23,19 +28,19 @@ Region &getRegion(DDModel::Node *n) {
 	return gd<NodeGeom>(vn).region;
 }
 double Config::LeftExtent(DDModel::Node *n) {
-	if(!n) 
+	if(!n)
 		return 0.0;
-	if(DDd(n).amEdgePart()) 
-		return gd<GraphGeom>(client).separation.x/2.0; 
+	if(DDd(n).amEdgePart())
+		return gd<GraphGeom>(client).separation.x/2.0;
 	if(getRegion(n).boundary.valid)
 		return -getRegion(n).boundary.l;
 	return EPSILON;
 }
 double Config::RightExtent(DDModel::Node *n) {
-	if(!n) 
+	if(!n)
 		return 0.0;
-	if(DDd(n).amEdgePart()) 
-		return gd<GraphGeom>(client).separation.x/2.0; 
+	if(DDd(n).amEdgePart())
+		return gd<GraphGeom>(client).separation.x/2.0;
 	double r = 0.0;
 	if(getRegion(n).boundary.valid)
 		r = getRegion(n).boundary.r;
@@ -45,18 +50,18 @@ double Config::RightExtent(DDModel::Node *n) {
 	return max(r,EPSILON);
 }
 double Config::TopExtent(DDModel::Node *n) {
-	if(!n) 
+	if(!n)
 		return 0.0;
-	if(DDd(n).amEdgePart()) 
+	if(DDd(n).amEdgePart())
 		return EPSILON;
 	if(getRegion(n).boundary.valid)
 		return getRegion(n).boundary.t;
 	return EPSILON;
 }
 double Config::BottomExtent(DDModel::Node *n) {
-	if(!n) 
+	if(!n)
 		return 0.0;
-	if(DDd(n).amEdgePart()) 
+	if(DDd(n).amEdgePart())
 		return EPSILON;
 	if(getRegion(n).boundary.valid)
 		return -getRegion(n).boundary.b;
@@ -104,11 +109,11 @@ double Config::CoordBetween(DDModel::Node *L, DDModel::Node *R) {
 }
 DDModel::Node *Config::RelNode(DDModel::Node *n, int offset) {
 	unsigned pos = DDd(n).order + offset;
-	if(pos < 0) 
+	if(pos < 0)
 		return 0;
 	Rank *rank = ranking.GetRank(DDd(n).rank);
 	assert(rank);
-	if(pos >= rank->order.size()) 
+	if(pos >= rank->order.size())
 		return 0;
 	return rank->order[pos];
 }

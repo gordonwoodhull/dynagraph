@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 #include "common/Dynagraph.h"
 #include "ObstacleAvoiderSpliner.h"
 
@@ -13,7 +30,7 @@ using namespace std;
 
 ObstacleAvoiderSpliner::ObstacleAvoiderSpliner(Layout *layout) {
 	int N = 0;
-	for(Layout::node_iter ni = layout->nodes().begin(); ni!=layout->nodes().end(); ++ni) 
+	for(Layout::node_iter ni = layout->nodes().begin(); ni!=layout->nodes().end(); ++ni)
 		if(gd<NodeGeom>(*ni).region.shape.size())
 			++N;
 	obs.resize(N,0);
@@ -35,7 +52,7 @@ ObstacleAvoiderSpliner::ObstacleAvoiderSpliner(Layout *layout) {
 		//if (Verbose) fprintf(stderr,"nodes touch - falling back to straight line edges\n");
 		vconfig = 0;
 	}
-	else 
+	else
 		vconfig = Pobsopen(&*obs.begin(),N);
 }
 void ObstacleAvoiderSpliner::FindSpline(Coord a,Coord b,Line &ret) {
@@ -45,19 +62,19 @@ void ObstacleAvoiderSpliner::FindSpline(Coord a,Coord b,Line &ret) {
 		q = *reinterpret_cast<Ppoint_t*>(&b);
 	Ppolyline_t line;
 	int			pp, qp;
-	
+
 	/* determine the polygons (if any) that contain the endpoints */
 	pp = qp = POLYID_NONE;
 	for(unsigned i = 0; i < obs.size(); i++) {
 		if ((pp == POLYID_NONE) && in_poly(*obs[i], p)) pp = i;
 		if ((qp == POLYID_NONE) && in_poly(*obs[i], q)) qp = i;
 	}
-	if(!Pobspath(vconfig, p, pp, q, qp, &line)) 
+	if(!Pobspath(vconfig, p, pp, q, qp, &line))
 		throw ClockwiseShapes();
 	Ppolyline_t spline;
 	Pvector_t	slopes[2];
 	int			n_barriers;
-	
+
 	Pedge_t     *barriers;
 	make_barriers(pp, qp, &barriers, &n_barriers);
 	slopes[0].x = slopes[0].y = 0.0;

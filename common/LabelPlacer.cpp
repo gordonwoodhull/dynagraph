@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Dynagraph.h"
 
@@ -27,7 +32,7 @@ void placeLabels(Layout::Edge *e) {
 	if(l.empty())
 		return;
 	segsizes sizes(&*l.begin(),l.size(),l.degree);
-	for(EdgeLabels::iterator il = el.begin(); il!=el.end(); ++il) 
+	for(EdgeLabels::iterator il = el.begin(); il!=el.end(); ++il)
 		if(l.size()) {
 			pair<Coord,Coord> pc = secant(&*l.begin(),l.size(),l.degree,sizes,il->where,il->length);
 			if(il->shape) {
@@ -101,9 +106,9 @@ void placeLabels(Layout::Node *n) {
 		;
 		const Bounds &bb = ng.BoundingBox();
 		Coord rpn = bb.NW() + il->nodeAlign*(bb.SE()-bb.NW()) + il->nodeOffset,
-			rpl = il->labelAlign*sizevec + il->labelOffset; 
+			rpl = il->labelAlign*sizevec + il->labelOffset;
 		Coord rpn2 = bb.NW() + il->nodeAlign2*(bb.SE()-bb.NW()) + il->nodeOffset2,
-			rpl2 = il->labelAlign2*sizevec + il->labelOffset2; 
+			rpl2 = il->labelAlign2*sizevec + il->labelOffset2;
 		Coord scale(1,1);
 		if(il->scaleX)
 			scale.x = (rpn2.x-rpn.x)/(rpl2.x-rpl.x);

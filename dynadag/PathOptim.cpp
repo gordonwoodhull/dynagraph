@@ -1,25 +1,30 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
 namespace DynaDAG {
 
 void PathOptim::optPath(DDPath *path) {
-	for(int pass = 0; pass < MINCROSS_PASSES; pass++) 
-		if(pass % 2 == 0) 
+	for(int pass = 0; pass < MINCROSS_PASSES; pass++)
+		if(pass % 2 == 0)
 			for(DDModel::Edge *e = path->first; e != path->last; e = *e->head->outs().begin())
 				optElt(e->head,UP,(pass%4)<2);
-		else 
+		else
 			for(DDModel::Edge *e = path->last; e != path->first; e = *e->tail->ins().begin())
 				optElt(e->tail,DOWN,(pass%4)<2);
 }
@@ -34,18 +39,18 @@ bool PathOptim::leftgoing(DDModel::Node *n, UpDown dir, int eq_pass) {
 			return true;
 	}
 #ifdef BOTH_MVAL_GOING
-	if(!MValExists(n,UP)||!MValExists(n,DOWN)) 
+	if(!MValExists(n,UP)||!MValExists(n,DOWN))
 		return false;
 	while(left) {
-		if(MValExists(left,UP)&&MValExists(left,DOWN)) 
+		if(MValExists(left,UP)&&MValExists(left,DOWN))
 			return MVal(n,UP)+MVal(n,DOWN) < MVal(left,UP)+MVal(left,DOWN);
 		left = config.Left(left);
 	}
 #else
-	if(!MValExists(n,dir)) 
+	if(!MValExists(n,dir))
 		return false;
 	while(left) {
-		if(MValExists(left,dir)) 
+		if(MValExists(left,dir))
 			return MVal(n,dir) < MVal(left,dir);
 		left = Left(left);
 	}
@@ -67,18 +72,18 @@ bool PathOptim::rightgoing(DDModel::Node *n, UpDown dir, int eq_pass) {
 			return true;
 	}
 #ifdef BOTH_MVAL_GOING
-	if(!MValExists(n,UP)||!MValExists(n,DOWN)) 
+	if(!MValExists(n,UP)||!MValExists(n,DOWN))
 		return false;
 	while(right) {
-		if(MValExists(right,UP)&&MValExists(right,DOWN)) 
+		if(MValExists(right,UP)&&MValExists(right,DOWN))
 			return MVal(n,UP)+MVal(n,DOWN) > MVal(right,UP)+MVal(right,DOWN);
 		right = config.Right(right);
 	}
 #else
-	if(!MValExists(n,dir)) 
+	if(!MValExists(n,dir))
 		return false;
 	while(right) {
-		if(MValExists(right,dir)) 
+		if(MValExists(right,dir))
 			return MVal(n,dir) > MVal(right,dir);
 		right = Right(right);
 	}
@@ -96,13 +101,13 @@ void PathOptim::resetCoord(DDModel::Node *n) {
 		DDd(n).cur.x = config.CoordBetween(L,R);
 }
 void PathOptim::optElt(DDModel::Node *n, UpDown dir, int eq_pass) {
-	if(leftgoing(n,dir,eq_pass)) { 
-		do shiftLeft(n); 
-		while(leftgoing(n,dir,eq_pass)); 
+	if(leftgoing(n,dir,eq_pass)) {
+		do shiftLeft(n);
+		while(leftgoing(n,dir,eq_pass));
 	}
-	else if(rightgoing(n,dir,eq_pass)) { 
-		do shiftRight(n); 
-		while(rightgoing(n,dir,eq_pass)); 
+	else if(rightgoing(n,dir,eq_pass)) {
+		do shiftRight(n);
+		while(rightgoing(n,dir,eq_pass));
 	}
 	resetCoord(n);
 }
@@ -123,7 +128,7 @@ double PathOptim::Reopt(DDModel::Node *n,UpDown dir) {
 		rn = config.Right(n);
 		for(ln = config.Left(n); ln; ln = config.Left(ln)) {
 			if(MValExists(ln,dir)) {
-				if(MVal(ln,dir) <= MVal(n,dir)) 
+				if(MVal(ln,dir) <= MVal(n,dir))
 					break;
 			}
 			else rn = ln;
@@ -133,7 +138,7 @@ double PathOptim::Reopt(DDModel::Node *n,UpDown dir) {
 		ln = config.Left(n);
 		for(rn = config.Right(n); rn; rn = config.Right(rn)) {
 			if(MValExists(rn,dir))  {
-				if(MVal(rn,dir) >= MVal(n,dir)) 
+				if(MVal(rn,dir) >= MVal(n,dir))
 					break;
 			}
 			else ln = rn;

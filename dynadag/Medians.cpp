@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 #include "common/weightedMedian.h"
@@ -28,12 +33,12 @@ void autoMVal(DDModel::Node *n, UpDown dir) {
 		n2 = n;
 	// ick
 	if(dir==UP)
-		for(DDModel::inedge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei) 
+		for(DDModel::inedge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei)
 			vec.push_back(DDd((*ei)->tail).order);
 	else
-		for(DDModel::outedge_iter ei = n->outs().begin(); ei!=n->outs().end(); ++ei) 
+		for(DDModel::outedge_iter ei = n->outs().begin(); ei!=n->outs().end(); ++ei)
 			vec.push_back(DDd((*ei)->head).order);
-	if(!vec.size()) 
+	if(!vec.size())
 		DDd(n).med[dir].exists = false;
 	else {
 		DDd(n).med[dir].exists = true;

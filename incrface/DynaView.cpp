@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 #include "common/Dynagraph.h"
 #include "DynaView.h"
 #include "common/stringsIn.h"
@@ -7,7 +24,7 @@
 
 using namespace std;
 
-DynaView::DynaView(Name name,Transform *transform, bool useDotDefaults) : 
+DynaView::DynaView(Name name,Transform *transform, bool useDotDefaults) :
 	current(&layout),
     old(&layout),
 	Q(&layout,&current),
@@ -43,7 +60,7 @@ pair<Layout::Node*,bool> DynaView::getNode(DString name,bool create) {
 	Layout::Node *n = nodes[name];
 	if(n)
 		return make_pair(n,false);
-	if(!create) 
+	if(!create)
 		return make_pair<Layout::Node*>(0,false);
     // NodeAttrs *NA = new NodeAttrs();
 	n = layout.create_node();//*NA);
@@ -117,7 +134,7 @@ void DynaView::destroy(Layout::Edge *e) {
 // incr_ev
 
 bool DynaView::maybe_go() {
-    if(locks>0) 
+    if(locks>0)
         return false;
 	bool ch = false;
     while(!Q.Empty()) {
@@ -163,7 +180,7 @@ bool DynaView::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
     }
 
     open_layout(attrs);
-    if(!dgserver) 
+    if(!dgserver)
         return false;
     incr_set_handler(gd<Name>(&layout) = graph,this);
 	cout << (isModify?"modify":"open") << " graph " << graph << " " << gd<StrAttrs2>(&layout) << endl;
@@ -191,7 +208,7 @@ bool DynaView::incr_ev_unlock() {
 DString DynaView::incr_ev_ins_node(DString name, const StrAttrs &attrs, bool merge) {
     DString rename = name;
     pair<Layout::Node *,bool> nb = getNode(name,true);
-    if(!nb.second&&!merge) { 
+    if(!nb.second&&!merge) {
         // name already was used, so make an anónimo and label with the name
         nb.second = true;
         nb.first = getNode(0,true).first;
@@ -229,7 +246,7 @@ DString DynaView::incr_ev_ins_edge(DString name, DString tailname, DString headn
         Q.InsEdge(eb.first);
         IncrNewEdge(eb.first);
     }
-    else 
+    else
         Q.ModEdge(eb.first,upd);
     maybe_go();
     return gd<Name>(eb.first);
@@ -245,14 +262,14 @@ DString DynaView::incr_ev_ins_edge(DString name, DString tailname, DString headn
 			    IncrNewEdge(eb.first);
             Q.InsEdge(eb.first);
         }
-        else 
+        else
             Q.ModEdge(eb.first,upd);
         maybe_go();
         */
 }
 bool DynaView::incr_ev_mod_node(DString name,const StrAttrs &attrs) {
     Layout::Node *n = getNode(name).first;
-    if(!n) 
+    if(!n)
         throw DVNodeDoesNotExist(name.c_str());
     Q.ModNode(n,stringsIn(m_transform,n,attrs,false));
     maybe_go();
@@ -260,7 +277,7 @@ bool DynaView::incr_ev_mod_node(DString name,const StrAttrs &attrs) {
 }
 bool DynaView::incr_ev_mod_edge(DString name,const StrAttrs &attrs) {
     Layout::Edge *e = getEdge(name);
-    if(!e) 
+    if(!e)
         throw DVEdgeDoesNotExist(name.c_str());
     Q.ModEdge(e,stringsIn(m_transform,e,attrs,false));
     maybe_go();
@@ -268,7 +285,7 @@ bool DynaView::incr_ev_mod_edge(DString name,const StrAttrs &attrs) {
 }
 bool DynaView::incr_ev_del_node(DString name) {
 	Layout::Node *n = getNode(name).first;
-    if(!n) 
+    if(!n)
         throw DVNodeDoesNotExist(name.c_str());
     Q.DelNode(n);
     maybe_go();
@@ -276,7 +293,7 @@ bool DynaView::incr_ev_del_node(DString name) {
 }
 bool DynaView::incr_ev_del_edge(DString name) {
     Layout::Edge *e = getEdge(name);
-    if(!e) 
+    if(!e)
         throw DVEdgeDoesNotExist(name.c_str());
     Q.DelEdge(e);
     maybe_go();
@@ -289,14 +306,14 @@ bool DynaView::incr_ev_req_graph() {
 }
 bool DynaView::incr_ev_req_node(DString name) {
     Layout::Node *n = getNode(name).first;
-    if(!n) 
+    if(!n)
         throw DVNodeDoesNotExist(name.c_str());
 	cout << "fulfil node " << gd<Name>(&layout) << " " << name << " " << gd<StrAttrs>(n);
     return true;
 }
 bool DynaView::incr_ev_req_edge(DString name) {
     Layout::Edge *e = getEdge(name);
-    if(!e) 
+    if(!e)
         throw DVEdgeDoesNotExist(name.c_str());
     cout << "fulfil edge " << gd<Name>(&layout) << " " << name << " " << gd<StrAttrs>(e);
     return true;
@@ -323,7 +340,7 @@ void DynaView::incr_ev_load_strgraph(StrGraph *sg,bool merge, bool del) {
                 di = nd.find(gd<Name>((*ei)->head));
                 if(di!=nd.end()) {
                     h = di->second;
-                    if(!sg->find_edge(t,h)) 
+                    if(!sg->find_edge(t,h))
                         incr_ev_del_edge(gd<Name>(*ei));
                 }
             }

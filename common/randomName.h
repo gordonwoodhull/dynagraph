@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 // tricky problem: if client doesn't specify a name, we need to generate one
 // can't use e.g. e17 because the client might already have something named that!
 // so generate a random name
@@ -6,7 +23,7 @@ inline DString randomName(char prefix) {
 	unsigned char ch;
 	buf[0] = prefix;
 	buf[1] = '_';
-	while(i<8) 
+	while(i<8)
 		if(isalnum(ch = rand()%256))
 			buf[i++] = ch;
 	buf[8] = 0;

@@ -1,9 +1,26 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 struct DinoPatternLookIn : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
 	StrGraph *m_source;
 	DynaView *m_dest;
-    DinoPatternLookIn(DinoInternalChanges *chain,DinoMachine::Edge *de) 
+    DinoPatternLookIn(DinoInternalChanges *chain,DinoMachine::Edge *de)
             : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
@@ -36,7 +53,7 @@ struct DinoPatternLookOut : DinoInternalChanges {
 	DinoMachine::Edge *m_dinoe;
 	DynaView *m_source;
 	StrGraph *m_dest;
-    DinoPatternLookOut(DinoInternalChanges *chain,DinoMachine::Edge *de) 
+    DinoPatternLookOut(DinoInternalChanges *chain,DinoMachine::Edge *de)
             : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;

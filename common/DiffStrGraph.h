@@ -1,20 +1,25 @@
-/* Copyright (c) 2001 AT&T Corp.  All rights reserved.
-
-This software may only be used by you under license from AT&T Corp. 
-("AT&T").  A copy of AT&T's Source Code Agreement is available at 
-AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 StrAttrs *diffAttr(StrAttrs &a1,StrAttrs &a2) {
 	StrAttrs *ret = 0;
 	for(StrAttrs::iterator i1 = a1.begin(),i2 = a2.begin(); i1!=a1.end() || i2!=a2.end();)
 		if(i1->first==i2->first) { // attr in both
-			if(i1->second!=i2->second) { 
+			if(i1->second!=i2->second) {
 				if(!ret)
 					ret = new StrAttrs;
 				(*ret)[i2->first] = i2->second;
@@ -94,7 +99,7 @@ StrGraph *DiffStrGraph(StrGraph *sg1,StrGraph *sg2) {
 				}
 			}
 		}
-		// edge deleted 
+		// edge deleted
 		StrGraph::Node *t3 = dict3[gd<Name>((*ei)->tail)],
 			*h3 = dict3[gd<Name>((*ei)->head)];
 		StrGraph::Edge *e3 = ret->create_edge(t3,h3).first;

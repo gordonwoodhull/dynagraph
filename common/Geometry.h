@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef Geometry_h
 #define Geometry_h
@@ -30,7 +35,7 @@ struct Coord {
 	}
 	bool operator !=(const Coord &c) const {
 		return !(*this==c);
-	} 
+	}
 	Coord operator +(const Coord &c) const {
 		return Coord(x+c.x,y+c.y);
 	}
@@ -190,7 +195,7 @@ struct Bounds : Rect {
 	Bounds &operator |=(const Rect &r) {
 		if(!valid)
 			*this = r;
-		else 
+		else
 			static_cast<Rect&>(*this) |= r;
 		return *this;
 	}
@@ -202,7 +207,7 @@ struct Bounds : Rect {
 };
 struct Region;
 struct Line : std::vector<Coord> {
-	typedef std::vector<Coord>::iterator iterator; // for gcc 3.0; why?  
+	typedef std::vector<Coord>::iterator iterator; // for gcc 3.0; why?
     Coord &at(int i) { return operator[](i); } // for earlier gccs
 	Coord at(int i) const { return operator[](i); }
 	int degree;
@@ -271,7 +276,7 @@ private:
 typedef std::list<Line> Lines;
 
 struct Region {
-	Bounds boundary; 
+	Bounds boundary;
 	Line shape;
 	mutable int lastOut; // to make iterative calls quicker
 	Region() : lastOut(0) {}

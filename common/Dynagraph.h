@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef Dynagraph_h
 #define Dynagraph_h
@@ -20,16 +25,16 @@ use it without violating AT&T's intellectual property rights. */
 #include "genpoly.h"
 
 /*
-        UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this 
-	modify subgraph specific flag.  
-	(this update flag is a poor use for instance-specific data, because the data 
+        UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this
+	modify subgraph specific flag.
+	(this update flag is a poor use for instance-specific data, because the data
 	is unused in the other subgraphs)
 */
 typedef enum {
 	DG_UPD_MOVE = 1<<0, // NodeGeom:: or EdgeGeom:: pos attribute
 	DG_UPD_REGION = 1<<1, // NodeGeom::region
 	DG_UPD_NAIL = 1<<2, // NodeGeom::nail
-	DG_UPD_TAIL = 1<<3, // EdgeGeom::tailPort or ::tailClipped 
+	DG_UPD_TAIL = 1<<3, // EdgeGeom::tailPort or ::tailClipped
 	DG_UPD_HEAD = 1<<4, // (sorry - can't change end nodes! create a new edge and delete this one)
 	DG_UPD_LENGTH = 1<<6, // EdgeGeom::minLength,fromBottom,toTop
 	DG_UPD_CONSTRAINT = 1<<8, // EdgeGeom::
@@ -49,14 +54,14 @@ struct Update { // subgraph-specific datum
 };
 
 /*
-	MODEL pointer - annoying type unsafe pocket in each layout object for 
+	MODEL pointer - annoying type unsafe pocket in each layout object for
 	a layout server to put a back-pointer; there's no provision for additional servers
 
 	Really, the layout servers should be templated on the layout graph type, and
 	the GraphAttrs, NodeAttrs, EdgeAttrs shouldn't be defined here but in client code.
 
 	But I haven't seen a great need yet, and don't know what compiler-specific
-	tricks you'd have to pull to still have separate compilation.  
+	tricks you'd have to pull to still have separate compilation.
 */
 struct ModelPointer {
 	void *model;
@@ -65,7 +70,7 @@ struct ModelPointer {
 
 // the lines to render an object. applies to all nodes, edges, and the Layout itself (right now just for debugging)
 // position-relative for nodes, absolute for others
-struct Drawn : Lines {}; 
+struct Drawn : Lines {};
 
 /*
 	GRAPH attributes
@@ -78,7 +83,7 @@ typedef enum {
 } SpliningLevel;
 struct GraphGeom {
 	Bounds bounds, // of all shown
-		changerect; // what area changed last FindChangedRect::Process 
+		changerect; // what area changed last FindChangedRect::Process
 	SpliningLevel splineLevel;
 	Coord labelGap, // between node and label
 		resolution, // smallest units in each dimension (e.g. 1,1 for integer)
@@ -94,7 +99,7 @@ struct StaticLabel {
 struct StaticLabels {
 	std::vector<StaticLabel> labels;
 };
-// at present dynagraph has no orientation parameter; that is, you can't 
+// at present dynagraph has no orientation parameter; that is, you can't
 // specify which way is down and thus which way dynadag edges will point.
 // instead, translate your coords to and from dynagraph using e.g. reorient.h
 // and set this parameter so that things that don't want to be translated,
@@ -112,7 +117,7 @@ struct Translation {
 
 struct GraphAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,GraphGeom,Translation,StaticLabels {};
 
-// generated shapes for nodes (relative to NodeGeom::pos); 
+// generated shapes for nodes (relative to NodeGeom::pos);
 // this (unlike NodeGeom::region), is not translated according to Translation::orientation
 // in other words, translate dynagraph coords first, then add these.
 // (nyi) line ([0]) + arrows for edges (absolute canvas coords)
@@ -128,7 +133,7 @@ typedef enum {
 } NailType;
 struct NodeGeom {
 	Position pos;
-	Region region; 
+	Region region;
 	NailType nail;
 	NodeGeom() : nail(DG_NONAIL) {}
 	Bounds BoundingBox() {
@@ -136,7 +141,7 @@ struct NodeGeom {
 			return Bounds();
 		if(region.boundary.valid)
 			return Bounds(region.boundary+pos);
-		else 
+		else
 			return Bounds(pos);
 	}
 	bool Overlaps(const NodeGeom &o) {
@@ -161,8 +166,8 @@ struct NodeLabel {
 		nodeOffset,labelOffset; // in respective plain coordinates
 	// labels can be stretched by matching a second reference point
 	bool scaleX,scaleY; // whether to use the x or y of the other refpoint
-	Coord nodeAlign2,labelAlign2, 
-		nodeOffset2,labelOffset2; 
+	Coord nodeAlign2,labelAlign2,
+		nodeOffset2,labelOffset2;
 
 	Coord size;
 	// output
@@ -227,7 +232,7 @@ typedef LGraph<ADTisCDT,GraphAttrs,NodeAttrs,EdgeAttrs,Update,Update,Update> Lay
 struct ChangeQueue {
 	// the client edits this supergraph of server's current layout
 	// then calls the methods below to signal the changes in the subgraphs
-	Layout * const client, * const current; 
+	Layout * const client, * const current;
 	Layout insN,modN,delN,
 		insE,modE,delE;
 
@@ -278,7 +283,7 @@ struct ChangeQueue {
 struct Server {
 	// shared by all actors in a system;  represents everything currently inserted
 	// note this is a subgraph of the client layout
-	Layout *const client, *const current; 
+	Layout *const client, *const current;
 
 	virtual void Process(ChangeQueue &Q) = 0;
 	Server(Layout *client,Layout *current) : client(client), current(current) {}
@@ -309,19 +314,19 @@ struct ShapeGenerator : Server {
 	ShapeGenerator(Layout *client,Layout *currentLayout) : Server(client,currentLayout) {}
 	~ShapeGenerator() {}
 };
-/* 
+/*
 	EXCEPTIONS
 */
 struct NailWithoutPos : DGException {
 	Layout::Node *n;
-	NailWithoutPos(Layout::Node *n) : 
+	NailWithoutPos(Layout::Node *n) :
 	  DGException("nailing a node without specifying a position"),
 	  n(n) {}
 };
-struct BackForth : DGException { 
-	Layout::Edge *e; 
+struct BackForth : DGException {
+	Layout::Edge *e;
 	BackForth(Layout::Edge *e) : DGException("dynadag can't handle a->b->a  (a->b->c->a is okay)"),
-	  e(e) {} 
-}; 
+	  e(e) {}
+};
 
 #endif

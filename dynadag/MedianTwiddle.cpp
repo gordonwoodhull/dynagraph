@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
@@ -28,9 +33,9 @@ void MedianTwiddle::Reorder(Layout &nodes,Layout &edges) {
 	bool moving = true;
 	for(int i = 0; i<MINCROSS_PASSES/2 && moving; ++i) {
 		moving = false;
-		for(vector<DDModel::Node*>::iterator ni = optimOrder.begin(); ni!=optimOrder.end(); ++ni) 
+		for(vector<DDModel::Node*>::iterator ni = optimOrder.begin(); ni!=optimOrder.end(); ++ni)
 			moving |= repos(*ni,UP);
-		for(vector<DDModel::Node*>::reverse_iterator rni = optimOrder.rbegin(); rni!=optimOrder.rend(); ++rni) 
+		for(vector<DDModel::Node*>::reverse_iterator rni = optimOrder.rbegin(); rni!=optimOrder.rend(); ++rni)
 			moving |= repos(*rni,DOWN);
 	}
 }
@@ -57,22 +62,22 @@ bool MedianTwiddle::repos(DDModel::Node *n,UpDown dir) {
 	return acted;
 }
 bool MedianTwiddle::leftgoing(DDModel::Node *n,UpDown dir) {
-	if(!MValExists(n,dir)) 
+	if(!MValExists(n,dir))
 		return false;
 	DDModel::Node *left = config.Left(n);
 	while(left) {
-		if(MValExists(left,dir)) 
+		if(MValExists(left,dir))
 			return MVal(n,dir) < MVal(left,dir);
 		left = config.Left(left);
 	}
 	return false;
 }
 bool MedianTwiddle::rightgoing(DDModel::Node *n,UpDown dir) {
-	if(!MValExists(n,dir)) 
+	if(!MValExists(n,dir))
 		return false;
 	DDModel::Node *right = config.Right(n);
 	while(right) {
-		if(MValExists(right,dir)) 
+		if(MValExists(right,dir))
 			return MVal(n,dir) > MVal(right,dir);
 		right = config.Right(right);
 	}

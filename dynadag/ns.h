@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include <queue>
 #include <limits.h>
@@ -110,13 +115,13 @@ struct NS {
 
 	struct CycleException : DGException {
 		Node *involving;
-		CycleException(Node *n) : 
+		CycleException(Node *n) :
 		  DGException("the network symplex algorithm encountered a cycle"),
 		  involving(n) {}
 	};
 	struct DisconnectedException : DGException {
 		Node *bad;
-		DisconnectedException(Node *n) : 
+		DisconnectedException(Node *n) :
 		  DGException("the network symplex algorithm encountered a disconnected graph"),
 		  bad(n) {}
 	};
@@ -524,7 +529,7 @@ public:
 		Run++;
 		bool verbose = flags & VERBOSE;
 		bool feasible = initGraph(g);
-		if(flags & VALIDATE) 
+		if(flags & VALIDATE)
 			checkGraph(g);
 		feasibleTree(g,feasible);
 
@@ -532,15 +537,15 @@ public:
 		while(Edge *e = leaveEdge(g)) {
 			Edge *f = enterEdge(e);
 			update(e,f);
-			if(step(g,++iter, verbose)) 
+			if(step(g,++iter, verbose))
 				break;
 		}
 
-		if(verbose || flags&RECHECK) 
+		if(verbose || flags&RECHECK)
 			checkRanks(g,iter,verbose);
-		if(flags&NORMALIZE) 
+		if(flags&NORMALIZE)
 			Normalize(g);
-		if(flags&ATTACHATTRS) 
+		if(flags&ATTACHATTRS)
 			AttachAttrs(g);
 	}
 	void SetMinLength(Edge *e, int len) {
@@ -578,7 +583,7 @@ private:
 			}
 		}
 		/*
-		if(verbose) 
+		if(verbose)
 			fprintf(stderr,"ns: %s, %d iter, %d cost\n",agnameof(g),iter,cost);
 		*/
 		return cost;
@@ -599,13 +604,13 @@ private:
 	}
 
 	void checkDFS(Node *n) {
-		if(NSd(n).dmark) 
+		if(NSd(n).dmark)
 			return;
 		NSd(n).dmark = true;
 		NSd(n).onstack = true;
 		for(outedge_iter ei = n->outs().begin(); ei!=n->outs().end(); ++ei) {
 			Node *w = (*ei)->head;
-			if(NSd(w).onstack) 
+			if(NSd(w).onstack)
 				throw CycleException(n);
 			if(!NSd(w).dmark)
 				checkDFS(w);
@@ -617,12 +622,12 @@ private:
 			NSd(n).dmark = true;
 			for(outedge_iter outi=n->outs().begin(); outi!=n->outs().end(); ++outi) {
 				Node *o = (*outi)->head;
-				if(!NSd(o).dmark) 
+				if(!NSd(o).dmark)
 					checkReach(o);
 			}
 			for(inedge_iter ini=n->ins().begin(); ini!=n->ins().end(); ++ini) {
 				Node *o = (*ini)->tail;
-				if(!NSd(o).dmark) 
+				if(!NSd(o).dmark)
 					checkReach(o);
 			}
 		}
@@ -638,7 +643,7 @@ private:
 			if(!NSd(n).dmark)
 				throw DisconnectedException(n);
 		}
-		for(ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) 
+		for(ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni)
 			NSd(*ni).dmark = false;
 	}
 	void checkGraph(G *g) {
@@ -660,10 +665,10 @@ private:
 		int minr = INT_MAX;
 		node_iter ni;
 		for(ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni)
-			if(minr > NSd(*ni).rank) 
+			if(minr > NSd(*ni).rank)
 				minr = NSd(*ni).rank;
-		if(minr != 0) 
-			for(ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) 
+		if(minr != 0)
+			for(ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni)
 				NSd(*ni).rank = NSd(*ni).rank - minr;
 	}
 };

@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 #include <common/diff_strgraph.h>
 struct AbGNodeUnknown : DGException2 {
     AbGNodeUnknown(const char *name) : DGException2("tried to modify unknown node",name) {}
@@ -40,14 +57,14 @@ struct AbsGraphHandler : IncrLangEvents {
 };
 
 // make changes immediately but only fire DinoInternalChanges when unlocked
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::maybe_go() {
-    if(locks>0) 
+    if(locks>0)
         return false;
     g_dinoMachine.changed(gd<Name>(g));
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
     if(graph.empty())
         graph = randomName('g');
@@ -57,29 +74,29 @@ bool AbsGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttrs &a
     maybe_go();
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 
 bool AbsGraphHandler<NGraph>::incr_ev_close_graph() {
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_mod_graph(const StrAttrs &attrs) {
     gd<StrAttrs>(g) = attrs;
     maybe_go();
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_lock() {
     locks++;
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_unlock() {
     --locks;
     maybe_go();
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 DString AbsGraphHandler<NGraph>::incr_ev_ins_node(DString name, const StrAttrs &attrs, bool merge) {
     if(name.empty())
         name = randomName('n');
@@ -88,7 +105,7 @@ DString AbsGraphHandler<NGraph>::incr_ev_ins_node(DString name, const StrAttrs &
     maybe_go();
     return name;
 }
-template<typename NGraph> 
+template<typename NGraph>
 DString AbsGraphHandler<NGraph>::incr_ev_ins_edge(DString name, DString tailname, DString headname, const StrAttrs &attrs) {
     if(name.empty())
         name = randomName('e');
@@ -97,7 +114,7 @@ DString AbsGraphHandler<NGraph>::incr_ev_ins_edge(DString name, DString tailname
     maybe_go();
     return name;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_mod_node(DString name,const StrAttrs &attrs) {
     typename NGraph::Node *n = g->ndict[name];
     if(!n)
@@ -106,16 +123,16 @@ bool AbsGraphHandler<NGraph>::incr_ev_mod_node(DString name,const StrAttrs &attr
     maybe_go();
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_mod_edge(DString name,const StrAttrs &attrs) {
     typename NGraph::Edge *e = g->edict[name];
-    if(!e) 
+    if(!e)
         throw AbGEdgeUnknown(name.c_str());
     gd<StrAttrs>(e) += attrs;
     maybe_go();
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_del_node(DString name) {
     typename NGraph::Node *n = g->ndict[name];
     if(!n)
@@ -124,25 +141,25 @@ bool AbsGraphHandler<NGraph>::incr_ev_del_node(DString name) {
     maybe_go();
     return true;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_del_edge(DString name) {
     typename NGraph::Edge *e = g->edict[name];
-    if(!e) 
+    if(!e)
         throw AbGEdgeUnknown(name.c_str());
     g->erase(e);
     maybe_go();
     return true;
 }
 // NO
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_req_graph() {
     return false;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_req_node(DString name) {
     return false;
 }
-template<typename NGraph> 
+template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_req_edge(DString name) {
     return false;
 }
@@ -169,7 +186,7 @@ struct we_do_what_were_told {
         hand->incr_ev_del_edge(gd<Name>(e));
     }
 };
-template<typename NGraph> 
+template<typename NGraph>
 void AbsGraphHandler<NGraph>::incr_ev_load_strgraph(StrGraph *sg,bool merge, bool del) {
     assert(merge && del);
     we_do_what_were_told<NGraph> react(this);

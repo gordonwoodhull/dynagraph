@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "fdp.h"
 #include "common/weightedMedian.h"
@@ -37,13 +42,13 @@ void FDPServer::setParams(Coord avgsize) {
 	else
 		K = 1.0;
 
-	if(T0 <= 0.0) 
+	if(T0 <= 0.0)
 		T0 = K*sqrt((double)model.nodes().size())/5;
 
 	K2 = K*K;
 
 	if(useGrid) {
-		if(CellSize <= 0.0) 
+		if(CellSize <= 0.0)
 			CellSize = 3*K;
 		Radius2 = CellSize *CellSize;
 	}
@@ -94,7 +99,7 @@ inline void readPos(Layout::Node *n) {
 	fdpn.pos[1] = pos.y;
 }
 void FDPServer::Process(ChangeQueue &Q) {
-	// this is not incremental, really: just respond to events, run, 
+	// this is not incremental, really: just respond to events, run,
 	// and then say "everything changed"!
 	Layout::node_iter ni;
 	Layout::graphedge_iter ei;

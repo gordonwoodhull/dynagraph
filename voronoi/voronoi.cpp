@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "voronoi.h"
 
@@ -39,13 +44,13 @@ void VoronoiServer::voronoi(const vector<Site*> &order) {
 
     newsite = is==order.end()?0:*is++;
     while(1) {
-        if(!hedges.PQempty()) 
+        if(!hedges.PQempty())
 			newintstar = hedges.PQ_min();
 
-        if (newsite != (struct Site *)0 
-           && (hedges.PQempty() 
+        if (newsite != (struct Site *)0
+           && (hedges.PQempty()
              || newsite -> coord.y < newintstar.y
-             || (newsite->coord.y == newintstar.y 
+             || (newsite->coord.y == newintstar.y
                  && newsite->coord.x < newintstar.x))) {
     /* new site is smallest */
             lbnd = hedges.leftbnd(newsite->coord);
@@ -65,7 +70,7 @@ void VoronoiServer::voronoi(const vector<Site*> &order) {
                 hedges.PQinsert(bisector, p, dist(p,newsite));
 			newsite = is==order.end()?0:*is++;
         }
-        else if(!hedges.PQempty()) { 
+        else if(!hedges.PQempty()) {
     /* intersection is smallest */
             lbnd = hedges.PQextractmin();
             llbnd = left(lbnd);
@@ -80,9 +85,9 @@ void VoronoiServer::voronoi(const vector<Site*> &order) {
             sites.makevertex(v);
             edges.endpoint(lbnd->ELedge,lbnd->ELpm,v);
             edges.endpoint(rbnd->ELedge,rbnd->ELpm,v);
-            hedges.erase(lbnd); 
+            hedges.erase(lbnd);
             hedges.PQdelete(rbnd);
-            hedges.erase(rbnd); 
+            hedges.erase(rbnd);
             pm = le;
             if (bot->coord.y > top->coord.y) {
 				swap(bot,top);

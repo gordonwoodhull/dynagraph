@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Dynagraph.h"
 
@@ -32,13 +37,13 @@ void ChangeQueue::InsEdge(Layout::Edge *e) {
 	insE.insert(e);
 }
 void ChangeQueue::ModNode(Layout::Node *n,Update u) {
-	if(!insN.find(n) && !delN.find(n)) { // u.flags && 
+	if(!insN.find(n) && !delN.find(n)) { // u.flags &&
 		Layout::Node *n2 = modN.insert(n).first;
 		igd<Update>(n2).flags |= u.flags;
 	}
 }
 void ChangeQueue::ModEdge(Layout::Edge *e,Update u) {
-	if(!insE.find(e) && !delE.find(e)) { // u.flags && 
+	if(!insE.find(e) && !delE.find(e)) { // u.flags &&
 		Layout::Edge *e2 = modE.insert(e).first;
 		igd<Update>(e2).flags |= u.flags;
 	}
@@ -48,7 +53,7 @@ void ChangeQueue::DelNode(Layout::Node *n) {
 	modN.erase(n);
 	delN.insert(n);
 	n = current->find(n); // remove edges that are currently inserted
-	for(Layout::nodeedge_iter i = n->alledges().begin(); i!=n->alledges().end(); ++i) 
+	for(Layout::nodeedge_iter i = n->alledges().begin(); i!=n->alledges().end(); ++i)
 		DelEdge(*i);
 }
 void ChangeQueue::DelEdge(Layout::Edge *e) {

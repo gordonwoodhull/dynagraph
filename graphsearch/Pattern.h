@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "common/LGraph-cdt.h"
 #include "common/StrAttr.h"
@@ -20,7 +25,7 @@ use it without violating AT&T's intellectual property rights. */
 #define HASH_NAMESPACE __gnu_cxx
 #else
 #include <hash_set>
-#if defined(_MSC_VER) && _MSC_VER>=1310 
+#if defined(_MSC_VER) && _MSC_VER>=1310
 // just great
 #define HASH_NAMESPACE stdext
 #else
@@ -41,7 +46,7 @@ struct Test {
 		if(i==gd<StrAttrs>(e).end())
 			return false;
 		return i->second==value;
-	}	
+	}
 };
 struct Path {
 	std::vector<Test> tests;
@@ -89,7 +94,7 @@ struct FollowedPath {
 
 // hash_* didn't make the standard!!! aieeee!!
 
-#if defined(_MSC_VER) && _MSC_VER>=1300 
+#if defined(_MSC_VER) && _MSC_VER>=1300
 // vc++.net stl uses one traits class rather than separate hash and eq
 using GSearch::FollowedPath;
 struct hash_fp {
@@ -116,9 +121,9 @@ struct equal_toFollowedPath {
 	}
 };
 
-typedef HASH_NAMESPACE::hash_set<GSearch::FollowedPath,hashFollowedPath,equal_toFollowedPath> 
+typedef HASH_NAMESPACE::hash_set<GSearch::FollowedPath,hashFollowedPath,equal_toFollowedPath>
   PathsFollowed;
-#endif 
+#endif
 
 void runPattern(std::queue<GSearch::Match> &Q,PathsFollowed &followed,int limit,
 		StrGraph *dest);

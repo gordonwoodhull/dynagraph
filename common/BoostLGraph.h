@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 namespace boost {
 
 	struct LGraph_traversal_category :
@@ -45,13 +62,13 @@ namespace boost {
 	template <class ADT,class gdata,class vdata, class edata>
 	inline std::pair< typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_iterator,
 		typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_iterator >
-	vertices(const LGraph<ADT,gdata,vdata,edata> &g) 
+	vertices(const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return std::make_pair(g.nodes().begin(),g.nodes().end());
 	}
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertices_size_type
-	num_vertices(const LGraph<ADT,gdata,vdata,edata> &g) 
+	num_vertices(const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return g.nodes().size();
 	}
@@ -60,14 +77,14 @@ namespace boost {
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor
 	source(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::edge_descriptor e,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return e->tail;
 	}
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor
 	target(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::edge_descriptor e,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return e->head;
 	}
@@ -75,14 +92,14 @@ namespace boost {
 	inline std::pair< typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::out_edge_iterator,
 		typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::out_edge_iterator >
 	out_edges(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return std::make_pair(u->outs().begin(),u->outs().end());
 	}
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::degree_size_type
 	out_degree(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return u->outs().size();
 	}
@@ -92,21 +109,21 @@ namespace boost {
 	inline std::pair< typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::in_edge_iterator,
 		typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::in_edge_iterator >
 	in_edges(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return std::make_pair(u->ins().begin(),u->ins().end());
 	}
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::degree_size_type
 	in_degree(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return u->ins().size();
 	}
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::degree_size_type
 	degree(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		const LGraph<ADT,gdata,vdata,edata> &g) 
+		const LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return u->degree();
 	}
@@ -116,45 +133,45 @@ namespace boost {
 	inline std::pair< typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::edge_descriptor, bool >
 	add_edge(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
 		typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor v,
-		LGraph<ADT,gdata,vdata,edata> &g) 
+		LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return g.create_edge(u,v);
 	}
 	template <class ADT,class gdata,class vdata, class edata>
-	inline void 
+	inline void
 	remove_edge(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
 		typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor v,
-		LGraph<ADT,gdata,vdata,edata> &g) 
+		LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::edge_descriptor e = g.find_edge(u,v);
 		if(e)
 			g.erase(e);
 	}
 	template <class ADT,class gdata,class vdata, class edata>
-	inline void 
+	inline void
 	remove_edge(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::edge_descriptor e,
-		LGraph<ADT,gdata,vdata,edata> &g) 
+		LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		g.erase(e);
 	}
 	template <class ADT,class gdata,class vdata, class edata>
-	inline void 
+	inline void
 	remove_edge(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::edge_iterator ei,
-		LGraph<ADT,gdata,vdata,edata> &g) 
+		LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		g.erase(*ei);
 	}
 	// skipping *_if
 	template <class ADT,class gdata,class vdata, class edata>
 	inline typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor
-	add_vertex(LGraph<ADT,gdata,vdata,edata> &g) 
+	add_vertex(LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		return g.create_node();
 	}
 	template <class ADT,class gdata,class vdata, class edata>
 	inline void
 	clear_vertex(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		LGraph<ADT,gdata,vdata,edata> &g) 
+		LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		for(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::out_edge_iterator ei = u->outs().begin(); ei!=u->outs().end(); ++ei)
 			g.erase(*ei);
@@ -164,12 +181,12 @@ namespace boost {
 	template <class ADT,class gdata,class vdata, class edata>
 	inline void
 	remove_vertex(typename graph_traits< LGraph<ADT,gdata,vdata,edata> >::vertex_descriptor u,
-		LGraph<ADT,gdata,vdata,edata> &g) 
+		LGraph<ADT,gdata,vdata,edata> &g)
 	{
 		g.erase(u);
 	}
 
-	// MemberAccessor models a Read/Write Property Map by 
+	// MemberAccessor models a Read/Write Property Map by
     // accessing a member of a graph/node/edge datum
 	template <class K,class Datum,class MT,MT Datum::*Member>
 	struct MemberAccessor {
@@ -188,7 +205,7 @@ namespace boost {
 	get(const MemberAccessor<K,Datum,MT,Member>&,K const &u) {
 		return gd<Datum>(u).*Member;
 	}
-	// PointerAccessor models a Read/Write Property Map by 
+	// PointerAccessor models a Read/Write Property Map by
     // accessing an array (pointer) by the ID value of the node/edge
 	template <class G,class K,class V>
 	struct PointerAccessor {

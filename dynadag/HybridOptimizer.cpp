@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
@@ -17,7 +22,7 @@ namespace DynaDAG {
 //#define DOUBLE_MEDIANS
 #ifdef DOUBLE_MEDIANS
 #define med_type double
-#define cvt_med 
+#define cvt_med
 #define med_eq(m1,m2) (fabs(m1-m2)<0.25)
 #else
 #define med_type int
@@ -52,7 +57,7 @@ struct MedianOptimizer {
 					break;
 				}
 			}
-			if(l) 
+			if(l)
 				return DDd(l).order;
 			// same for right, with lesser medians
 			DDModel::Node *r = 0;
@@ -68,7 +73,7 @@ struct MedianOptimizer {
 					break;
 				}
 			}
-			if(r) 
+			if(r)
 				return DDd(r).order+1;
 		}
 		return -1;
@@ -142,7 +147,7 @@ void HybridOptimizer::Reorder(Layout &nodes,Layout &edges) {
 	MedianOptimizer median(config);
 	SiftingOptimizer sifting(config);
 	Config::Ranks backup = config.ranking;
-	// optimize once ignoring node crossings (they can scare the sifting alg) 
+	// optimize once ignoring node crossings (they can scare the sifting alg)
 	// in a sec we'll sift using the node penalty to clean up
 	sifting.matrix.m_light = true;
 	sifting.matrix.recompute();
@@ -185,7 +190,7 @@ void HybridOptimizer::Reorder(Layout &nodes,Layout &edges) {
 				best = score;
 				tired = 0;
 			}
-			else 
+			else
 				tired++;
 			pass++;
 		}
@@ -194,7 +199,7 @@ void HybridOptimizer::Reorder(Layout &nodes,Layout &edges) {
 			sifting.matrix.recompute();
 		}
 	}
-	if(score>=best) 
+	if(score>=best)
 		config.Restore(backup);
 	loops.Field(r_crossopt,"model edge crossings",best);
 

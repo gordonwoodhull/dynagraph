@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 // so as not to mess with callbacks, this is iterators returning *both* node and edge
 // the edge was followed to get to the node, unless the traversal didn't follow an edge to get there.
@@ -104,7 +109,7 @@ struct DFS : Traversal<G> {
 		m_nodeiter = n?g->iter(n):g->nodes().begin();
 		m_stopped = !next();
     }
-	DFS(G *g,bool travAll=false,bool outward=true,bool inward=true,bool outsfirst=true) : 
+	DFS(G *g,bool travAll=false,bool outward=true,bool inward=true,bool outsfirst=true) :
 		Traversal<G>(g),m_outward(outward),m_inward(inward),m_outsfirst(outsfirst),m_travAll(travAll),m_stopped(false)
 	{
         m_stopped = true;
@@ -178,11 +183,11 @@ private:
 			m_curr = m_stack.top();
 			m_stack.pop();
 		}
-		while(!follow(deadpath)); 
+		while(!follow(deadpath));
 		return true;
 	}
 	bool next() {
-		for(;m_nodeiter!=m_g->parent->nodes().end();++m_nodeiter) 
+		for(;m_nodeiter!=m_g->parent->nodes().end();++m_nodeiter)
 			if(!gd<Hit>(*m_nodeiter)[m_hitpos]) {
 				m_curr.e = 0;
 				m_curr.n = *m_nodeiter;
@@ -205,7 +210,7 @@ struct BFS : Traversal<G> {
 		V last = **this;
 		m_queue.pop();
 		if(last.n) {
-			if(m_inwards) 
+			if(m_inwards)
 				for(typename G::inedge_iter ei = last.n->ins().begin(); ei!=last.n->ins().end(); ++ei)
 					if(!gd<Hit>(*ei)[m_hitpos]) {
 						Node *t = (*ei)->tail;
@@ -216,7 +221,7 @@ struct BFS : Traversal<G> {
 						m_queue.push(V(*ei,t));
 						gd<Hit>(*ei)[m_hitpos] = true;
 					}
-			if(m_outwards) 
+			if(m_outwards)
 				for(typename G::outedge_iter ei = last.n->outs().begin(); ei!=last.n->outs().end(); ++ei)
 					if(!gd<Hit>(*ei)[m_hitpos]) {
 						Node *h = (*ei)->head;
@@ -230,7 +235,7 @@ struct BFS : Traversal<G> {
 		}
 		if(m_queue.empty() && m_travAll)
 			for(;m_nodeiter!=m_g->nodes().end(); ++m_nodeiter)
-				if(!gd<Hit>(*m_nodeiter)[m_hitpos]) 
+				if(!gd<Hit>(*m_nodeiter)[m_hitpos])
                     add(*m_nodeiter);
 		return *this;
 	}
@@ -250,7 +255,7 @@ struct BFS : Traversal<G> {
         gd<Hit>(n)[m_hitpos] = true;
         m_queue.push(V(0,n));
 	}
-	BFS(G *g,bool travAll = false,bool inwards=true,bool outwards=true) : 
+	BFS(G *g,bool travAll = false,bool inwards=true,bool outwards=true) :
         Traversal<G>(g),m_travAll(travAll), m_inwards(inwards),m_outwards(outwards) {
 	}
 private:

@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Dynagraph.h"
 #include "Transform.h"
@@ -44,25 +49,25 @@ void stringifyEdgePos(const Line &ep,Transform *trans,Layout *l,StrAttrs2 &out);
 template<typename T>
 void stringifyAny(Transform *trans,T *o,Update u) {
 	// if there's lines to tell OR there useta be and now there aren't...
-	if(u.flags&DG_UPD_DRAWN && (gd<Drawn>(o).size() || gd<StrAttrs>(o)["lines"].length())) 
+	if(u.flags&DG_UPD_DRAWN && (gd<Drawn>(o).size() || gd<StrAttrs>(o)["lines"].length()))
 		stringifyDrawn(gd<Drawn>(o),gd<StrAttrs2>(o));
 }
 void stringifyChanges(Transform *trans,Layout *l,Update u) {
 	stringifyAny(trans,l,u);
 	GraphGeom &gg = gd<GraphGeom>(l);
 	StrAttrs2 &att = gd<StrAttrs2>(l);
-	if(u.flags&DG_UPD_BOUNDS) 
+	if(u.flags&DG_UPD_BOUNDS)
 		stringifyBounds(gg.bounds,trans,l,att);
-	if(u.flags&DG_UPD_CHANGERECT) 
+	if(u.flags&DG_UPD_CHANGERECT)
 		stringifyChangeRect(gg.changerect,trans,l,att);
 }
 void stringifyChanges(Transform *trans,Layout::Node *n,Update u) {
 	stringifyAny(trans,n,u);
 	NodeGeom &ng = gd<NodeGeom>(n);
 	StrAttrs2 &att = gd<StrAttrs2>(n);
-	if(u.flags&DG_UPD_MOVE) 
+	if(u.flags&DG_UPD_MOVE)
 		stringifyPos(ng.pos,trans,n->g,att);
-	if(u.flags&DG_UPD_POLYDEF) 
+	if(u.flags&DG_UPD_POLYDEF)
 		stringifyPolyDef(gd<PolyDef>(n),trans,n->g,att);
 	if(u.flags&DG_UPD_LABEL)
 		stringifyNodeLabels(gd<NodeLabels>(n),trans,n->g,att);
@@ -71,7 +76,7 @@ void stringifyChanges(Transform *trans,Layout::Edge *e,Update u) {
 	stringifyAny(trans,e,u);
 	EdgeGeom &eg = gd<EdgeGeom>(e);
 	StrAttrs2 &att = gd<StrAttrs2>(e);
-	if(u.flags&DG_UPD_MOVE) 
+	if(u.flags&DG_UPD_MOVE)
 		stringifyEdgePos(eg.pos,trans,e->g,att);
 }
 void stringsOut(Transform *trans,ChangeQueue &Q) {
@@ -88,11 +93,11 @@ void stringsOut(Transform *trans,ChangeQueue &Q) {
 		}
 		*/
 	}
-	if(Q.GraphUpdateFlags()) 
+	if(Q.GraphUpdateFlags())
 		stringifyChanges(trans,Q.client,Q.GraphUpdateFlags());
 	Layout::node_iter ni;
 	Layout::graphedge_iter ei;
-	if(llchanged) { 
+	if(llchanged) {
 		// all coordinates have changed because they're based on lower-left corner
 		for(ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni)
 			if(!Q.insN.find(*ni) && !Q.delN.find(*ni))
@@ -123,13 +128,13 @@ void outBounds(ostream &o,const Bounds &b) {
 	// dot rects are llx,lly,urx,ury
 	if(b.valid)
 		o << b;
-	else 
+	else
 		o << "0,0,0,0";
 }
 void stringifyBounds(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out) {
 	ostringstream o;
 	initStream(o,l);
-	if(b.valid && trans) 
+	if(b.valid && trans)
 		outBounds(o,trans->out(b));
 	else
 		outBounds(o,b);
@@ -138,7 +143,7 @@ void stringifyBounds(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out) 
 void stringifyChangeRect(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out) {
 	ostringstream o;
 	initStream(o,l);
-	if(b.valid && trans) 
+	if(b.valid && trans)
 		outBounds(o,trans->out(b));
 	else
 		outBounds(o,b);
@@ -230,7 +235,7 @@ void stringifyNodeLabels(const NodeLabels &nl,Transform *trans,Layout *l,StrAttr
 			o << nl[i].bounds << ends;
 			out.put(posname,o.str());
 		}
-	}		
+	}
 }
 void stringifyEdgePos(const Line &ep,Transform *trans,Layout *l,StrAttrs2 &out) {
 	ostringstream o;

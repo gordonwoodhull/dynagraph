@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "fdp.h"
 #include <math.h>
@@ -55,7 +60,7 @@ void FDPServer::doRep(FDPModel::Node *p, FDPModel::Node *q, double xdelta, doubl
 }
 
 /*applyRep:
- *Repulsive force =(K*K)/d 
+ *Repulsive force =(K*K)/d
  */
 void FDPServer::applyRep(FDPModel::Node *p, FDPModel::Node *q) {
     double xdelta, ydelta;
@@ -66,7 +71,7 @@ void FDPServer::applyRep(FDPModel::Node *p, FDPModel::Node *q) {
 }
 
 /*applyAttr:
- *Attractive force =(d*d)/K 
+ *Attractive force =(d*d)/K
  */
 void FDPServer::applyAttr(FDPModel::Node *p, FDPModel::Node *q) {
     double xdelta, ydelta;
@@ -119,8 +124,8 @@ int FDPServer::VisitCell(Cell *cell,Grid *grid) {
 		fprintf(stderr, "gridRepulse(%d,%d) : %d\n", i, j, gLength(cell));
 	*/
 	node_list &nodes = cell->nodes;
-	for(node_list::iterator pi = nodes.begin(); pi!=nodes.end(); ++pi) 
-		for(node_list::iterator qi = nodes.begin(); qi!=nodes.end(); ++qi) 
+	for(node_list::iterator pi = nodes.begin(); pi!=nodes.end(); ++pi)
+		for(node_list::iterator qi = nodes.begin(); qi!=nodes.end(); ++qi)
 			if(pi!=qi)
 				applyRep(*pi,*qi);
 
@@ -140,10 +145,10 @@ int FDPServer::VisitCell(Cell *cell,Grid *grid) {
 void FDPServer::adjust(FDPModel *g, double temp, Grid *grid) {
 	double disp[NDIM];          /*incremental displacement */
 
-	if(temp <= 0.0) 
+	if(temp <= 0.0)
 		return;
 
-	if(useGrid) 
+	if(useGrid)
 		grid->clear();
 
 	FDPModel::node_iter ni;
@@ -165,7 +170,7 @@ void FDPServer::adjust(FDPModel *g, double temp, Grid *grid) {
 			FDPModel::node_iter ni2;
 			for((ni2 = ni)++; ni2!=g->nodes().end(); ++ni2)
 				applyRep(*ni, *ni2);
-			for(FDPModel::outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end(); ++ei) 
+			for(FDPModel::outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end(); ++ei)
 				applyAttr(*ni, (*ei)->head);
 		}
 	}
@@ -219,7 +224,7 @@ void FDPServer::layout() {
 #endif
   Grid *grid=0;
 
-  if(useGrid) 
+  if(useGrid)
 	  grid = new Grid(model.nodes().size());
   if(useComp) {
 #ifdef JJ
@@ -241,7 +246,7 @@ void FDPServer::layout() {
     }
 */
   }
-  if(useGrid) 
+  if(useGrid)
 	  delete grid;
 
 }

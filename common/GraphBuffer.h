@@ -1,9 +1,26 @@
-struct GraphBufferXep : DGException { 
-  DString description; 
-  EndNodesDontMatch(DString description) : 
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
+struct GraphBufferXep : DGException {
+  DString description;
+  EndNodesDontMatch(DString description) :
     DGException("GraphBuffer exception"),
     description(description)
-  {} 
+  {}
 };
 
 struct GraphBuffer {
@@ -58,7 +75,7 @@ struct GraphBuffer {
 			return;
 		}
 		StrGraph::Node *d = delN.create_node(name);
-		if(StrGraph::Node *m = modN.ndict[name]) 
+		if(StrGraph::Node *m = modN.ndict[name])
 			modN.erase(m);
 	}
 	void delete_edge(DString name) {
@@ -93,6 +110,6 @@ struct GraphBuffer {
 			gd<StrAttrs>(n) = gd<StrAttrs>(*ni);
 		}
 		for(StrGraph::graphedge_iter ei = insE.edges().begin(); ei!=insE.edges().end(); ++ei)
-		...			
+		...
 
 };

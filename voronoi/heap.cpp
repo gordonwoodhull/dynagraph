@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include <stdio.h>
 #include "hedges.h"
@@ -38,7 +43,7 @@ void Halfedges::PQinsert(Halfedge *he, Site *v, double offset) {
       {
         last = next;
       }
-    he -> PQnext = last -> PQnext; 
+    he -> PQnext = last -> PQnext;
     last -> PQnext = he;
     PQcount += 1;
 }
@@ -82,12 +87,12 @@ Halfedge *Halfedges::PQextractmin() {
 
 
 void Halfedges::PQinitialize() {
-    int i; 
+    int i;
 
     PQcount = 0;
     PQmin = 0;
     PQhash.resize(PQhashsize);
-    for(i=0; i<PQhashsize; i+=1) 
+    for(i=0; i<PQhashsize; i+=1)
 		PQhash[i].PQnext = 0;
 }
 

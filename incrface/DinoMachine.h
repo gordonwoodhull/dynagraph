@@ -1,3 +1,20 @@
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
+
 // the set of graphs that Dinograph is holding, and the relations between them
 
 #include "IncrLangEvents.h"
@@ -22,7 +39,7 @@ struct NEID {
 // to map between nodes, edges, and subgraphs
 typedef two_way_map<NEID> NEID_map;
 
-// fired by DinoMachine when the tail 
+// fired by DinoMachine when the tail
 struct DinoInternalChanges {
     virtual ~DinoInternalChanges() {}
     virtual void GraphChanged() = 0;
@@ -50,7 +67,7 @@ struct DinoMachEdge : NamedAttrs {
         return !reversed?mappings->B:mappings->A;
     }
     void connect(NEID a,NEID b) {
-        if(!reversed) 
+        if(!reversed)
             mappings->connect(a,b);
         else
             mappings->connect(b,a);
@@ -95,7 +112,7 @@ struct DinoMachine : NamedGraph<NamedAttrs,DinoMachNode,DinoMachEdge> {
 	// eventually this will be a real data flow model
 	// for now, it's a mess of cascading events
 	// the only check is: it won't return to the starting node
-	Node *m_start; 
+	Node *m_start;
 	DinoMachine() : m_start(0) {}
     void changed(DString nodename) {
         Node *n = ndict[nodename];

@@ -1,5 +1,5 @@
-// originally thanks to Llew S. Goodstadt
-// from http://www.codeguru.com/gdi/ellipse.shtml
+// thanks to Llew S. Goodstadt
+// http://www.codeguru.com/gdi/ellipse.shtml
 
 #include "Geometry.h"
 
@@ -9,7 +9,7 @@ void ellipse2bezier(Rect &r, Line &out) {
 	out.degree = 3;
 	out.resize(13,Coord());
     // MAGICAL CONSTANT to map ellipse to beziers
-    //  			2/3*(sqrt(2)-1) 
+    //  			2/3*(sqrt(2)-1)
     const double EToBConst = 0.2761423749154,
 		translation = (r.b>r.t)?-1.0:1.0;
 

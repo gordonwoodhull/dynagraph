@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 // Sanity checks.
 
@@ -67,7 +72,7 @@ void Config::checkEdges(bool strict) {
 void Config::checkX() {
 	for(Ranks::iterator ri = ranking.begin(); ri!=ranking.end(); ++ri) {
 		Rank *r = *ri;
-		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni) 
+		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
 			if(ni!=r->order.begin())
 #ifdef X_STRICTLY_INCREASING
 				assert(DDd(*ni).cur.x>DDd(*(ni-1)).cur.x);
@@ -80,7 +85,7 @@ void XSolver::checkLRConstraints() {
 	bool missing = false;
 	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri) {
 		Rank *r = *ri;
-		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni) 
+		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
 			if(DDModel::Node *left = config.Left(*ni)) {
 				DDCGraph::Node *l = DDd(left).getXcon().n,
 					*n = DDd(*ni).getXcon().n;
@@ -98,17 +103,17 @@ void XSolver::checkLRConstraints() {
 				// don't allow extraneous constraints: only edge,stab, and L-R are good
 				for(DDCGraph::edge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei) {
 					DDCGraph::Edge *e2 = *ei;
-					assert(e2==e || 
+					assert(e2==e ||
 						e2->tail == DDd(*ni).getXcon().stab ||
 						gd<ConstraintType>(e2->tail).why==ConstraintType::orderEdgeStraighten);
 				}
 				*/
 			}
 	}
-	assert(!missing);			
+	assert(!missing);
 }
 void XSolver::checkEdgeConstraints() {
-	for(DDModel::graphedge_iter ei = config.model.edges().begin(); ei!=config.model.edges().end(); ++ei) 
+	for(DDModel::graphedge_iter ei = config.model.edges().begin(); ei!=config.model.edges().end(); ++ei)
 		if(DDd(*ei).amEdgePart()) {
 			DDCGraph::Node *cn = DDd(*ei).cn;
 			assert(cn);

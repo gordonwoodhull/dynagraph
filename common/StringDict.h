@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #ifndef STRINGDICT_H
 #define STRINGDICT_H
@@ -27,7 +32,7 @@ use it without violating AT&T's intellectual property rights. */
 #include "cdt.h"
 struct StringDict {
 	StringDict();
-	void init(); 
+	void init();
 	const char *enter(const char *val);
 	void release(const char *val);
 	void ref(const char *val); // MUST have come from here!
@@ -106,7 +111,7 @@ public:
         return val?std::string(val):std::string();
 	}
 	// these are what make this super-cool: single-word compare!
-    // (obviously this is not a typological sort, but no one wants 
+    // (obviously this is not a typological sort, but no one wants
     // attributes in alphabetical order just to look them up quickly)
 	bool operator <(const DString &ds) const {
 		return val<ds.val;
@@ -221,7 +226,7 @@ inline std::ostream &operator <<(std::ostream &os,const DString &s) {
 }
 struct DictStringLost : DGException {
 	const char *s;
-	DictStringLost(const char *s) : 
+	DictStringLost(const char *s) :
 	  DGException("StringDict internal exception: string lost"),
 	  s(s)
   {}

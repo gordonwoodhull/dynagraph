@@ -1,20 +1,25 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "Geometry.h"
 
 int Line::GetSeg(double y) {
 	for(unsigned i = 0; i < size() - 1; i += degree)
-		if(sequence(double(at(i).y),y,double(at(i+degree).y)) || 
+		if(sequence(double(at(i).y),y,double(at(i+degree).y)) ||
 				sequence(double(at(i+degree).y),y,double(at(i).y)))
 			return i;
 	return -1;
@@ -23,19 +28,19 @@ Position Line::YIntersection(double y) {
 	if(!size())
 		return Position();
 	for(unsigned i = 0; i < size(); i += degree)
-		if(at(i).y == y) 
+		if(at(i).y == y)
 			return Position(at(i));
 	int seg = GetSeg(y);
-	if(seg < 0) 
+	if(seg < 0)
 		return Position();
 	double high,low;
-	if(at(seg).y < at(seg+degree).y) { 
-		high = 1.0; 
-		low = 0.0; 
+	if(at(seg).y < at(seg+degree).y) {
+		high = 1.0;
+		low = 0.0;
 	}
-	else  { 
-		high = 0.0; 
-		low = 1.0; 
+	else  {
+		high = 0.0;
+		low = 1.0;
 	}
 	double close = DBL_MAX;
 	Coord ret;
@@ -44,14 +49,14 @@ Position Line::YIntersection(double y) {
 		Coord p = Bezier(&at(seg),degree,t);
 		double d = absol(p.y - y);
 		if(d < close) {
-			ret = p; 
+			ret = p;
 			close = d;
 		}
-		if(p.y > y) 
+		if(p.y > y)
 			high = t;
-		else 
+		else
 			low = t;
-	} 
+	}
 	while(absol(high - low) > .01); /* should be adaptive */
 	return Position(ret);
 }
@@ -61,16 +66,16 @@ inline Coord *Line::clip(Coord *in, const Coord offset, const Region &reg, Coord
 		low = 0.0;
 	bool lowInside = reg.Hit(in[0]-offset),
 		highInside = reg.Hit(in[degree]-offset);
-	if(lowInside == highInside) 
+	if(lowInside == highInside)
 		return in;
 	Coord work[4],
 		*lowSeg,*highSeg;
 	if(lowInside) {
 		lowSeg = 0;
-		highSeg = work; 
+		highSeg = work;
 	}
 	else {
-		lowSeg = work; 
+		lowSeg = work;
 		highSeg = 0;
 	}
 
@@ -78,11 +83,11 @@ inline Coord *Line::clip(Coord *in, const Coord offset, const Region &reg, Coord
 		double t = (high + low) / 2.0;
 		Coord p = Bezier(in,degree,t,lowSeg,highSeg);
 		bool inside = reg.Hit(p-offset);
-		if(inside == lowInside) 
+		if(inside == lowInside)
 			low = t;
-		else 
+		else
 			high = t;
-	} 
+	}
 	while(high - low > DETAIL);	/* should be adaptive with resolution */
 	for(int i=0;i<=degree;++i)
 		out[i] = work[i];
@@ -141,14 +146,14 @@ void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
 	int firstI,lastI;
 	if(tl) {
 		for(firstI = 0; firstI < int(source.size())-1; firstI += degree)
-			if(!tl->Hit(source[firstI + degree]-offsetTail)) 
+			if(!tl->Hit(source[firstI + degree]-offsetTail))
 				break;
 	}
 	else
 		firstI = 0;
 	if(hd) {
 		for(lastI = source.size() - degree - 1; lastI >= 0; lastI -= degree)
-			if(!hd->Hit(source[lastI]-offsetHead)) 
+			if(!hd->Hit(source[lastI]-offsetHead))
 				break;
 	}
 	else

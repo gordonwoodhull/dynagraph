@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 /* adjust.c
  * Routines for repositioning nodes after initial layout in
@@ -28,14 +33,14 @@ namespace Voronoi {
 /* chkBoundBox:
  *   Compute extremes of graph, then set up bounding box.
  *   If user supplied a bounding box, use that;
- *   else if "window" is a graph attribute, use that; 
+ *   else if "window" is a graph attribute, use that;
  *   otherwise, define bounding box as a percentage expansion of
  *   graph extremes.
  *   In the first two cases, check that graph fits in bounding box.
  */
 void VoronoiServer::chkBoundBox() {
 	bounds.valid = false;
-    for(vector<Info>::iterator ii = infos.nodes.begin(); ii !=infos.nodes.end(); ii++) 
+    for(vector<Info>::iterator ii = infos.nodes.begin(); ii !=infos.nodes.end(); ii++)
 		bounds |= gd<NodeGeom>(ii->layoutN).BoundingBox();
 
 	if(bounds.valid) {
@@ -45,7 +50,7 @@ void VoronoiServer::chkBoundBox() {
 }
 
  /* makeInfo:
-  * For each node in the graph, create a Info data structure 
+  * For each node in the graph, create a Info data structure
   */
 void VoronoiServer::makeInfo() {
 	int N = current->nodes().size();
@@ -99,7 +104,7 @@ void VoronoiServer::geomUpdate (vector<Site*> &sort) {
 
     /* compute ranges */
 	hedges.range = Rect(sort[0]->coord);
-    for(size_t i = 1; i < current->nodes().size(); i++) 
+    for(size_t i = 1; i < current->nodes().size(); i++)
 		hedges.range |= sort[i]->coord;
 }
 int VoronoiServer::countOverlap(int iter) {
@@ -112,7 +117,7 @@ int VoronoiServer::countOverlap(int iter) {
 
     for(vector<Info>::iterator ip = infos.nodes.begin(); ip!=infos.nodes.end(); ++ip)
 		for(vector<Info>::iterator jp = ip+1; jp!=infos.nodes.end(); ++jp)
-			if(gd<NodeGeom>(ip->layoutN).region.Overlaps(ip->site.coord, 
+			if(gd<NodeGeom>(ip->layoutN).region.Overlaps(ip->site.coord,
 				jp->site.coord, gd<NodeGeom>(jp->layoutN).region)) {
 			  count++;
 			  ip->overlaps = jp->overlaps = true;
@@ -171,7 +176,7 @@ void VoronoiServer::newpos(Info* ip) {
 		seg.degree = 1;
 		for(PtItem *p = anchor; p; p = p->next)
 			seg.push_back(p->p);
-		seg.push_back(anchor->p); 
+		seg.push_back(anchor->p);
 		gd<Drawn>(l).push_back(seg);
 		}
 #endif
@@ -183,7 +188,7 @@ void VoronoiServer::newpos(Info* ip) {
 		}
 		ip->site.coord = ws/totalArea;
 	}
-	else 
+	else
 		ip->site.coord.x += 1;
 }
 
@@ -202,7 +207,7 @@ void VoronoiServer::addCorners() {
 	double   sed = dSquared(ip->site.coord, bounds.SE());
 	double   ned = dSquared(ip->site.coord, bounds.NE());
 	double   d;
-    
+
     while(++ip!=infos.nodes.end()) {
         d = dSquared(ip->site.coord, bounds.SW());
         if (d < swd) {
@@ -243,7 +248,7 @@ void VoronoiServer::addCorners() {
 void VoronoiServer::newPos() {
     addCorners ();
     for(vector<Info>::iterator ii = infos.nodes.begin(); ii!=infos.nodes.end(); ++ii)
-        if (doAll || ii->overlaps) 
+        if (doAll || ii->overlaps)
 			newpos(&*ii);
 }
 
@@ -256,7 +261,7 @@ bool VoronoiServer::vAdjust () {
 
     if (!useIter || (iterations > 0))
       overlapCnt = countOverlap (iterCnt);
-    
+
     if ((overlapCnt == 0) || (iterations == 0))
       return 0;
 
@@ -264,11 +269,11 @@ bool VoronoiServer::vAdjust () {
 
 	vector<Site*> sort;
     geomUpdate(sort);
-    voronoi(sort); 
+    voronoi(sort);
     while (1) {
       newPos ();
       iterCnt++;
-      
+
       if (useIter && (iterCnt == iterations)) break;
       cnt = countOverlap (iterCnt);
       if (cnt == 0) break;
@@ -294,7 +299,7 @@ bool VoronoiServer::vAdjust () {
       }
 
       geomUpdate(sort);
-      voronoi(sort); 
+      voronoi(sort);
     }
 
 	/*
@@ -314,7 +319,7 @@ rePos (Coord c)
     Info*    ip = nodes;
     double   f = 1.0 + incr;
 
-  
+
     for (i = 0; i < nsites; i++) {
       ip->site.coord.x = f*(ip->site.coord.x - c.x) + c.x;
       ip->site.coord.y = f*(ip->site.coord.y - c.y) + c.y;
@@ -334,7 +339,7 @@ sAdjust ()
 
     if (!useIter || (iterations > 0))
       overlapCnt = countOverlap (iterCnt);
-    
+
     if ((overlapCnt == 0) || (iterations == 0))
       return 0;
 
@@ -343,7 +348,7 @@ sAdjust ()
     while (1) {
       rePos (center);
       iterCnt++;
-      
+
       if (useIter && (iterCnt == iterations)) break;
       cnt = countOverlap (iterCnt);
       if (cnt == 0) break;
@@ -367,7 +372,7 @@ void VoronoiServer::updateLayout(ChangeQueue &Q) {
 	}
 }
 /*
-static void 
+static void
 normalize(graph_t *g)
 {
 	node_t	*v;

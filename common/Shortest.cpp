@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include <limits.h>
 #include <deque>
@@ -133,7 +138,7 @@ void PathPlan::Shortest(const Line &boundary, Segment endpoints, Line &out) {
 		p1 = boundary[minpi == 0 ? boundary.size()-1 : minpi - 1],
 		p3 = boundary[minpi == int(boundary.size()) - 1 ? 0 : minpi + 1];
     if(p1.x == p2.x && p2.x == p3.x && p3.y > p2.y ||
-            ccw(p1, p2, p3) != ISCCW) 
+            ccw(p1, p2, p3) != ISCCW)
         for(Line::const_reverse_iterator pi = boundary.rbegin(); pi != boundary.rend(); pi++) {
             if(pi != boundary.rbegin() && *pi == pi[-1])
                 continue;
@@ -203,7 +208,7 @@ void PathPlan::Shortest(const Line &boundary, Segment endpoints, Line &out) {
     /* build funnel and shortest path linked list(in add2dq) */
 	PnL epnls[2] = {&endpoints.a,&endpoints.b};
     dq.apex = dq.add_front(&epnls[0]);
-	Triangle *trii = &*ftrii; 
+	Triangle *trii = &*ftrii;
     while(trii) {
 		trii->mark = 2;
 
@@ -303,7 +308,7 @@ static bool isDiagonal(PnLPV &pnlps, unsigned pnli, unsigned pnlip2) {
     /* check against all other edges */
     for(unsigned pnlj = 0; pnlj < pnlps.size(); pnlj++) {
         unsigned pnljp1 =(pnlj + 1) % pnlps.size();
-        if(!(pnlj == pnli || pnljp1 == pnli || 
+        if(!(pnlj == pnli || pnljp1 == pnli ||
 			pnlj == pnlip2 || pnljp1 == pnlip2))
             if(segsIntersect(*pnlps[pnli]->pp, *pnlps[pnlip2]->pp,
                     *pnlps[pnlj]->pp, *pnlps[pnljp1]->pp))

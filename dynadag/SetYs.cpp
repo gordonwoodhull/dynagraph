@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
@@ -35,13 +40,13 @@ void Config::resetRankBox(Rank *rank) {
 	double maxTop = gd<GraphGeom>(config.client).separation.y / 20.0,
 		maxBottom = gd<GraphGeom>(client).separation.y / 20.0;
 	for(NodeV::iterator ni = rank->order.begin(); ni!=rank->order.end(); ++ni) {
-		if(DDd(*ni).amEdgePart()) 
+		if(DDd(*ni).amEdgePart())
 			continue;
 		double nt = TopExtent(*ni);
-		if(maxTop < nt) 
+		if(maxTop < nt)
 			maxTop = nt;
 		double nb = BottomExtent(*ni);
-		if(maxBottom > nb) 
+		if(maxBottom > nb)
 			maxBottom = nb;
 	}
 
@@ -89,12 +94,12 @@ void Config::resetBaselines() {
 
 void Config::SetYs() {
   Ranks::iterator ri;
-	for(ri = ranking.begin(); ri!=ranking.end(); ++ri) 
+	for(ri = ranking.begin(); ri!=ranking.end(); ++ri)
 		resetRankBox(*ri);
 
 	resetBaselines();
 
-	for(ri = ranking.begin(); ri!=ranking.end(); ++ri) 
+	for(ri = ranking.begin(); ri!=ranking.end(); ++ri)
 		for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni) {
 			DDNode &ddn = DDd(*ni);
 			double newY = (*ri)->yBase;

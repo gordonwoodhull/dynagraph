@@ -1,14 +1,19 @@
-/*   Copyright (c) AT&T Corp.  All rights reserved.
-   
-This software may only be used by you under license from 
-AT&T Corp. ("AT&T").  A copy of AT&T's Source Code Agreement 
-is available at AT&T's Internet website having the URL 
-
-http://www.research.att.com/sw/tools/graphviz/license/
-
-If you received this software without first entering into a license 
-with AT&T, you have an infringing copy of this software and cannot 
-use it without violating AT&T's intellectual property rights. */
+/**********************************************************
+*      This software is part of the graphviz toolset      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2005 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+*                                                         *
+*                   *        *        *                   *
+*            Current source code available from           *
+*                http://gordon.woodhull.com               *
+**********************************************************/
 
 #include "DynaDAG.h"
 
@@ -23,10 +28,10 @@ namespace DynaDAG {
 void XSolver::RemoveNodeConstraints(DDModel::Node *n) {
 	cg.RemoveNodeConstraints(DDd(n).getXcon());
 	/*
-	if(DDMultiNode *multi = DDd(n).multi) 
+	if(DDMultiNode *multi = DDd(n).multi)
 		if(multi->xcon.n) // kill all connected edge constraints (but only once)
 			for(DDMultiNode::node_iter ni = multi->nBegin(); ni!=multi->nEnd(); ++ni)
-				for(DDModel::nodeedge_iter ei(*ni); ei!=DDModel::nodeedge_iter(); ++ei) 
+				for(DDModel::nodeedge_iter ei(*ni); ei!=DDModel::nodeedge_iter(); ++ei)
 					RemoveEdgeConstraints(*ei);
 	*/
 }
@@ -46,7 +51,7 @@ void XSolver::InvalidateChainConstraints(DDChain *path) {
 void XSolver::DeleteLRConstraint(DDModel::Node *u,DDModel::Node *v) {
 	DDCGraph::Node *cn_u = u?DDd(u).getXcon().n:cg.anchor,
 		*cn_v = DDd(v).getXcon().n;
-	DDCGraph::Edge *ce; 
+	DDCGraph::Edge *ce;
 	if(cn_u && cn_v && (ce = cg.find_edge(cn_u,cn_v)))
 		cg.erase(ce);
 }
@@ -101,7 +106,7 @@ void XSolver::doNodesep(Layout *subLayout) {
 void XSolver::doEdgesep(Layout *subLayout) {
 	for(Layout::graphedge_iter ei = subLayout->edges().begin(); ei!=subLayout->edges().end(); ++ei) {
 		DDPath *path = DDp(*ei);
-		if(path->first) 
+		if(path->first)
 			for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni)
 				fixSeparation(*ni);
 		else if((*ei)->head!=(*ei)->tail) { /* flat */
@@ -110,7 +115,7 @@ void XSolver::doEdgesep(Layout *subLayout) {
 			int ux = DDd(u).order,
 				vx = DDd(v).order;
 			if(abs(ux - vx) == 1) {
-				if(ux > vx) 
+				if(ux > vx)
 					swap(u,v);
 				DDCGraph::Node *uvar = DDd(u).getXcon().n,
 					*vvar = DDd(v).getXcon().n;
@@ -153,7 +158,7 @@ void XSolver::doEdgeCost(Layout *subLayout) {
 		for(DDPath::edge_iter ei2 = path->eBegin(); ei2!=path->eEnd(); ++ei2)
 			fixEdgeCost(*ei2);
 	}
-} 
+}
 
 	// restore around changed nodes
 void XSolver::fixLostEdges(Layout *subLayout) {
@@ -178,7 +183,7 @@ void XSolver::restoreEdgeCost(ChangeQueue &changeQ) {
 
 void XSolver::stabilizeNodes(ChangeQueue &changeQ) {
 #ifdef REDO_ALL
-	for(Layout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni) 
+	for(Layout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
         if(gd<NodeGeom>(*ni).pos.valid)  // DDp(*ni)->coordFixed) { assert(gd<NodeGeom>(*ni).pos.valid);
 			cg.Stabilize(DDd(DDp(*ni)->top()).getXcon(),ROUND(xScale * gd<NodeGeom>(*ni).pos.x),STABILITY_FACTOR_X);
     /*
@@ -186,28 +191,28 @@ void XSolver::stabilizeNodes(ChangeQueue &changeQ) {
     // it's not necessary to unstabilize nodes that are connected to edges because the cost
     // of edge bends is much higher than that of stability
 	int i;
-	for(i = 0; i < 2; i++) 
-		for(Layout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni) 
+	for(i = 0; i < 2; i++)
+		for(Layout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni)
 			if(!DDp(*ni)->coordFixed)
 				cg.Unstabilize(DDd(DDp(*ni)->top()).getXcon());
     */
 #else
-	Layout *modnodes[2] = {&changeQ.insN,&changeQ.modN}, 
+	Layout *modnodes[2] = {&changeQ.insN,&changeQ.modN},
 		*modedges[2] = {&changeQ.insE,&changeQ.modE};
 
 	/* what about delE? make sure endpoint isn't deleted too. */
 
 	int i;
-	for(i = 0; i < 2; i++) 
-		for(Layout::node_iter ni = modnodes[i]->nodes().begin(); ni!=modnodes[i]->nodes().end(); ++ni) 
+	for(i = 0; i < 2; i++)
+		for(Layout::node_iter ni = modnodes[i]->nodes().begin(); ni!=modnodes[i]->nodes().end(); ++ni)
             if(gd<NodeGeom>(*ni).pos.valid) { // DDp(*ni)->coordFixed) { assert(gd<NodeGeom>(*ni).pos.valid);
 				double x = gd<NodeGeom>(*ni).pos.x;
 				int ix = ROUND(xScale * x);
 				cg.Stabilize(DDd(DDp(*ni)->top()).getXcon(),ix,STABILITY_FACTOR_X);
 			}
     /*
-	for(i = 0; i < 2; i++) 
-		for(Layout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni) 
+	for(i = 0; i < 2; i++)
+		for(Layout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni)
 			if(!DDp(*ni)->coordFixed)
 				cg.Unstabilize(DDd(DDp(*ni)->top()).getXcon());
     */
@@ -216,7 +221,7 @@ void XSolver::stabilizeNodes(ChangeQueue &changeQ) {
 void XSolver::readoutCoords() {
 	int anchor_rank = DDNS::NSd(cg.anchor).rank;
 	for(DDModel::node_iter ni = config.model.nodes().begin(); ni!=config.model.nodes().end(); ++ni)
-		if(DDCGraph::Node *cn = DDd(*ni).getXcon().n) 
+		if(DDCGraph::Node *cn = DDd(*ni).getXcon().n)
 			DDd(*ni).cur.x = (DDNS::NSd(cn).rank - anchor_rank) / xScale;
 }
 // DynaDAG callin
@@ -246,7 +251,7 @@ void XSolver::Place(ChangeQueue &changeQ) {
 	//timer.LoopPoint(r_timing,"XConstraints");
 	config.model.dirty.clear();
 	stabilizeNodes(changeQ);
-	// if(cg.inconsistent || 1) 
+	// if(cg.inconsistent || 1)
 	{
 		checkLRConstraints();
 		checkEdgeConstraints();
@@ -277,4 +282,4 @@ void XSolver::Place(ChangeQueue &changeQ) {
 	}
 }
 
-} // namespace DynaDAG	
+} // namespace DynaDAG
