@@ -13,10 +13,10 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef VORONOI_H
 #define VORONOI_H
 
-#include "voronoi/site.h"
-#include "voronoi/info.h"
-#include "voronoi/edges.h"
-#include "voronoi/hedges.h"
+#include "site.h"
+#include "info.h"
+#include "edges.h"
+#include "hedges.h"
 
 namespace Voronoi {
 

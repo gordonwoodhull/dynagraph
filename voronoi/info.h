@@ -15,7 +15,7 @@ use it without violating AT&T's intellectual property rights. */
 
 #include "common/Dynagraph.h"
 #include "common/freelist.h"
-#include "voronoi/site.h"
+#include "site.h"
 
 namespace Voronoi {
 

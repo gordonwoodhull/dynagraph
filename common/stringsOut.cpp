@@ -10,149 +10,73 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Dynagraph.h"
-#include "common/Transform.h"
+#include "Dynagraph.h"
+#include "Transform.h"
 #include <sstream>
 #include <iomanip>
 using namespace std;
 
 const unsigned int AllFlags = 0xffffffff;
-const double ln10 = 2.30258509299404568401799145468436;
 // these write dynagraph Geom changes to the StrAttrs and StrAttrChanges attributes
+DString g_NLPNames[5] = {"center","right","top","left","bottom"};
 
-inline void initStream(ostringstream &o,Layout *l) {
+
+#include <sstream>
+const double ln10 = 2.30258509299404568401799145468436;
+inline void initStream(std::ostringstream &o,Layout *l) {
 	double lbase10 = log(gd<GraphGeom>(l).resolution.x)/ln10;
 	int precX = int(-floor(lbase10));
-	o.flags(o.flags()|ios::fixed);
+	o.flags(o.flags()|std::ios::fixed);
 	o.width(0);
 	o.precision(precX);
 }
+// forward decls
+void stringifyDrawn(const Drawn &d,StrAttrs2 &out);
+void outBounds(std::ostream &o,const Bounds &b);
+void stringifyBounds(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out);
+void stringifyChangeRect(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out);
+void stringifyPos(const Position &p,Transform *trans,Layout *l,StrAttrs2 &out);
+void stringifyPolyDef(const PolyDef &pdef,Transform *trans,Layout *l,StrAttrs2 &out);
+void stringifyNodeLabels(const NodeLabels &nl,Transform *trans,Layout *l,StrAttrs2 &out);
+void stringifyEdgePos(const Line &ep,Transform *trans,Layout *l,StrAttrs2 &out);
+
 // some attributes belong to all Geoms
 template<typename T>
 void stringifyAny(Transform *trans,T *o,Update u) {
 	// if there's lines to tell OR there useta be and now there aren't...
-	if(u.flags&DG_UPD_DRAWN && (gd<Drawn>(o).size() || gd<StrAttrs>(o)["lines"].length())) {
-		ostringstream stream;
-		stream << gd<Drawn>(o) << ends;
-		gd<StrAttrs>(o)["lines"] = stream.str();
-		gd<StrAttrChanges>(o).insert("lines");
-	}
+	if(u.flags&DG_UPD_DRAWN && (gd<Drawn>(o).size() || gd<StrAttrs>(o)["lines"].length())) 
+		stringifyDrawn(gd<Drawn>(o),gd<StrAttrs2>(o));
 }
 void stringifyChanges(Transform *trans,Layout *l,Update u) {
 	stringifyAny(trans,l,u);
 	GraphGeom &gg = gd<GraphGeom>(l);
 	StrAttrs2 &att = gd<StrAttrs2>(l);
-	if(u.flags&DG_UPD_BOUNDS) {
-		ostringstream o;
-		initStream(o,l);
-		Bounds b = gg.bounds;
-		if(b.valid && trans) 
-			b = trans->out(b);
-		if(b.valid)
-			o << b.l << ',' << b.b << ',' << b.r << ',' << b.t;
-		else 
-			o << "0,0,0,0";
-		att.put("bb",o.str());
-	}
+	if(u.flags&DG_UPD_BOUNDS) 
+		stringifyBounds(gg.bounds,trans,l,att);
+	if(u.flags&DG_UPD_CHANGERECT) 
+		stringifyChangeRect(gg.changerect,trans,l,att);
 }
 void stringifyChanges(Transform *trans,Layout::Node *n,Update u) {
 	stringifyAny(trans,n,u);
 	NodeGeom &ng = gd<NodeGeom>(n);
 	StrAttrs2 &att = gd<StrAttrs2>(n);
-	if(u.flags&DG_UPD_MOVE) {
-		ostringstream o;
-		initStream(o,n->g);
-		if(ng.pos.valid) {
-			Coord p = ng.pos;
-			if(trans)
-				p = trans->out(p);
-			o << p.x << ',' << p.y;
-		}
-		att.put("pos",o.str());
-	}
-	if(u.flags&DG_UPD_POLYDEF) {
-		char buf[20]; // agh  can't make myself use <<, am i getting old?
-		PolyDef &here=gd<PolyDef>(n),norm;
-		if(here.isEllipse) {
-			if(!norm.isEllipse)
-				att.put("shape","ellipse");
-			if(here.aspect!=norm.aspect) {
-				sprintf(buf,"%f",here.aspect);
-				att.put("aspect",buf);
-			}
-		}
-		else {
-			if(gd<StrAttrs>(n).find("shape")==gd<StrAttrs>(n).end())
-				att.put("shape","polygon");
-			if(here.sides!=norm.sides) {
-				sprintf(buf,"%d",here.sides);
-				att.put("sides",buf);
-			}
-		}
-		if(here.peripheries!=norm.peripheries) {
-			sprintf(buf,"%d",here.peripheries);
-			att.put("peripheries",buf);
-		}
-		if(here.perispacing!=norm.perispacing) {
-			sprintf(buf,"%f",here.perispacing);
-			att.put("perispacing",buf);
-		}
-		if(here.rotation!=norm.rotation) {
-			sprintf(buf,"%f",(here.rotation*180.0)/M_PI);
-			att.put("orientation",buf);
-		}
-		if(here.skew!=norm.skew) {
-			sprintf(buf,"%f",here.skew);
-			att.put("skew",buf);
-		}
-		if(here.distortion!=norm.distortion) {
-			sprintf(buf,"%f",here.distortion);
-			att.put("distortion",buf);
-		}
-		if(here.regular)
-			att.put("regular",0);
-		if(here.exterior_box.x||here.exterior_box.y) {
-		  Coord conv = trans->outSize(here.exterior_box);
-		  if(conv.x) {
-		    sprintf(buf,"%f",conv.x);
-		    att.put("width",buf);
-		  }
-		  if(conv.y) {
-		    sprintf(buf,"%f",conv.y);
-		    att.put("height",buf);
-		  }
-		}
-		if(here.interior_box.x||here.interior_box.y) {
-			sprintf(buf,"%f,%f",here.interior_box.x,here.interior_box.y);
-			att.put("textsize",buf);
-		}
-	}
-
+	if(u.flags&DG_UPD_MOVE) 
+		stringifyPos(ng.pos,trans,n->g,att);
+	if(u.flags&DG_UPD_POLYDEF) 
+		stringifyPolyDef(gd<PolyDef>(n),trans,n->g,att);
+	if(u.flags&DG_UPD_LABEL)
+		stringifyNodeLabels(gd<NodeLabels>(n),trans,n->g,att);
 }
 void stringifyChanges(Transform *trans,Layout::Edge *e,Update u) {
 	stringifyAny(trans,e,u);
 	EdgeGeom &eg = gd<EdgeGeom>(e);
-	StrAttrs &att = gd<StrAttrs>(e);
-	StrAttrChanges &cha = gd<StrAttrChanges>(e);
-	if(u.flags&DG_UPD_MOVE) {
-		ostringstream o;
-		initStream(o,e->g);
-		for(Line::iterator pi = eg.pos.begin(); pi!=eg.pos.end(); ++pi) {
-			if(pi!=eg.pos.begin())
-				o << ' ';
-			Coord p = *pi;
-			if(trans)
-				p = trans->out(p);
-			o << p.x << ',' << p.y;
-		}
-		att["pos"] = o.str();
-		cha.insert("pos");
-	}
+	StrAttrs2 &att = gd<StrAttrs2>(e);
+	if(u.flags&DG_UPD_MOVE) 
+		stringifyEdgePos(eg.pos,trans,e->g,att);
 }
 void stringsOut(Transform *trans,ChangeQueue &Q) {
 	bool llchanged = false;
 	if(trans) {
-		trans->ll = Coord(0,0);
 		/*
 		// grappa used to require bounding box with lower left = (0,0)
 		// this means you have to resend all coords pretty much every step
@@ -187,4 +111,138 @@ void stringsOut(Transform *trans,ChangeQueue &Q) {
 		for(ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
 			stringifyChanges(trans,*ei,igd<Update>(*ei));
 	}
+}
+
+
+void stringifyDrawn(const Drawn &d,StrAttrs2 &out) {
+	ostringstream stream;
+	stream << d << ends;
+	out.put("lines",stream.str());
+}
+void outBounds(ostream &o,const Bounds &b) {
+	// dot rects are llx,lly,urx,ury
+	if(b.valid)
+		o << b;
+	else 
+		o << "0,0,0,0";
+}
+void stringifyBounds(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out) {
+	ostringstream o;
+	initStream(o,l);
+	if(b.valid && trans) 
+		outBounds(o,trans->out(b));
+	else
+		outBounds(o,b);
+	out.put("bb",o.str());
+}
+void stringifyChangeRect(const Bounds &b,Transform *trans,Layout *l,StrAttrs2 &out) {
+	ostringstream o;
+	initStream(o,l);
+	if(b.valid && trans) 
+		outBounds(o,trans->out(b));
+	else
+		outBounds(o,b);
+	out.put("changerect",o.str());
+}
+void stringifyPos(const Position &p,Transform *trans,Layout *l,StrAttrs2 &out) {
+	ostringstream o;
+	initStream(o,l);
+	if(p.valid) {
+		Position p2 = trans?trans->out(p):p;
+		o << p2.x << ',' << p2.y;
+	}
+	out.put("pos",o.str());
+}
+void stringifyPolyDef(const PolyDef &pdef,Transform *trans,Layout *l,StrAttrs2 &out) {
+	char buf[20]; // agh  can't make myself use <<, am i getting old?
+	PolyDef norm;
+	if(pdef.isEllipse) {
+		if(!norm.isEllipse)
+			out.put("shape","ellipse");
+		if(pdef.aspect!=norm.aspect) {
+			sprintf(buf,"%f",pdef.aspect);
+			out.put("aspect",buf);
+		}
+	}
+	else {
+		StrAttrs &saout = out;
+		if(saout.find("shape")==saout.end())
+			out.put("shape","polygon");
+		if(pdef.sides!=norm.sides) {
+			sprintf(buf,"%d",pdef.sides);
+			out.put("sides",buf);
+		}
+	}
+	if(pdef.peripheries!=norm.peripheries) {
+		sprintf(buf,"%d",pdef.peripheries);
+		out.put("peripheries",buf);
+	}
+	if(pdef.perispacing!=norm.perispacing) {
+		sprintf(buf,"%f",pdef.perispacing);
+		out.put("perispacing",buf);
+	}
+	if(pdef.rotation!=norm.rotation) {
+		sprintf(buf,"%f",(pdef.rotation*180.0)/M_PI);
+		out.put("orientation",buf);
+	}
+	if(pdef.skew!=norm.skew) {
+		sprintf(buf,"%f",pdef.skew);
+		out.put("skew",buf);
+	}
+	if(pdef.distortion!=norm.distortion) {
+		sprintf(buf,"%f",pdef.distortion);
+		out.put("distortion",buf);
+	}
+	if(pdef.regular)
+		out.put("regular",0);
+	if(pdef.exterior_box.x||pdef.exterior_box.y) {
+		Coord conv = trans->outSize(pdef.exterior_box);
+		if(conv.x) {
+			sprintf(buf,"%f",conv.x);
+			out.put("width",buf);
+		}
+		if(conv.y) {
+			sprintf(buf,"%f",conv.y);
+			out.put("height",buf);
+		}
+	}
+}
+void stringifyNodeLabels(const NodeLabels &nl,Transform *trans,Layout *l,StrAttrs2 &out) {
+	for(unsigned i = 0; i<nl.size(); ++i) {
+		char plname[20] = "labelalign",
+			sname[20] = "labelsize",
+			posname[20] = "labelbounds";
+		if(i>0) {
+			sprintf(plname+strlen(plname),"%d",i);
+			sprintf(sname+strlen(sname),"%d",i);
+			sprintf(posname+strlen(posname),"%d",i);
+		}
+		out.put(plname,g_NLPNames[nl[i].align]);
+		{
+			ostringstream o;
+			initStream(o,l);
+			o << nl[i].size << ends;
+			out.put(sname,o.str());
+		}
+		if(nl[i].bounds.valid) {
+			ostringstream o;
+			initStream(o,l);
+			o << nl[i].bounds << ends;
+			out.put(posname,o.str());
+		}
+	}		
+}
+void stringifyEdgePos(const Line &ep,Transform *trans,Layout *l,StrAttrs2 &out) {
+	ostringstream o;
+	initStream(o,l);
+	for(Line::const_iterator pi = ep.begin(); pi!=ep.end(); ++pi) {
+		if(pi!=ep.begin())
+			o << ' ';
+		Coord p = *pi;
+		if(trans)
+			p = trans->out(p);
+		o << p.x << ',' << p.y;
+	}
+    o << ends;
+	out.put("pos",o.str());
 }

@@ -13,7 +13,7 @@ use it without violating AT&T's intellectual property rights. */
 #include <limits.h>
 #include <deque>
 #include <algorithm>
-#include "common/PathPlan.h"
+#include "PathPlan.h"
 
 using namespace std;
 
@@ -127,6 +127,8 @@ void PathPlan::Shortest(const Line &boundary, Segment endpoints, Line &out) {
     for(unsigned pi = 0; pi < boundary.size(); pi++)
         if(minx > boundary[pi].x)
             minx = boundary[pi].x, minpi = pi;
+	if(minpi<0)
+		throw InvalidBoundary();
     Coord p2 = boundary[minpi],
 		p1 = boundary[minpi == 0 ? boundary.size()-1 : minpi - 1],
 		p3 = boundary[minpi == int(boundary.size()) - 1 ? 0 : minpi + 1];

@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 
 using namespace std;
 
@@ -26,7 +26,7 @@ double Config::LeftExtent(DDModel::Node *n) {
 	if(!n) 
 		return 0.0;
 	if(DDd(n).amEdgePart()) 
-		return nodeSep.x/2.0; 
+		return gd<GraphGeom>(client).separation.x/2.0; 
 	if(getRegion(n).boundary.valid)
 		return -getRegion(n).boundary.l;
 	return EPSILON;
@@ -35,10 +35,14 @@ double Config::RightExtent(DDModel::Node *n) {
 	if(!n) 
 		return 0.0;
 	if(DDd(n).amEdgePart()) 
-		return nodeSep.x/2.0; 
+		return gd<GraphGeom>(client).separation.x/2.0; 
+	double r = 0.0;
 	if(getRegion(n).boundary.valid)
-		return getRegion(n).boundary.r;
-	return EPSILON;
+		r = getRegion(n).boundary.r;
+	Layout::Node *ln = DDd(n).multi->layoutN;
+	if(current->find_edge(ln,ln))
+		r += gd<GraphGeom>(client).separation.x;
+	return max(r,EPSILON);
 }
 double Config::TopExtent(DDModel::Node *n) {
 	if(!n) 
@@ -64,7 +68,7 @@ Coord Config::NodeSize(DDModel::Node *n) {
 	if(!n)
 		ret.x = ret.y = 0.0;
 	else if(DDd(n).amEdgePart()) {
-		ret.x = nodeSep.x; // separation is good enough
+		ret.x = gd<GraphGeom>(client).separation.x; // separation is good enough
 		ret.y = EPSILON;
 	}
 	else {
@@ -86,7 +90,7 @@ Coord Config::NodeSize(DDModel::Node *n) {
 double Config::UVSep(DDModel::Node *left,DDModel::Node *right) {
 	double s0 = RightExtent(left),
 		s1 = LeftExtent(right);
-	return s0+s1 + nodeSep.x;
+	return s0+s1 + gd<GraphGeom>(client).separation.x;
 }
 double Config::CoordBetween(DDModel::Node *L, DDModel::Node *R) {
 	double x;

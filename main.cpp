@@ -14,30 +14,72 @@ use it without violating AT&T's intellectual property rights. */
 #include <fstream>
 #include "common/Dynagraph.h"
 #include "common/ag2str.h"
+#include "incrface/DynaView.h"
 #include "common/stringsIn.h"
 #include "common/stringsOut.h"
 #include "common/emitGraph.h"
-#include "incrface/View.h"
-#include "incrface/incrxep.h"
 #include "incrface/incrout.h"
-#include "incrface/incrglobs.h"
+#include "incrface/incrparse.h"
 
 using namespace std;
-
 #define CATCH_XEP
 
-struct TextView : View {
+Transform *g_transform;
+bool g_useDotDefaults;
+char *g_outdot=0;
+int g_count=1;
+struct CouldntOpen {};
+void doOutdot(Layout *l) {
+	if(g_outdot) {
+		char filename[100];
+		sprintf(filename,"%s%d.dot",g_outdot,g_count);
+		fstream f(filename,fstream::out);
+		if(f.fail()) {
+			report(r_error,"couldn't write to %s\n",filename);
+			throw CouldntOpen();
+		}
+		emitGraph(f,l);
+		++g_count;
+	}
+}
+
+struct TextView : DynaView {
 	void IncrHappened() {
 		emitChanges(cout,Q,gd<Name>(&layout).c_str());
 		Q.Okay(true);
+		doOutdot(&current);
 	}
 	void IncrNewNode(Layout::Node *n) {}
 	void IncrNewEdge(Layout::Edge *e) {}
-	TextView(Name name) : View(name) {}
+	TextView(Name name) : DynaView(name,g_transform,g_useDotDefaults) {}
 };
-View *createView(Name name) {
-	return new TextView(name);
-}
+struct IncrCalledBack : IncrCallbacks {
+    IncrCalledBack() {
+        g_incrCallback = this;
+    }
+    IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
+    	return new TextView(name);
+	}
+	void incr_cb_destroy_handler(IncrLangEvents *h) {
+		delete h;
+	}
+    // echo all fulfils (prob from another server not client!)
+    void incr_cb_fulfil_graph(DString name,StrGraph *sg) {
+        cout << "fulfil graph " << name << endl;
+        cout << *sg;
+	}
+    void incr_cb_fulfil_node(DString graphname,DString nodename,const StrAttrs &attrs) {
+        cout << "fulfil node " << graphname << ' ' << nodename << attrs << endl;
+	}
+    void incr_cb_fulfil_edge(DString graphname,DString edgename,const StrAttrs &attrs) {
+        cout << "fulfil edge " << graphname << ' ' << edgename << attrs << endl;
+	}
+    void incr_cb_message(const char *msg) {
+        // pass through
+        cout << "message \"" << msg << '"' << endl;
+	}
+};
+IncrCalledBack g_incrPhone;
 struct Stepper {
 	virtual void Step(ChangeQueue &Q) = 0;
 	virtual bool Done() = 0;
@@ -153,9 +195,9 @@ template<class Trav>
 class TraversalStep : public Stepper {
 	Trav i;
 public:
-	TraversalStep(Layout *l) : i(l) {}
+	TraversalStep(Layout *l) : i(l,true) {}
 	bool Done() {
-		return i.stop();
+		return i.stopped();
 	}
 	void Step(ChangeQueue &Q) {
 		typename Trav::V ins = *i;
@@ -363,15 +405,13 @@ pair<bool,char*> findDescription(switchval<V> *array,int n,V v) {
 			return make_pair(true,array[i].desc);
 	return make_pair(false,(char*)0);
 }
-int incr_yyparse(); // in incrgram.c
-extern FILE *incr_yyin;
 int main(int argc, char *args[]) {
 	enum travmode traversal_mode = unspecified;
 	enableReport(r_error,stderr);
 	enableReport(r_cmdline,stdout);
 	loops.sep = ',';
 	bool forceRelayout = false;
-	char *dotfile = 0,*outdot = 0;
+	char *dotfile = 0;
 	FILE *outfile[10];
 	int i,generateN=-1;
 	double reconnectProbability = 0.05;
@@ -379,7 +419,10 @@ int main(int argc, char *args[]) {
 	for(i = 0;i<10;++i) outfile[i] = 0;
 	map<int,int> reports;
 	for(i = 1; i<argc; ++i) {
-		assert(args[i][0]=='-');
+		if(args[i][0]!='-') {
+			report(r_error,"not a valid command: %s\n",args[i]);
+			return 1;
+		}
 		switch(args[i][1]) {
 	case 'i': // input file (otherwise dynamic)
 		if(i==argc-1) {
@@ -461,7 +504,7 @@ int main(int argc, char *args[]) {
 			return 1;
 		}
 		if(toupper(args[i][2])=='L') {
-			outdot = args[++i];
+			g_outdot = args[++i];
 			break;
 		}
 		else if(!isdigit(args[i][2])) {
@@ -483,7 +526,7 @@ int main(int argc, char *args[]) {
 		break;
 	case 'd': // dot-compatible coords
 		g_transform  = &g_dotRatios;
-        g_dotCoords = true;
+        g_useDotDefaults = true;
 		break;
 	default:
 		report(r_error,"switch -%c not recognized\n",args[i][1]);
@@ -552,14 +595,25 @@ int main(int argc, char *args[]) {
 		if(!g_transform)
 			g_transform = new Transform(Coord(1,1),Coord(1,1));
 		if(traversal_mode==dynamic) {
-			try {
-				incr_yyparse();
-			}
-			catch(IncrError ie) {
-				fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
-			}
-			catch(DGException dgx) {
-				fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype);
+			while(1) {
+				try {
+					incr_yyparse();
+					break; // end of stream
+				}
+				catch(DVException dvx) { // DynaView exceptions are recoverable
+					fprintf(stdout,"message \"%s %s\"\n",dvx.exceptype,dvx.param);;
+				}
+				catch(IncrGraphNotOpen gnotop) { // graph not open too
+					fprintf(stdout,"message \"%s %s\"\n",gnotop.exceptype,gnotop.param);;
+				}
+				catch(IncrError ie) { // parser error
+					fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
+					break;
+				}
+				catch(DGException dgx) {
+					fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype);
+					break;
+				}
 			}
 			fprintf(stdout,"message \"dynagraph closing\"\n");
 			return 0;
@@ -591,7 +645,7 @@ int main(int argc, char *args[]) {
 				return 1;
 			}
 			timer.Now(r_progress,"read dot file...\n");
-			applyStrGraph(g_transform,sg,&layout,&layout);
+			applyStrGraph(g_transform,g_useDotDefaults,sg,&layout,&layout);
 			timer.Now(r_progress,"translated...\n");
 			/*
 			// give nodes some area
@@ -604,7 +658,6 @@ int main(int argc, char *args[]) {
 
 		Stepper *stepper=createStepper(traversal_mode,&layout,generateN,reconnectProbability);
 		double startLayout = timer.Now(r_progress,"Starting layout\n");
-		int count = 0;
 		try {
 			while(!stepper->Done()) {
 				loops.Start(r_timing);
@@ -613,8 +666,8 @@ int main(int argc, char *args[]) {
 				loops.Start(r_dynadag);
 				loops.Start(r_crossopt);
 
-				loops.Field(-1,"step",++count);
-				timer.Now(r_progress,"Step %d\n",count);
+				loops.Field(-1,"step",g_count);
+				timer.Now(r_progress,"Step %d\n",g_count);
 				if(forceRelayout) { // erase everything and start from scratch
 					shush(true);
 					assert(Q.Empty());
@@ -664,16 +717,7 @@ int main(int argc, char *args[]) {
 				loops.Finish(r_dynadag);
 				loops.Finish(r_crossopt);
 
-				if(outdot) {
-					char filename[100];
-					sprintf(filename,"%s%d.dot",outdot,count);
-					fstream f(filename,fstream::out);
-					if(f.failbit) {
-						report(r_error,"couldn't write to %s\n",filename);
-						return 1;
-					}
-					emitGraph(f,&current);
-				}
+				doOutdot(&layout);
 			}
 		}
 		catch(ChangeQueue::EndnodesNotInserted) {
@@ -681,7 +725,7 @@ int main(int argc, char *args[]) {
 			return 1;
 		}
 		double endLayout = timer.Elapsed(r_progress,startLayout,"start of layout\n");
-		report(r_progress,"average step time: %8.4f\n",(endLayout-startLayout)/double(count));
+		report(r_progress,"average step time: %8.4f\n",(endLayout-startLayout)/double(g_count));
 
 		timer.Now(r_cmdline,"writing files...\n");
 #ifdef CATCH_XEP

@@ -12,11 +12,11 @@ use it without violating AT&T's intellectual property rights. */
 
 #include "fdp.h"
 #include "voronoi/voronoi.h"
-#include "shortspline/shortspline.h"
+#include "shortspline/ObAvSplinerEngine.h"
 struct FVSCombo : CompoundServer {
 	FVSCombo(Layout *client,Layout *current) : CompoundServer(client,current) {
 		actors.push_back(new FDP::FDPServer(client,current));
 		actors.push_back(new Voronoi::VoronoiServer(client,current));
-		actors.push_back(new ShortSpliner(client,current));
+		actors.push_back(new ObAvSplinerEngine(client,current));
 	}
 };

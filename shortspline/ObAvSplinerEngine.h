@@ -11,11 +11,8 @@ with AT&T, you have an infringing copy of this software and cannot
 use it without violating AT&T's intellectual property rights. */
 
 #include "common/Dynagraph.h"
-struct ShortSpliner : Server {
-	ShortSpliner(Layout *client,Layout *current) : Server(client,current) {}
+struct ObAvSplinerEngine : Server {
+	ObAvSplinerEngine(Layout *client,Layout *current) : Server(client,current) {}
 	// Server
 	void Process(ChangeQueue &changeQ);
-};
-struct ClockwiseShapes : DGException {
-	ClockwiseShapes() : DGException("node shapes must be counter-clockwise") {}
 };

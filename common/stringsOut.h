@@ -10,6 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Transform.h"
-
+void stringifyChanges(Transform *trans,Layout *l,Update u);
+void stringifyChanges(Transform *trans,Layout::Node *n,Update u);
+void stringifyChanges(Transform *trans,Layout::Edge *e,Update u);
 void stringsOut(Transform *ratios,ChangeQueue &Q);

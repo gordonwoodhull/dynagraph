@@ -1,30 +1,30 @@
 ## Process this file with automake to produce Makefile.in
 
-AM_CPPFLAGS = \
-        -I$(top_srcdir) \
-	-I$(top_srcdir)/cdt \
+AUTOMAKE_OPTIONS = 1.4
+
+INCLUDES = -I$(top_srcdir)/cdt \
 	-I$(top_srcdir)/agraph \
 	-I$(top_srcdir)/dynagraph \
 	-I$(top_builddir)/dynagraph
 
+LIBS = @LIBS@
+
 noinst_HEADERS = Pattern.h Search.h gscmds.h gsxep.h gsgram.h
 
-if ENABLE_DYNAGRAPH
 bin_PROGRAMS = graphsearch
-endif
 
 graphsearch_SOURCES = graphsearch.cpp Pattern.cpp Search.cpp gscmds.cpp \
-	gsscan.cpp gsgram.cpp
+	gsscan.cpp gsgram.cpp ${noinst_HEADERS}
 
-graphsearch_LDADD = $(top_builddir)/dynagraph/common/libdynagraph.la \
-	$(top_builddir)/agraph/libagraph.la \
-	$(top_builddir)/cdt/libcdt.la
+graphsearch_LDADD = ${top_builddir}/dynagraph/common/libdynagraph.la \
+	${top_builddir}/agraph/libagraph.la \
+	${top_builddir}/cdt/libcdt.la
 
-gsscan.cpp: $(top_srcdir)/dynagraph/graphsearch/gsscan.lpp gsgram.h
+gsscan.cpp: ${top_srcdir}/dynagraph/graphsearch/gsscan.lpp gsgram.h
 
 gsgram.h : gsgram.cpp
 
-gsgram.cpp : $(top_srcdir)/dynagraph/graphsearch/gsgram.ypp
+gsgram.cpp : ${top_srcdir}/dynagraph/graphsearch/gsgram.ypp
 
 SUFFIXES = .cpp .lpp .ypp
 
@@ -39,13 +39,6 @@ SUFFIXES = .cpp .lpp .ypp
 	@SED@ "s/yy/gs_yy/g" < y.tab.h > $*.h
 	rm y.tab.c y.tab.h
 
-DISTCLEANFILES = y.output
-MAINTAINERCLEANFILES = gsgram.cpp gsgram.h gsscan.cpp
+DISTCLEANFILES = y.output gsscan.cpp gsgram.cpp gsgram.h
 
-EXTRA_DIST = \
-        $(graphsearch_SOURCES) \
-        Collapse.cpp \
-        gsscan.cpp \
-        gsgram.cpp \
-        gsscan.lpp \
-        gsgram.ypp
+EXTRA_DIST = Collapse.cpp gsscan.cpp gsgram.cpp gsgram.h gsscan.lpp gsgram.ypp

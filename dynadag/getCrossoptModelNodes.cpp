@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 namespace DynaDAG {
 
 void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out) {

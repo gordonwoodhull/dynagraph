@@ -13,12 +13,11 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef stringsIn_h
 #define stringsIn_h
 
-#include "common/Transform.h"
-Update stringsIn(Transform *trans,Layout *l,const StrAttrs &attrs,bool clearOld);
+Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld);
 Update stringsIn(Transform *trans,Layout::Node *n,const StrAttrs &attrs,bool clearOld);
 Update stringsIn(Transform *trans,Layout::Edge *e,const StrAttrs &attrs,bool clearOld);
 
-void applyStrGraph(Transform *trans,StrGraph *g,Layout *out, Layout *subg);
+void applyStrGraph(Transform *trans,bool useDotDefaults,StrGraph *g,Layout *out, Layout *subg);
 
 struct NonSizeableShape {};
 struct UnknownShape {};

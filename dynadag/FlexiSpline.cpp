@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 #include "common/PathPlan.h"
 
 using namespace std;
@@ -71,7 +71,7 @@ void RouteBounds::poly(Line &out) {
 			out.push_back(*pri);
 }
 double RouteBounds::side(DDModel::Node *n,int s) {
-	return DDd(n).cur.x + s*(((s==LEFT)?config.LeftExtent(n):config.RightExtent(n)) + config.nodeSep.x/2.0);
+	return DDd(n).cur.x + s*(((s==LEFT)?config.LeftExtent(n):config.RightExtent(n)) + gd<GraphGeom>(config.client).separation.x/2.0);
 }
 bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 	const int dist=2;
@@ -162,46 +162,58 @@ void RouteBounds::path(DDModel::Edge *e) {
 		hy = config.ranking.GetRank(DDd(e->head).rank)->yBase;
 	appendQuad(tl,tr,hl,hr,ty,hy);
 }
-bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) {
+bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoiderSpliner &obav) {
 	assert(path->unclippedPath.Empty());
 
-	DDModel::Node *tl = DDp(path->layoutE->tail)->bottom(),
-		*hd = DDp(path->layoutE->head)->top();
+	Layout::Edge *e = path->layoutE;
+	DDModel::Node *tl = DDp(e->tail)->bottom(),
+		*hd = DDp(e->head)->top();
 
 	bool reversed = DDd(tl).rank > DDd(hd).rank,
 		flat = false;
 	if(reversed) {
-		tl = DDp(path->layoutE->head)->bottom();
-		hd = DDp(path->layoutE->tail)->top();
+		tl = DDp(e->head)->bottom();
+		hd = DDp(e->tail)->top();
 		if(DDd(tl).rank>DDd(hd).rank)
 			flat = true;
 	}
-	EdgeGeom &eg = gd<EdgeGeom>(path->layoutE);
+	EdgeGeom &eg = gd<EdgeGeom>(e);
 	Coord tailpt = eg.tailPort.pos + DDd(tl).multi->pos(),
 		headpt = eg.headPort.pos + DDd(hd).multi->pos();
 
 	Line &unclipped = path->unclippedPath;
-	if(path->layoutE->tail==path->layoutE->head) {	/* self arc */
+	Line region;
+	assert(e->tail!=e->head); // DynaDAGServer should draw self-edges
+	if(flat) { // flat edge
+		DDModel::Node *left = tl,
+			*right = hd;
+		if(DDd(left).order>DDd(right).order)
+			swap(left,right);
+		obav.FindSpline(tailpt,headpt,unclipped);
+		/*
+		// hope that no nodes are in the way (calculating path to avoid 'em will be difficult)
+		unclipped.degree = 1;
+		unclipped.push_back(tailpt);
+		unclipped.push_back(headpt);
+		*/
 	}
-	else {
-		Line region;
-		if(flat)
-			;
-		else {
-			RouteBounds rb(config,gd<GraphGeom>(path->layoutE->g).bounds);
-			//rb.term(path->first,tailpt,true);
-			for(DDMultiNode::edge_iter ei0 = DDd(tl).multi->eBegin(); ei0!=DDd(tl).multi->eEnd(); ++ei0)
-				rb.path(*ei0);
-			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
-				rb.path(*ei);
-			for(DDMultiNode::edge_iter ei2 = DDd(hd).multi->eBegin(); ei2!=DDd(hd).multi->eEnd(); ++ei2)
-				rb.path(*ei2);
-			//rb.term(path->last,headpt,false);
-			rb.poly(region);
-		}
+	else { // normal edge
+		assert(path->first); // no flat or self edges!
+		RouteBounds rb(config,gd<GraphGeom>(e->g).bounds);
+		//rb.term(path->first,tailpt,true);
+		for(DDMultiNode::edge_iter ei0 = DDd(tl).multi->eBegin(); ei0!=DDd(tl).multi->eEnd(); ++ei0)
+			rb.path(*ei0);
+		for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
+			rb.path(*ei);
+		for(DDMultiNode::edge_iter ei2 = DDd(hd).multi->eBegin(); ei2!=DDd(hd).multi->eEnd(); ++ei2)
+			rb.path(*ei2);
+		//rb.term(path->last,headpt,false);
+		rb.poly(region);
+	}
+	if(!region.empty()) {
 		switch(level) {
 		case DG_SPLINELEVEL_BOUNDS:
-			eg.pos.ClipEndpoints(region,Coord(),0,Coord(),0); // silly way to copy line
+			eg.pos = region;
 			return true;
 		case DG_SPLINELEVEL_SHORTEST:
 		case DG_SPLINELEVEL_SPLINE: {
@@ -219,7 +231,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) {
 					unclipped = polylineRoute;
 			}
 			catch(...) {
-				return false;
+				//return false;
+			}
+			for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
+				double y = DDd(*ni).cur.y,
+					x = checkPos(unclipped.YIntersection(y)).x;
+				DDd(*ni).actualX = x;
+				DDd(*ni).actualXValid = true;
 			}
 			break;
 		}
@@ -227,8 +245,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) {
 			assert(0);
 		}
 	}
-	NodeGeom &tg = gd<NodeGeom>(path->layoutE->tail),
-		&hg = gd<NodeGeom>(path->layoutE->head);
+	NodeGeom &tg = gd<NodeGeom>(e->tail),
+		&hg = gd<NodeGeom>(e->head);
 	if(reversed) {
 		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);

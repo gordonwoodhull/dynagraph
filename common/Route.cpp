@@ -10,9 +10,9 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/PathPlan.h"
-#include "common/Solvers.h"
-#include "common/BezCoeffs.h"
+#include "PathPlan.h"
+#include "Solvers.h"
+#include "BezCoeffs.h"
 
 #define PATHDEBUGGING 1
 
@@ -149,14 +149,14 @@ static void mkSpline(const Coord *inps, int inpn, TnA *tnas, Segment endSlopes,
 	double c[2][2] = {{0,0},{0,0}},
 		x[2] = {0,0};
     for(int i = 0; i < inpn; i++) {
-        c[0][0] += tnas[i].a*tnas[i].a;
-        c[0][1] += tnas[i].a*tnas[i].b;
+        c[0][0] += tnas[i].a%tnas[i].a;
+        c[0][1] += tnas[i].a%tnas[i].b;
         c[1][0] = c[0][1];
-        c[1][1] += tnas[i].b*tnas[i].b;
+        c[1][1] += tnas[i].b%tnas[i].b;
         Coord tmp = inps[i]-(front*B01(tnas[i].t)+
 			back*B23(tnas[i].t));
-        x[0] += tnas[i].a*tmp;
-        x[1] += tnas[i].b*tmp;
+        x[0] += tnas[i].a%tmp;
+        x[1] += tnas[i].b%tmp;
     }
     double det01 = c[0][0] * c[1][1] - c[1][0] * c[0][1],
 		det0X = c[0][0] * x[1] - c[0][1] * x[0],

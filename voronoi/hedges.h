@@ -13,8 +13,8 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef HEDGES_H
 #define HEDGES_H
 
-#include "voronoi/site.h"
-#include "voronoi/edges.h"
+#include "site.h"
+#include "edges.h"
 
 namespace Voronoi {
 

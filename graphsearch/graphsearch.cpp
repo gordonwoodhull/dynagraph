@@ -11,7 +11,7 @@ with AT&T, you have an infringing copy of this software and cannot
 use it without violating AT&T's intellectual property rights. */
 
 #include <stdio.h>
-#include "graphsearch/Search.h"
+#include "Search.h"
 #include "common/ag2str.h"
 
 using namespace GSearch;
@@ -32,23 +32,26 @@ int main(int argc, char *args[]) {
 		fprintf(stderr,"file %s not found!\n",args[1]);
 		return -1;
 	}
-	if(!(g_sourceGraph = readStrGraph(fSource))) {
-		fprintf(stderr,"error parsing %s\n",args[1]);
-		return -1;
-	}
-	if(argc>2) {
-		gs_yyin = fopen(args[2],"r");
-		if(!gs_yyin) {
-			fprintf(stderr,"couldn't open script %s\n",args[2]);
-			return -1;
-		}
-	}
-	else
-		gs_yyin = stdin;
 	try {
+	    if(!(g_sourceGraph = readStrGraph(fSource))) {
+		    fprintf(stderr,"error parsing %s\n",args[1]);
+		    return -1;
+	    }
+	    if(argc>2) {
+		    gs_yyin = fopen(args[2],"r");
+		    if(!gs_yyin) {
+			    fprintf(stderr,"couldn't open script %s\n",args[2]);
+			    return -1;
+		    }
+	    }
+	    else
+		    gs_yyin = stdin;
 		while(!feof(gs_yyin)) // ?
 			gs_yyparse();
 	}
+    catch(DGException xep) {
+        fprintf(stderr,"Dynagraph exception: %s\n",xep.exceptype);
+    }
 	catch(...) {
 		fprintf(stderr,"unhandled exception: closing...\n");
 	}

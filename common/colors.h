@@ -8,24 +8,26 @@ struct ColorNotFound : DGException { DString s; ColorNotFound(DString s) : DGExc
 struct Color;
 Color findColor(DString s);
 struct Color {
-    bool isHSV;
+    bool isHSV,hasAlpha;
     union {
         HSVColor hsv;
         RGBAColor rgba;
     };
-    Color() : isHSV(false) {
+    Color() : isHSV(false),hasAlpha(false) {
         rgba.r = rgba.g = rgba.b = 0;
-        rgba.a = -1;
     }
-    Color(int r,int g,int b,int a = 255) {
-        isHSV = false;
+    Color(int r,int g,int b) : isHSV(false),hasAlpha(false)  {
+        rgba.r = r;
+        rgba.g = g;
+        rgba.b = b;
+    }
+    Color(int r,int g,int b,int a) : isHSV(false),hasAlpha(true)  {
         rgba.r = r;
         rgba.g = g;
         rgba.b = b;
         rgba.a = a;
     }
-    Color(float h,float s,float v) {
-        isHSV = true;
+    Color(float h,float s,float v) : isHSV(true),hasAlpha(false)  {
         hsv.h = h;
         hsv.s = s;
         hsv.v = v;
@@ -44,8 +46,10 @@ struct Color {
         }
         else {
             int n = sscanf(c+1,"%2x%2x%2x",&rgba.r,&rgba.g,&rgba.b) + c-s.c_str()+1;
-            if(s[n] && (isdigit(s[n]) || isalpha(s[n]) && s[n]<'g'))
+            if(s[n] && (isdigit(s[n]) || isalpha(s[n]) && s[n]<'g')) {
+                hasAlpha = true;
                 sscanf(s.c_str()+n,"%2x",&rgba.a);
+            }
         }
     }
     DString toString() {
@@ -53,10 +57,10 @@ struct Color {
         if(isHSV)
             sprintf(buf,"%f %f %f",hsv.h,hsv.s,hsv.v);
         else
-            if(rgba.a>=0)
-                sprintf(buf,"%2x%2x%2x%2x",rgba.r,rgba.g,rgba.b,rgba.a);
+            if(hasAlpha)
+                sprintf(buf,"#%2x%2x%2x%2x",rgba.r,rgba.g,rgba.b,rgba.a);
             else
-                sprintf(buf,"%2x%2x%2x",rgba.r,rgba.g,rgba.b);
+                sprintf(buf,"#%2x%2x%2x",rgba.r,rgba.g,rgba.b);
         return buf;
     }
     // thanks to http://www.cs.rit.edu/~ncs/color/t_convert.html

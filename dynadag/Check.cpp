@@ -12,7 +12,7 @@ use it without violating AT&T's intellectual property rights. */
 
 // Sanity checks.
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 
 namespace DynaDAG {
 

@@ -12,8 +12,8 @@ use it without violating AT&T's intellectual property rights. */
 
 // a silly translation deal until i make a native agread
 
-#include "common/LGraph-cdt.h"
-#include "common/StrAttr.h"
+#include "LGraph-cdt.h"
+#include "StrAttr.h"
 
 extern "C" {
 	#include "agraph.h"

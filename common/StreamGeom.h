@@ -21,7 +21,12 @@ struct BadSplineValue : DGException {
 	BadSplineValue(int val) : 
 	  DGException("bezier degree must be 1 or 3"),val(val) {}
 };
-inline std::istream & operator>>(std::istream &is, Coord &read) {
+inline std::ostream & operator <<(std::ostream &os,const Coord &write) {
+	os.flags(os.flags()|std::ios::fixed);
+	os << write.x << ',' << write.y;
+	return os;
+}
+inline std::istream & operator >>(std::istream &is, Coord &read) {
 	is >> read.x;
 	char c;
 	is >> c;
@@ -34,7 +39,49 @@ inline std::istream & operator>>(std::istream &is, Coord &read) {
 	is >> read.y;
 	return is;
 }
-inline std::istream & operator>>(std::istream &is,Line &read) {
+inline std::ostream & operator <<(std::ostream &os,const Position &write) {
+	if(write.valid)
+		os << (const Coord &)write;
+	return os;
+}
+inline std::istream & operator >>(std::istream &is, Position &read) {
+	if(read.valid = !is.eof())
+		is >> (Coord &)read;
+	return is;
+}
+inline std::ostream & operator <<(std::ostream &os,const Rect &write) {
+	os << write.SW() << "," << write.NE();
+	return os;
+}
+inline std::istream & operator >>(std::istream &is, Rect &read) {
+	Coord sw,ne;
+	is >> sw;
+	char c;
+	is >> c;
+	if(c!=',') {
+		fprintf(stderr,">>Coord: %c %d\n",c,c);
+		GeomParseError xep;
+		xep.val.assign(1,c);
+		throw xep;
+	}
+	is >> ne;
+	read.l = sw.x;
+	read.b = sw.y;
+	read.t = ne.x;
+	read.r = ne.y;
+	return is;
+}
+inline std::ostream & operator <<(std::ostream &os,const Bounds &write) {
+	if(write.valid)
+		os << (const Rect &)write;
+	return os;
+}
+inline std::istream & operator >>(std::istream &is, Bounds &read) {
+	if(read.valid = !is.eof())
+		is >> (Rect &)read;
+	return is;
+}
+inline std::istream & operator >>(std::istream &is,Line &read) {
 	read.clear();
 	char ch;
 	if(!is.eof()) {
@@ -63,24 +110,19 @@ inline std::istream & operator>>(std::istream &is,Line &read) {
 	}
 	return is;
 }
-inline std::istream & operator>>(std::istream &is,Lines &read) {
+inline std::ostream & operator <<(std::ostream &os,const Line &write) {
+	os << 'b' << write.degree;
+	for(Line::const_iterator ci = write.begin(); ci!=write.end(); ++ci)
+		os << ' ' << *ci;
+	return os;
+}
+inline std::istream & operator >>(std::istream &is,Lines &read) {
 	read.clear();
 	while(!is.eof()) {
 		read.push_back(Line());
 		is >> read.back();
 	}
 	return is;
-}
-inline std::ostream & operator <<(std::ostream &os,const Coord &write) {
-	os.flags(os.flags()|std::ios::fixed);
-	os << write.x << ',' << write.y;
-	return os;
-}
-inline std::ostream & operator <<(std::ostream &os,const Line &write) {
-	os << 'b' << write.degree;
-	for(Line::const_iterator ci = write.begin(); ci!=write.end(); ++ci)
-		os << ' ' << *ci;
-	return os;
 }
 inline std::ostream & operator <<(std::ostream &os,const Lines &write) {
 	for(Lines::const_iterator li = write.begin(); li!=write.end(); ++li)

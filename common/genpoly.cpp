@@ -10,8 +10,8 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/genpoly.h"
-#include "common/ellipse2bezier.h"
+#include "genpoly.h"
+#include "ellipse2bezier.h"
 
 using namespace std;
 

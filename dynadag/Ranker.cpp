@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 
 using namespace std;
 
@@ -36,6 +36,7 @@ void Ranker::makeStrongConstraint(DDPath *path) {
 	Layout::Edge *layoutE = path->layoutE;
 	gd<EdgeGeom>(layoutE).constraint = true;
 
+	int length = rankLength(layoutE);
 	DDCGraph::Node *tvar = cg.GetVar(DDp(layoutE->tail)->bottomC),
 		*hvar = cg.GetVar(DDp(layoutE->head)->topC);
 
@@ -43,7 +44,7 @@ void Ranker::makeStrongConstraint(DDPath *path) {
 	path->strong = constr;
 	DDNS::NSE &nse = DDNS::NSd(constr);
 #ifdef FLEXIRANKS
-	nse.minlen = ROUND(config.nodeSep.y*rankLength(layoutE)/config.ranking.div);
+	nse.minlen = ROUND(gd<GraphGeom>(config.client).separation.y*length/config.ranking.div);
 #else
 	nse.minlen = rankLength(layoutE);
 #endif
@@ -62,7 +63,7 @@ void Ranker::makeWeakConstraint(DDPath *path) {
 	DDNS::NSd(ep.e[0]).minlen = 0;
 	DDNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
 #ifdef FLEXIRANKS
-	DDNS::NSd(ep.e[1]).minlen = ROUND(config.nodeSep.y*rankLength(layoutE)/config.ranking.div);
+	DDNS::NSd(ep.e[1]).minlen = ROUND(gd<GraphGeom>(config.client).separation.y*rankLength(layoutE)/config.ranking.div);
 #else
 	DDNS::NSd(ep.e[1]).minlen = rankLength(layoutE);
 #endif
@@ -72,17 +73,28 @@ void Ranker::fixNode(Layout::Node *n,bool fix) {
 	for(Layout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei) {
 		DDPath *path = DDp(*ei);
 		if(path->strong && fix) {
-			cg.erase_edge(path->strong);
-			path->strong = 0;
+			RemovePathConstraints(path);
 			makeWeakConstraint(path);
 		}
 		else if(path->weak && !fix) {
-			cg.erase_node(path->weak);
-			path->weak = 0;
+			RemovePathConstraints(path);
 			makeStrongConstraint(path);
 		}
 	}
 	DDp(n)->rankFixed = fix;
+}
+void Ranker::doNodeHeight(Layout::Node *n) {
+	DDMultiNode *mn = DDp(n);
+	DDCGraph::Node *tv = cg.GetVar(mn->topC),
+		*bv = cg.GetVar(mn->bottomC);
+	DDCGraph::Edge *heightC = cg.create_edge(tv,bv).first;
+#ifdef FLEXIRANKS
+	 // one-node chains cause trouble; make sure there's one edge
+	DDNS::NSd(heightC).minlen = max(1,ROUND(gd<NodeGeom>(n).region.boundary.Height()/config.ranking.div));
+#else
+	DDNS::NSd(heightC).minlen = 0;
+#endif
+	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
 void Ranker::moveOldNodes(ChangeQueue &changeQ) {
 	for(Layout::node_iter ni = changeQ.modN.nodes().begin(); ni!=changeQ.modN.nodes().end(); ++ni) {
@@ -99,15 +111,8 @@ void Ranker::moveOldNodes(ChangeQueue &changeQ) {
 			else if(n->rankFixed) // un-nail
 				fixNode(vn,false);
 		}
-#ifdef FLEXIRANKS
-		if(upd & DG_UPD_REGION) {
-			DDCGraph::Node *tv = cg.GetVar(n->topC),
-				*bv = cg.GetVar(n->bottomC);
-			DDCGraph::Edge *heightC = cg.create_edge(tv,bv).first;
-			DDNS::NSd(heightC).minlen = max(1,ROUND((config.TopExtent(n->top())+config.BottomExtent(n->top()))/config.ranking.div)); // one-node chains cause trouble
-			assert(DDNS::NSd(heightC).minlen>=0);
-		}
-#endif
+		if(upd & DG_UPD_REGION) 
+			doNodeHeight(*ni);
 	}
 }
 void Ranker::insertNewNodes(ChangeQueue &changeQ) {
@@ -120,16 +125,7 @@ void Ranker::insertNewNodes(ChangeQueue &changeQ) {
 		DDNS::NSd(pull).minlen = 0;
 		DDNS::NSd(pull).weight = UPWARD_TENDENCY;
 
-		// establish height of node
-		DDCGraph::Node *tv = cg.GetVar(DDd(mn).multi->topC),
-			*bv = cg.GetVar(DDd(mn).multi->bottomC);
-		DDCGraph::Edge *heightC = cg.create_edge(tv,bv).first;
-#ifdef FLEXIRANKS
-		DDNS::NSd(heightC).minlen = max(1,ROUND((config.TopExtent(mn)+config.BottomExtent(mn))/config.ranking.div)); // one-node chains cause trouble
-#else
-		DDNS::NSd(heightC).minlen = 0;
-#endif
-		DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
+		doNodeHeight(n);
 	}
 }
 void Ranker::stabilizePositionedNodes(ChangeQueue &changeQ) {
@@ -148,7 +144,7 @@ void Ranker::stabilizePositionedNodes(ChangeQueue &changeQ) {
 		}
 }
 /* is there a path from head(e) to tail(e)? next two fns. */
-static bool dfs(Layout::Node *src, Layout::Node *dest, VNodeV &hit) {
+static int dfs(Layout::Node *src, Layout::Node *dest, LNodeV &hit) {
     if(src == dest) {
 		return true;
 	}
@@ -157,18 +153,17 @@ static bool dfs(Layout::Node *src, Layout::Node *dest, VNodeV &hit) {
 	DDp(src)->hit = true;
 	hit.push_back(src);
     for(Layout::outedge_iter ei = src->outs().begin(); ei!=src->outs().end(); ++ei) {
-		if(!gd<EdgeGeom>(*ei).constraint) 
+		if(!DDp(*ei) || !DDp(*ei)->strong) 
 			continue;
-        if(dfs((*ei)->head,dest,hit)) {
+        if(dfs((*ei)->head,dest,hit))
 			return true;
-		}
     }
     return false;
 }
-static bool pathExists(Layout::Node *src, Layout::Node *dest) {
-    VNodeV hit;
+static int pathExists(Layout::Node *src, Layout::Node *dest) {
+    LNodeV hit;
     bool result = dfs(src,dest,hit);
-	for(VNodeV::iterator i=hit.begin(); i!=hit.end(); ++i)
+	for(LNodeV::iterator i=hit.begin(); i!=hit.end(); ++i)
 		DDp(*i)->hit = false;
 	return result;
 }
@@ -181,15 +176,16 @@ void Ranker::insertNewEdges(ChangeQueue &changeQ) {
 		if(ve->head == ve->tail) 
 			continue;
 		bool weak = false;
-		if(pathExists(current->find(ve->head),current->find(ve->tail))) {
-			weak = true;
-			if(current->find_edge(ve->head,ve->tail)) {
-				BackForth bf(changeQ.client->find(ve));
-				config.current->erase(ve);
-				// we can't yet deal with 2-cycles
-				throw bf;
+		if(Layout::Edge *e1 = current->find_edge(ve->head,ve->tail)) {
+			// mark & ignore second leg of 2-cycle for all modelling purposes
+			// DynaDAGServer will draw it by reversing the other
+			if(DDp(e1) && (DDp(e1)->weak || DDp(e1)->strong)) { // if both get inserted at once, mark the second
+				DDp(ve)->secondOfTwo = true;
+				continue;
 			}
 		}
+		else if(pathExists(current->find(ve->head),current->find(ve->tail)))
+			weak = true;
 		if(DDp(ve->tail)->rankFixed || DDp(ve->head)->rankFixed)
 			weak = true;
 		if(weak)

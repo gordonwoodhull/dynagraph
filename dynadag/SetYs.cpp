@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 
 namespace DynaDAG {
 
@@ -32,8 +32,8 @@ void Config::resetRankBox(Rank *rank) {
 	rank->spaceBelow = 0;
 	//rank->deltaBelow -= rank->spaceBelow = rank->deltaBelow/10.0;
 #else
-	double maxTop = nodeSep.y / 20.0,
-		maxBottom = nodeSep.y / 20.0;
+	double maxTop = gd<GraphGeom>(config.client).separation.y / 20.0,
+		maxBottom = gd<GraphGeom>(client).separation.y / 20.0;
 	for(NodeV::iterator ni = rank->order.begin(); ni!=rank->order.end(); ++ni) {
 		if(DDd(*ni).amEdgePart()) 
 			continue;
@@ -47,7 +47,7 @@ void Config::resetRankBox(Rank *rank) {
 
 	rank->deltaAbove = maxTop;
 	rank->deltaBelow = maxBottom;
-	rank->spaceBelow = nodeSep.y;
+	rank->spaceBelow = gd<GraphGeom>(client).separation.y;
 #endif
 }
 

@@ -10,8 +10,8 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Dynagraph.h"
-#include "common/reorient.h"
+#include "Dynagraph.h"
+#include "reorient.h"
 #include <sstream>
 using namespace std;
 void ShapeGenerator::Process(ChangeQueue &Q) {
@@ -20,14 +20,12 @@ void ShapeGenerator::Process(ChangeQueue &Q) {
     for(Layout::node_iter ni = subs[i]->nodes().begin(); ni !=subs[i]->nodes().end(); ++ni) {
       Layout::Node *n = *ni;
       if((i==0 || igd<Update>(n).flags&DG_UPD_POLYDEF) && gd<IfPolyDef>(n).whether) {
-		// hack: this fixes an apparent bug in gcc (genpoly will call clear() too)
 		gd<Drawn>(n).clear(); 
         try {
 		    genpoly(gd<PolyDef>(n),gd<Drawn>(n));
         }
-        catch(BadPolyDef) {
-            // silly users with your zero-gons and such
-            gd<Drawn>(n).clear();
+        catch(GenPolyXep) {
+			// bad or incomplete definitions: just leave blank
         }
 		NodeGeom &ng = gd<NodeGeom>(n);
 		ng.region.shape.Clear();

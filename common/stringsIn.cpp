@@ -10,21 +10,26 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Dynagraph.h"
-#include "common/stringsIn.h"
-#include "common/genpoly.h"
+#include "Dynagraph.h"
+#include "Transform.h"
+#include "stringsIn.h"
+#include "genpoly.h"
 #include <sstream>
-#include "incrface/incrglobs.h"
+#include "attrvalues.h"
 
 using namespace std;
 
 bool attrChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs, const DString &name) {
+	return newAttrs.find(name)!=newAttrs.end();
+  /*
+   alas, the attribute can have been changed already but not yet processed by shapegen
   StrAttrs::const_iterator ai1,ai2;
   if((ai2 = newAttrs.find(name))==newAttrs.end())
     return false;
   if((ai1 = oldAttrs.find(name))==oldAttrs.end())
     return true;
 	return ai1->second!=ai2->second;
+	*/
 }
 bool transformShape(Transform *trans,Line &shape) {
 	bool nonzero = false;
@@ -48,7 +53,7 @@ void ensureAttr(const StrAttrs &att,StrAttrs &A, DString name) {
     if(att.find(name)==att.end())
         A[name]; // lookup creates blank entry if not there
 }
-Update stringsIn(Transform *trans,Layout *l,const StrAttrs &attrs,bool clearOld) {
+Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	StrAttrs allChanges = attrs;
 	if(clearOld)
 		clearRemoved(gd<StrAttrs>(l),attrs,allChanges);
@@ -61,28 +66,28 @@ Update stringsIn(Transform *trans,Layout *l,const StrAttrs &attrs,bool clearOld)
             value = ai->second;
 		if(name=="resolution") {
 			if(value.empty())
-                value = g_dotCoords?"1,5":"0.1,0.1";
+                value = useDotDefaults?"1,5":"0.1,0.1";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).resolution;
     
+		}
+		else if(name=="separation") {
+			if(value.empty())
+                value = useDotDefaults?"24,24":"0.5,0.5";
+			istringstream s(value);
+			s >> gd<GraphGeom>(l).separation;
+		}
+		else if(name=="defaultsize") {
+			if(value.empty())
+                value = useDotDefaults?"54,36":"1.5,1";
+			istringstream s(value);
+			s >> gd<GraphGeom>(l).defaultSize;
 		}
 		else if(name=="ticks") {
 			if(value.empty())
                 value = "0";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).ticks;
-		}
-		else if(name=="separation") {
-			if(value.empty())
-                value = g_dotCoords?"24,24":"0.5,0.5";
-			istringstream s(value);
-			s >> gd<GraphGeom>(l).separation;
-		}
-		else if(name=="defaultsize") {
-			if(value.empty())
-                value = g_dotCoords?"54,36":"1.5,1";
-			istringstream s(value);
-			s >> gd<GraphGeom>(l).defaultSize;
 		}
 		att.put(ai->first,value);
 	}
@@ -99,7 +104,7 @@ const DString g_shapeAttrs[] = {
 	"regular",
 	"skew",
 	"distortion",
-	"textsize"
+	"labelsize"
 };
 const int g_numShapeAttrs = sizeof(g_shapeAttrs)/sizeof(DString);
 bool shapeChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs) {
@@ -229,7 +234,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
 		istringstream stream(ai->second);
 		stream >> ret.distortion;
 	}
-	if((ai = attrs.find("textsize"))!=attrs.end()) {
+	if((ai = attrs.find("labelsize"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0,0";
 		istringstream stream(ai->second);
@@ -283,6 +288,15 @@ Update assureAttrs(Transform *trans,Layout::Node *n) {
 	    ret.flags |= DG_UPD_REGION;
 	return ret;
 }
+int ds2int(const DString &s) {
+	int i = 0;
+	for(unsigned j=0; j<s.length(); ++j)
+		if(!isdigit(s[j]))
+			return -1;
+		else
+			i = i*10 + s[j]-'0';
+	return i;
+}
 Update stringsIn(Transform *trans,Layout::Node *n,const StrAttrs &attrs,bool clearOld) {
 	StrAttrs allChanges;
 	if(clearOld)
@@ -293,6 +307,8 @@ Update stringsIn(Transform *trans,Layout::Node *n,const StrAttrs &attrs,bool cle
 	StrAttrs &att = gd<StrAttrs>(n);
 	StrAttrs::const_iterator ai;
 	bool chshape = shapeChanged(att,A);
+	if(chshape)
+		ret.flags |= DG_UPD_POLYDEF;
 	for(ai = A.begin(); ai!=A.end(); ++ai) {
 		if(ai->first=="pos") {
             if(ai->second.empty())  // position intentionally removed
@@ -305,10 +321,33 @@ Update stringsIn(Transform *trans,Layout::Node *n,const StrAttrs &attrs,bool cle
             }
 			ret.flags |= DG_UPD_MOVE;
 		}
+		else if(ai->first.compare(0,9,"labelsize")==0) {
+			int i=ds2int(ai->first.substr(9));
+			if(i>=0) {
+				istringstream stream(ai->second);
+				stream >> gd<NodeLabels>(n)[i].size;
+				ret.flags |= DG_UPD_LABEL;
+			}
+		}
+		else if(ai->first.compare(0,14,"labelalign")==0) {
+			int i=ds2int(ai->first.substr(14));
+			if(i>=0) {
+				gd<NodeLabels>(n)[i].align = string2nlp(ai->second);
+				ret.flags |= DG_UPD_LABEL;
+			}
+		}
+		else if(ai->first.compare(0,2,"labelbounds")==0) {
+			int i=ds2int(ai->first.substr(9));
+			if(i>=0) {
+				istringstream stream(ai->second);
+				stream >> gd<NodeLabels>(n)[i].bounds;
+				ret.flags |= DG_UPD_LABEL;
+			}
+		}
 		gd<StrAttrs2>(n).put(ai->first,ai->second);
 	}
 	ret.flags |= assureAttrs(trans,n).flags;
-	if(chshape || ret.flags&DG_UPD_REGION) {
+	if(ret.flags&(DG_UPD_REGION|DG_UPD_POLYDEF)) {
 		if((ai = att.find("boundary"))!=att.end() && !ai->second.empty()) {
 			const DString &s = ai->second;
 			istringstream stream(s);
@@ -322,7 +361,7 @@ Update stringsIn(Transform *trans,Layout::Node *n,const StrAttrs &attrs,bool cle
 		}
 		else if((ai = att.find("shape"))!=att.end() && ai->second=="plaintext") {
 			Coord size;
-			ai = att.find("textsize");
+			ai = att.find("labelsize");
 			if(ai != att.end()) {
 				istringstream stream(ai->second);
 				stream >> size;
@@ -393,8 +432,8 @@ Update stringsIn(Transform *trans,Layout::Edge *e,const StrAttrs &attrs,bool cle
 	}
 	return ret;
 }
-void applyStrGraph(Transform *trans,StrGraph *g,Layout *out, Layout *subg) {
-  stringsIn(trans,out,gd<StrAttrs>(g),false);
+void applyStrGraph(Transform *trans,bool useDotDefaults,StrGraph *g,Layout *out, Layout *subg) {
+  stringsIn(trans,useDotDefaults,out,gd<StrAttrs>(g),false);
   gd<Name>(out) = gd<Name>(g);
   map<DString,Layout::Node*> renode;
   for(StrGraph::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {

@@ -10,7 +10,8 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Transform.h"
+#include "Geometry.h"
+#include "Transform.h"
 
 Transform g_dotRatios(Coord(72,72), // node sizes in inches
 						Coord(1,1)); // position in up-positive points

@@ -10,7 +10,6 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#pragma warning (disable : 4786 4503)
 #include <string>
 #include <vector>
 #include <map>

@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Geometry.h"
+#include "Geometry.h"
 
 int Line::GetSeg(double y) {
 	for(unsigned i = 0; i < size() - 1; i += degree)
@@ -138,9 +138,9 @@ void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
 		return;
 
 	/* find terminal sections */
-	unsigned firstI,lastI;
+	int firstI,lastI;
 	if(tl) {
-		for(firstI = 0; firstI < source.size()-1; firstI += degree)
+		for(firstI = 0; firstI < int(source.size())-1; firstI += degree)
 			if(!tl->Hit(source[firstI + degree]-offsetTail)) 
 				break;
 	}
@@ -169,7 +169,7 @@ void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
 	}
 	*/
 	Coord temp[4];
-	for(unsigned i = firstI; i <= lastI; i += degree) {
+	for(int i = firstI; i <= lastI; i += degree) {
 		Coord *section = &source[i];
 		if(i==firstI && tl)
 			section = clip(&*section,offsetTail,*tl,temp);

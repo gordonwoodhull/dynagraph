@@ -11,7 +11,8 @@ with AT&T, you have an infringing copy of this software and cannot
 use it without violating AT&T's intellectual property rights. */
 
 #include "common/Dynagraph.h"
-#include "dynadag/ns.h"
+#include "shortspline/ObstacleAvoiderSpliner.h"
+#include "ns.h"
 #include <float.h>
 
 namespace DynaDAG {
@@ -23,8 +24,7 @@ struct InternalErrorException : DGException {
 // future template parameters?
 #define FLEXIRANKS
  
-// how many times must I say this?
-#pragma warning (disable : 4786 4503)
+typedef std::vector<Layout::Node*> LNodeV; // mneh
 
 // dynadag constraint graphs: basic data + debug accounting
 struct ConstraintType {
@@ -236,11 +236,13 @@ template<typename N,typename E>
 struct Path : Chain<N,E> {
 	// self or flat: first==last==0; use layoutE to figure out ends
 	Layout::Edge *layoutE;
+	// the second edge of 2-cycle should be ignored, mostly
+	bool secondOfTwo;
 	Line unclippedPath;
 	// ranking vars
 	DDCGraph::Node *weak; 
 	DDCGraph::Edge *strong;
-	Path() : weak(0),strong(0) {}
+	Path() : weak(0),strong(0),secondOfTwo(false) {}
 };
 struct NSEdgePair {
 	DDCGraph::Edge *e[2];
@@ -250,7 +252,7 @@ struct NSEdgePair {
 	}
 };
 typedef enum _UpDown {UP,DOWN} UpDown;
-typedef enum _LeftRight {LEFT= -1,RIGHT=1} LeftRight;
+typedef enum _LeftRight {LEFT=-1,RIGHT=1} LeftRight;
 struct Median {
 	double val; // value 
 	bool exists, // if defined 
@@ -351,14 +353,14 @@ inline DDPath *&DDp(Layout::Edge *e) {
 /*
 template<>
 inline DDNode &gd<DDNode,DDModel::Node>(DDModel::Node *n) {
-	return reinterpret_cast<DDNode&>(gd<DDNodeT<void,void> >(n));
+	return gd2<DDNode,DDNodeT<void,void> >(n);
 }
 */
 inline DDNode &DDd(DDModel::Node *n) {
-	return reinterpret_cast<DDNode&>(gd<DDNodeT<void,void> >(n));
+	return gd2<DDNode,DDNodeT<void,void> >(n);
 }
 inline DDEdge &DDd(DDModel::Edge *e) {
-	return reinterpret_cast<DDEdge&>(gd<DDEdgeT<void,void> >(e));
+	return gd2<DDEdge,DDEdgeT<void,void> >(e);
 }
 inline const char *type(DDModel::Node *mn) {
 	return DDd(mn).amEdgePart()?"path":"multinode";
@@ -373,7 +375,7 @@ typedef std::vector<DDModel::Node*> NodeV;
 typedef std::vector<DDModel::Edge*> EdgeV;
 typedef std::pair<DDModel::Node *,DDModel::Node *> NodePair;
 typedef std::set<Layout::Node*> NodeSet;
-#include "dynadag/Medians.h"
+#include "Medians.h"
 // utility
 struct Crossings {
 	unsigned edgeEdgeCross,nodeEdgeCross,nodeNodeCross;
@@ -700,11 +702,9 @@ struct Config {
 #endif
 	Config(DynaDAGServices *dynaDAG,DDModel &model, 
 	       Layout *client,Layout *current,
-	       XConstraintOwner *xconOwner, 
-	       double yRes, Coord sep) : 
-	  ranking(yRes,sep.y),
+	       XConstraintOwner *xconOwner) : 
+	  ranking(gd<GraphGeom>(client).resolution.y,gd<GraphGeom>(client).separation.y),
 	  prevLow(INT_MAX),
-	  nodeSep(sep),
 	  model(model),
 	  client(client),
 	  current(current),
@@ -735,7 +735,6 @@ struct Config {
 
 	Ranks ranking;
 	Ranks::index prevLow;
-	const Coord nodeSep;
 	DDModel &model;
 	Layout *client,*current; // same as DynaDAGServer::
 private:
@@ -784,7 +783,7 @@ struct ConstraintGraph : DDCGraph {
 	void RemoveNodeConstraints(NodeConstraints &nc);
 };
 inline int rankLength(Layout::Edge *e) {
-	return std::max(0,int(gd<EdgeGeom>(e).lengthHint));
+	return std::max(0,int(gd<EdgeGeom>(e).minLength));
 }
 struct Ranker {
 	Ranker(DynaDAGServices *dynaDAG,Config &config) : dynaDAG(dynaDAG),config(config),top(cg.create_node()) {}
@@ -800,6 +799,7 @@ private:
 	void makeStrongConstraint(DDPath *path);
 	void makeWeakConstraint(DDPath *path);
 	void fixNode(Layout::Node *n,bool fix);
+	void doNodeHeight(Layout::Node *n);
 	void moveOldNodes(ChangeQueue &changeQ);
 	void insertNewNodes(ChangeQueue &changeQ);
 	void stabilizePositionedNodes(ChangeQueue &changeQ);
@@ -844,7 +844,7 @@ struct MedianShuffle : Optimizer {
 private:
 	Config &config;
 };
-#include "dynadag/SiftMatrix.h"
+#include "SiftMatrix.h"
 
 struct Sifter : Optimizer {
 	Sifter(Config &config) : config(config) {}
@@ -900,7 +900,7 @@ private:
 struct Spliner {
 	Spliner(Config &config) : config(config) {}
 	friend struct TempRoute;
-	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);
+	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoiderSpliner &obav);
 private:
 	Config &config;
 	void forwardEdgeRegion(DDModel::Node *tl, DDModel::Node *hd,DDPath *inp, Coord tp, Coord hp, Line &out);
@@ -909,7 +909,7 @@ private:
 };
 struct FlexiSpliner {
 	FlexiSpliner(Config &config) : config(config) {}
-	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);
+	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoiderSpliner &obav);
 private:
 	Config &config;
 };
@@ -942,7 +942,7 @@ struct DynaDAGServer : Server,DynaDAGServices {
 	DynaDAGServer(Layout *client,Layout *current) :
 		Server(client,current),
 		model(),
-		config(this,model,client,current,&xsolver,gd<GraphGeom>(current).resolution.y,gd<GraphGeom>(current).separation), 
+		config(this,model,client,current,&xsolver), 
 		ranker(this,config), 
 		optimizer(new DotlikeOptimizer(config)),
 		xsolver(config,gd<GraphGeom>(current).resolution.x),
@@ -960,7 +960,7 @@ struct DynaDAGServer : Server,DynaDAGServices {
 private:
 	void closeLayoutNode(Layout::Node *n);
 	void closeLayoutEdge(Layout::Edge *e);
-	void executeDeletions(ChangeQueue &changeQ);
+	void executeDeletions(ChangeQueue &changeQ,Layout &extraI);
 	void findOrdererSubgraph(ChangeQueue &changeQ,Layout &outN,Layout &outE);
 	void updateBounds(ChangeQueue &changeQ);
 	void findChangedNodes(ChangeQueue &changeQ);
@@ -970,7 +970,6 @@ private:
 	void cleanUp();
 	void dumpModel();
 };
-typedef std::vector<Layout::Node*> VNodeV;
 
 inline bool userDefinedMove(Layout::Edge *ve) {
 	return gd<EdgeGeom>(ve).manualRoute;

@@ -13,12 +13,18 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef STRINGDICT_H
 #define STRINGDICT_H
 
-#include "cdt.h"
+#include "dgxep.h"
+#include "useful.h"
 #include <string>
 #include <algorithm>
 #include <iostream>
 
 // adaptation of agraph's refstr
+
+// I know, there's a more modern way to do this....
+#define STRINGDICT_USE_STL
+#ifndef STRINGDICT_USE_STL
+#include "cdt.h"
 struct StringDict {
 	StringDict();
 	void init(); 
@@ -28,11 +34,56 @@ struct StringDict {
 private:
 	Dict_t *dict;
 };
+#else
+#include <map>
+#include <string>
+struct StringDict {
+	typedef std::map<std::string,int> mapstrs;
+	StringDict() { init(); }
+	void init() { strs = new mapstrs; }
+	const char *enter(const char *val) {
+		if(!val)
+			return 0;
+		if(!strs)
+			init();
+		mapstrs::iterator mi = strs->insert(mapstrs::value_type(val,0)).first;
+		mi->second++;
+		return mi->first.c_str();
+	}
+	void release(const char *val) {
+		if(!val)
+			return;
+		mapstrs::iterator mi = strs->find(val);
+		if(mi==strs->end())
+			return;
+		assert(mi->second>0);
+		if(!--mi->second)
+			strs->erase(mi);
+	}
+	void ref(const char *val) {
+		if(!val)
+			return;
+		mapstrs::iterator mi = strs->find(val);
+		if(mi==strs->end())
+			return;
+		assert(mi->second>0);
+		++mi->second;
+	}
+
+private:
+	mapstrs *strs;
+};
+#endif
+// in StringDict.cpp, or define your own if DSTRING_USE_STL
 extern StringDict g_stringDict;
 
 struct DString { // imitation of std::string
+private:
+	const char *val;
+public:
 	typedef const char *iterator;
 	typedef const char *const_iterator;
+	typedef char value_type;
 	typedef size_t size_type;
 	static const size_type npos;
 
@@ -55,6 +106,8 @@ struct DString { // imitation of std::string
         return val?std::string(val):std::string();
 	}
 	// these are what make this super-cool: single-word compare!
+    // (obviously this is not a typological sort, but no one wants 
+    // attributes in alphabetical order just to look them up quickly)
 	bool operator <(const DString &ds) const {
 		return val<ds.val;
 	}
@@ -108,7 +161,7 @@ struct DString { // imitation of std::string
 		else
 			return i-begin();
 	}
-	DString substr(size_type pos,size_type len) const {
+	DString substr(size_type pos,size_type len=npos) const {
 		DString ret;
 		if(pos>=size())
 			return ret;
@@ -136,15 +189,36 @@ struct DString { // imitation of std::string
 		delete [] copy;
 		return *this;
 	}
-private:
-	const char *val;
+	int compare(const DString&s) const {
+		return strcmp(c_str(),s.c_str());
+	}
+	int compare(size_type _Pos1,size_type _Num1,const DString& _Str) {
+		return strncmp(c_str()+_Pos1,_Str.c_str(),_Num1);
+	}
+	int compare(size_type _Pos1,size_type _Num1,const DString& _Str,size_type _Off,size_type _Count) {
+		int ret = strncmp(c_str()+_Pos1,_Str.c_str()+_Off,std::min(_Num1,_Count));
+		if(ret==0 &&_Num1!=_Count) // comparing strings of different sizes
+			return int(_Num1)-int(_Count);
+		else
+			return ret;
+	}
+	int compare(const value_type* _Ptr) const {
+		return strcmp(c_str(),_Ptr);
+	}
+	int compare(size_type _Pos1,size_type _Num1,const value_type* _Ptr,size_type _Num2 = npos) const {
+		int ret = strncmp(c_str()+_Pos1,_Ptr,std::min(_Num1,_Num2));
+		if(ret==0 && _Num1!=_Num2)
+			return int(_Num1)-int(_Num2);
+		else
+			return ret;
+	}
+
 };
 inline std::ostream &operator <<(std::ostream &os,const DString &s) {
   if(s.length())
     os << s.c_str();
   return os;
 }
-#include "common/dgxep.h"
 struct DictStringLost : DGException {
 	const char *s;
 	DictStringLost(const char *s) : 

@@ -15,7 +15,7 @@ typedef struct hsbcolor_t {
 typedef map<DString,Color> named_colors;
 named_colors g_namedColors;
 void initNamed() {
-    for(unsigned int i = 0; i<sizeof(color_lib)/sizeof(hsbcolor_t); ++i)
+    for(int i = 0; i<sizeof(color_lib)/sizeof(hsbcolor_t); ++i)
         g_namedColors[color_lib[i].name] = Color(color_lib[i].h/255.0f,color_lib[i].s/255.0f,color_lib[i].b/255.0f);
 }
 Color findColor(DString s) {

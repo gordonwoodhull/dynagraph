@@ -13,7 +13,7 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef SHAPES_H
 #define SHAPES_H
 
-#include "common/Geometry.h"
+#include "Geometry.h"
 
 /*
  *	shape generators
@@ -40,14 +40,17 @@ extern void genpoly(const PolyDef &arg,Lines &out);
 Coord polysize(const Line &poly);
 
 // exceptions
-struct BadPolyBounds : DGException {
-  BadPolyBounds() : DGException("must specify internal or external box of poly; no one-dimensional or negative boxes") {}
+struct GenPolyXep : DGException {
+	GenPolyXep(const char *descrip) : DGException(descrip) {}
 };
-struct BadPolyDef : DGException { 
-  BadPolyDef() : DGException("polygon must have at least three sides") {}
+struct BadPolyBounds : GenPolyXep {
+  BadPolyBounds() : GenPolyXep("must specify internal or external box of poly; no one-dimensional or negative boxes") {}
 };
-struct BadInputPoly : DGException {
-    BadInputPoly() : DGException("polydef input poly must have degree>0 and size>2") {}
+struct BadPolyDef : GenPolyXep { 
+  BadPolyDef() : GenPolyXep("polygon must have at least three sides, or ellipse must have aspect") {}
+};
+struct BadInputPoly : GenPolyXep {
+    BadInputPoly() : GenPolyXep("polydef input poly must have degree>0 and size>2") {}
 };
 
 //bezier_t *genellipse(polyreq_t *arg);

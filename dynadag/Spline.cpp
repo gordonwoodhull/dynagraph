@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 #include "common/PathPlan.h"
 
 using namespace std;
@@ -63,7 +63,7 @@ static DDModel::Node *boundingNode(Config &config,DDModel::Node *inp, LeftRight 
 
 double findBound(Config &config,const Bounds &bb,DDModel::Node *u, LeftRight side) {
 	assert(bb.valid);
-	double sep = config.nodeSep.x/2.0;
+	double sep = gd<GraphGeom>(config.client).separation.x/2.0;
 	double ret;
 	if(DDModel::Node *w = boundingNode(config,u,side)) {
 		if(side==LEFT)
@@ -319,7 +319,7 @@ void Spliner::adjustPath(DDPath *path) {
 			x = rb;
 
 		/* don't move if it's too small */
-		double least_move = config.nodeSep.x;
+		double least_move = gd<GraphGeom>(config.client).separation.x;
 		if(x < rb && x > lb && absol(x - DDd(*ni).cur.x) >= least_move)
 			DDd(*ni).cur.x = x;
 		/* it's possible that local_crossing() swaps *ni order */
@@ -341,7 +341,7 @@ void Spliner::adjustPath(DDPath *path) {
 	}
 }
 
-bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) {
+bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoiderSpliner &obav) {
 	assert(path->unclippedPath.Empty());
 
 	DDModel::Node *tl = DDp(path->layoutE->tail)->bottom(),
@@ -358,7 +358,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) {
 
 	Line &unclipped = path->unclippedPath;
 	if(path->layoutE->tail==path->layoutE->head) {	/* self arc */
-		Coord sep = config.nodeSep;
+		Coord sep = gd<GraphGeom>(config.client).separation;
 		unclipped.degree = 3;
 		Coord farpt(DDd(tl).multi->pos().x + config.RightExtent(tl) + 2.0 * sep.x,
 			(tailpt.y + headpt.y) / 2.0);

@@ -27,7 +27,7 @@ inline bool between(Coord a, Coord b, Coord c) {
         return false;
     Coord p1 = b-a, 
 		p2 = c-a;
-    return p2*p1 >= 0 && p2*p2 <= p1*p1;
+    return p2%p1 >= 0 && p2%p2 <= p1%p1;
 }
 // this one appears to work better:
 inline bool between2(Coord a, Coord b, Coord c) {

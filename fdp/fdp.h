@@ -37,7 +37,7 @@ struct FDPNode {
 	}
 };
 
-typedef LGraph<Nothing,FDPNode,FDPEdge> FDPModel;
+typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
 
 inline FDPModel::Node *&modelP(Layout::Node *n) {
 	return reinterpret_cast<FDPModel::Node*&>(gd<ModelPointer>(n).model);

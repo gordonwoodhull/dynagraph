@@ -12,7 +12,7 @@ use it without violating AT&T's intellectual property rights. */
 
 #ifndef useful_h
 #define useful_h
-#include "common/time-o-matic.h"
+#include "time-o-matic.h"
 #include <stdio.h>
 
 template<typename T>
@@ -43,9 +43,10 @@ struct Assertion : DGException {
 	Assertion(char *file,int line) : DGException("assertion failure") {}
 };
 #undef assert
+#undef check
 #ifndef NDEBUG
-inline void assert(bool val) { if(!val) throw Assertion(__FILE__,__LINE__); }
-inline void check(bool val) { if(!val) throw Assertion(__FILE__,__LINE__); }
+inline void assert(bool val) { if(!(val)) throw Assertion(__FILE__,__LINE__); }
+inline void check(bool val) { if(!(val)) throw Assertion(__FILE__,__LINE__); } 
 #else
 #define assert(X)
 #define check(X) (X)

@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 
 namespace DynaDAG {
 
@@ -45,7 +45,7 @@ struct MSNodeData : MSNSNode {
 	MSNodeData() : n(0) {}
 };
 typedef NS::NSEdge<void*,void*> MSNSEdge;
-typedef LGraph<NS::NSData<void*,void*>,MSNodeData,NS::NSEdge<void*,void*> > MSGraph;
+typedef LGraph<ADTisCDT,NS::NSData<void*,void*>,MSNodeData,NS::NSEdge<void*,void*> > MSGraph;
 typedef NS::NS<MSGraph,NS::AccessNoAttr<MSGraph> > MSNS;
 
 typedef vector<MSGraph::Node*> msgnv;

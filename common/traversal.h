@@ -19,9 +19,9 @@ use it without violating AT&T's intellectual property rights. */
 #include <stack>
 #include <queue>
 #include <bitset>
-#include <assert.h>
+#include <vector>
 
-// a traversal is an expensive iterator with bool stop() instead of an end() iterator
+// a traversal is an expensive iterator with bool stopped() instead of an end() iterator
 // its operator*() returns both a Node* and an Edge*
 
 // embedded tag for simultaneous traversals
@@ -40,8 +40,8 @@ struct EN {
 template<class G>
 struct Traversal {
 	Traversal(G *g) : m_g(g) {
-		resetAll();
 		m_hitpos = findHitpos();
+		resetAll();
 	}
 	~Traversal() {
 		resetAll();
@@ -89,26 +89,28 @@ struct DFS : Traversal<G> {
 		// try popping stack
 		if(restore())
 			return *this;
-		// look for a new tree
-		if(next())
+		// look for a new tree if "traverse all" was specified
+		if(m_travAll && next())
 			return *this;
 		// nope
-		m_stop = true;
+		m_stopped = true;
 		return *this;
 	}
 	// no postfix ++ because that requires copying the iterator
-	bool stop() {
-		return m_stop;
+	bool stopped() {
+		return m_stopped;
 	}
-	DFS(G *g,typename G::Node *start=0,bool outward=true,bool inward=true,bool outsfirst=true) : 
-		Traversal<G>(g),m_outward(outward),m_inward(inward),m_outsfirst(outsfirst),m_stop(false)
+    void start(Node *n = 0) {
+		m_nodeiter = n?g->iter(n):g->nodes().begin();
+		m_stopped = !next();
+    }
+	DFS(G *g,bool travAll=false,bool outward=true,bool inward=true,bool outsfirst=true) : 
+		Traversal<G>(g),m_outward(outward),m_inward(inward),m_outsfirst(outsfirst),m_travAll(travAll),m_stopped(false)
 	{
-		m_nodeiter = start?g->iter(start):g->nodes().begin();
-		if(!next())
-			m_stop = true;
+        m_stopped = true;
 	}
 private:
-	bool m_outward,m_inward,m_outsfirst,m_stop;
+	bool m_outward,m_inward,m_outsfirst,m_travAll,m_stopped;
 	typedef std::stack<V> ne_stack;
 	ne_stack m_stack;
 	V m_curr;
@@ -226,27 +228,33 @@ struct BFS : Traversal<G> {
 						gd<Hit>(*ei)[m_hitpos] = true;
 					}
 		}
-		if(m_queue.empty())
+		if(m_queue.empty() && m_travAll)
 			for(;m_nodeiter!=m_g->nodes().end(); ++m_nodeiter)
-				if(!gd<Hit>(*m_nodeiter)[m_hitpos]) {
-					gd<Hit>(*m_nodeiter)[m_hitpos] = true;
-					m_queue.push(V(0,*m_nodeiter++));
-					break;
-				}
+				if(!gd<Hit>(*m_nodeiter)[m_hitpos]) 
+                    add(*m_nodeiter);
 		return *this;
 	}
-	bool stop() {
+	bool stopped() {
 		return m_queue.empty();
 	}
-	BFS(G *g,typename G::Node *start = 0,bool inwards=true,bool outwards=true) : Traversal<G>(g),m_inwards(inwards),m_outwards(outwards) {
-		m_nodeiter = start?g->iter(start):g->nodes().begin();
-		if(m_nodeiter!=g->nodes().end()) {
-			gd<Hit>(*m_nodeiter)[m_hitpos] = true;
-			m_queue.push(V(0,*m_nodeiter++));
-		}
+    void start(typename G::Node *n = 0) {
+        if(m_travAll) {
+		    m_nodeiter = m_g->nodes().begin();
+            if(!n && m_nodeiter!=m_g->nodes().end())
+                n = *m_nodeiter;
+        }
+        if(n)
+            add(n);
+    }
+    void add(Node *n) {
+        gd<Hit>(n)[m_hitpos] = true;
+        m_queue.push(V(0,n));
+	}
+	BFS(G *g,bool travAll = false,bool inwards=true,bool outwards=true) : 
+        Traversal<G>(g),m_travAll(travAll), m_inwards(inwards),m_outwards(outwards) {
 	}
 private:
-	bool m_inwards,m_outwards;
+	bool m_inwards,m_outwards,m_travAll;
 	typedef std::queue<V> ne_queue;
 	ne_queue m_queue;
 	typename G::node_iter m_nodeiter;

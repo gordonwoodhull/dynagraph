@@ -12,9 +12,8 @@ use it without violating AT&T's intellectual property rights. */
 
 #include <stdio.h>
 
-#include "common/ag2str.h"
-#include "common/StrAttr.h"
-#include "common/useful.h"
+#include "ag2str.h"
+#include "StrAttr.h"
 
 using namespace std;
 
@@ -63,7 +62,7 @@ StrGraph *ag2str(Agraph_t *g) {
 			sprintf(buf,"n%d",anonN++);
 			name = buf;
 		}
-		StrGraph::Node *nn = gg->create_node(DString(name));
+		StrGraph::Node *nn = gg->create_node(name);
 		remem[n] = nn;
 		report(-1,"%s has:\n",agnameof(n));
 		for(Agsym_t *sym = agnxtattr(g,AGNODE,0); sym; sym = agnxtattr(g,AGNODE,sym)) {
@@ -76,23 +75,24 @@ StrGraph *ag2str(Agraph_t *g) {
 		StrGraph::Node *tail = remem[n];
 		for(Agedge_t *e = agfstout(n); e; e = agnxtout(e)) {
 			StrGraph::Node *head = remem[aghead(e)];
-			StrGraph::Edge *ee = gg->create_edge(tail,head).first;
-			char *name = agnameof(e),
-			buf[30];
-			if(!name || !name[0]) {
-				sprintf(buf,"e%d",anonE++);
-				name = buf;
-			}
-			gd<Name>(ee) = name;
-
+			char *name = agnameof(e);
+            NamedAttrs nattr(name);
 			for(Agsym_t *sym = agnxtattr(g,AGEDGE,0); sym; sym = agnxtattr(g,AGEDGE,sym)) {
 				char *val = agget(e,sym->name);
 				if(val&&*val)
-					gd<StrAttrs>(ee)[sym->name] = val;
+                    if(!strcmp(sym->name,"id"))
+                        (Name)nattr = val;
+                    else
+					    nattr[sym->name] = val;
+			}
+			try {
+				StrGraph::Edge *ee = gg->create_edge(tail,head,nattr).first;
+			}
+			catch(ParallelEdgesUnsupported) {
 			}
 		}
 	}
-	for(Agraph_t *s = agfstsubg(g); s; s = agnxtsubg(s))
+	for(Agraph_t *s = agfstsubg(g); s; s = agnxtsubg(s)) 
 		doSubgraph(remem,gg,gg,s);
 	return gg;
 }

@@ -1,30 +1,30 @@
 ## Process this file with automake to produce Makefile.in
 
-AM_CPPFLAGS = \
-        -I$(top_srcdir) \
-	-I$(top_srcdir)/dynagraph \
+AUTOMAKE_OPTIONS = 1.4
+
+INCLUDES = -I$(top_srcdir)/dynagraph \
 	-I$(top_builddir)/dynagraph \
 	-I$(top_srcdir)/agraph \
 	-I$(top_srcdir)/cdt
 
-noinst_HEADERS = createLayoutServer.h View.h incrcmds.h incrglobs.h incrout.h incrxep.h
+LIBS =
 
-if ENABLE_DYNAGRAPH
+noinst_HEADERS = createLayoutServer.h DynaView.h incrcmds.h incrglobs.h incrout.h incrxep.h
+
 noinst_LTLIBRARIES = libincrface.la
-endif
 
 libincrface_la_SOURCES = createLayoutServer.cpp incrcmds.cpp incrout.cpp \
-	incrgram.cpp incrscan.cpp View.cpp
+	incrgram.cpp incrscan.cpp DynaView.cpp ${noinst_HEADERS}
 
 incrscan.o incrscan.lo : incrscan.cpp incrgram.h
 
 incrgram.o incrgram.lo : incrgram.cpp incrgram.h
 
-incrscan.cpp: $(top_srcdir)/dynagraph/incrface/incrscan.lpp
+incrscan.cpp: ${top_srcdir}/dynagraph/incrface/incrscan.lpp
 
 incrgram.h : incrgram.cpp
 
-incrgram.cpp : $(top_srcdir)/dynagraph/incrface/incrgram.ypp
+incrgram.cpp : ${top_srcdir}/dynagraph/incrface/incrgram.ypp
 
 SUFFIXES = .cpp .ypp .lpp
 
@@ -39,13 +39,6 @@ SUFFIXES = .cpp .ypp .lpp
 	@SED@ "s/yy/incr_yy/g" < y.tab.h > $*.h
 	rm y.tab.c y.tab.h
 
-DISTCLEANFILES = y.output
-MAINTAINERCLEANFILES = incrgram.cpp incrgram.h incrscan.cpp
+DISTCLEANFILES = y.output incrgram.cpp incrgram.h incrscan.cpp
 
-EXTRA_DIST = \
-        $(libincrface_la_SOURCES) \
-        incrgram.cpp \
-        incrgram.h \
-        incrscan.cpp \
-        incrgram.ypp \
-        incrscan.lpp
+EXTRA_DIST = incrgram.cpp incrgram.h incrscan.cpp incrgram.ypp incrscan.lpp

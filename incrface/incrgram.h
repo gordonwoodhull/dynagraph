@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 1.875c.  */
+/* A Bison parser, made by GNU Bison 1.875b.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
@@ -32,49 +32,51 @@
      T_graph = 258,
      T_node = 259,
      T_edge = 260,
-     T_view = 261,
-     T_open = 262,
-     T_close = 263,
-     T_insert = 264,
-     T_delete = 265,
-     T_modify = 266,
-     T_lock = 267,
-     T_unlock = 268,
-     T_segue = 269,
-     T_message = 270,
-     T_id = 271,
-     T_edgeop = 272,
-     T_subgraph = 273
+     T_open = 261,
+     T_close = 262,
+     T_insert = 263,
+     T_delete = 264,
+     T_modify = 265,
+     T_lock = 266,
+     T_unlock = 267,
+     T_segue = 268,
+     T_message = 269,
+     T_request = 270,
+     T_fulfil = 271,
+     T_id = 272,
+     T_edgeop = 273,
+     T_subgraph = 274
    };
 #endif
 #define T_graph 258
 #define T_node 259
 #define T_edge 260
-#define T_view 261
-#define T_open 262
-#define T_close 263
-#define T_insert 264
-#define T_delete 265
-#define T_modify 266
-#define T_lock 267
-#define T_unlock 268
-#define T_segue 269
-#define T_message 270
-#define T_id 271
-#define T_edgeop 272
-#define T_subgraph 273
+#define T_open 261
+#define T_close 262
+#define T_insert 263
+#define T_delete 264
+#define T_modify 265
+#define T_lock 266
+#define T_unlock 267
+#define T_segue 268
+#define T_message 269
+#define T_request 270
+#define T_fulfil 271
+#define T_id 272
+#define T_edgeop 273
+#define T_subgraph 274
 
 
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 12 "incrgram.ypp"
+#line 13 "incrgram.ypp"
 typedef union YYSTYPE {
 			int				i;
 			char			*str;
 } YYSTYPE;
-/* Line 1275 of yacc.c.  */
-#line 78 "y.tab.h"
+/* Line 1252 of yacc.c.  */
+#line 80 "incrgram.tab.hpp"
 # define incr_yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

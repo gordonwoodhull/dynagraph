@@ -14,7 +14,12 @@ use it without violating AT&T's intellectual property rights. */
 #define DGXEP_H
 // a base for all exceptions so we can report the basics
 struct DGException {
-  char *exceptype;
-  DGException(char *exceptype) : exceptype(exceptype) {}
+    const char *exceptype;
+    DGException(const char *exceptype) : exceptype(exceptype) {}
+};
+// pretty dopey - eliminate a few more chars in xep defs
+struct DGException2 : DGException {
+    const char *param;
+    DGException2(const char *exceptype,const char *param) : DGException(exceptype),param(param) {}
 };
 #endif

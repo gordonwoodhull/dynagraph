@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Dynagraph.h"
+#include "Dynagraph.h"
 
 ChangeQueue::ChangeQueue(Layout *client,Layout *current) : client(client),current(current),
 	insN(client),modN(client),delN(client),insE(client),modE(client),delE(client) {}
@@ -32,13 +32,13 @@ void ChangeQueue::InsEdge(Layout::Edge *e) {
 	insE.insert(e);
 }
 void ChangeQueue::ModNode(Layout::Node *n,Update u) {
-	if(u.flags && !insN.find(n) && !delN.find(n)) {
+	if(!insN.find(n) && !delN.find(n)) { // u.flags && 
 		Layout::Node *n2 = modN.insert(n).first;
 		igd<Update>(n2).flags |= u.flags;
 	}
 }
 void ChangeQueue::ModEdge(Layout::Edge *e,Update u) {
-	if(u.flags && !insE.find(e) && !delE.find(e)) {
+	if(!insE.find(e) && !delE.find(e)) { // u.flags && 
 		Layout::Edge *e2 = modE.insert(e).first;
 		igd<Update>(e2).flags |= u.flags;
 	}

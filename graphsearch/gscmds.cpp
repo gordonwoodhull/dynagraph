@@ -14,10 +14,11 @@ use it without violating AT&T's intellectual property rights. */
 #include "common/ag2str.h"
 #include "common/emitGraph.h"
 #include "common/bufferGraphStream.h"
+#include "common/randomName.h"
 #include "common/diff_strgraph.h"
 
-#include "graphsearch/gscmds.h"
-#include "graphsearch/Search.h"
+#include "gscmds.h"
+#include "Search.h"
 
 using namespace GSearch;
 using namespace std;
@@ -67,68 +68,83 @@ StrGraph &result(Session &s) {
 struct emitReact {
 	const char *view;
 	void ins(StrGraph::Node *n) {
-		cout << "insert " << mquote(view) << " node " << mquote(gd<Name>(n).c_str()) << " ";
-		emitAttrs(cout,gd<StrAttrs>(n));
-	}
-	void mod(StrGraph::Node *n,StrAttrs *attrs) {
-		cout << "modify " << mquote(view) << " node " << mquote(gd<Name>(n).c_str()) << " ";
-		emitAttrs(cout,*attrs);
-	}
-	void del(StrGraph::Node *n) {
-		cout << "delete " << mquote(view) << " node " << mquote(gd<Name>(n).c_str()) << endl;
+		cout << "insert node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << " "
+			<< gd<StrAttrs>(n) << endl;
 	}
 	void ins(StrGraph::Edge *e) {
-		cout << "insert " << mquote(view) << " edge " << mquote(gd<Name>(e).c_str()) << 
-            " " << mquote(gd<Name>(e->tail)) << " " << mquote(gd<Name>(e->head)) << " ";
-		emitAttrs(cout,gd<StrAttrs>(e));
+		cout << "insert edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << 
+            " " << mquote(gd<Name>(e->tail)) << " " << mquote(gd<Name>(e->head)) << " "
+			<< gd<StrAttrs>(e) << endl;
+	}
+    void mod(StrGraph::Node*,StrGraph::Node *n,StrAttrs *attrs) {
+		cout << "modify node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << " "
+			<< *attrs << endl;
+	}
+    void mod(StrGraph::Edge*,StrGraph::Edge *e,StrAttrs *attrs) {
+		cout << "modify edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << " "
+			<< *attrs << endl;
+	}
+	void del(StrGraph::Node *n) {
+		cout << "delete node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << endl;
 	}
 	void del(StrGraph::Edge *e) {
-		cout << "delete " << mquote(view) << " edge " << mquote(gd<Name>(e).c_str()) << "\n";
-	}
-	void mod(StrGraph::Edge *e,StrAttrs *attrs) {
-		cout << "modify " << mquote(view) << " edge " << mquote(gd<Name>(e).c_str()) << " ";
-		emitAttrs(cout,*attrs);
+		cout << "delete edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << endl;
 	}
 };
+void remove_2cycles(StrGraph &g) {
+	for(StrGraph::graphedge_iter ei = g.edges().begin(); ei!=g.edges().end();) {
+		StrGraph::Edge *e0 = *ei++;
+		if(StrGraph::Edge *e = g.find_edge(e0->head,e0->tail)) {
+			if(e==*ei)
+				++ei; // tricky iters!
+			g.erase(e);
+		}
+	}
+}
 void output_result(const char *view,StrGraph &start,Session &s) {
 	StrGraph &finish = result(s);
+	remove_2cycles(finish);
 	start.oopsRefreshDictionary(); // ecch.
 	finish.oopsRefreshDictionary();
 	emitReact r;
 	r.view = view;
-	cout << "lock view " << mquote(view) << endl;
+	cout << "lock graph " << mquote(view) << endl;
 	diff_strgraph(&start,&finish,r);
-	cout << "unlock view " << mquote(view) << endl;
-	/*
-	cout << "segue view " << mquote(view) << endl;
+	cout << "unlock graph " << mquote(view) << endl;
+    /*
+	cout << "segue graph " << mquote(view) << endl;
 	cout.flush();
-	emitGraph(cout,&gd<SearchStage>(finish).result);
-	*/
+	emitGraph(cout,&finish);
+    */
 }
 void run(Session &s,const char *view) {
     if(!s.locks) {
-	    StrGraph before = result(s);
-	    s.search->Run(g_inputs);
-	    output_result(view,before,s);
+        try {
+	        StrGraph before = result(s);
+	        s.search->Run(g_inputs);
+	        output_result(view,before,s);
+        }
+        catch(...) {
+        }
     }
     else
         s.changed = true;
 }
-void gs_open_view(char *view)
+void gs_open_graph(char *view)
 {
 	Session &s = g_sessions[view];
 	if(s.search) {
 		gs_error(IF_ERR_ALREADY_OPEN,view);
-		gs_close_view(view);
+		gs_close_graph(view);
 	}
 	bool hasSearch = assign_search(s);
-	cout << "open view " << mquote(view) << ' ';
-	emitAttrs(cout,g_currAttrs);
+	cout << "open graph " << mquote(view) << ' '
+		<< g_currAttrs << endl;
 	if(hasSearch) 
         run(s,view);
 }
 
-void gs_close_view(char *view)
+void gs_close_graph(char *view)
 {
 	Session &s = g_sessions[view];
 	if(s.search) {
@@ -136,15 +152,15 @@ void gs_close_view(char *view)
 		g_sessions.erase(view);
 	}
 	else gs_error(IF_ERR_NOT_OPEN,view);
-	cout << "close view " << mquote(view) << endl;
+	cout << "close graph " << mquote(view) << endl;
 }
 
-void gs_mod_view(char *view) {
+void gs_mod_graph(char *view) {
 	Session &s = g_sessions[view];
     if(!s.locks) {
 	    cout.flush();
-	    cout << "modify view " << mquote(view) << ' ';
-	    emitAttrs(cout,g_currAttrs);
+	    cout << "modify graph " << mquote(view) << ' '
+	    	<< g_currAttrs << endl;
     }
 	if(assign_search(s)) 
         run(s,view);
@@ -218,7 +234,15 @@ void gs_define_input() {
 	if(!sg)
 		throw ParseError();
 	StrGraph *input = new StrGraph(g_sourceGraph);
-	input->readSubgraph(sg);
+	try {
+		input->readSubgraph(sg);
+	}
+	catch(NodeNotFound nnf) {
+		fprintf(stderr,"input node %s not found\n",nnf.name.c_str());
+	}
+	catch(EdgeNotFound enf) {
+		fprintf(stderr,"input edge %s -> %s not found\n",enf.tail.c_str(),enf.head.c_str());
+	}
     g_inputs[gd<Name>(sg)] = input;
     for(Sessions::iterator si = g_sessions.begin(); si!=g_sessions.end(); ++si) {
         Session &s = si->second;
@@ -233,32 +257,26 @@ void gs_define_input() {
 }
 void gs_ins_node(char *view,char *id)
 {
-	throw NYI();
 }
 
 void gs_mod_node(char *view,char *id)
 {
-	throw NYI();
 }
 
 void gs_del_node(char *view,char *id)
 {
-	throw NYI();
 }
 
 void gs_ins_edge(char *view,char *id, char *tail, char *head)
 {
-	throw NYI();
 }
 
 void gs_mod_edge(char *view,char *id)
 {
-	throw NYI();
 }
 
 void gs_del_edge(char *view,char *id)
 {
-	throw NYI();
 }
 
 /* attribute scanning */

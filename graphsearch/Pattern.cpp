@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "graphsearch/Pattern.h"
+#include "Pattern.h"
 #include <stdio.h>
 #include <sstream>
 #include "common/parsestr.h"
@@ -62,7 +62,7 @@ void Pattern::readStrGraph(StrGraph &desc) {
 	}
 }
 
-void runPattern(queue<Match> &Q,PathsFollowed &followed,StrGraph *dest) {
+void runPattern(queue<Match> &Q,PathsFollowed &followed,int limit,StrGraph *dest) {
 	while(!Q.empty()) {
 		Match match = Q.front();
 		Q.pop();
@@ -74,11 +74,11 @@ void runPattern(queue<Match> &Q,PathsFollowed &followed,StrGraph *dest) {
 					if(!followed.insert(FollowedPath(*pei,*sei)).second)
 						continue;
 					if(gd<Path>(*pei).matches(*sei)) {
-					  //StrGraph::Edge *e = 
-					  dest->insert(*sei).first;
+						dest->insert(*sei).first;
 						Q.push(Match((*pei)->head,(*sei)->head));
-						//printf("push %x %x\t",(*pei)->head,(*sei)->head);
 					}
+					if(limit>0 && dest->nodes().size()>size_t(limit)) 
+						return;
 				}
 			if(gd<Path>(*pei).direction&matchUp)
 				for(StrGraph::inedge_iter sei = match.match->ins().begin(); sei!=match.match->ins().end(); ++sei) {
@@ -86,11 +86,11 @@ void runPattern(queue<Match> &Q,PathsFollowed &followed,StrGraph *dest) {
 					if(!followed.insert(FollowedPath(*pei,*sei)).second)
 						continue;
 					if(gd<Path>(*pei).matches(*sei)) {
-					  //StrGraph::Edge *e = 
-					  dest->insert(*sei).first;
+						dest->insert(*sei).first;
 						Q.push(Match((*pei)->head,(*sei)->tail));
-						//printf("push %x %x\t",(*pei)->head,(*sei)->tail);
 					}
+					if(limit>0 && dest->nodes().size()>size_t(limit)) 
+						return;
 				}
 		}
 	}
@@ -101,7 +101,7 @@ void matchPattern(Pattern::Node *start,StrGraph::Node *source,StrGraph *dest) {
 	queue<Match> Q;
 	PathsFollowed followed;
 	Q.push(Match(start,source));
-	runPattern(Q,followed,dest);
+	runPattern(Q,followed,0,dest);
 }
 
 }

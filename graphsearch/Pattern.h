@@ -19,9 +19,14 @@ use it without violating AT&T's intellectual property rights. */
 #include <ext/hash_set>
 #define HASH_NAMESPACE __gnu_cxx
 #else
-// this for gcc2.9x and all MSVC versions (note below that the interface is different for vc++.net)
 #include <hash_set>
+#if defined(_MSC_VER) && _MSC_VER>=1310 
+// just great
+#define HASH_NAMESPACE stdext
+#else
 #define HASH_NAMESPACE std
+#endif
+
 #endif
 
 namespace GSearch {
@@ -51,7 +56,7 @@ struct Path {
 };
 struct NamedState : PatternState,Name {};
 struct NamedTransition : Path,Name {};
-struct Pattern : LGraph<Nothing,NamedState,NamedTransition> {
+struct Pattern : LGraph<ADTisCDT,Nothing,NamedState,NamedTransition> {
 	std::map<DString,Node*> dict;
 	Pattern(const Pattern &copy) : Graph(copy) {
 		for(node_iter ni = nodes().begin(); ni!=nodes().end(); ++ni)
@@ -115,7 +120,7 @@ typedef HASH_NAMESPACE::hash_set<GSearch::FollowedPath,hashFollowedPath,equal_to
   PathsFollowed;
 #endif 
 
-void runPattern(std::queue<GSearch::Match> &Q,PathsFollowed &followed,
+void runPattern(std::queue<GSearch::Match> &Q,PathsFollowed &followed,int limit,
 		StrGraph *dest);
 void matchPattern(Pattern::Node *start,StrGraph::Node *source,StrGraph *dest);
 

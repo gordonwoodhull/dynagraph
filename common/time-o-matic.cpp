@@ -12,7 +12,7 @@ use it without violating AT&T's intellectual property rights. */
 
 #include <stdio.h>
 #include <stdarg.h>
-#include "common/Geometry.h"
+#include "Geometry.h"
 
 #ifdef _WIN32
 #include <windows.h>

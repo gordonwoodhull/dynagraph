@@ -10,26 +10,29 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Dynagraph.h"
-#include "common/parsestr.h"
-
-void emitAttrs(std::ostream &os,const StrAttrs &attrs,const DString &id=DString());
+#include "Dynagraph.h"
+#include "parsestr.h"
 
 template<typename G>
 void emitGraph(std::ostream &os,G *g) {
-  os << "digraph " << mquote(gd<Name>(g));
-  os << " {" << endl << "\tgraph ";
-  emitAttrs(os,gd<StrAttrs>(g));
-  for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {
-    os << '\t' << mquote(gd<Name>(*ni)) << ' ';
-    emitAttrs(os,gd<StrAttrs>(*ni));
-  }
+  os << "digraph " << mquote(gd<Name>(g)) << " {" << endl;
+  StrAttrs gattrs = gd<StrAttrs>(g);
+  if(!gattrs.empty())
+      os << "\tgraph " << gattrs << std::endl;
+  for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) 
+      os << '\t' << mquote(gd<Name>(*ni)) << ' ' << gd<StrAttrs>(*ni) << std::endl;
   for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
-    os << '\t' << mquote(gd<Name>((*ei)->tail)) << " -> " << mquote(gd<Name>((*ei)->head));
-    os << ' ';
+    os << '\t' << mquote(gd<Name>((*ei)->tail)) << " -> " << mquote(gd<Name>((*ei)->head)) << ' ';
     emitAttrs(os,gd<StrAttrs>(*ei),gd<Name>(*ei));
+    os << std::endl;
   }
   os << "}\n";
+}
+
+template<class GD,class ND,class ED,class GID,class NID,class EID>
+inline std::ostream &operator <<(std::ostream &os,LGraph<ADTisCDT,GD,ND,ED,GID,NID,EID> &g) {
+    emitGraph(os,&g);
+    return os;
 }
 
 // try to substitute labels for names to make dotfile more pleasant
@@ -44,8 +47,10 @@ void emitGraph2(std::ostream &os,G *g) {
 	Name &gname = (ati!=gd<StrAttrs>(g).end())?ati->second:gd<Name>(g);
 
 	os << "digraph " << mquote(gname);
-	os << " {" << endl << "\tgraph ";
-	emitAttrs(os,gd<StrAttrs>(g));
+    os << " {" << endl;
+    StrAttrs gattrs = gd<StrAttrs>(g);
+    if(!gattrs.empty())
+        os << "\tgraph " << gattrs << std::endl;
 	for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {
 		StrAttrs::iterator ati = gd<StrAttrs>(*ni).find("label");
 		Name nname;
@@ -56,8 +61,7 @@ void emitGraph2(std::ostream &os,G *g) {
 		}
 		else 
 			ndict[nameOf[*ni] = nname = gd<Name>(*ni)] = *ni;
-		os << '\t' << mquote(nname) << ' ';
-		emitAttrs(os,gd<StrAttrs>(*ni));
+        os << '\t' << mquote(nname) << ' ' << gd<StrAttrs>(*ni) << std::endl;
 	}
 	edge_dict edict;
 	for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
@@ -72,6 +76,7 @@ void emitGraph2(std::ostream &os,G *g) {
 		else
 			edict[ename = gd<Name>(*ei)] = *ei;
 		emitAttrs(os,gd<StrAttrs>(*ei),ename);
+        os << std::endl;
 	}
 	os << "}\n";
 }

@@ -9,6 +9,7 @@ http://www.research.att.com/sw/tools/graphviz/license/
 If you received this software without first entering into a license 
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
+#pragma prototyped
 #include <stdio.h>
 #include "pathplan.h"
 

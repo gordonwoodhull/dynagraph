@@ -13,7 +13,6 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef Transform_h
 #define Transform_h
 
-#include "common/Geometry.h"
 // dynagraph uses dimensionless up-positive coords, but not everyone else does!
 // so when it reads or writes .dot files or talks over a pipe, it uses one of these:
 // multiplies by relevant ratios on read, divides on write
@@ -22,7 +21,7 @@ class Transform {
 		coordRatio; // for node position, edge coords, and bounding box
 public:
 	Coord ll; // lower left corner
-	Transform(Coord nr,Coord cr) : nodeRatio(nr),coordRatio(cr) {}
+	Transform(Coord nr,Coord cr) : nodeRatio(nr),coordRatio(cr),ll(Coord(0,0)) {}
 
 	Coord inSize(Coord c) {
 		return Coord(c.x*nodeRatio.x,c.y*nodeRatio.y);

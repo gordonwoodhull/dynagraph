@@ -17,9 +17,9 @@ use it without violating AT&T's intellectual property rights. */
 //#include "fdp.h"
 //#include "options.h"
 #include "common/Dynagraph.h"
-#include "voronoi/voronoi.h"
-#include "voronoi/info.h"
-#include "voronoi/edges.h"
+#include "voronoi.h"
+#include "info.h"
+#include "edges.h"
 
 using namespace std;
 
@@ -99,7 +99,7 @@ void VoronoiServer::geomUpdate (vector<Site*> &sort) {
 
     /* compute ranges */
 	hedges.range = Rect(sort[0]->coord);
-    for(int i = 1; i < current->nodes().size(); i++) 
+    for(size_t i = 1; i < current->nodes().size(); i++) 
 		hedges.range |= sort[i]->coord;
 }
 int VoronoiServer::countOverlap(int iter) {

@@ -1,7 +1,7 @@
 // originally thanks to Llew S. Goodstadt
 // from http://www.codeguru.com/gdi/ellipse.shtml
 
-#include "common/Geometry.h"
+#include "Geometry.h"
 
 // Create points to simulate ellipse using beziers
 // senses coordinate translation, generates CW (swap top and bottom for CCW)

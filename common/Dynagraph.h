@@ -13,11 +13,11 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef Dynagraph_h
 #define Dynagraph_h
 
-#include "common/LGraph-cdt.h"
-#include "common/traversal.h"
-#include "common/StrAttr.h"
-#include "common/Geometry.h"
-#include "common/genpoly.h"
+#include "LGraph-cdt.h"
+#include "StrAttr.h"
+#include "traversal.h"
+#include "Geometry.h"
+#include "genpoly.h"
 
 /*
         UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this 
@@ -31,18 +31,17 @@ typedef enum {
 	DG_UPD_NAIL = 1<<2, // NodeGeom::nail
 	DG_UPD_TAIL = 1<<3, // EdgeGeom::tailPort or ::tailClipped 
 	DG_UPD_HEAD = 1<<4, // (sorry - can't change end nodes! create a new edge and delete this one)
-	DG_UPD_WIDTH = 1<<5, // EdgeGeom::
-	DG_UPD_LENGTH = 1<<6, // EdgeGeom::
-	DG_UPD_COST = 1<<7, // EdgeGeom::
+	DG_UPD_LENGTH = 1<<6, // EdgeGeom::minLength,fromBottom,toTop
 	DG_UPD_CONSTRAINT = 1<<8, // EdgeGeom::
 	DG_UPD_LABEL = 1<<9, // all Geom:: any label changed (hmm this update flag model is breaking down.  should i reserve 5 bits for 32 labels har har)
-	DG_UPD_BOUNDS = 1<<10, // NodeGeom:: and GraphGeom::
+	DG_UPD_BOUNDS = 1<<10, // GraphGeom::
 	DG_UPD_NESTING = 1<<11, // dream on
 	DG_UPD_EDGESTYLE = 1<<12, // GraphGeom::splineLevel (useful for debugging.  real edge styles also should be on the way...)
 	DG_UPD_RESOLUTION = 1<<13, // GraphGeom::
 	DG_UPD_SEPARATION = 1<<14, // GraphGeom::
 	DG_UPD_DRAWN = 1<<15, // nodes,graphs,edges: the Drawn lines have changed
-	DG_UPD_POLYDEF = 1<<16 // anything in node's PolyDef
+	DG_UPD_POLYDEF = 1<<16, // anything in node's PolyDef
+	DG_UPD_CHANGERECT = 1<<17 // GraphGeom::changerect
 } UpdateFlags;
 struct Update { // subgraph-specific datum
 	unsigned flags;
@@ -78,14 +77,16 @@ typedef enum {
 	DG_SPLINELEVEL_SPLINE
 } SpliningLevel;
 struct GraphGeom {
-	Bounds bounds;
+	Bounds bounds, // of all shown
+		changerect; // what area changed last FindChangedRect::Process 
 	SpliningLevel splineLevel;
-	Coord labelGap; // between node and label
-	Coord resolution; // smallest units in each dimension (e.g. 1,1 for integer)
-	Coord separation; // space between horizontally adjacent nodes and edges; minimum edge height
-	Coord defaultSize; // a hint for the engines about node size; clients such as incrface use this
+	Coord labelGap, // between node and label
+		resolution, // smallest units in each dimension (e.g. 1,1 for integer)
+		separation, // DynaDAG: x: space between nodes and edges; y: multiplier for edge minLength
+		defaultSize; // node size to use if neither width nor height specified
 	float ticks; // time limit, in seconds, 0 - no limit (NYI)
-	GraphGeom() : splineLevel(DG_SPLINELEVEL_SPLINE),labelGap(0,0),resolution(0.1,0.1),separation(0.5,0.5),defaultSize(1,1),ticks(0) {}
+	GraphGeom() : splineLevel(DG_SPLINELEVEL_SPLINE),labelGap(0,0),resolution(0.1,0.1),
+		separation(0.5,0.5),defaultSize(1.5,1),ticks(0) {}
 };
 struct StaticLabel {
 	Rect bounds;
@@ -109,7 +110,7 @@ struct Translation {
 	Translation() : orientation(DG_ORIENT_DOWN) {}
 };
 
-struct GraphAttrs : Name,StrAttrs2,GraphGeom,Drawn,Translation,StaticLabels,ModelPointer,Hit {};
+struct GraphAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,GraphGeom,Translation,StaticLabels {};
 
 // generated shapes for nodes (relative to NodeGeom::pos); 
 // this (unlike NodeGeom::region), is not translated according to Translation::orientation
@@ -147,43 +148,57 @@ typedef enum {
 	DG_NODELABEL_RIGHT,
 	DG_NODELABEL_TOP,
 	DG_NODELABEL_LEFT,
-	DG_NODELABEL_BOTTOM
-} NodeLabelPlacement;
-
+	DG_NODELABEL_BOTTOM,
+	DG_NODELABEL_BETTER
+} NodeLabelAlignment;
 struct NodeLabel {
-	// input
-	NodeLabelPlacement where;
+	NodeLabelAlignment align;
+	// if DG_NODELABEL_BETTER:
+	// place labels by matching one or two reference points on the node
+	// and the and the label.  for example (0.5,0.5),(0.5,0.5) centers
+	// (0,0),(0,1) puts the label above, aligned at the left
+	Coord nodeAlign,labelAlign, // 0 top/left - 1 bottom/right
+		nodeOffset,labelOffset; // in respective plain coordinates
+	// labels can be stretched by matching a second reference point
+	bool scaleX,scaleY; // whether to use the x or y of the other refpoint
+	Coord nodeAlign2,labelAlign2, 
+		nodeOffset2,labelOffset2; 
+
 	Coord size;
 	// output
-	Position pos; // upper-left corner
+	Bounds bounds;
 
-	NodeLabel(NodeLabelPlacement where = DG_NODELABEL_CENTER, Coord size = Coord(0,0)) :
-		where(where), size(size) {}
+	NodeLabel(NodeLabelAlignment align = DG_NODELABEL_CENTER, Coord size = Coord(0,0)) :
+		align(align), size(size),nodeAlign(0,0),labelAlign(0,0),nodeOffset(0,0),labelOffset(0,0),
+		scaleX(false),scaleY(false),nodeAlign2(0,0),labelAlign2(0,0),nodeOffset2(0,0),labelOffset2(0,0) {}
 };
+typedef std::vector<NodeLabel> NodeLabels;
 struct Port {
 	Coord pos;
 	double angle;
 	Port(Coord pos=Coord(),double angle=0) : pos(pos),angle(angle) {}
 };
 typedef std::vector<std::pair<int,Port> > IdentifiedPorts;
-typedef std::vector<NodeLabel> NodeLabels;
 struct IfPolyDef : PolyDef {
 	bool whether; // whether to use, else client has other way to fill NodeGeom::region
 	IfPolyDef() : whether(true) {}
 };
-struct NodeAttrs : Name,StrAttrs2,NodeGeom,NodeLabels,Hit,IfPolyDef,Drawn,ModelPointer {};
+struct NodeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,NodeGeom,NodeLabels,IfPolyDef {};
 
 /*
 	EDGE attributes
 */
 struct EdgeGeom {
-	double width,lengthHint,cost;
 	Line pos;
-	bool constraint, // whether should affect ranking
-		manualRoute; // try to use 
 	Port tailPort,headPort;
 	bool tailClipped,headClipped;
-	EdgeGeom() : width(1.0),lengthHint(1.0),cost(0.0),constraint(true),
+	// DynaDAG attributes
+	double minLength; // minimum Y-spanning of edge (multiplied by GraphGeom::separation::y)
+	bool fromBottom, // how to measure length
+		toTop; // default both true: measure from bottom of tail to top of head
+	bool constraint, // whether this edge affects ranking; set true by DynaDAG if last in loop & set false if a node is nailed
+		manualRoute; // try to use the line specified in pos
+	EdgeGeom() : minLength(1.0),fromBottom(true),toTop(true),constraint(true),
 		manualRoute(false),tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),
 		tailClipped(true),headClipped(true) {}
 };
@@ -197,14 +212,14 @@ struct EdgeLabel {
 	EdgeLabel(double where = 0.5f,double length = 0.0f) : where(where),length(length),shape(0) {}
 };
 typedef std::vector<EdgeLabel> EdgeLabels;
-struct EdgeAttrs : Name,StrAttrs2,EdgeGeom,EdgeLabels,ModelPointer,Hit,Drawn {
+struct EdgeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,EdgeGeom,EdgeLabels {
 
 };
 
 /*
 	LAYOUT (spec & geom graph)
 */
-typedef LGraph<GraphAttrs,NodeAttrs,EdgeAttrs,Update,Update,Update> Layout;
+typedef LGraph<ADTisCDT,GraphAttrs,NodeAttrs,EdgeAttrs,Update,Update,Update> Layout;
 
 /*
 	CHANGE QUEUE

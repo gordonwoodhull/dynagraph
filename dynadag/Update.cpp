@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "dynadag/DynaDAG.h"
+#include "DynaDAG.h"
 
 using namespace std;
 
@@ -113,6 +113,8 @@ void Config::buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGen
 		return;
 	int tr = DDd(t).rank,
 		hr = DDd(h).rank;
+	if(tr==hr)
+		return;
 	assert(ranking.Above(tr,hr));
 	Ranks::iterator ti = ranking.GetIter(tr),
 		hi = ranking.GetIter(hr),
@@ -272,9 +274,6 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Layo
 		// stretch/shrink ends
 		adjustChain(chain,false,nhr,vn,ve);
 		adjustChain(chain,true,ntr,vn,ve);
-
-		/* do not call dd_opt_path(chain) here!  other
-		edges are not yet adjusted, so tangles can result. */
 	}
 }
 void Config::autoAdjustEdge(Layout::Edge *ve) {
@@ -297,9 +296,9 @@ void unbindEndpoints(Layout::Edge *ve) {
 }
 */
 void Config::insertEdge(Layout::Edge *ve) {
-	if(ve->head==ve->tail) // special case b/c head *model* node != tail *model* node
-		dynaDAG->CloseChain(DDp(ve),false);
-	else if(!gd<EdgeGeom>(ve).pos.Empty()) 
+	if(ve->head==ve->tail || DDp(ve)->secondOfTwo)
+		dynaDAG->CloseChain(DDp(ve),false); // do not model self-edges 
+	else if(userDefinedMove(ve))
 		userRouteEdge(ve);
 	else 
 		autoRouteEdge(ve);
@@ -362,11 +361,11 @@ struct compOldRank {
 	}
 };
 void Config::moveOldNodes(ChangeQueue &changeQ) {
-	VNodeV moveOrder;
+	LNodeV moveOrder;
 	for(Layout::node_iter vni = changeQ.modN.nodes().begin(); vni!=changeQ.modN.nodes().end(); ++vni)
 		moveOrder.push_back(*vni);
 	sort(moveOrder.begin(),moveOrder.end(),compOldRank());
-	for(VNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) {
+	for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) {
 		Layout::Node *vn = *ni,
 			*mvn = client->find(*ni);
 		NodeGeom &ng = gd<NodeGeom>(vn);
@@ -445,13 +444,17 @@ void Config::moveOldNodes(ChangeQueue &changeQ) {
 }
 void Config::moveOldEdges(ChangeQueue &changeQ) {
 	for(Layout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		if(igd< ::Update>(*ei).flags&DG_UPD_MOVE) // yes that space in < :: is necessary >:(
-			if((*ei)->head==(*ei)->tail) // ignore self-edges
-				;
+		if(igd< ::Update>(*ei).flags&DG_UPD_MOVE) { // yes that space in < :: is necessary >:(
+			Layout::Edge *ve = client->find(*ei);
+			if((*ei)->head==(*ei)->tail) 
+				; // ignore self-edges
+			else if(DDp(*ei)->secondOfTwo)
+				; // ignore one edge of 2-cycle
 			else if(userDefinedMove(*ei))
-				userRouteEdge(client->find(*ei));
+				userRouteEdge(ve);
 			else
-				autoAdjustEdge(client->find(*ei));
+				autoAdjustEdge(ve);
+		}
 }
 void Config::splitRank(DDChain *chain,DDModel::Edge *e,Layout::Node *vn, Layout::Edge *ve) {
 	Ranks::index newR = ranking.Down(DDd(e->tail).rank);
@@ -535,14 +538,10 @@ void Config::updateRanks(ChangeQueue &changeQ) {
 				for(NodeV::iterator ni = (*ri2)->order.begin(); ni!=(*ri2)->order.end(); ++ni) 
 					for(DDModel::outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end();) {
 						DDModel::Edge *e = *ei++;
-						if(DDd(e).amEdgePart()) {
-							changeQ.ModEdge(DDd(e).path->layoutE,DG_UPD_MOVE);
+						if(DDd(e).amEdgePart())
 							splitRank(DDd(e).path,e,0,DDd(e).path->layoutE);
-						}
-						else if(DDd(*ni).amNodePart() && DDd(*ni).multi==DDd(e->head).multi) {
+						else if(DDd(*ni).amNodePart() && DDd(*ni).multi==DDd(e->head).multi)
 							splitRank(DDd(*ni).multi,e,DDd(*ni).multi->layoutN,0);
-							changeQ.ModNode(DDd(*ni).multi->layoutN,DG_UPD_MOVE);
-						}
 						else assert(0); // what's this edge doing?
 					}
 			}
@@ -557,12 +556,9 @@ void Config::updateRanks(ChangeQueue &changeQ) {
 				if(DDd(n).amEdgePart()) {
 					DDPath *path = DDd(*n->ins().begin()).path;
 					joinRanks(path,n,path->layoutE);
-					changeQ.ModEdge(path->layoutE,DG_UPD_MOVE);
 				}
-				else {
-					changeQ.ModNode(DDd(n).multi->layoutN,DG_UPD_MOVE);
+				else 
 					joinRanks(DDd(n).multi,n,0);
-				}
 			}
 			ranking.RemoveRank(ri);
 			++oi;

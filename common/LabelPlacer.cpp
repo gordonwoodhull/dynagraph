@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "common/Dynagraph.h"
+#include "Dynagraph.h"
 
 using namespace std;
 
@@ -56,12 +56,6 @@ void placeLabels(Layout::Edge *e) {
 		else
 			il->pos1 = il->pos2 = Position();
 }
-NodeLabelPlacement xlateNodeLabelPlacement(NodeLabelPlacement in,Orientation rient) {
-	if(1)
-		return in;
-	// both measure rotation in 90° increments but NodeLabelPlacement starts with 1
-	return (NodeLabelPlacement)((in+rient)%4+1);  // terse!
-}
 void placeLabels(Layout::Node *n) {
 	NodeLabels &nl = gd<NodeLabels>(n);
 	if(nl.empty())
@@ -71,39 +65,56 @@ void placeLabels(Layout::Node *n) {
 	Coord start = ng.pos;
 	Coord gap = gd<GraphGeom>(n->g).labelGap;
 	for(NodeLabels::iterator il = nl.begin(); il!=nl.end(); ++il) {
-		Coord ul = il->size/-2.0;
-#ifndef DOWN_GREATER
-		ul.y *= -1.0;
-#endif
-		il->pos = start + ul;
-		switch(xlateNodeLabelPlacement(il->where,gd<Translation>(n->g).orientation)) {
+		// simulate old align with new
+		switch(il->align) {
 		case DG_NODELABEL_CENTER:
-			break;
-		case DG_NODELABEL_LEFT:
-			il->pos.x = ng.BoundingBox().l - gap.x - il->size.x;
-			break;
-		case DG_NODELABEL_TOP:
-			il->pos.y = ng.BoundingBox().t 
-#ifndef DOWN_GREATER
-				+ 
-#else
-				-
-#endif
-				(gap.y + il->size.y);
-			break;
+			il->nodeAlign = il->labelAlign = Coord(0.5,0.5);
+			goto old_align;
 		case DG_NODELABEL_RIGHT:
-			il->pos.x = ng.BoundingBox().r + gap.x;
-			break;
+			il->nodeAlign = Coord(1.0,0.5);
+			il->labelAlign = Coord(0,0.5);
+			goto old_align;
+		case DG_NODELABEL_TOP:
+			il->nodeAlign = Coord(0.5,0);
+			il->labelAlign = Coord(0.5,1);
+			goto old_align;
+		case DG_NODELABEL_LEFT:
+			il->nodeAlign = Coord(0,0.5);
+			il->labelAlign = Coord(1,0.5);
+			goto old_align;
 		case DG_NODELABEL_BOTTOM:
-			il->pos.y = ng.BoundingBox().b
-#ifndef DOWN_GREATER
-				- 
-#else
-				+
-#endif
-				gap.y;
+			il->nodeAlign = Coord(0.5,1);
+			il->labelAlign = Coord(0.5,0);
+		old_align:
+			il->nodeOffset = il->labelOffset = Coord(0,0);
+			il->scaleX = il->scaleY = false;
 			break;
+		case DG_NODELABEL_BETTER:
+			break;
+		default:
+			continue;
 		}
+		Coord sizevec = il->size
+#ifndef DOWN_GREATER
+			* Coord(1,-1)
+#endif
+		;
+		const Bounds &bb = ng.BoundingBox();
+		Coord rpn = bb.NW() + il->nodeAlign*(bb.SE()-bb.NW()) + il->nodeOffset,
+			rpl = il->labelAlign*sizevec + il->labelOffset; 
+		Coord rpn2 = bb.NW() + il->nodeAlign2*(bb.SE()-bb.NW()) + il->nodeOffset2,
+			rpl2 = il->labelAlign2*sizevec + il->labelOffset2; 
+		Coord scale(1,1);
+		if(il->scaleX)
+			scale.x = (rpn2.x-rpn.x)/(rpl2.x-rpl.x);
+		if(il->scaleY)
+			scale.y = (rpn2.y-rpn.y)/(rpl2.y-rpl.y);
+		Coord ul = rpn - scale*rpl;
+		il->bounds.valid = true;
+		il->bounds.l = ul.x;
+		il->bounds.t = ul.y;
+		il->bounds.r = ul.x + scale.x*sizevec.x;
+		il->bounds.b = ul.y + scale.y*sizevec.y;
 	}
 }
 
@@ -118,6 +129,6 @@ void LabelPlacer::Process(ChangeQueue &Q) {
 	for(ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
 		placeLabels(*ni);
 	for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
-		if(igd<Update>(*ni).flags&(DG_UPD_MOVE|DG_UPD_LABEL))
+		if(igd<Update>(*ni).flags&(DG_UPD_MOVE|DG_UPD_LABEL|DG_UPD_REGION|DG_UPD_POLYDEF|DG_UPD_DRAWN))
 			placeLabels(*ni);
 }

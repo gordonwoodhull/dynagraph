@@ -10,7 +10,7 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "graphsearch/Pattern.h"
+#include "Pattern.h"
 
 namespace GSearch {
 
@@ -22,11 +22,17 @@ enum InquiryType {
 };
 struct SearchStage {
 	InquiryType type;
-	Pattern *pattern; // only if PatternInquiry
 	StrGraph result;
 	bool done;
-	SearchStage(StrGraph *parent) : pattern(0),result(parent),done(false)	 {}
-	SearchStage(const SearchStage &o) : type(o.type),pattern(o.pattern),result(o.result),done(false) {}
+	int limit; // approx. max number of nodes, default 0: no limit
+	Pattern *pattern; // only if PatternInquiry
+    bool goIn,goOut,firstOnly; // only if PathInquiry
+	bool shortest;
+	DString weightattr;
+	SearchStage(StrGraph *parent) : pattern(0),result(parent),done(false),limit(0),
+		goIn(true),goOut(true),firstOnly(false),shortest(false) {}
+	SearchStage(const SearchStage &o) : type(o.type),pattern(o.pattern),result(o.result),done(false),limit(o.limit),
+		goIn(o.goIn),goOut(o.goOut),firstOnly(o.firstOnly),shortest(o.shortest),weightattr(o.weightattr) {}
 };
 // edge names match pattern's start state name(s) or "a" or "b" for PathInquiry
 // node names match runSearch input names 
@@ -35,7 +41,7 @@ struct NamedStage : Name,SearchStage {
 	NamedStage(StrGraph *parent,DString name) : Name(name),SearchStage(parent) {}
 };
 typedef std::map<DString,StrGraph*> Inputs;
-struct Search : LGraph<Nothing,NamedStage,Name> {
+struct Search : LGraph<ADTisCDT,Nothing,NamedStage,Name> {
 	StrGraph &source;
 	std::map<DString,Node*> dict;
 	Search(const Search &copy) : Graph(copy),source(copy.source) { // don't let them copy dict!

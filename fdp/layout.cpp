@@ -13,7 +13,6 @@ use it without violating AT&T's intellectual property rights. */
 #include "fdp.h"
 #include <math.h>
 #include "macros.h"
-//#include <utils.h>
 
 namespace FDP {
 
@@ -33,7 +32,8 @@ inline double localK2(Layout::Node *a,Layout::Node *b) {
 		tot+=gd<NodeGeom>(b).region.boundary.Size(),++n;
 	if(n)
 		tot /= n;
-	return tot*tot;
+	tot += gd<GraphGeom>(a->g).separation/2;
+	return tot%tot;
 }
 inline double localK(Layout::Node *a,Layout::Node *b) {
 	return sqrt(localK2(a,b));

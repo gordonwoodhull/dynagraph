@@ -30,10 +30,10 @@ struct seqtreelink : seqlink,treelink {};
 template<typename Ty,typename L>
 struct derived_accessor {
 	typedef Ty T;
-	Dtlink_t *operator [](T *o) {
+	Dtlink_t *operator [](T *o) const {
 		return static_cast<Dtlink_t*>(static_cast<L*>(o));
 	}
-	T *operator [](Dtlink_t *l) {
+	T *operator [](Dtlink_t *l) const {
 		return static_cast<T*>(static_cast<L*>(l));
 	}
 };
@@ -60,13 +60,18 @@ struct sequence {
 	Dtlink_t *m_left,*m_right;
 	sequence(Dtlink_t *left = 0,Dtlink_t *right = 0,Accessor acc = Accessor()) : m_acc(acc),m_left(left),m_right(right) {}
 	struct iterator {
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef T* value_type;
+		typedef T** pointer;
+		typedef T*& reference;
+		typedef void difference_type;
 		Accessor m_acc;
 		Dtlink_t *m_link;
 		iterator() {
 			m_link = 0;
 		}
 		iterator(Accessor acc,Dtlink_t *link) : m_acc(acc),m_link(link) {}
-		T *operator *() {
+		T *operator *() const {
 			return m_acc[m_link];
 		}
 		iterator &operator++() {
@@ -99,6 +104,8 @@ struct sequence {
 			return !(*this==i);
 		}
 	};
+	typedef std::reverse_iterator<iterator> reverse_iterator;
+	/*
 	struct reverse_iterator {
 		iterator i;
 		reverse_iterator(Accessor acc,T *o) : i(acc,o) {}
@@ -111,27 +118,28 @@ struct sequence {
 		}
 		// ...
 	};
-	iterator make_iter(Dtlink_t *link) {
+	*/
+	iterator make_iter(Dtlink_t *link) const {
 		return iterator(m_acc,link);
 	}
-	iterator iter(T *o) {
+	iterator iter(T *o) const {
 		if(!o)
 			return end();
 		return make_iter(m_acc[o]);
 	}
-	iterator rev_iter(Dtlink_t *link) {
+	iterator rev_iter(Dtlink_t *link) const {
 		return reverse_iterator(m_acc,link);
 	}
-	iterator begin() {
+	iterator begin() const {
 		return make_iter(m_left);
 	}
-	iterator end() {
+	iterator end() const {
 		return make_iter((Dtlink_t*)0);
 	}
-	reverse_iterator rbegin() {
+	reverse_iterator rbegin() const {
 		return rev_iter(m_right);
 	}
-	reverse_iterator rend() {
+	reverse_iterator rend() const {
 		return rev_iter(0);
 	}
 	void insert(iterator i,T *x) {
@@ -209,6 +217,8 @@ struct tree {
 	}
 	// heavy tree iterator
 	struct iterator {
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef T* value_type;
 		tree *m_tree;
 		Dtlink_t *m_link;
 		iterator() : m_tree(0),m_link(0) {}
@@ -273,10 +283,10 @@ struct tree {
 		extract();
 		return iterator(this,s);
 	}
-	int size() {
-		return m_size;
+	size_t size() const {
+		return size_t(m_size);
 	}
-	bool empty() {
+	bool empty() const {
 		return !size();
 	}
 };
@@ -287,19 +297,19 @@ struct ordering : Tree,Sequence {
 	typedef typename Sequence::iterator iterator;
 	typedef typename Sequence::reverse_iterator reverse_iterator;
 	ordering(D &disc,Dt_t *dict) : Tree(disc,dict) {}
-	bool empty() {
+	bool empty() const {
 		return Tree::empty();
 	}
-	int size() {
+	size_t size() const {
 		return Tree::size();
 	}
-	iterator iter(T *o) {
+	iterator iter(T *o) const {
 		return Sequence::iter(o);
 	}
-	iterator begin() {
+	iterator begin() const {
 		return Sequence::begin();
 	}
-	iterator end() {
+	iterator end() const {
 		return Sequence::end();
 	}
 	// kind of anomalous method for cdt.

@@ -1,24 +1,22 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = common dynadag fdp graphsearch incrface shortspline voronoi
+AUTOMAKE_OPTIONS = 1.4
 
-htmldir = $(pkgdatadir)/doc/html
-
-html = dynagraph.html
-
-AM_CPPFLAGS = \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/dynagraph \
+INCLUDES = -I$(top_srcdir)/dynagraph \
 	-I$(top_srcdir)/agraph \
 	-I$(top_srcdir)/cdt
 
-AM_CFLAGS = -DDATE="\"`date`\""
+LIBS = @LIBS@
 
-if ENABLE_DYNAGRAPH
+CFLAGS = @CFLAGS@ -DDATE="\"`date`\""
+
+noinst_HEADERS = 
+
+SUBDIRS = common dynadag fdp graphsearch incrface shortspline voronoi
+
 bin_PROGRAMS = dynagraph
+
 noinst_PROGRAMS = gengraph
-html_DATA = $(html)
-endif
 
 gengraph_SOURCES = gengraph.cpp
 
@@ -38,5 +36,6 @@ dynagraph_LDADD = $(top_builddir)/dynagraph/incrface/libincrface.la \
         $(top_builddir)/agraph/libagraph.la \
 	$(top_builddir)/cdt/libcdt.la
 
-EXTRA_DIST = $(html) $(gengraph_SOURCES) $(dynagraph_SOURCES) \
-        dynagraph.html plainmake.zip
+man_MANS = 
+
+EXTRA_DIST = $(man_MANS) dynagraph.html plainmake.zip

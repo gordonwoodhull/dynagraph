@@ -14,11 +14,12 @@ use it without violating AT&T's intellectual property rights. */
 
 #include <stdlib.h>
 
-#include "common/StringDict.h"
+#include "StringDict.h"
 
 StringDict g_stringDict;
 const DString::size_type DString::npos = DString::size_type(-1);
 
+#ifndef STRINGDICT_USE_STL
 typedef struct refstr_t {
 	Dtlink_t		link;
 	unsigned int	refcnt;
@@ -76,13 +77,24 @@ const char *StringDict::enter(const char* s) {
 	return r->s;
 }
 
+
 void StringDict::release(const char* s) {
-	refstr_t		*key,*r;
+	refstr_t *r;
+	if(!s)
+		return;
+#ifdef SLOW_RELEASE
+	refstr_t *key;
 
 	if ((dict == NULL) || (s == NULL)) return;
 	key = (refstr_t*)(s - offsetof(refstr_t,s[0]));
 	r = (refstr_t*) dtsearch(dict,key);
 
+#else
+	// not sure why agraph version looks it up.
+	// one should never call this function with a value 
+	// that wasn't returned from enter
+	r = (refstr_t*)(s - offsetof(refstr_t,s[0]));
+#endif
 	if (r) {
 		r->refcnt--;
 		if (r->refcnt <= 0) {
@@ -98,3 +110,4 @@ void StringDict::ref(const char *s) {
 	refstr_t *key = (refstr_t*)(s - offsetof(refstr_t,s[0]));
 	key->refcnt++;
 }
+#endif

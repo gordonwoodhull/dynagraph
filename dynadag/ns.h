@@ -21,11 +21,10 @@ const int SearchSize = 20;
 
 #pragma inline_recursion(off)
 
-#include "dynadag/nsdat.h"
-#include "common/useful.h"
+#include "nsdat.h"
 
 // minimum data for this alg:
-// typedef LGraph<NSData<void*,void*>,NSNode<void*,void*>,NSEdge<void*,void*> > NSGraph;
+// typedef LGraph<ADTisCDT,NSData<void*,void*>,NSNode<void*,void*>,NSEdge<void*,void*> > NSGraph;
 // minimal NS algorithm
 // typedef NS<NSGraph,AccessNoAttr<NSGraph> > NSAlg;
 
@@ -339,7 +338,7 @@ private:
 			initRank(g);
 
 		NodeV nodes;
-		int t;
+		size_t t;
 		while((t = tightTree(g)) < g->nodes().size()) {
 			if(t == 1)
 				NSd(*g->nodes().begin()).mark = true;

@@ -11,8 +11,8 @@ with AT&T, you have an infringing copy of this software and cannot
 use it without violating AT&T's intellectual property rights. */
 
 #include <math.h>
-#include "common/Geometry.h"
-#include "common/Solvers.h"
+#include "Geometry.h"
+#include "Solvers.h"
 
 inline bool near0(double x) {
 	return absol(x)<1E-7;

@@ -12,10 +12,11 @@ use it without violating AT&T's intellectual property rights. */
 
 #include "voronoi/voronoi.h"
 #include "fdp/fdp.h"
-#include "shortspline/shortspline.h"
+#include "shortspline/ObAvSplinerEngine.h"
 #include "dynadag/DynaDAG.h"
 #include "common/ColorByAge.h"
-#include "incrface/createLayoutServer.h"
+#include "common/FindChangeRect.h"
+#include "createLayoutServer.h"
 #include "common/breakList.h"
 
 using namespace std;
@@ -35,19 +36,22 @@ struct creators : map<DString,creatorf> {
 		me["dynadag"] = tcreator<DynaDAG::DynaDAGServer>::create;
 		me["fdp"] = tcreator<FDP::FDPServer>::create;
 		me["voronoi"] = tcreator<Voronoi::VoronoiServer>::create;
-		me["visspline"] = tcreator<ShortSpliner>::create;
+		me["visspline"] = tcreator<ObAvSplinerEngine>::create;
 		me["labels"] = tcreator<LabelPlacer>::create;
 		me["shapegen"] = tcreator<ShapeGenerator>::create;
         me["colorbyage"] = tcreator<ColorByAge>::create;
 	}
 } g_creators;
 Server *createLayoutServer(Layout *client,Layout *current) {
-	UpdateCurrent *uc = new UpdateCurrent(client,current);
 	CompoundServer *eng = new CompoundServer(client,current);
-	eng->actors.push_back(uc); // obligatory
-	DString &serverlist = gd<StrAttrs>(client)["engines"];
+    FCRData *fcrdata = new FCRData(client);
+    FCRBefore *fcrbefore = new FCRBefore(client,current,fcrdata);
+    FCRAfter *fcrafter = new FCRAfter(client,current,fcrdata);
+	eng->actors.push_back(fcrbefore);
+	eng->actors.push_back(new UpdateCurrent(client,current)); // obligatory
+	DString serverlist = gd<StrAttrs>(client)["engines"];
 	if(serverlist.empty())
-		serverlist = "shapegen,dynadag,labels,colorbyage";
+		gd<StrAttrs2>(client).put("engines",serverlist = "shapegen,dynadag,labels");
     //gd<StrAttrs>(client)["agecolors"] = "green,blue,black";
     vector<DString> engs;
     breakList(serverlist,engs);
@@ -62,6 +66,7 @@ Server *createLayoutServer(Layout *client,Layout *current) {
 		Server *server = crea(client,current);
 		eng->actors.push_back(server);
 	}
-
+	eng->actors.push_back(fcrafter);
+	
 	return eng;
 }

@@ -10,7 +10,9 @@ If you received this software without first entering into a license
 with AT&T, you have an infringing copy of this software and cannot 
 use it without violating AT&T's intellectual property rights. */
 
-#include "graphsearch/Search.h"
+#include "Search.h"
+#include "findAllPaths.h"
+#include "findShortestPaths.h"
 
 using namespace std;
 
@@ -25,6 +27,8 @@ void Search::readStrGraph(Patterns &patterns,StrGraph &desc) {
 		Node *n = create_node(gd<Name>(*ni));
 		recollect[*ni] = n;
 		SearchStage &stage = gd<SearchStage>(n);
+		DString limit = gd<StrAttrs>(*ni).look("limit","50");
+		stage.limit = atoi(limit.c_str());
 		DString action = gd<StrAttrs>(*ni).look("action","union");
 		if(action=="union")
 			stage.type = UnionInquiry;
@@ -38,8 +42,19 @@ void Search::readStrGraph(Patterns &patterns,StrGraph &desc) {
 				throw UndefinedPattern(pattern);
 			stage.pattern = &pi->second;
 		}
-		else if(action=="path")
+        else if(action=="path") {
 			stage.type = PathInquiry;
+            DString ways = gd<StrAttrs>(*ni)["ways"];
+            if(ways=="in")
+                stage.goIn = true, stage.goOut = false;
+            else if(ways=="both")
+                stage.goIn = stage.goOut = true;
+            else  // ways=="out" default
+                stage.goIn = false, stage.goOut = true;
+			stage.firstOnly = gd<StrAttrs>(*ni)["firstonly"]=="true";
+			stage.shortest = gd<StrAttrs>(*ni)["shortest"]=="true";
+			stage.weightattr = gd<StrAttrs>(*ni).look("weightattr","weight");
+        }
 		else 
 			throw UnknownAction(action);
 	}
@@ -99,14 +114,15 @@ void Search::Run(const Inputs &inputs) {
 			case PatternInquiry: {
 				if(!earchage.pattern)
 					throw PatternNotThere();
+				earchage.result.clear();
 				queue<Match> Q;
 				PathsFollowed followed;
 				for(; ei!=stage->ins().end(); ++ei) {
-					const Name &name = gd<Name>(*ei);
+					Name inputname = gd<Name>(*ei);
 					Pattern::node_iter ni;
 					for(ni = earchage.pattern->nodes().begin();
 							ni!=earchage.pattern->nodes().end(); ++ni)
-						if(gd<Name>(*ni)==name) {
+						if(gd<Name>(*ni)==inputname) {
 							StrGraph &input = gd<SearchStage>((*ei)->tail).result;
 							for(StrGraph::node_iter inpi = input.nodes().begin(); inpi !=input.nodes().end(); ++inpi) {
 								earchage.result.insert(*inpi);
@@ -115,12 +131,27 @@ void Search::Run(const Inputs &inputs) {
 							break;
 						}
 					if(ni==earchage.pattern->nodes().end())
-						throw PatternStateNotFound(name);
+						throw PatternStateNotFound(inputname);
 				}
-				runPattern(Q,followed,&earchage.result);
+				runPattern(Q,followed,earchage.limit,&earchage.result);
 				break;
 			}
-			case PathInquiry:;
+            case PathInquiry: {
+				earchage.result.clear();
+                StrGraph *a = 0, *b = 0;
+				for(; ei!=stage->ins().end(); ++ei) {
+                    DString inputname = gd<Name>(*ei);
+                    if(inputname=="a")
+                        a = &gd<SearchStage>((*ei)->tail).result;
+                    else if(inputname=="b")
+                        b = &gd<SearchStage>((*ei)->tail).result;
+                }
+                if(a&&b)
+					if(earchage.shortest)
+						findShortestPaths(source,*a,*b,earchage.weightattr,earchage.limit,earchage.result);
+					else
+						findAllPaths(source,*a,*b,earchage.goOut,earchage.goIn,earchage.firstOnly,earchage.limit,earchage.result);
+            }
 			}
 		earchage.done = true;
 	}

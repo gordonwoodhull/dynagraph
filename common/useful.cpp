@@ -16,7 +16,7 @@ use it without violating AT&T's intellectual property rights. */
 #include <crtdbg.h>
 #endif
 
-#include "common/Geometry.h"
+#include "Geometry.h"
 #include <vector>
 
 using namespace std;

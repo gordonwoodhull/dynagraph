@@ -13,15 +13,13 @@ use it without violating AT&T's intellectual property rights. */
 #ifndef Geometry_h
 #define Geometry_h
 
-#pragma warning (disable : 4786 4503)
 #include <math.h>
-#include "common/moremath.h"
+#include "moremath.h"
 #include <vector>
 #include <list>
 #include <algorithm>
 #include <float.h>
-#include "common/StringDict.h"
-#include "common/useful.h"
+#include "StringDict.h"
 
 struct Coord {
 	double x,y;
@@ -60,12 +58,19 @@ struct Coord {
 	Coord &operator /=(double a) {
 		return *this = *this/a;
 	}
+	// multiply each field
+	Coord operator *(Coord a) const {
+		return Coord(x*a.x,y*a.y);
+	}
 	// dot product
-	double operator *(Coord a) const {
+	double operator %(Coord a) const {
 		return x*a.x+y*a.y;
 	}
+	Coord operator /(Coord a) const {
+		return Coord(x/a.x,y/a.y);
+	}
 	double Len() const {
-		return sqrt(*this * *this);
+		return sqrt(*this % *this);
 	}
 	Coord Norm() const {
 		double d = Len();
@@ -80,7 +85,7 @@ struct Coord {
 };
 inline double dSquared(Coord a,Coord b) {
 	Coord c = a-b;
-	return c*c;
+	return c%c;
 }
 inline double dist(Coord a,Coord b) {
 	return sqrt(dSquared(a,b));
