@@ -9,10 +9,6 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
-*                                                         *
-*                   *        *        *                   *
-*            Current source code available from           *
-*                http://gordon.woodhull.com               *
 **********************************************************/
 
 void ellipse2bezier(Rect &r, Line &out);

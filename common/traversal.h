@@ -9,10 +9,6 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
-*                                                         *
-*                   *        *        *                   *
-*            Current source code available from           *
-*                http://gordon.woodhull.com               *
 **********************************************************/
 
 // so as not to mess with callbacks, this is iterators returning *both* node and edge
