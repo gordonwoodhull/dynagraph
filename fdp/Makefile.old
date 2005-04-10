@@ -1,0 +1,29 @@
+all: libfdp.a
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+INCS =	-I.. -I../.. \
+	-I../../cdt
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = grid.o layout.o process.o
+
+HFILES = FVSCombo.h fdp.h grid.h macros.h
+
+libfdp.a : $(OBJS)
+	$(AR) cr libfdp.a $(OBJS)
+	$(RANLIB) libfdp.a
+
+$(OBJS) : $(HFILES)
+
+install: libfdp.a
+#	$(MKPATH) $(LIBDIR)
+#	$(INSTALL) libfdp.a $(LIBDIR)
+
+clean:
+	$(RM) *.o core
+
+distclean: clean
+	$(RM) *.a lib*.so.*
