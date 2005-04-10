@@ -36,7 +36,7 @@ struct ConstraintType {
 	enum {unknown,anchor,stab,node,rankWeak,orderEdgeStraighten} why;
 };
 struct DDCNodeData : NS::NSNode<void*,void*>, ConstraintType {};
-typedef LGraph<NS::NSData<void*,void*>,DDCNodeData,NS::NSEdge<void*,void*> > DDCGraph;
+typedef LGraph<ADTisCDT,NS::NSData<void*,void*>,DDCNodeData,NS::NSEdge<void*,void*> > DDCGraph;
 typedef NS::NS<DDCGraph,NS::AccessNoAttr<DDCGraph> > DDNS;
 
 struct NodeConstraints {
@@ -330,8 +330,8 @@ struct DDEdgeT {
 
 #pragma warning (disable : 4355)
 
-struct DDModel : LGraph<Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > {
-	typedef LGraph<Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > G;
+struct DDModel : LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > {
+	typedef LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > G;
 	// the real types, hampered by circular typing problems
 	typedef Chain<Node,Edge> C;
 	typedef MultiNode<Node,Edge> MN;

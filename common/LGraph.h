@@ -124,7 +124,7 @@ struct LGraph {
 	};
 	struct Edge;
 	struct Node;
-	typedef ADTPolicy::defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
+	typedef typename ADTPolicy::defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
     struct ND2 : NodeDatum, Seq {
 		ND2(const NodeDatum &d) : NodeDatum(d) {}
 	};
@@ -170,11 +170,11 @@ struct LGraph {
 		}
 		~Edge() {}
 	};
-    typedef ADTDefs::inedge_order inedge_order;
-    typedef ADTDefs::outedge_order outedge_order;
-    typedef ADTDefs::edge_by_head_order edge_by_head_order;
-    typedef ADTDefs::inedge_order::iterator inedge_iter;
-	typedef ADTDefs::outedge_order::iterator outedge_iter;
+    typedef typename ADTDefs::inedge_order inedge_order;
+    typedef typename ADTDefs::outedge_order outedge_order;
+    typedef typename ADTDefs::edge_by_head_order edge_by_head_order;
+    typedef typename inedge_order::iterator inedge_iter;
+	typedef typename ADTDefs::outedge_order::iterator outedge_iter;
 	class nodeedge_iter {
 		inedge_order *m_inSeq;
 		outedge_order *m_outSeq;
@@ -309,11 +309,11 @@ struct LGraph {
 	typedef std::list<LGraph *> subgraph_list;
 	typedef typename subgraph_list::iterator subgraph_iter;
 
-    typedef typename ADTPolicy<Graph>::node_order node_order;
+    typedef typename ADTDefs::node_order node_order;
 	typedef typename node_order::iterator node_iter;
 
 private:
-    ADTDefs::graph_adtdata m_adtdata;
+    typename ADTDefs::graph_adtdata m_adtdata;
 	subgraph_list m_subs;
 	int m_nNumber, m_eNumber;
     typedef std::stack<int, std::vector<int> > id_stack;
@@ -412,6 +412,7 @@ public:
 		typename outedge_order::iterator ei;
 		LGraph *g;
 	};
+	/*
 	template<typename D>
 	D &gd() {
 		return *static_cast<D*>(dat);
@@ -420,6 +421,7 @@ public:
 	D &igd() {
 		return static_cast<D&>(idat);
 	}
+	*/
 	pseudo_seq<graphedge_iter> edges() {
 		return pseudo_seq<graphedge_iter>(graphedge_iter(this),graphedge_iter(0));
 	}
@@ -657,10 +659,15 @@ public:
 		return ret;
 	}
 };
-
-template<typename D,typename GD,typename ND, typename ED,typename GID,typename NID, typename EID>
-inline D &gd(LGraph<GD,ND,ED,GID,NID,EID> *g) {
+/*
+template<typename ADT,typename D,typename GD,typename ND, typename ED,typename GID,typename NID, typename EID>
+inline D &gd(LGraph<ADT,GD,ND,ED,GID,NID,EID> *g) {
 	return *static_cast<D*>(g->dat);
+}
+*/
+template<typename D,typename GO>
+inline D &gd(GO *go) {
+	return static_cast<D&>(*go->dat);
 }
 // extracts instance-specific datum by type
 template<typename D,typename GO>

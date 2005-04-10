@@ -18,8 +18,8 @@
 #ifndef LGRAPH_CDT_H
 #define LGRAPH_CDT_H
 
-#include "dt.h"
 #include "LGraph.h"
+#include "dt.h"
 
 struct ADTisCDT {
 	template<typename Edge,typename Node,typename EdgeCompare,typename HeadCompare,typename NodeCompare>
@@ -44,10 +44,6 @@ struct ADTisCDT {
 		typedef cdt::tree<inedge_tree_disc> inedge_tree;
 		typedef cdt::tree<outedge_tree_disc> outedge_tree;
 
-		typedef cdt::ordering<inedge_tree,inedge_sequence> inedge_order;
-		typedef cdt::ordering<outedge_tree,outedge_sequence> outedge_order;
-		typedef cdt::tree<head_tree_disc> edge_by_head_order;
-		typedef cdt::ordering<node_tree,node_sequence> node_order;
 		typedef cdt::derived_accessor<typename Edge,headtreelink> head_tree_accessor;
 		typedef cdt::disc<head_tree_accessor,HeadCompare> head_tree_disc;
 		typedef cdt::tree_dict<head_tree_disc> head_tree_dict;
@@ -59,6 +55,11 @@ struct ADTisCDT {
 		typedef cdt::disc<node_tree_accessor,NodeCompare> node_tree_disc;
 		typedef cdt::tree_dict<node_tree_disc> node_tree_dict;
 		typedef cdt::tree<node_tree_disc> node_tree;
+
+		typedef cdt::ordering<inedge_tree,inedge_sequence> inedge_order;
+		typedef cdt::ordering<outedge_tree,outedge_sequence> outedge_order;
+		typedef cdt::tree<head_tree_disc> edge_by_head_order;
+		typedef cdt::ordering<node_tree,node_sequence> node_order;
 
 
 		struct graph_adtdata {
@@ -95,7 +96,7 @@ struct ADTisCDT {
 				m_outFinder(gadt.m_headdisc,gadt.m_headtreedict)
 			{}
 		};
-	}
+	};
 };
 
 #endif //LGRAPH_CDT_H

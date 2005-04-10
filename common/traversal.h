@@ -51,7 +51,7 @@ struct Traversal {
 	~Traversal() {
 		resetAll();
 		//Hit &h = *static_cast<Hit>(m_g->dat); //gd<Hit>(m_g);
-		m_g->template gd<Hit>()[m_hitpos] = false;
+		gd<Hit>(m_g)[m_hitpos] = false;
 	}
 protected:
 	G *m_g;
