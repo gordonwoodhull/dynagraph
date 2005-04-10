@@ -25,6 +25,7 @@
 #include <stack>
 #include <vector>
 
+/*
 // convert c-style int compare() to bool less()
 template<typename Comp>
 struct ComparesLess {
@@ -41,7 +42,6 @@ struct set_order : ST {
 	}
 };
 
-template<class Graph>
 struct ADTisSTL {
     typedef set_order<std::set<typename Graph::Edge*,ComparesLess<typename Graph::SeqComp<typename Graph::Edge> > > > edge_order;
 	typedef set_order<std::set<typename Graph::Edge*,ComparesLess<typename Graph::HeadSeqComp> > > edge_by_head_order;
@@ -65,52 +65,7 @@ struct ADTisSTL {
         node_parent(Graph *g) {}
     };
 };
-
-
-// LGraph graphs, nodes, and edges carry data that has been aggregated using
-// multiple inheritance.  the gd function accesses part of a graph, node, or
-// edge's data by specifying one of the aggregated classes.
-
-template<typename D,typename GO>
-inline D &gd(GO *go) {
-	return *static_cast<D*>(go->dat);
-}
-// extracts instance-specific datum by type
-template<typename D,typename GO>
-inline D &igd(GO *go) {
-	return static_cast<D&>(go->idat);
-}
-
-/* because LGraph nodes' and edges' types depend on the data within,
-    it's not possible to specify directly that the data will contain pointers to
-    other nodes and edges.  a cast is necessary.
-    a good way to do this is to use templates:
-template<typename T>
-struct NodeData {
-    T *another_node;
-};
-typedef NodeData<void> StoredNodeData;
-typedef LGraph<... StoredNodeData ...> Graph;
-typedef NodeData<Graph::Node *> RealNodeData;
-
-then either use gd2<RealNodeData,StoredNodeData>
-or better, specialize gd for your type:
-template<>
-RealNodeData &gd<RealNodeData,Graph::Node>(Graph::Node *n) {
-    return gd2<RealNodeData,StoredNodeData>(n);
-}
 */
-
-template<class DOut,class DIn,class GO>
-DOut &gd2(GO *go) {
-    return *reinterpret_cast<DOut*>(&gd<DIn>(go));
-}
-template<class DOut,class DIn,class GO>
-DOut &igd2(GO *go) {
-    return *reinterpret_cast<DOut*>(&igd<DIn>(go));
-}
-
-
 struct Nothing {};
 
 // exceptions
@@ -138,14 +93,13 @@ public:
 		return ret;
 	}
 };
-template<template<class> class ADTPolicy,typename GraphDatum,typename NodeDatum, typename EdgeDatum, // same data in every image
+template<class ADTPolicy,typename GraphDatum,typename NodeDatum, typename EdgeDatum, // same data in every image
 	// different data in different images; gets copied on insert
 	typename GraphIDat = Nothing, typename NodeIDat = Nothing, typename EdgeIDat = Nothing>
 struct LGraph {
 	typedef LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat> Graph;
 	struct Edge;
 	class Node;
-
 
 	struct Seq {
 		int seq, // these numbers keep going up
@@ -168,18 +122,16 @@ struct LGraph {
 			return s1 - s2;
 		}
 	};
-
-    friend typename ADTPolicy<Graph>::node_parent;
-    friend typename ADTPolicy<Graph>::edge_parent;
-    friend typename ADTPolicy<Graph>::graph_adtdata;
-
+	struct Edge;
+	struct Node;
+	typedef ADTPolicy::defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
     struct ND2 : NodeDatum, Seq {
 		ND2(const NodeDatum &d) : NodeDatum(d) {}
 	};
 	struct ED2 : EdgeDatum, Seq {
 		ED2(const EdgeDatum &d) : EdgeDatum(d) {}
 	};
-    struct Edge : ADTPolicy<Graph>::edge_parent
+    struct Edge : ADTDefs::edge_parent
 	{
 		LGraph * const g;
 		ED2 * const dat;
@@ -194,6 +146,15 @@ struct LGraph {
 				return 0;
 		}
 		bool amMain() { return g->amMain(); }
+		template<typename D>
+		D &gd() {
+			return *static_cast<D*>(dat);
+		}
+		template<typename D>
+		D &igd() {
+			return static_cast<D&>(idat);
+		}
+
 	private:
 		friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
 		Edge(LGraph *g, Node *tail, Node *head, ED2 *dat) :
@@ -209,11 +170,11 @@ struct LGraph {
 		}
 		~Edge() {}
 	};
-    typedef typename ADTPolicy<Graph>::inedge_order inedge_order;
-    typedef typename ADTPolicy<Graph>::outedge_order outedge_order;
-    typedef typename ADTPolicy<Graph>::edge_by_head_order edge_by_head_order;
-    typedef typename ADTPolicy<Graph>::inedge_order::iterator inedge_iter;
-	typedef typename ADTPolicy<Graph>::outedge_order::iterator outedge_iter;
+    typedef ADTDefs::inedge_order inedge_order;
+    typedef ADTDefs::outedge_order outedge_order;
+    typedef ADTDefs::edge_by_head_order edge_by_head_order;
+    typedef ADTDefs::inedge_order::iterator inedge_iter;
+	typedef ADTDefs::outedge_order::iterator outedge_iter;
 	class nodeedge_iter {
 		inedge_order *m_inSeq;
 		outedge_order *m_outSeq;
@@ -228,7 +189,7 @@ struct LGraph {
 			else
 				i.out = m_outSeq->begin();
 		}
-		friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
+		friend struct LGraph;
 		nodeedge_iter(inedge_order *ins, outedge_order *outs) : m_inSeq(ins), m_outSeq(outs) {
 			if(m_inSeq) {
 				if(m_inSeq->empty())
@@ -298,13 +259,14 @@ struct LGraph {
 	static nodeedge_iter ne_iter(inedge_order *i,outedge_order *o) {
 		return nodeedge_iter(i,o);
 	}
-    class Node : public ADTPolicy<Graph>::node_parent
+    class Node : public ADTDefs::node_parent
 	{
 	  friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
-	  Node(LGraph *g,ND2 *dat) : node_parent(g),
+	  Node(LGraph *g,ND2 *dat) : ADTDefs::node_parent(g->m_adtdata),
 	  g(g),
 	  dat(dat) {}
 	  ~Node() {}
+	  
 	public:
 		LGraph * const g;
 		ND2 * const dat;
@@ -327,12 +289,20 @@ struct LGraph {
 		inedge_iter inIter(Edge *e) {
 			if(e->head!=this)
 				throw WrongNode();
-			return m_ins.make_iter(static_cast<inseqlink*>(e));
+			return ADTPolicy<Graph>::m_ins.make_iter(static_cast<inseqlink*>(e));
 		}
 		inedge_iter outIter(Edge *e) {
 			if(e->tail!=this)
 				throw WrongNode();
 			return m_outs.make_iter(static_cast<outseqlink*>(e));
+		}
+		template<typename D>
+		D &gd() {
+			return *static_cast<D*>(dat);
+		}
+		template<typename D>
+		D &igd() {
+			return static_cast<D&>(idat);
 		}
 	};
 
@@ -343,8 +313,7 @@ struct LGraph {
 	typedef typename node_order::iterator node_iter;
 
 private:
-    // I would rather LGraph derived from this class but that appears to cause circular typing problems
-    typename ADTPolicy<LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat> >::graph_adtdata m_adtdata;
+    ADTDefs::graph_adtdata m_adtdata;
 	subgraph_list m_subs;
 	int m_nNumber, m_eNumber;
     typedef std::stack<int, std::vector<int> > id_stack;
@@ -390,6 +359,8 @@ public:
 	subgraph_list &subgraphs() {
 		return m_subs;
 	}
+	template<typename GD>
+	
 	// to iterate on all edges in a graph
 	struct graphedge_set;
 	struct graphedge_iter {
@@ -441,6 +412,14 @@ public:
 		typename outedge_order::iterator ei;
 		LGraph *g;
 	};
+	template<typename D>
+	D &gd() {
+		return *static_cast<D*>(dat);
+	}
+	template<typename D>
+	D &igd() {
+		return static_cast<D&>(idat);
+	}
 	pseudo_seq<graphedge_iter> edges() {
 		return pseudo_seq<graphedge_iter>(graphedge_iter(this),graphedge_iter(0));
 	}
@@ -678,5 +657,48 @@ public:
 		return ret;
 	}
 };
+
+template<typename D,typename GD,typename ND, typename ED,typename GID,typename NID, typename EID>
+inline D &gd(LGraph<GD,ND,ED,GID,NID,EID> *g) {
+	return *static_cast<D*>(g->dat);
+}
+// extracts instance-specific datum by type
+template<typename D,typename GO>
+inline D &igd(GO *go) {
+	return static_cast<D&>(go->idat);
+}
+
+// LGraph graphs, nodes, and edges carry data that has been aggregated using
+// multiple inheritance.  the gd function accesses part of a graph, node, or
+// edge's data by specifying one of the aggregated classes.
+	
+/* because LGraph nodes' and edges' types depend on the data within,
+    it's not possible to specify directly that the data will contain pointers to
+    other nodes and edges.  a cast is necessary.
+    a good way to do this is to use templates:
+template<typename T>
+struct NodeData {
+    T *another_node;
+};
+typedef NodeData<void> StoredNodeData;
+typedef LGraph<... StoredNodeData ...> Graph;
+typedef NodeData<Graph::Node *> RealNodeData;
+
+then either use gd2<RealNodeData,StoredNodeData>
+or better, specialize gd for your type:
+template<>
+RealNodeData &gd<RealNodeData,Graph::Node>(Graph::Node *n) {
+    return gd2<RealNodeData,StoredNodeData>(n);
+}
+*/
+
+template<class DOut,class DIn,class GO>
+DOut &gd2(GO *go) {
+    return *reinterpret_cast<DOut*>(&gd<DIn>(go));
+}
+template<class DOut,class DIn,class GO>
+DOut &igd2(GO *go) {
+    return *reinterpret_cast<DOut*>(&igd<DIn>(go));
+}
 
 #endif

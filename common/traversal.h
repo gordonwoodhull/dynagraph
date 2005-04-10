@@ -30,7 +30,7 @@
 // its operator*() returns both a Node* and an Edge*
 
 // embedded tag for simultaneous traversals
-#define MAX_TRAVERSAL sizeof(unsigned long)*8 // this is the min for bitset
+const int MAX_TRAVERSAL = sizeof(unsigned long)*8; // this is the min for bitset
 typedef std::bitset<MAX_TRAVERSAL> hitflags;
 typedef hitflags Hit;
 template<class G>
@@ -42,7 +42,7 @@ struct EN {
 	EN(Edge *e=0,Node *n=0) : e(e),n(n) {}
 };
 
-template<class G>
+template<typename G>
 struct Traversal {
 	Traversal(G *g) : m_g(g) {
 		m_hitpos = findHitpos();
@@ -50,16 +50,17 @@ struct Traversal {
 	}
 	~Traversal() {
 		resetAll();
-		gd<Hit>(m_g)[m_hitpos] = 0;
+		//Hit &h = *static_cast<Hit>(m_g->dat); //gd<Hit>(m_g);
+		m_g->template gd<Hit>()[m_hitpos] = false;
 	}
 protected:
 	G *m_g;
 	int m_hitpos;
 	void resetAll() {
 		for(typename G::node_iter ni = m_g->nodes().begin(); ni!=m_g->nodes().end();++ni)
-			gd<Hit>(*ni)[m_hitpos] = false;
+			(*ni)->template gd<Hit>()[m_hitpos] = false;
 		for(typename G::graphedge_iter ei = m_g->edges().begin(); ei!=m_g->edges().end();++ei)
-			gd<Hit>(*ei)[m_hitpos] = false;
+			(*ei)->template gd<Hit>()[m_hitpos] = false;
 	}
 	int findHitpos() {
 		unsigned hitpos;
@@ -83,7 +84,7 @@ struct DFS : Traversal<G> {
 	}
 	DFS &operator++() {
 		if(m_curr.e)
-			gd<Hit>(m_curr.e)[m_hitpos] = true;
+			gd<::Hit>(m_curr.e)[m_hitpos] = true;
 		else {
 			assert(m_curr.n);
 			gd<Hit>(m_curr.n)[m_hitpos] = true;
