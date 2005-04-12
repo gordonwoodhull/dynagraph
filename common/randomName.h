@@ -19,7 +19,8 @@
 // can't use e.g. e17 because the client might already have something named that!
 // so generate a random name
 inline DString randomName(char prefix) {
-	char buf[10],i=2;
+	char buf[10];
+	int i=2;
 	unsigned char ch;
 	buf[0] = prefix;
 	buf[1] = '_';

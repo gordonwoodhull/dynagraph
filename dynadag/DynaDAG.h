@@ -247,7 +247,7 @@ struct Path : Chain<N,E> {
 	// ranking vars
 	DDCGraph::Node *weak;
 	DDCGraph::Edge *strong;
-	Path() : weak(0),strong(0),secondOfTwo(false) {}
+	Path() : secondOfTwo(false),weak(0),strong(0) {}
 };
 struct NSEdgePair {
 	DDCGraph::Edge *e[2];

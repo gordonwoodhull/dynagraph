@@ -23,7 +23,7 @@ void findAllPaths(G &top,G &a,G &b,bool followOuts,bool followIns,bool firstOnly
     for(typename G::node_iter ni = a.nodes().begin(); ni!=a.nodes().end(); ++ni)
         bfs.add(top.find(*ni));
 
-    vector<typename G::Edge*> prev;
+    std::vector<typename G::Edge*> prev;
     prev.resize(top.nodes().size(),0);
     for(bfs.start();!bfs.stopped(); ++bfs) {
         EN<G> v = *bfs;

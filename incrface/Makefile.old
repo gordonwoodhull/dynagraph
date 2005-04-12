@@ -5,13 +5,22 @@ include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
 	-I../../agraph \
+	-I../../pathplan \
 	-I../../cdt
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = View.o createLayoutServer.o incrscan.o incrgram.o incrcmds.o incrout.o
+OBJS = \
+	DinoMachineHandler.o    DynaView.o              createLayoutServer.o \
+	incrcmds.o              incrgram.o              incrout.o \
+	incrscan.o
 
-HFILES = createLayoutServer.h View.h incrcmds.h incrout.h incrxep.h
+HFILES = \
+	AbsGraphHandler.h       DinoMachine.h           DinoMachineHandler.h    DinoPatternLook.h \
+	DinoSearchLook.h        DynaView.h              IncrLangEvents.h        IncrMappings.h \
+	LabelToNameTranslator.h MatchNames.h            createLayoutServer.h    incrcmds.h \
+	incrgram.h              incrout.h               incrparse.h             incrxep.h \
+	two_way_map.h
 
 libincrface.a : $(OBJS)
 	$(AR) cr libincrface.a $(OBJS)

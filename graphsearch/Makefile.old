@@ -5,7 +5,8 @@ include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
 	-I../../agraph \
-	-I../../cdt
+	-I../../cdt \
+	-I../../../boost
 
 DEFINES = -DHAVE_CONFIG_H
 

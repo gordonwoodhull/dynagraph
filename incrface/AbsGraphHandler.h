@@ -32,7 +32,7 @@ struct AbsGraphHandler : IncrLangEvents {
         this->g = 0;
         this->g = g?(own=false,g):(own=true,new NGraph);  // hnguh
     }
-    ~AbsGraphHandler() {
+    virtual ~AbsGraphHandler() {
         if(own)
             delete g;
     }

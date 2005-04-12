@@ -58,7 +58,7 @@ StrGraph *ag2str(Agraph_t *g) {
 	for(Agsym_t *sym = agnxtattr(g,AGRAPH,0); sym; sym = agnxtattr(g,AGRAPH,sym))
 		gd<StrAttrs>(gg)[sym->name] = agget(gg,sym->name);
 
-	int anonN(0),anonE(0);
+	int anonN(0);
 	Agnode_t *n;
 	for(n = agfstnode(g);n;n = agnxtnode(n)) {
 		char *name = agnameof(n),
@@ -88,10 +88,10 @@ StrGraph *ag2str(Agraph_t *g) {
                     if(!strcmp(sym->name,"id"))
                         (Name)nattr = val;
                     else
-					    nattr[sym->name] = val;
+					    ((StrAttrs)nattr)[sym->name] = val;
 			}
 			try {
-				StrGraph::Edge *ee = gg->create_edge(tail,head,nattr).first;
+				gg->create_edge(tail,head,nattr).first;
 			}
 			catch(ParallelEdgesUnsupported) {
 			}
