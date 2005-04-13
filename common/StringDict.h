@@ -27,7 +27,7 @@
 // adaptation of agraph's refstr
 
 // I know, there's a more modern way to do this....
-#define STRINGDICT_USE_STL
+//#define STRINGDICT_USE_STL
 #ifndef STRINGDICT_USE_STL
 #include "cdt.h"
 struct StringDict {
