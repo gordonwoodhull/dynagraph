@@ -30,7 +30,7 @@
 // its operator*() returns both a Node* and an Edge*
 
 // embedded tag for simultaneous traversals
-const int MAX_TRAVERSAL = sizeof(unsigned long)*8; // this is the min for bitset
+const unsigned MAX_TRAVERSAL = sizeof(unsigned long)*8; // this is the min for bitset
 typedef std::bitset<MAX_TRAVERSAL> hitflags;
 typedef hitflags Hit;
 template<class G>
@@ -257,7 +257,7 @@ struct BFS : Traversal<G> {
         m_queue.push(V(0,n));
 	}
 	BFS(G *g,bool travAll = false,bool inwards=true,bool outwards=true) :
-        Traversal<G>(g),m_travAll(travAll), m_inwards(inwards),m_outwards(outwards) {
+        Traversal<G>(g), m_inwards(inwards),m_outwards(outwards),m_travAll(travAll) {
 	}
 private:
 	bool m_inwards,m_outwards,m_travAll;

@@ -153,7 +153,7 @@ void stringifyPos(const Position &p,Transform *trans,Layout *l,StrAttrs2 &out) {
 	ostringstream o;
 	initStream(o,l);
 	if(p.valid) {
-		Position p2 = trans?trans->out(p):p;
+		Position p2 = trans?Position(trans->out(p)):p;
 		o << p2.x << ',' << p2.y;
 	}
 	out.put("pos",o.str());
