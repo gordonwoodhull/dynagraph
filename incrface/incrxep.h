@@ -20,7 +20,7 @@ struct IncrError : DGException {
   IncrError(DString descrip) :
     DGException("incrface error"),descrip(descrip) {}
 };
-struct IncrGraphNotOpen : DGException2 {
-	IncrGraphNotOpen(const char *graph) : DGException2("incr: graph not open",graph) {}
+struct IncrGraphNotOpen : DGNonFatalException {
+	IncrGraphNotOpen(const char *graph) : DGNonFatalException("incr: graph not open",graph) {}
 };
 

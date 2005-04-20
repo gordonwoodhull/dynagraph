@@ -39,7 +39,6 @@ namespace boost {
 		typedef size_t edges_size_type;
 		typedef size_t degree_size_type;
 	};
-
 	template <class gdata,class vdata, class edata>
 	struct graph_traits< NamedGraph<gdata,vdata,edata> > {
 		typedef NamedGraph<gdata,vdata,edata> ELGraph;

@@ -68,6 +68,55 @@ struct ADTisSTL {
 */
 struct Nothing {};
 
+/*
+template<typename ADT,typename D,typename GD,typename ND, typename ED,typename GID,typename NID, typename EID>
+inline D &gd(LGraph<ADT,GD,ND,ED,GID,NID,EID> *g) {
+	return *static_cast<D*>(g->dat);
+}
+*/
+template<typename D,typename GO>
+inline D &gd(GO *go) {
+	return static_cast<D&>(*go->dat);
+}
+// extracts instance-specific datum by type
+template<typename D,typename GO>
+inline D &igd(GO *go) {
+	return static_cast<D&>(go->idat);
+}
+
+// LGraph graphs, nodes, and edges carry data that has been aggregated using
+// multiple inheritance.  the gd function accesses part of a graph, node, or
+// edge's data by specifying one of the aggregated classes.
+	
+/* because LGraph nodes' and edges' types depend on the data within,
+    it's not possible to specify directly that the data will contain pointers to
+    other nodes and edges.  a cast is necessary.
+    a good way to do this is to use templates:
+template<typename T>
+struct NodeData {
+    T *another_node;
+};
+typedef NodeData<void> StoredNodeData;
+typedef LGraph<... StoredNodeData ...> Graph;
+typedef NodeData<Graph::Node *> RealNodeData;
+
+then either use gd2<RealNodeData,StoredNodeData>
+or better, specialize gd for your type:
+template<>
+RealNodeData &gd<RealNodeData,Graph::Node>(Graph::Node *n) {
+    return gd2<RealNodeData,StoredNodeData>(n);
+}
+*/
+
+template<class DOut,class DIn,class GO>
+DOut &gd2(GO *go) {
+    return *reinterpret_cast<DOut*>(&gd<DIn>(go));
+}
+template<class DOut,class DIn,class GO>
+DOut &igd2(GO *go) {
+    return *reinterpret_cast<DOut*>(&igd<DIn>(go));
+}
+
 // exceptions
 struct LGraphException {};
 // when trying to use set operations with subgraphs
@@ -289,12 +338,12 @@ struct LGraph {
 		inedge_iter inIter(Edge *e) {
 			if(e->head!=this)
 				throw WrongNode();
-			return ADTPolicy<Graph>::m_ins.make_iter(static_cast<inseqlink*>(e));
+			return m_ins.make_iter(static_cast<typename ADTDefs::inseqlink*>(e));
 		}
 		inedge_iter outIter(Edge *e) {
 			if(e->tail!=this)
 				throw WrongNode();
-			return m_outs.make_iter(static_cast<outseqlink*>(e));
+			return m_outs.make_iter(static_cast<typename ADTDefs::outseqlink*>(e));
 		}
 		template<typename D>
 		D &gd() {
@@ -659,53 +708,5 @@ public:
 		return ret;
 	}
 };
-/*
-template<typename ADT,typename D,typename GD,typename ND, typename ED,typename GID,typename NID, typename EID>
-inline D &gd(LGraph<ADT,GD,ND,ED,GID,NID,EID> *g) {
-	return *static_cast<D*>(g->dat);
-}
-*/
-template<typename D,typename GO>
-inline D &gd(GO *go) {
-	return static_cast<D&>(*go->dat);
-}
-// extracts instance-specific datum by type
-template<typename D,typename GO>
-inline D &igd(GO *go) {
-	return static_cast<D&>(go->idat);
-}
-
-// LGraph graphs, nodes, and edges carry data that has been aggregated using
-// multiple inheritance.  the gd function accesses part of a graph, node, or
-// edge's data by specifying one of the aggregated classes.
-	
-/* because LGraph nodes' and edges' types depend on the data within,
-    it's not possible to specify directly that the data will contain pointers to
-    other nodes and edges.  a cast is necessary.
-    a good way to do this is to use templates:
-template<typename T>
-struct NodeData {
-    T *another_node;
-};
-typedef NodeData<void> StoredNodeData;
-typedef LGraph<... StoredNodeData ...> Graph;
-typedef NodeData<Graph::Node *> RealNodeData;
-
-then either use gd2<RealNodeData,StoredNodeData>
-or better, specialize gd for your type:
-template<>
-RealNodeData &gd<RealNodeData,Graph::Node>(Graph::Node *n) {
-    return gd2<RealNodeData,StoredNodeData>(n);
-}
-*/
-
-template<class DOut,class DIn,class GO>
-DOut &gd2(GO *go) {
-    return *reinterpret_cast<DOut*>(&gd<DIn>(go));
-}
-template<class DOut,class DIn,class GO>
-DOut &igd2(GO *go) {
-    return *reinterpret_cast<DOut*>(&igd<DIn>(go));
-}
 
 #endif

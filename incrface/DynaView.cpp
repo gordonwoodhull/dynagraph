@@ -31,9 +31,9 @@ DynaView::DynaView(Name name,Transform *transform, bool useDotDefaults) :
 	dgserver(0),
 	locks(0),
     m_transform(transform),
+    m_useDotDefaults(useDotDefaults),
     m_replacementFlag(false),
-    m_allowOneReopen(false),
-    m_useDotDefaults(useDotDefaults)
+    m_allowOneReopen(false)
 {
 	if(name.empty())
 		name = randomName('v');

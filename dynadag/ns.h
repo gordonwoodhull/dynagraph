@@ -207,7 +207,7 @@ private:
 			if(!NSd(*ni).priority)
 				Q.push(*ni);
 
-		int ctr = 0;
+		size_t ctr = 0;
 		while(!Q.empty()) {
 			Node *n = Q.front(); Q.pop();
 			NSN &nsn = NSd(n);
@@ -322,7 +322,7 @@ private:
 		for(nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei)
 			if(!calcSlack(*ei) && !NSd(ei.target()).mark) {
 				addTreeEdge(*ei);
-				if(NSd(g).n_tree_edges == g->nodes().size())
+				if(NSd(g).n_tree_edges == (int)g->nodes().size())
 					return true;
 				if(tsearch(g,ei.target()))
 					return true;

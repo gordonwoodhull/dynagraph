@@ -53,7 +53,7 @@ struct two_way_map {
     void rename(tmap &M,tmap &N,Type v,Type v2 = Type()) {
         assert(v2==Type()||M[v2].empty());
         tset &S = M[v];
-        for(tset::iterator in = S.begin(); in!=S.end(); ++in) {
+        for(typename tset::iterator in = S.begin(); in!=S.end(); ++in) {
             tset &T = N[*in];
             check(T.erase(v)==1);
             if(v2!=Type())

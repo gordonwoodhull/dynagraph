@@ -135,7 +135,6 @@ struct LabelToNameTranslator : DinoInternalChanges {
                 label = gd<StrAttrs>(ei->second)["label"];
             if(label.empty())
                 label = ei->first;
-			StrGraph::Edge *se = 0;
 			if(s.empty()) { // added edge
                 DString newname;
                 StrAttrs attrs;
@@ -171,7 +170,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
                         assert(dme.tailmap()[NEID(true,ei->first)].size()==1);
                         assert(dme.headmap()[NEID(true,label)].size()==1);
                         assert(dme.tailmap()[NEID(true,ei->first)].begin()->name==label);
-                        assert(dme.headmap()[NEID(true,label)].begin()->name==ni->first);
+                        assert(dme.headmap()[NEID(true,label)].begin()->name==ei->first);
                     }
             }
 			assert(s.size()==1);

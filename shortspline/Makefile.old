@@ -9,9 +9,9 @@ INCS =	-I.. -I../.. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = shortspline.o legal_arrangement.o
+OBJS = ObAvSplinerEngine.o ObstacleAvoiderSpliner.o legal_arrangement.o
 
-HFILES = legal_arrangement.h shortspline.h simple.h
+HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h simple.h
 
 libshortspline.a : $(OBJS)
 	$(AR) cr libshortspline.a $(OBJS)

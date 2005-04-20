@@ -21,6 +21,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -99,8 +100,11 @@ int main(int narg,char *argh[]) {
 			gd<StrAttrs>(e)["color"] = color;
 		}
 		char buf[10];
-		if(maxweight)
-			gd<StrAttrs>(e)["weight"] = itoa(rand()%maxweight,buf,10);
+		if(maxweight) {
+			ostringstream os;
+			os << rand()%maxweight;
+			gd<StrAttrs>(e)["weight"] = os.str();
+		}
 	}
 	emitGraph(cout,&g);
 	return 0;

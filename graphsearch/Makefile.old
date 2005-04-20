@@ -5,7 +5,8 @@ include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
 	-I../../agraph \
-	-I../../cdt
+	-I../../cdt \
+	-I../../../boost
 
 DEFINES = -DHAVE_CONFIG_H
 
@@ -39,4 +40,4 @@ clean:
 	$(RM) *.o core
 
 distclean: clean
-	$(RM) *.a lib*.so.* graphsearch
+	$(RM) *.a lib*.so.* graphsearch gsgram.cpp gsgram.h gsscan.cpp

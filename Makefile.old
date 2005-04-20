@@ -17,7 +17,8 @@ BASELIBS = -Lcommon -ldynagraph \
        -L../cdt -lcdt
 
 GLIBS = -Lcommon -ldynagraph \
-       -L../cdt -lcdt
+       -L../cdt -lcdt \
+	   -L../agraph -lagraph
 
 OTHERLIBS = -Lincrface -lincrface \
 	-Lfdp -lfdp \

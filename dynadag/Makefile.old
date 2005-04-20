@@ -4,6 +4,7 @@ include ../../Config.mk
 include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
+	-I../../pathplan \
 	-I../../cdt
 
 DEFINES = -DHAVE_CONFIG_H

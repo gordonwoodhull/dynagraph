@@ -5,24 +5,33 @@ include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
 	-I../../agraph \
-	-I../../cdt
+	-I../../cdt \
+	-I../../../boost
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = ag2str.o stringsIn.o Dynagraph.o ellipse2bezier.o \
-	emitGraph.o genpoly.o LabelPlacer.o Line.o PolyBarriers.o \
-	Region.o Route.o ShapeGenerator.o Shortest.o Solvers.o \
-	StringDict.o stringsOut.o time-o-matic.o Transform.o \
-	useful.o xlines.o parsestr.o ColorByAge.o
+OBJS = \
+	ColorByAge.o            Dynagraph.o             FindChangeRect.o \
+	LabelPlacer.o           Line.o          PolyBarriers.o \
+	Region.o                Route.o         ShapeGenerator.o \
+	Shortest.o              Solvers.o               StringDict.o \
+	Transform.o             ag2str.o \
+	colors.o                ellipse2bezier.o        genpoly.o \
+	parsestr.o              stringsIn.o             stringsOut.o \
+	time-o-matic.o  useful.o                xlines.o
 
-HFILES = BezCoeffs.h DiffStrGraph.h Dynagraph.h GeomUtil.h Geometry.h \
-	LGraph-cdt.h LGraph.h PathPlan.h LineTricks.h \
-        Solvers.h StrAttr.h StreamGeom.h StringDict.h Transform.h \
-	ag2str.h stringsIn.h bufferGraphStream.h derivable_dt.h dgxep.h \
-	diff_strgraph.h dt.h ellipse2bezier.h emitGraph.h freelist.h \
-        genpoly.h moremath.h needsQuotes.h parsestr.h ColorByAge.h \
-    breakList.h colors.h \
-	stringsOut.h time-o-matic.h traversal.h useful.h weightedMedian.h
+HFILES = \
+	BezCoeffs.h             BoostLGraph.h           ColorByAge.h            DiffStrGraph.h \
+	Dynagraph.h             FindChangeRect.h        GeomUtil.h              Geometry.h \
+	GraphBuffer.h           LGraph-cdt.h            LGraph.h                LineTricks.h \
+	PathPlan.h              Solvers.h               StrAttr.h               StreamGeom.h \
+	StringDict.h            Transform.h             ag2str.h                attrvalues.h \
+	breakList.h             bufferGraphStream.h     colors.h                derivable_dt.h \
+	dgxep.h                 diff_strgraph.h         dt.h                    ellipse2bezier.h \
+	emitGraph.h             engine_replacement.h    freelist.h              genpoly.h \
+	moremath.h              parsestr.h              randomName.h            reorient.h \
+	stringsIn.h             stringsOut.h            time-o-matic.h          traversal.h \
+	useful.h                weightedMedian.h
 
 libdynagraph.a : $(OBJS)
 	$(AR) cr libdynagraph.a $(OBJS)

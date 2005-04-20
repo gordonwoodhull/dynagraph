@@ -30,13 +30,13 @@ struct ADTisCDT {
 		struct outtreelink : cdt::treelink {};
 		struct headtreelink : cdt::treelink {};
 
-		typedef cdt::derived_accessor<typename Edge,inseqlink> inedge_sequence_accessor;
-		typedef cdt::derived_accessor<typename Edge,outseqlink> outedge_sequence_accessor;
+		typedef cdt::derived_accessor<Edge,inseqlink> inedge_sequence_accessor;
+		typedef cdt::derived_accessor<Edge,outseqlink> outedge_sequence_accessor;
 		typedef cdt::sequence<inedge_sequence_accessor> inedge_sequence;
 		typedef cdt::sequence<outedge_sequence_accessor> outedge_sequence;
 
-		typedef cdt::derived_accessor<typename Edge,intreelink> inedge_tree_accessor;
-		typedef cdt::derived_accessor<typename Edge,outtreelink> outedge_tree_accessor;
+		typedef cdt::derived_accessor<Edge,intreelink> inedge_tree_accessor;
+		typedef cdt::derived_accessor<Edge,outtreelink> outedge_tree_accessor;
 		typedef cdt::disc<inedge_tree_accessor,EdgeCompare> inedge_tree_disc;
 		typedef cdt::disc<outedge_tree_accessor,EdgeCompare> outedge_tree_disc;
 		typedef cdt::tree_dict<inedge_tree_disc> inedge_tree_dict;
@@ -44,7 +44,7 @@ struct ADTisCDT {
 		typedef cdt::tree<inedge_tree_disc> inedge_tree;
 		typedef cdt::tree<outedge_tree_disc> outedge_tree;
 
-		typedef cdt::derived_accessor<typename Edge,headtreelink> head_tree_accessor;
+		typedef cdt::derived_accessor<Edge,headtreelink> head_tree_accessor;
 		typedef cdt::disc<head_tree_accessor,HeadCompare> head_tree_disc;
 		typedef cdt::tree_dict<head_tree_disc> head_tree_dict;
 

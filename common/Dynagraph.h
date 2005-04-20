@@ -174,8 +174,9 @@ struct NodeLabel {
 	Bounds bounds;
 
 	NodeLabel(NodeLabelAlignment align = DG_NODELABEL_CENTER, Coord size = Coord(0,0)) :
-		align(align), size(size),nodeAlign(0,0),labelAlign(0,0),nodeOffset(0,0),labelOffset(0,0),
-		scaleX(false),scaleY(false),nodeAlign2(0,0),labelAlign2(0,0),nodeOffset2(0,0),labelOffset2(0,0) {}
+		align(align), nodeAlign(0,0),labelAlign(0,0),nodeOffset(0,0),labelOffset(0,0),
+		scaleX(false),scaleY(false),nodeAlign2(0,0),labelAlign2(0,0),nodeOffset2(0,0),labelOffset2(0,0),
+		size(size) {}
 };
 typedef std::vector<NodeLabel> NodeLabels;
 struct Port {
@@ -203,9 +204,9 @@ struct EdgeGeom {
 		toTop; // default both true: measure from bottom of tail to top of head
 	bool constraint, // whether this edge affects ranking; set true by DynaDAG if last in loop & set false if a node is nailed
 		manualRoute; // try to use the line specified in pos
-	EdgeGeom() : minLength(1.0),fromBottom(true),toTop(true),constraint(true),
-		manualRoute(false),tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),
-		tailClipped(true),headClipped(true) {}
+	EdgeGeom() : tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),tailClipped(true),
+		headClipped(true),minLength(1.0),fromBottom(true),toTop(true),constraint(true),
+		manualRoute(false) {}
 };
 struct EdgeLabel {
 	// input

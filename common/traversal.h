@@ -84,7 +84,7 @@ struct DFS : Traversal<G> {
 	}
 	DFS &operator++() {
 		if(m_curr.e)
-			gd<::Hit>(m_curr.e)[m_hitpos] = true;
+			gd<Hit>(m_curr.e)[m_hitpos] = true;
 		else {
 			assert(m_curr.n);
 			gd<Hit>(m_curr.n)[m_hitpos] = true;

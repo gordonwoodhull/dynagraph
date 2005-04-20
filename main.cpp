@@ -605,14 +605,15 @@ int main(int argc, char *args[]) {
 					incr_yyparse();
 					break; // end of stream
 				}
-				catch(DVException dvx) { // DynaView exceptions are recoverable
-					fprintf(stdout,"message \"%s %s\"\n",dvx.exceptype,dvx.param);;
-				}
-				catch(IncrGraphNotOpen gnotop) { // graph not open too
-					fprintf(stdout,"message \"%s %s\"\n",gnotop.exceptype,gnotop.param);;
+				catch(DGNonFatalException dvx) { // DynaView exceptions are recoverable
+					fprintf(stdout,"message \"%s: %s\"\n",dvx.exceptype,dvx.param);;
 				}
 				catch(IncrError ie) { // parser error
 					fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
+					break;
+				}
+				catch(DGException2 dgx) {
+					fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype);
 					break;
 				}
 				catch(DGException dgx) {

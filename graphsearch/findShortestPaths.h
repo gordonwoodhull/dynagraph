@@ -22,8 +22,8 @@ template<class G>
 void findShortestPaths(G &top,G &a,G &b,DString weightattr,int limit,G &ret) {
 	if(a.empty() || b.empty())
 		return;
-	vector<typename G::Node *> pred;
-	vector<int> dist,weight;
+	std::vector<typename G::Node *> pred;
+	std::vector<int> dist,weight;
 	pred.resize(top.nodes().size());
 	dist.resize(top.nodes().size());
 	weight.resize(top.edges().size());

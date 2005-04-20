@@ -15,9 +15,5 @@
 **********************************************************/
 
 
-struct ServerUnknown : DGException {
-  DString serverName;
-  ServerUnknown() : DGException("incremental engine name unknown") {}
-};
 // creates the servers specified in gd<StrAttrs>(client)["engines"]
 Server *createLayoutServer(Layout *client,Layout *current);

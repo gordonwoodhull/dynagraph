@@ -57,11 +57,11 @@ void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
 	sg1->oopsRefreshDictionary();
 	sg2->oopsRefreshDictionary();
 	{ // find deletions
-		for(NGraph1::graphedge_iter ei1 = sg1->edges().begin(),ej1; ei1!=sg1->edges().end(); ei1=ej1) {
+		for(typename NGraph1::graphedge_iter ei1 = sg1->edges().begin(),ej1; ei1!=sg1->edges().end(); ei1=ej1) {
             (ej1 = ei1)++;
 			// find edges by head and tail because prob has no name.
-			NGraph2::Node *t2=0,*h2=0;
-			NGraph2::NDict::iterator di2 = sg2->ndict.find(gd<Name>((*ei1)->tail));
+			typename NGraph2::Node *t2=0,*h2=0;
+			typename NGraph2::NDict::iterator di2 = sg2->ndict.find(gd<Name>((*ei1)->tail));
             bool gone = true;
 			if(di2!=sg2->ndict.end()) {
 				t2 = di2->second;
@@ -75,15 +75,15 @@ void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
             if(gone)
                 react.del(*ei1);
 		}
-        for(NGraph1::node_iter ni1 = sg1->nodes().begin(),nj1; ni1!=sg1->nodes().end(); ni1 = nj1) {
+        for(typename NGraph1::node_iter ni1 = sg1->nodes().begin(),nj1; ni1!=sg1->nodes().end(); ni1 = nj1) {
             (nj1 = ni1)++;
 			if(sg2->ndict.find(gd<Name>(*ni1))==sg2->ndict.end())
 				react.del(*ni1);
         }
 	}
 	{ // find insertions & modifications
-		for(NGraph2::node_iter ni2 = sg2->nodes().begin(); ni2!=sg2->nodes().end(); ++ni2) {
-			NGraph1::NDict::iterator di1 = sg1->ndict.find(gd<Name>(*ni2));
+		for(typename NGraph2::node_iter ni2 = sg2->nodes().begin(); ni2!=sg2->nodes().end(); ++ni2) {
+			typename NGraph1::NDict::iterator di1 = sg1->ndict.find(gd<Name>(*ni2));
 			if(di1!=sg1->ndict.end()) {
 				if(StrAttrs *diff = diff_attr(gd<StrAttrs>(di1->second),gd<StrAttrs>(*ni2))) {
 					react.mod(di1->second,*ni2,diff);
@@ -93,24 +93,24 @@ void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
 			else
 				react.ins(*ni2);
 		}
-		for(NGraph2::graphedge_iter ei2 = sg2->edges().begin(); ei2!=sg2->edges().end(); ++ei2) {
+		for(typename NGraph2::graphedge_iter ei2 = sg2->edges().begin(); ei2!=sg2->edges().end(); ++ei2) {
             if(poorEdgeName(gd<Name>(*ei2).c_str()))
                 gd<Name>(*ei2) = randomName('e');
 			DString t = gd<Name>((*ei2)->tail),
 				h = gd<Name>((*ei2)->head);
-			NGraph1::NDict::iterator di1 = sg1->ndict.find(t);
+			typename NGraph1::NDict::iterator di1 = sg1->ndict.find(t);
 			if(di1==sg1->ndict.end()) {
 				react.ins(*ei2);
 				continue;
 			}
-			NGraph1::Node *t1 = di1->second;
+			typename NGraph1::Node *t1 = di1->second;
 			di1 = sg1->ndict.find(h);
 			if(di1==sg1->ndict.end()) {
 				react.ins(*ei2);
 				continue;
 			}
-			NGraph1::Node *h1 = di1->second;
-			if(NGraph1::Edge *e = sg1->find_edge(t1,h1)) {
+			typename NGraph1::Node *h1 = di1->second;
+			if(typename NGraph1::Edge *e = sg1->find_edge(t1,h1)) {
 				if(StrAttrs *diff = diff_attr(gd<StrAttrs>(e),gd<StrAttrs>(*ei2))) {
 					react.mod(e,*ei2,diff);
 					delete diff;
