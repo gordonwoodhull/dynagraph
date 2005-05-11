@@ -94,9 +94,9 @@ struct RankLess {
 	}
 };
 const int MAX_TOPDOWN = 10;
-void Sifter::Reorder(Layout &nodes,Layout &edges) {
+void Sifter::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	int numedges = 0;
-	for(Layout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei)
+	for(DynaDAGLayout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei)
 		numedges++;
 	report(r_crossopt,"Sifter: %d nodes, %d edges\n",nodes.nodes().size(),numedges);
 	NodeV optimOrder;

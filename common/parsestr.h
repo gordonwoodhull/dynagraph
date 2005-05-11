@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef PARSESTR_H
-#define PARSESTR_H
+#ifndef parsestr_h
+#define parsestr_h
 
 // overload >> DString for better-delimited tokens
 // returns one token or one delimeter
@@ -227,4 +227,4 @@ inline std::istream &operator>>(std::istream &in,match &m) {
     return in;
 }
 
-#endif // PARSESTR_H
+#endif // parsestr_h

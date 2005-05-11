@@ -14,11 +14,13 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef reorient_h
+#define reorient_h
 
 struct ReorientBadDir : DGException {
 	ReorientBadDir() : DGException("bad direction argument to reorient()") {}
 };
-Coord reorient(Coord val,bool in,Orientation dir) {
+inline Coord reorient(Coord val,bool in,Orientation dir) {
 	Coord ret;
 	switch(dir) {
 	case DG_ORIENT_UP:
@@ -48,3 +50,5 @@ Coord reorient(Coord val,bool in,Orientation dir) {
 	}
 	return ret;
 }
+
+#endif //reorient_h

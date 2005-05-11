@@ -97,14 +97,14 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 	}
 }
 
-void XSolver::doNodesep(Layout *subLayout) {
-	for(Layout::node_iter vni = subLayout->nodes().begin(); vni!=subLayout->nodes().end(); ++vni)
+void XSolver::doNodesep(DynaDAGLayout *subLayout) {
+	for(DynaDAGLayout::node_iter vni = subLayout->nodes().begin(); vni!=subLayout->nodes().end(); ++vni)
 		for(DDMultiNode::node_iter mni = DDp(*vni)->nBegin(); mni!=DDp(*vni)->nEnd(); ++mni)
 			fixSeparation(*mni);
 }
 
-void XSolver::doEdgesep(Layout *subLayout) {
-	for(Layout::graphedge_iter ei = subLayout->edges().begin(); ei!=subLayout->edges().end(); ++ei) {
+void XSolver::doEdgesep(DynaDAGLayout *subLayout) {
+	for(DynaDAGLayout::graphedge_iter ei = subLayout->edges().begin(); ei!=subLayout->edges().end(); ++ei) {
 		DDPath *path = DDp(*ei);
 		if(path->first)
 			for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni)
@@ -127,7 +127,7 @@ void XSolver::doEdgesep(Layout *subLayout) {
 		else {} /* self */
 	}
 }
-void XSolver::restoreNodesep(ChangeQueue &changeQ) {
+void XSolver::restoreNodesep(DDChangeQueue &changeQ) {
 	doNodesep(&changeQ.insN);
 	doNodesep(&changeQ.modN);
 	// hack: nodes of edges may also be changed
@@ -152,8 +152,8 @@ void XSolver::fixEdgeCost(DDModel::Edge *me) {
 	DDNS::NSd(ep.e[1]).minlen = 0;
 }
 
-void XSolver::doEdgeCost(Layout *subLayout) {
-	for(Layout::graphedge_iter ei = subLayout->edges().begin(); ei!=subLayout->edges().end(); ++ei) {
+void XSolver::doEdgeCost(DynaDAGLayout *subLayout) {
+	for(DynaDAGLayout::graphedge_iter ei = subLayout->edges().begin(); ei!=subLayout->edges().end(); ++ei) {
 		DDPath *path = DDp(*ei);
 		for(DDPath::edge_iter ei2 = path->eBegin(); ei2!=path->eEnd(); ++ei2)
 			fixEdgeCost(*ei2);
@@ -161,8 +161,8 @@ void XSolver::doEdgeCost(Layout *subLayout) {
 }
 
 	// restore around changed nodes
-void XSolver::fixLostEdges(Layout *subLayout) {
-	for(Layout::node_iter ni = subLayout->nodes().begin(); ni!=subLayout->nodes().end(); ++ni) {
+void XSolver::fixLostEdges(DynaDAGLayout *subLayout) {
+	for(DynaDAGLayout::node_iter ni = subLayout->nodes().begin(); ni!=subLayout->nodes().end(); ++ni) {
 	  report(r_xsolver,"fixing multinode %p\n",DDp(*ni));
 		DDModel::Node *top = DDp(*ni)->top(),
 			*bottom = DDp(*ni)->bottom();
@@ -172,7 +172,7 @@ void XSolver::fixLostEdges(Layout *subLayout) {
 			fixEdgeCost(*outi);
 	}
 }
-void XSolver::restoreEdgeCost(ChangeQueue &changeQ) {
+void XSolver::restoreEdgeCost(DDChangeQueue &changeQ) {
 	doEdgeCost(&changeQ.insE);
 	doEdgeCost(&changeQ.modE);
 	fixLostEdges(&changeQ.insN);
@@ -181,30 +181,30 @@ void XSolver::restoreEdgeCost(ChangeQueue &changeQ) {
 	fixLostEdges(&changeQ.modE);
 }
 
-void XSolver::stabilizeNodes(ChangeQueue &changeQ) {
+void XSolver::stabilizeNodes(DDChangeQueue &changeQ) {
 #ifdef REDO_ALL
-	for(Layout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
+	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
         if(gd<NodeGeom>(*ni).pos.valid)  // DDp(*ni)->coordFixed) { assert(gd<NodeGeom>(*ni).pos.valid);
 			cg.Stabilize(DDd(DDp(*ni)->top()).getXcon(),ROUND(xScale * gd<NodeGeom>(*ni).pos.x),STABILITY_FACTOR_X);
     /*
-	Layout *modedges[2] = {&changeQ.insE,&changeQ.modE};
+	DynaDAGLayout *modedges[2] = {&changeQ.insE,&changeQ.modE};
     // it's not necessary to unstabilize nodes that are connected to edges because the cost
     // of edge bends is much higher than that of stability
 	int i;
 	for(i = 0; i < 2; i++)
-		for(Layout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni)
+		for(DynaDAGLayout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni)
 			if(!DDp(*ni)->coordFixed)
 				cg.Unstabilize(DDd(DDp(*ni)->top()).getXcon());
     */
 #else
-	Layout *modnodes[2] = {&changeQ.insN,&changeQ.modN},
+	DynaDAGLayout *modnodes[2] = {&changeQ.insN,&changeQ.modN},
 		*modedges[2] = {&changeQ.insE,&changeQ.modE};
 
 	/* what about delE? make sure endpoint isn't deleted too. */
 
 	int i;
 	for(i = 0; i < 2; i++)
-		for(Layout::node_iter ni = modnodes[i]->nodes().begin(); ni!=modnodes[i]->nodes().end(); ++ni)
+		for(DynaDAGLayout::node_iter ni = modnodes[i]->nodes().begin(); ni!=modnodes[i]->nodes().end(); ++ni)
             if(gd<NodeGeom>(*ni).pos.valid) { // DDp(*ni)->coordFixed) { assert(gd<NodeGeom>(*ni).pos.valid);
 				double x = gd<NodeGeom>(*ni).pos.x;
 				int ix = ROUND(xScale * x);
@@ -212,7 +212,7 @@ void XSolver::stabilizeNodes(ChangeQueue &changeQ) {
 			}
     /*
 	for(i = 0; i < 2; i++)
-		for(Layout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni)
+		for(DynaDAGLayout::node_iter ni = modedges[i]->nodes().begin(); ni!=modedges[i]->nodes().end(); ++ni)
 			if(!DDp(*ni)->coordFixed)
 				cg.Unstabilize(DDd(DDp(*ni)->top()).getXcon());
     */
@@ -225,7 +225,7 @@ void XSolver::readoutCoords() {
 			DDd(*ni).cur.x = (DDNS::NSd(cn).rank - anchor_rank) / xScale;
 }
 // DynaDAG callin
-void XSolver::Place(ChangeQueue &changeQ) {
+void XSolver::Place(DDChangeQueue &changeQ) {
 #ifdef REDO_ALL
 	DDModel::graphedge_iter ei;
 	DDModel::node_iter ni;
@@ -239,10 +239,10 @@ void XSolver::Place(ChangeQueue &changeQ) {
 		fixEdgeCost(*ei);
 #else
 	// obliterate constraints on all changed nodes & edges
-	for(Layout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		if(igd<Update>(*ei).flags&DG_UPD_MOVE)
 			InvalidateChainConstraints(DDp(*ei));
-	for(Layout::node_iter ni = changeQ.modN.nodes().begin(); ni!=changeQ.modN.nodes().end(); ++ni)
+	for(DynaDAGLayout::node_iter ni = changeQ.modN.nodes().begin(); ni!=changeQ.modN.nodes().end(); ++ni)
 		if(igd<Update>(*ni).flags&DG_UPD_MOVE)
 			InvalidateChainConstraints(DDp(*ni));
 	restoreNodesep(changeQ);

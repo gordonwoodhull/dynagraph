@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ag2str_h
+#define ag2str_h
 
 // a silly translation deal until i make a native agread
 
@@ -34,3 +36,5 @@ inline StrGraph *readStrGraph(FILE *f) {
 		return 0;//throw agreadError();
 	return ag2str(g);
 }
+
+#endif //ag2str_h

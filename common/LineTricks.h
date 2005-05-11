@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef LineTricks_h
+#define LineTricks_h
 
 #include <math.h>
 #define W_DEGREE 5
@@ -264,3 +266,4 @@ inline Position lines_intersect(Segment L0, Segment L1) {
 	}
 }
 
+#endif //LineTricks_h

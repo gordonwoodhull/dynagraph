@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef LGRAPH_H
-#define LGRAPH_H
+#ifndef LGraph_h
+#define LGraph_h
 
 #include <list>
 #include <map>
@@ -709,4 +709,4 @@ public:
 	}
 };
 
-#endif
+#endif //LGraph_h

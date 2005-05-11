@@ -14,6 +14,9 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef moremath_h
+#define moremath_h
+
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -29,3 +32,4 @@ inline double cbrt(double x) {
 		return pow(x,1.0/3.0);
 }
 
+#endif //moremath_h

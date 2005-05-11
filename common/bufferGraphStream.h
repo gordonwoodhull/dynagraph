@@ -14,6 +14,9 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef bufferGraphStream_h
+#define bufferGraphStream_h
+
 
 //#include <io.h>
 #include <fcntl.h>
@@ -53,3 +56,5 @@ struct bufferGraphStream {
 			fclose(fin);
 	}
 };
+
+#endif //bufferGraphStream_h

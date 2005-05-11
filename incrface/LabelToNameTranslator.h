@@ -15,10 +15,11 @@
 **********************************************************/
 
 
+template<typename Layout>
 struct LabelToNameTranslator : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
-	DynaView *m_source;
+	DynaView<Layout> *m_source;
 	StrGraph *m_dest;
     bool m_useNodeLabels,m_useEdgeLabels;
     LabelToNameTranslator(DinoInternalChanges *chain,DinoMachine::Edge *de,bool useNodeLabels,bool useEdgeLabels)
@@ -27,7 +28,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
 			*h = de->head;
 		assert(gd<DinoMachNode>(t).handler->dinotype()=="layout");
 		assert(gd<DinoMachNode>(h).handler->dinotype()=="abstract");
-		m_source = static_cast<DynaView*>(gd<DinoMachNode>(t).handler);
+		m_source = static_cast<DynaView<Layout>*>(gd<DinoMachNode>(t).handler);
 		m_dest = static_cast<AbsGraphHandler<StrGraph>*>(gd<DinoMachNode>(h).handler)->g;
 	}
     ~LabelToNameTranslator() {
@@ -77,7 +78,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
 				}
 			}
         }
-		for(DynaView::nodeDict::iterator ni = m_source->nodes.begin(); ni!=m_source->nodes.end(); ++ni) {
+		for(typename DynaView<Layout>::nodeDict::iterator ni = m_source->nodes.begin(); ni!=m_source->nodes.end(); ++ni) {
             if(!ni->second)
                 continue;
 			NEID_map::tset &s = dme.tailmap()[NEID(false,ni->first)];
@@ -126,7 +127,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
             }
 			assert(s.size()==1);
 		}
-        for(DynaView::edgeDict::iterator ei = m_source->edges.begin(); ei!=m_source->edges.end(); ++ei) {
+        for(typename DynaView<Layout>::edgeDict::iterator ei = m_source->edges.begin(); ei!=m_source->edges.end(); ++ei) {
             if(!ei->second)
                 continue;
 			NEID_map::tset &s = dme.tailmap()[NEID(true,ei->first)];

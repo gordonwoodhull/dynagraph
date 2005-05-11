@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef SHAPES_H
-#define SHAPES_H
+#ifndef genpoly_h
+#define genpoly_h
 
 #include "Geometry.h"
 

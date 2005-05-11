@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include "common/Dynagraph.h"
+#include "common/LayoutAttrs.h"
 #include "DynaView.h"
 #include "AbsGraphHandler.h"
 #include "DinoMachineHandler.h"
@@ -70,6 +70,7 @@ bool DinoMachineHandler::incr_ev_del_edge(DString name) {
 void DinoMachineHandler::modify_node(DString name,const StrAttrs &attrs) {
 }
 void DinoMachineHandler::modify_edge(DString name,const StrAttrs &attrs) {
+	using DynaDAG::DynaDAGLayout;
     DinoMachine::Edge *de = g->edict[name];
     if(attrs.look("mapping").size() || attrs.look("l2n_edgelabels").size() || attrs.look("l2n_nodelabels").size()) {
         DinoInternalChanges *&handler = gd<DinoMachEdge>(de).handler;
@@ -83,16 +84,16 @@ void DinoMachineHandler::modify_edge(DString name,const StrAttrs &attrs) {
         breakList(xlate,handlers);
         for(vector<DString>::iterator si = handlers.begin(); si!=handlers.end(); ++si)
             if(*si=="label2name")
-                handler = new LabelToNameTranslator(handler,de,attrs.look("l2n_nodelabels")!="false",attrs.look("l2n_edgelabels")!="false");
+                handler = new LabelToNameTranslator<DynaDAGLayout>(handler,de,attrs.look("l2n_nodelabels")!="false",attrs.look("l2n_edgelabels")!="false");
             else if(*si=="matchnames")
-                handler = new MatchNames(handler,de);
+                handler = new MatchNames<DynaDAGLayout>(handler,de);
             else if(*si=="dinosearchIn")
-                handler = new DinoSearchLookIn(handler,de);
+                handler = new DinoSearchLookIn<DynaDAGLayout>(handler,de);
             else if(*si=="dinopatternIn")
-                handler = new DinoPatternLookIn(handler,de);
+                handler = new DinoPatternLookIn<DynaDAGLayout>(handler,de);
             else if(*si=="dinosearchOut")
-                handler = new DinoSearchLookOut(handler,de);
+                handler = new DinoSearchLookOut<DynaDAGLayout>(handler,de);
             else if(*si=="dinopatternOut")
-                handler = new DinoPatternLookOut(handler,de);
+                handler = new DinoPatternLookOut<DynaDAGLayout>(handler,de);
     }
 }

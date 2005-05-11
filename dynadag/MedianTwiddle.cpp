@@ -26,7 +26,7 @@ struct RankLess {
 		return DDd(n1).rank < DDd(n2).rank;
 	}
 };
-void MedianTwiddle::Reorder(Layout &nodes,Layout &edges) {
+void MedianTwiddle::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	NodeV optimOrder;
 	getCrossoptModelNodes(nodes,edges,optimOrder);
 	sort(optimOrder.begin(),optimOrder.end(),RankLess());

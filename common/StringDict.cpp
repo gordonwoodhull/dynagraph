@@ -115,4 +115,15 @@ void StringDict::ref(const char *s) {
 	refstr_t *key = (refstr_t*)(s - offsetof(refstr_t,s[0]));
 	key->refcnt++;
 }
+// ??? what year is this?
+int ds2int(const DString &s) {
+	int i = 0;
+	for(unsigned j=0; j<s.length(); ++j)
+		if(!isdigit(s[j]))
+			return -1;
+		else
+			i = i*10 + s[j]-'0';
+	return i;
+}
+
 #endif

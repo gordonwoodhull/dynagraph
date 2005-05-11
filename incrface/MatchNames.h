@@ -15,18 +15,19 @@
 **********************************************************/
 
 
+template<typename Layout>
 struct MatchNames : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
 	StrGraph *m_source;
-	DynaView *m_dest;
+	DynaView<Layout> *m_dest;
     MatchNames(DinoInternalChanges *chain,DinoMachine::Edge *de) : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
 		assert(gd<DinoMachNode>(t).handler->dinotype()=="abstract");
 		assert(gd<DinoMachNode>(h).handler->dinotype()=="layout");
 		m_source = static_cast<AbsGraphHandler<StrGraph>*>(gd<DinoMachNode>(t).handler)->g;
-		m_dest = static_cast<DynaView*>(gd<DinoMachNode>(h).handler);
+		m_dest = static_cast<DynaView<Layout>*>(gd<DinoMachNode>(h).handler);
 	}
     ~MatchNames() {
         if(m_chain)

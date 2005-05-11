@@ -16,7 +16,7 @@
 
 
 #include "DynaDAG.h"
-#include "common/PathPlan.h"
+#include "pathplot/PathPlot.h"
 
 using namespace std;
 
@@ -346,7 +346,7 @@ void Spliner::adjustPath(DDPath *path) {
 	}
 }
 
-bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoiderSpliner &obav) {
+bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
 	assert(path->unclippedPath.Empty());
 
 	DDModel::Node *tl = DDp(path->layoutE->tail)->bottom(),
@@ -402,13 +402,13 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoi
 		case DG_SPLINELEVEL_SPLINE: {
 			try {
 				Line polylineRoute;
-				PathPlan::Shortest(region,Segment(tailpt,headpt),polylineRoute);
+				PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
 				if(splineLevel==DG_SPLINELEVEL_SPLINE) {
-					PathPlan::SegmentV barriers;
-					PathPlan::PolyBarriers(PathPlan::LineV(1,region),barriers);
+					PathPlot::SegmentV barriers;
+					PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
 
 					Segment endSlopes(Coord(0.0,0.0),Coord(0.0,0.0));
-					check(PathPlan::Route(barriers,polylineRoute,endSlopes,unclipped));
+					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
 					unclipped = polylineRoute;

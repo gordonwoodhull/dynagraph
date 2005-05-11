@@ -149,7 +149,7 @@ bool pass(Config &config,node_iter begin,node_iter end,UpDown dir,HowOrdered ho)
 	}
 	return ret;
 }
-void MedianShuffle::Reorder(Layout &nodes,Layout &edges) {
+void MedianShuffle::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	NodeV optimOrder;
 	getCrossoptModelNodes(nodes,edges,optimOrder);
 	sort(optimOrder.begin(),optimOrder.end(),RankLess());

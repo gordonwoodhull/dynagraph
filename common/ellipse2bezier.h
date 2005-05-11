@@ -14,5 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ellipse2bezier_h
+#define ellipse2bezier_h
+
 
 void ellipse2bezier(Rect &r, Line &out);
+
+#endif //ellipse2bezier_h

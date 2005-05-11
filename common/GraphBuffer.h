@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef GraphBuffer_h
+#define GraphBuffer_h
 
 struct GraphBufferXep : DGException {
   DString description;
@@ -113,3 +115,4 @@ struct GraphBuffer {
 		...
 
 };
+#endif //GraphBuffer_h

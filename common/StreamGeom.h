@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef StreamGeom_h
+#define StreamGeom_h
 
 #include <iostream>
 struct GeomParseError : DGException {
@@ -134,3 +136,5 @@ inline std::ostream & operator <<(std::ostream &os,const Lines &write) {
 		os << *li << ';';
 	return os;
 }
+
+#endif //StreamGeom_h

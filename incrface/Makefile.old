@@ -5,14 +5,13 @@ include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
 	-I../../agraph \
-	-I../../pathplan \
-	-I../../cdt
+	-I../../cdt 
 
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	DinoMachineHandler.o    DynaView.o              createLayoutServer.o \
-	incrcmds.o              incrgram.o              incrout.o \
+	DinoMachineHandler.o    createLayoutServer.o \
+	incrcmds.o              incrgram.o \
 	incrscan.o
 
 HFILES = \

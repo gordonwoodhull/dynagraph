@@ -15,12 +15,16 @@
 **********************************************************/
 
 
-#include "common/Dynagraph.h"
-#include "shortspline/ObstacleAvoiderSpliner.h"
+#include "DynaDAGLayout.h"
+#include "common/ChangeQueue.h"
+#include "common/DynagraphServer.h"
+// #include "shortspline/ObstacleAvoiderSpliner.h"
 #include "ns.h"
 #include <float.h>
 
 namespace DynaDAG {
+
+typedef ChangeQueue<DynaDAGLayout> DDChangeQueue;
 
 struct InternalErrorException : DGException {
   InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints") {}
@@ -29,7 +33,7 @@ struct InternalErrorException : DGException {
 // future template parameters?
 #define FLEXIRANKS
 
-typedef std::vector<Layout::Node*> LNodeV; // mneh
+typedef std::vector<DynaDAGLayout::Node*> LNodeV; // mneh
 
 // dynadag constraint graphs: basic data + debug accounting
 struct ConstraintType {
@@ -142,7 +146,7 @@ struct MultiNode : Chain<N,E> {
 	// one node: first==last==0, node!=0
 	// multi-node: first,last!=0, node==0
 	N *node;
-	Layout::Node *layoutN;
+	DynaDAGLayout::Node *layoutN;
 	NodeConstraints topC,bottomC,xcon;
 	bool hit; // for rank dfs
 	int newTopRank,	// destination rank assignment
@@ -240,7 +244,7 @@ struct MultiNode : Chain<N,E> {
 template<typename N,typename E>
 struct Path : Chain<N,E> {
 	// self or flat: first==last==0; use layoutE to figure out ends
-	Layout::Edge *layoutE;
+	DynaDAGLayout::Edge *layoutE;
 	// the second edge of 2-cycle should be ignored, mostly
 	bool secondOfTwo;
 	Line unclippedPath;
@@ -347,11 +351,11 @@ typedef DDModel::MN DDMultiNode;
 typedef DDModel::P DDPath;
 typedef DDModel::DDN DDNode;
 typedef DDModel::DDE DDEdge;
-inline DDMultiNode *&DDp(Layout::Node *n) {
+inline DDMultiNode *&DDp(DynaDAGLayout::Node *n) {
 	DDMultiNode *&ret = *reinterpret_cast<DDMultiNode**>(&gd<ModelPointer>(n).model);
 	return ret;
 }
-inline DDPath *&DDp(Layout::Edge *e) {
+inline DDPath *&DDp(DynaDAGLayout::Edge *e) {
 	DDPath *&ret = *reinterpret_cast<DDPath**>(&gd<ModelPointer>(e).model);
 	return ret;
 }
@@ -379,7 +383,7 @@ inline void *thing(DDModel::Node *mn) {
 typedef std::vector<DDModel::Node*> NodeV;
 typedef std::vector<DDModel::Edge*> EdgeV;
 typedef std::pair<DDModel::Node *,DDModel::Node *> NodePair;
-typedef std::set<Layout::Node*> NodeSet;
+typedef std::set<DynaDAGLayout::Node*> NodeSet;
 #include "Medians.h"
 // utility
 struct Crossings {
@@ -417,13 +421,13 @@ inline unsigned crosslight(Crossings cc) {
 	return cc.edgeEdgeCross + cc.nodeEdgeCross + cc.nodeNodeCross;
 }
 struct Optimizer {
-	virtual void Reorder(Layout &nodes,Layout &edges) = 0;
+	virtual void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) = 0;
 	virtual double Reopt(DDModel::Node *n,UpDown dir) = 0;
 };
 struct DynaDAGServices {
-	virtual std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(Layout::Node *layoutN) = 0;
+	virtual std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN) = 0;
 	virtual void CloseModelNode(DDModel::Node *n) = 0;
-	virtual std::pair<DDPath*,DDModel::Edge*> OpenModelEdge(DDModel::Node *u, DDModel::Node *v, Layout::Edge *layoutE) = 0;
+	virtual std::pair<DDPath*,DDModel::Edge*> OpenModelEdge(DDModel::Node *u, DDModel::Node *v, DynaDAGLayout::Edge *layoutE) = 0;
 	virtual void CloseModelEdge(DDModel::Edge *e) = 0;
 	virtual void CloseChain(DDChain *chain,bool killEndNodes) = 0;
 	virtual Optimizer *GetOptimizer() = 0;
@@ -706,7 +710,7 @@ struct Config {
 	typedef ConseqRanks Ranks;
 #endif
 	Config(DynaDAGServices *dynaDAG,DDModel &model,
-	       Layout *client,Layout *current,
+	       DynaDAGLayout *client,DynaDAGLayout *current,
 	       XConstraintOwner *xconOwner) :
 	  ranking(gd<GraphGeom>(client).resolution.y,gd<GraphGeom>(client).separation.y),
 	  prevLow(INT_MAX),
@@ -717,7 +721,7 @@ struct Config {
 	  xconOwner(xconOwner)
   {}
 	// called by DynaDAGServer
-	void Update(ChangeQueue &changeQ);
+	void Update(DDChangeQueue &changeQ);
 	void SetYs();
 	// services
 	double LeftExtent(DDModel::Node *n);
@@ -741,36 +745,36 @@ struct Config {
 	Ranks ranking;
 	Ranks::index prevLow;
 	DDModel &model;
-	Layout *client,*current; // same as DynaDAGServer::
+	DynaDAGLayout *client,*current; // same as DynaDAGServer::
 private:
 	DynaDAGServices *dynaDAG;
 	XConstraintOwner *xconOwner;
 
 	// update
-	void insertNode(Layout::Node *vn);
-	void insertNewNodes(ChangeQueue &changeQ);
-	void buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGenerator *xgen,Layout::Node *vn,Layout::Edge *ve);
-	void routeEdge(Layout::Edge *ve, XGenerator *xgen);
-	void userRouteEdge(Layout::Edge *ve);
-	void autoRouteEdge(Layout::Edge *vi);
-	void adjustChain(DDChain *path,bool tail,Ranks::index dest,Layout::Node *vn,Layout::Edge *ve);
+	void insertNode(DynaDAGLayout::Node *vn);
+	void insertNewNodes(DDChangeQueue &changeQ);
+	void buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGenerator *xgen,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
+	void routeEdge(DynaDAGLayout::Edge *ve, XGenerator *xgen);
+	void userRouteEdge(DynaDAGLayout::Edge *ve);
+	void autoRouteEdge(DynaDAGLayout::Edge *vi);
+	void adjustChain(DDChain *path,bool tail,Ranks::index dest,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
 	//void adjustTail(DDChain *path, Ranks::index dest);
 	void rerouteChain(DDChain *chain,int tailRank,int headRank,XGenerator *xgen);
-	void autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Layout::Node *vn,Layout::Edge *ve);
-	void autoAdjustEdge(Layout::Edge *ve);
-	void insertEdge(Layout::Edge *ve);
-	void unfixOldSingletons(ChangeQueue &changeQ);
-	void insertNewEdges(ChangeQueue &changeQ);
+	void autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
+	void autoAdjustEdge(DynaDAGLayout::Edge *ve);
+	void insertEdge(DynaDAGLayout::Edge *ve);
+	void unfixOldSingletons(DDChangeQueue &changeQ);
+	void insertNewEdges(DDChangeQueue &changeQ);
 	void percolate(DDModel::Node *n,DDModel::Node *ref,Ranks::index destrank);
 	double placeAndReopt(DDModel::Node *n, Ranks::index r, double x);
-	void moveOldNodes(ChangeQueue &changeQ);
-	void moveOldEdges(ChangeQueue &changeQ);
-	void splitRank(DDChain *chain,DDModel::Edge *e,Layout::Node *vn, Layout::Edge *ve);
-	void joinRanks(DDChain *chain,DDModel::Node *n,Layout::Edge *ve);
+	void moveOldNodes(DDChangeQueue &changeQ);
+	void moveOldEdges(DDChangeQueue &changeQ);
+	void splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, DynaDAGLayout::Edge *ve);
+	void joinRanks(DDChain *chain,DDModel::Node *n,DynaDAGLayout::Edge *ve);
 #ifdef FLEXIRANKS
-	void updateRanks(ChangeQueue &changeQ);
+	void updateRanks(DDChangeQueue &changeQ);
 #endif
-	void reoptAllEdgesTouched(ChangeQueue &changeQ);
+	void reoptAllEdgesTouched(DDChangeQueue &changeQ);
         // set Ys
 	void resetRankBox(Rank *rank);
 	void resetBaselines();
@@ -787,7 +791,7 @@ struct ConstraintGraph : DDCGraph {
 	void Unstabilize(NodeConstraints &nc);
 	void RemoveNodeConstraints(NodeConstraints &nc);
 };
-inline int rankLength(Layout::Edge *e) {
+inline int rankLength(DynaDAGLayout::Edge *e) {
 	return std::max(0,int(gd<EdgeGeom>(e).minLength));
 }
 struct Ranker {
@@ -795,7 +799,7 @@ struct Ranker {
 	// called by DynaDAG
 	void RemoveLayoutNodeConstraints(DDMultiNode *m);
 	void RemovePathConstraints(DDPath *path);
-	void Rerank(ChangeQueue &changeQ);
+	void Rerank(DDChangeQueue &changeQ);
 private:
 	DynaDAGServices *dynaDAG;
 	Config &config;
@@ -803,23 +807,23 @@ private:
 	ConstraintGraph::Node *top; // to pull loose nodes upward
 	void makeStrongConstraint(DDPath *path);
 	void makeWeakConstraint(DDPath *path);
-	void fixNode(Layout::Node *n,bool fix);
-	void doNodeHeight(Layout::Node *n);
-	void moveOldNodes(ChangeQueue &changeQ);
-	void insertNewNodes(ChangeQueue &changeQ);
-	void stabilizePositionedNodes(ChangeQueue &changeQ);
-	void insertNewEdges(ChangeQueue &changeQ);
-	bool simpleCase(ChangeQueue &changeQ);
-	void recomputeRanks(ChangeQueue &changeQ);
+	void fixNode(DynaDAGLayout::Node *n,bool fix);
+	void doNodeHeight(DynaDAGLayout::Node *n);
+	void moveOldNodes(DDChangeQueue &changeQ);
+	void insertNewNodes(DDChangeQueue &changeQ);
+	void stabilizePositionedNodes(DDChangeQueue &changeQ);
+	void insertNewEdges(DDChangeQueue &changeQ);
+	bool simpleCase(DDChangeQueue &changeQ);
+	void recomputeRanks(DDChangeQueue &changeQ);
 #ifdef FLEXIRANKS
-	void makeRankList(ChangeQueue &changeQ);
+	void makeRankList(DDChangeQueue &changeQ);
 #endif
-	void checkStrongConstraints(ChangeQueue &changeQ);
+	void checkStrongConstraints(DDChangeQueue &changeQ);
 };
 // the classic DynaDAG path optimizer
 struct PathOptim : Optimizer {
 	PathOptim(Config &config) : config(config) {}
-	void Reorder(Layout &nodes,Layout &edges);
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;
@@ -834,7 +838,7 @@ private:
 };
 struct MedianTwiddle : Optimizer {
 	MedianTwiddle(Config &config) : config(config) {}
-	void Reorder(Layout &nodes,Layout &edges);
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;
@@ -844,7 +848,7 @@ private:
 };
 struct MedianShuffle : Optimizer {
 	MedianShuffle(Config &config) : config(config) {}
-	void Reorder(Layout &nodes,Layout &edges);
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;
@@ -853,7 +857,7 @@ private:
 
 struct Sifter : Optimizer {
 	Sifter(Config &config) : config(config) {}
-	void Reorder(Layout &nodes,Layout &edges);
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;
@@ -862,25 +866,25 @@ private:
 };
 struct HybridOptimizer : Optimizer {
 	HybridOptimizer(Config &config) : config(config) {}
-	void Reorder(Layout &nodes,Layout &edges);
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;
 };
 struct DotlikeOptimizer : Optimizer {
 	DotlikeOptimizer(Config &config) : config(config) {}
-	void Reorder(Layout &nodes,Layout &edges);
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;
 };
-void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out);
+void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out);
 struct XSolver : XConstraintOwner {
 	XSolver(Config &config, double xRes) :
 		xScale(1.0/xRes),config(config) {}
         virtual ~XSolver() {} // to shut gcc up
 	const double xScale;
-	void Place(ChangeQueue &changeQ);
+	void Place(DDChangeQueue &changeQ);
 	void RemoveEdgeConstraints(DDModel::Edge *e);
 	// XConstraintOwner
 	void RemoveNodeConstraints(DDModel::Node *n);
@@ -890,14 +894,14 @@ private:
 	Config &config;
 	ConstraintGraph cg;
 	void fixSeparation(DDModel::Node *mn);
-	void doNodesep(Layout *subLayout);
-	void doEdgesep(Layout *subLayout);
-	void restoreNodesep(ChangeQueue &changeQ);
+	void doNodesep(DynaDAGLayout *subLayout);
+	void doEdgesep(DynaDAGLayout *subLayout);
+	void restoreNodesep(DDChangeQueue &changeQ);
 	void fixEdgeCost(DDModel::Edge *me);
-	void fixLostEdges(Layout *subLayout);
-	void doEdgeCost(Layout *subLayout);
-	void restoreEdgeCost(ChangeQueue &changeQ);
-	void stabilizeNodes(ChangeQueue &changeQ);
+	void fixLostEdges(DynaDAGLayout *subLayout);
+	void doEdgeCost(DynaDAGLayout *subLayout);
+	void restoreEdgeCost(DDChangeQueue &changeQ);
+	void stabilizeNodes(DDChangeQueue &changeQ);
 	void readoutCoords();
 	void checkLRConstraints();
 	void checkEdgeConstraints();
@@ -905,7 +909,7 @@ private:
 struct Spliner {
 	Spliner(Config &config) : config(config) {}
 	friend struct TempRoute;
-	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoiderSpliner &obav);
+	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);//,ObstacleAvoiderSpliner<DynaDAGLayout> &obav);
 private:
 	Config &config;
 	void forwardEdgeRegion(DDModel::Node *tl, DDModel::Node *hd,DDPath *inp, Coord tp, Coord hp, Line &out);
@@ -914,7 +918,7 @@ private:
 };
 struct FlexiSpliner {
 	FlexiSpliner(Config &config) : config(config) {}
-	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel,ObstacleAvoiderSpliner &obav);
+	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);//,ObstacleAvoiderSpliner<DynaDAGLayout> &obav);
 private:
 	Config &config;
 };
@@ -931,7 +935,7 @@ struct OptimizerChooser {
 	}
 };
 */
-struct DynaDAGServer : Server,DynaDAGServices {
+struct DynaDAGServer : Server<DynaDAGLayout>,DynaDAGServices {
 	DDModel model; // client graph + virtual nodes & edges for tall nodes & edge chains
 	Config config;	// indexes layout nodes by rank and order
 	Ranker ranker;
@@ -944,8 +948,8 @@ struct DynaDAGServer : Server,DynaDAGServices {
 	Spliner spliner;
 #endif
 
-	DynaDAGServer(Layout *client,Layout *current) :
-		Server(client,current),
+	DynaDAGServer(DynaDAGLayout *client,DynaDAGLayout *current) :
+		Server<DynaDAGLayout>(client,current),
 		model(),
 		config(this,model,client,current,&xsolver),
 		ranker(this,config),
@@ -954,31 +958,47 @@ struct DynaDAGServer : Server,DynaDAGServices {
 		spliner(config) {}
 	~DynaDAGServer();
 	// Server
-	void Process(ChangeQueue &changeQ);
+	void Process(DDChangeQueue &changeQ);
 	// DynaDAGServices
-	std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(Layout::Node *layoutN);
+	std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN);
 	void CloseModelNode(DDModel::Node *n);
-	std::pair<DDPath*,DDModel::Edge*> OpenModelEdge(DDModel::Node *u, DDModel::Node *v, Layout::Edge *layoutE);
+	std::pair<DDPath*,DDModel::Edge*> OpenModelEdge(DDModel::Node *u, DDModel::Node *v, DynaDAGLayout::Edge *layoutE);
 	void CloseModelEdge(DDModel::Edge *e);
 	void CloseChain(DDChain *chain,bool killEndNodes);
 	Optimizer *GetOptimizer();
 private:
-	void closeLayoutNode(Layout::Node *n);
-	void closeLayoutEdge(Layout::Edge *e);
-	void executeDeletions(ChangeQueue &changeQ,Layout &extraI);
-	void findOrdererSubgraph(ChangeQueue &changeQ,Layout &outN,Layout &outE);
-	void updateBounds(ChangeQueue &changeQ);
-	void findChangedNodes(ChangeQueue &changeQ);
-	bool edgeNeedsRedraw(DDPath *path,ChangeQueue &changeQ);
+	void closeLayoutNode(DynaDAGLayout::Node *n);
+	void closeLayoutEdge(DynaDAGLayout::Edge *e);
+	void executeDeletions(DDChangeQueue &changeQ,DynaDAGLayout &extraI);
+	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
+	void updateBounds(DDChangeQueue &changeQ);
+	void findChangedNodes(DDChangeQueue &changeQ);
+	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
-	void redrawEdges(ChangeQueue &changeQ,bool force);
+	void redrawEdges(DDChangeQueue &changeQ,bool force);
 	void cleanUp();
 	void dumpModel();
 };
 
-inline bool userDefinedMove(Layout::Edge *ve) {
+inline bool userDefinedMove(DynaDAGLayout::Edge *ve) {
 	return gd<EdgeGeom>(ve).manualRoute;
 	//return flags & DG_UPD_MOVE && !gd<EdgeGeom>(ve).pos.Empty();
 }
+
+/*
+	EXCEPTIONS
+*/
+struct NailWithoutPos : DGException {
+	DynaDAGLayout::Node *n;
+	NailWithoutPos(DynaDAGLayout::Node *n) :
+	  DGException("nailing a node without specifying a position"),
+	  n(n) {}
+};
+struct BackForth : DGException {
+	DynaDAGLayout::Edge *e;
+	BackForth(DynaDAGLayout::Edge *e) : DGException("dynadag can't handle a->b->a  (a->b->c->a is okay)"),
+	  e(e) {}
+};
+
 
 } // namespace DynaDAG

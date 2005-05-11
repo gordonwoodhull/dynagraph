@@ -20,3 +20,13 @@
 
 Transform g_dotRatios(Coord(72,72), // node sizes in inches
 						Coord(1,1)); // position in up-positive points
+
+bool transformShape(Transform *trans,Line &shape) {
+	bool nonzero = false;
+	for(Line::iterator pi = shape.begin(); pi!=shape.end(); ++pi) {
+		if(pi->x!=0 || pi->y!=0)
+			nonzero = true;
+		*pi = trans->in(*pi);
+	}
+	return nonzero;
+}

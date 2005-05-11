@@ -14,8 +14,11 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef emitGraph_h
+#define emitGraph_h
 
-#include "Dynagraph.h"
+
+#include "LayoutAttrs.h"
 #include "parsestr.h"
 
 template<typename G>
@@ -85,3 +88,5 @@ void emitGraph2(std::ostream &os,G *g) {
 	}
 	os << "}\n";
 }
+
+#endif //emitGraph_h

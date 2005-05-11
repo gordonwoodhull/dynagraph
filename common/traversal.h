@@ -15,11 +15,11 @@
 **********************************************************/
 
 
+#ifndef traversal_h
+#define traversal_h
+
 // so as not to mess with callbacks, this is iterators returning *both* node and edge
 // the edge was followed to get to the node, unless the traversal didn't follow an edge to get there.
-
-#ifndef TRAVERSAL_H
-#define TRAVERSAL_H
 
 #include <stack>
 #include <queue>
@@ -267,4 +267,4 @@ private:
 
 };
 
-#endif // TRAVERSAL_H
+#endif // traversal_h

@@ -55,4 +55,7 @@ public:
 // (dynagraph will do calcs in up-positive points)
 extern Transform g_dotRatios;
 
+bool transformShape(Transform *trans,Line &shape);
+
+
 #endif // Transform_h

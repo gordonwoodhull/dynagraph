@@ -15,8 +15,9 @@
 **********************************************************/
 
 
-#ifndef DGXEP_H
-#define DGXEP_H
+#ifndef dgxep_h
+#define dgxep_h
+
 // a base for all exceptions so we can report the basics
 struct DGException {
     const char *exceptype;
@@ -31,4 +32,5 @@ struct DGException2 : DGException {
 struct DGNonFatalException : DGException2 {
 	DGNonFatalException(const char *exceptype,const char *param) : DGException2(exceptype,param) {}
 };
-#endif
+
+#endif //dgxep_h

@@ -60,7 +60,7 @@ void Config::checkEdges(bool strict) {
 		}
 	}
 	// view edges' paths connect the tops & bottoms of nodes
-	for(Layout::graphedge_iter ei2 = current->edges().begin(); ei2!=current->edges().end(); ++ei2) {
+	for(DynaDAGLayout::graphedge_iter ei2 = current->edges().begin(); ei2!=current->edges().end(); ++ei2) {
 		DDPath *path = DDp(*ei2);
 		DDMultiNode *n1 = DDp((*ei2)->tail),
 			*n2 = DDp((*ei2)->head);
@@ -127,8 +127,8 @@ void XSolver::checkEdgeConstraints() {
 			}
 		}
 }
-void Ranker::checkStrongConstraints(ChangeQueue &changeQ) {
-	for(Layout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
+void Ranker::checkStrongConstraints(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
 		DDCGraph::Edge *strong = DDp(*ei)->strong;
 		if(strong)
 			assert(DDNS::NSd(strong).minlen==rankLength(*ei));

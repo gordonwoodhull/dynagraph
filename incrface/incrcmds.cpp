@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include "common/Dynagraph.h"
+#include "common/LayoutAttrs.h"
 #include "DynaView.h"
 #include "common/ag2str.h"
 //#include "common/bufferGraphStream.h"

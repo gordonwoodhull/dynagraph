@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef BoostLGraph_h
+#define BoostLGraph_h
 
 namespace boost {
 
@@ -227,3 +229,4 @@ namespace boost {
 	}
 } // namespace boost
 
+#endif // BoostLGraph_h 

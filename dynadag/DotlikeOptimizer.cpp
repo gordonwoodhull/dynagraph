@@ -144,7 +144,7 @@ struct RankLess {
 	}
 };
 #define TIRE 6
-void DotlikeOptimizer::Reorder(Layout &nodes,Layout &edges) {
+void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	vector<int> affectedRanks;
 	{
 		NodeV optimVec;

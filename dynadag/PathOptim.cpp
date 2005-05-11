@@ -112,8 +112,8 @@ void PathOptim::optElt(DDModel::Node *n, UpDown dir, int eq_pass) {
 	resetCoord(n);
 }
 // do optimization on a certain subgraph
-void PathOptim::Reorder(Layout &nodes,Layout &edges) {
-	for(Layout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei)
+void PathOptim::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
+	for(DynaDAGLayout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei)
 		optPath(DDp(*ei));
 }
 /* return new coordinate if node were installed in given rank */

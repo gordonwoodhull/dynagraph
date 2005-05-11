@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef diff_strgraph_h
+#define diff_strgraph_h
 
 
 inline StrAttrs *diff_attr(StrAttrs &a1,StrAttrs &a2) {
@@ -120,3 +122,5 @@ void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
 		}
 	}
 }
+
+#endif //diff_strgraph_h

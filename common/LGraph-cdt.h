@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef LGRAPH_CDT_H
-#define LGRAPH_CDT_H
+#ifndef LGraph_cdt_h
+#define LGraph_cdt_h
 
 #include "LGraph.h"
 #include "dt.h"
@@ -99,4 +99,4 @@ struct ADTisCDT {
 	};
 };
 
-#endif //LGRAPH_CDT_H
+#endif //LGraph_cdt_h

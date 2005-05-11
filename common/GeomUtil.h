@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef GeomUtil_h
+#define GeomUtil_h
 
 #define ISCCW 1
 #define ISCW  2
@@ -110,3 +112,4 @@ inline Position intersection( Coord a, Coord b, Coord c, Coord d) {
     else ret.valid = false;
 	return ret;
 }
+#endif GeomUtil_h

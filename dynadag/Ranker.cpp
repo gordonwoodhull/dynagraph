@@ -38,7 +38,7 @@ void Ranker::RemovePathConstraints(DDPath *path) {
 }
 void Ranker::makeStrongConstraint(DDPath *path) {
 	assert(!path->strong);
-	Layout::Edge *layoutE = path->layoutE;
+	DynaDAGLayout::Edge *layoutE = path->layoutE;
 	gd<EdgeGeom>(layoutE).constraint = true;
 
 	int length = rankLength(layoutE);
@@ -57,7 +57,7 @@ void Ranker::makeStrongConstraint(DDPath *path) {
 }
 void Ranker::makeWeakConstraint(DDPath *path) {
 	assert(!path->weak);
-	Layout::Edge *layoutE = path->layoutE;
+	DynaDAGLayout::Edge *layoutE = path->layoutE;
 	gd<EdgeGeom>(layoutE).constraint = false;
 
 	DDCGraph::Node *tvar = cg.GetVar(DDp(layoutE->tail)->bottomC),
@@ -74,8 +74,8 @@ void Ranker::makeWeakConstraint(DDPath *path) {
 #endif
 }
 // change edge strengths around a node
-void Ranker::fixNode(Layout::Node *n,bool fix) {
-	for(Layout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei) {
+void Ranker::fixNode(DynaDAGLayout::Node *n,bool fix) {
+	for(DynaDAGLayout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei) {
 		DDPath *path = DDp(*ei);
 		if(path->strong && fix) {
 			RemovePathConstraints(path);
@@ -88,7 +88,7 @@ void Ranker::fixNode(Layout::Node *n,bool fix) {
 	}
 	DDp(n)->rankFixed = fix;
 }
-void Ranker::doNodeHeight(Layout::Node *n) {
+void Ranker::doNodeHeight(DynaDAGLayout::Node *n) {
 	DDMultiNode *mn = DDp(n);
 	DDCGraph::Node *tv = cg.GetVar(mn->topC),
 		*bv = cg.GetVar(mn->bottomC);
@@ -101,12 +101,12 @@ void Ranker::doNodeHeight(Layout::Node *n) {
 #endif
 	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
-void Ranker::moveOldNodes(ChangeQueue &changeQ) {
-	for(Layout::node_iter ni = changeQ.modN.nodes().begin(); ni!=changeQ.modN.nodes().end(); ++ni) {
+void Ranker::moveOldNodes(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::node_iter ni = changeQ.modN.nodes().begin(); ni!=changeQ.modN.nodes().end(); ++ni) {
 		DDMultiNode *n = DDp(*ni);
 		unsigned upd = igd<Update>(*ni).flags;
 		if(upd & DG_UPD_NAIL) {
-			Layout::Node *vn = config.current->find(*ni);
+			DynaDAGLayout::Node *vn = config.current->find(*ni);
 			if(gd<NodeGeom>(*ni).nail & DG_NAIL_Y) {
 				if(!gd<NodeGeom>(*ni).pos.valid)
 					throw NailWithoutPos(*ni);
@@ -120,9 +120,9 @@ void Ranker::moveOldNodes(ChangeQueue &changeQ) {
 			doNodeHeight(*ni);
 	}
 }
-void Ranker::insertNewNodes(ChangeQueue &changeQ) {
-	for(Layout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni) {
-        Layout::Node *n = *ni;
+void Ranker::insertNewNodes(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni) {
+        DynaDAGLayout::Node *n = *ni;
 		DDModel::Node *mn = dynaDAG->OpenModelNode(config.client->find(n)).second;
 
 		// pull loose nodes upward
@@ -133,10 +133,10 @@ void Ranker::insertNewNodes(ChangeQueue &changeQ) {
 		doNodeHeight(n);
 	}
 }
-void Ranker::stabilizePositionedNodes(ChangeQueue &changeQ) {
+void Ranker::stabilizePositionedNodes(DDChangeQueue &changeQ) {
 	// all nodes with position should want to stay there
 	// (this is particularly important for nodes that started without a position but got one last round)
-	for(Layout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni)
+	for(DynaDAGLayout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
 			DDMultiNode *mn = DDp(*ni);
 			// stabilize at starting position if any
@@ -149,7 +149,7 @@ void Ranker::stabilizePositionedNodes(ChangeQueue &changeQ) {
 		}
 }
 /* is there a path from head(e) to tail(e)? next two fns. */
-static int dfs(Layout::Node *src, Layout::Node *dest, LNodeV &hit) {
+static int dfs(DynaDAGLayout::Node *src, DynaDAGLayout::Node *dest, LNodeV &hit) {
     if(src == dest) {
 		return true;
 	}
@@ -157,7 +157,7 @@ static int dfs(Layout::Node *src, Layout::Node *dest, LNodeV &hit) {
 		return false;
 	DDp(src)->hit = true;
 	hit.push_back(src);
-    for(Layout::outedge_iter ei = src->outs().begin(); ei!=src->outs().end(); ++ei) {
+    for(DynaDAGLayout::outedge_iter ei = src->outs().begin(); ei!=src->outs().end(); ++ei) {
 		if(!DDp(*ei) || !DDp(*ei)->strong)
 			continue;
         if(dfs((*ei)->head,dest,hit))
@@ -165,23 +165,23 @@ static int dfs(Layout::Node *src, Layout::Node *dest, LNodeV &hit) {
     }
     return false;
 }
-static int pathExists(Layout::Node *src, Layout::Node *dest) {
+static int pathExists(DynaDAGLayout::Node *src, DynaDAGLayout::Node *dest) {
     LNodeV hit;
     bool result = dfs(src,dest,hit);
 	for(LNodeV::iterator i=hit.begin(); i!=hit.end(); ++i)
 		DDp(*i)->hit = false;
 	return result;
 }
-void Ranker::insertNewEdges(ChangeQueue &changeQ) {
-	for(Layout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
-		Layout::Edge *ve = *ei;
+void Ranker::insertNewEdges(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
+		DynaDAGLayout::Edge *ve = *ei;
 		// set up path but don't model it yet (that's config's job)
-		Layout *current = config.current;
+		DynaDAGLayout *current = config.current;
 		DDPath *path = dynaDAG->OpenModelEdge(0,0,config.client->find(ve)).first;
 		if(ve->head == ve->tail)
 			continue;
 		bool weak = false;
-		if(Layout::Edge *e1 = current->find_edge(ve->head,ve->tail)) {
+		if(DynaDAGLayout::Edge *e1 = current->find_edge(ve->head,ve->tail)) {
 			// mark & ignore second leg of 2-cycle for all modelling purposes
 			// DynaDAGServer will draw it by reversing the other
 			if(DDp(e1) && (DDp(e1)->weak || DDp(e1)->strong)) { // if both get inserted at once, mark the second
@@ -204,7 +204,7 @@ void Ranker::insertNewEdges(ChangeQueue &changeQ) {
 	}
 }
 /* special-case when it is easy */
-bool Ranker::simpleCase(ChangeQueue &changeQ) {
+bool Ranker::simpleCase(DDChangeQueue &changeQ) {
 	/* there must be no deletions */
 	if(changeQ.delN.nodes().size() || changeQ.delE.nodes().size())
 		return false;
@@ -214,9 +214,9 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 		return false;
 
 	/* there can only be singleton or leaf node insertions */
-	for(Layout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
-		Layout::Edge *e = *ei;
-		Layout::Node *u = e->tail,
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
+		DynaDAGLayout::Edge *e = *ei;
+		DynaDAGLayout::Node *u = e->tail,
 			*v = e->head,
 			*possibleLeaf,
 			*other;
@@ -238,7 +238,7 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 	}
 
 	/* do the insertions */
-	for(Layout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni) {
+	for(DynaDAGLayout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni) {
 		NodeGeom &ng = gd<NodeGeom>(*ni);
 		int newTopRank;
 		Bounds b = ng.BoundingBox();
@@ -251,9 +251,9 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 		else
 			newTopRank = config.ranking.Low();
 
-		if(Layout::Node *u = changeQ.insE.find(*ni)) {
+		if(DynaDAGLayout::Node *u = changeQ.insE.find(*ni)) {
 			if(u->ins().size()) {
-				Layout::Edge *e = *u->ins().begin();
+				DynaDAGLayout::Edge *e = *u->ins().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
 					int r = DDd(DDp(e->tail)->bottom()).rank + rankLength(e);
 					if(!ng.pos.valid || r > newTopRank)
@@ -261,7 +261,7 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 				}
 			}
 			else if(u->outs().size()) {
-				Layout::Edge *e = *u->outs().begin();
+				DynaDAGLayout::Edge *e = *u->outs().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
 					int r = DDd(DDp(e->head)->top()).rank - rankLength(e);
 					if(!ng.pos.valid || r < newTopRank)
@@ -290,15 +290,15 @@ bool Ranker::simpleCase(ChangeQueue &changeQ) {
 	}
 	return true;
 }
-void Ranker::recomputeRanks(ChangeQueue &changeQ) {
+void Ranker::recomputeRanks(DDChangeQueue &changeQ) {
 	/*
 	if(simpleCase(changeQ))
 		return;
 		*/
  	DDNS().Solve(&cg,NS::NORMALIZE|NS::RECHECK|NS::VALIDATE|NS::ATTACHATTRS);
 	int anchorRank = DDNS::NSd(cg.anchor).rank;
-	for(Layout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni) {
-		Layout::Node *n = *ni;
+	for(DynaDAGLayout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni) {
+		DynaDAGLayout::Node *n = *ni;
 		if(changeQ.delN.find(n))
 			continue;
 		int newTopRank = DDNS::NSd(DDp(n)->topC.n).rank - anchorRank,
@@ -309,16 +309,16 @@ void Ranker::recomputeRanks(ChangeQueue &changeQ) {
 			mn->newTopRank = newTopRank;
 			mn->newBottomRank = newBottomRank;
 			changeQ.ModNode(n,DG_UPD_MOVE);
-			Layout::Node *cn = config.current->find(n);
-			for(Layout::nodeedge_iter ei=cn->alledges().begin(); ei!=cn->alledges().end(); ++ei)
+			DynaDAGLayout::Node *cn = config.current->find(n);
+			for(DynaDAGLayout::nodeedge_iter ei=cn->alledges().begin(); ei!=cn->alledges().end(); ++ei)
 				changeQ.ModEdge(*ei,DG_UPD_MOVE);
 		}
 	}
 }
 #ifdef FLEXIRANKS
-void Ranker::makeRankList(ChangeQueue &changeQ) {
+void Ranker::makeRankList(DDChangeQueue &changeQ) {
 	Config::Ranks::IndexV rankvec;
-	for(Layout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni)
+	for(DynaDAGLayout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
 			rankvec.push_back(DDp(*ni)->newTopRank);
 			rankvec.push_back(DDp(*ni)->newBottomRank);
@@ -330,7 +330,7 @@ void Ranker::makeRankList(ChangeQueue &changeQ) {
 			config.ranking.newRanks.push_back(*ii);
 }
 #endif
-void Ranker::Rerank(ChangeQueue &changeQ) {
+void Ranker::Rerank(DDChangeQueue &changeQ) {
 	// this connection is just to keep the graph connected
 	ConstraintGraph::Edge *c = cg.create_edge(top,cg.anchor).first;
 	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;

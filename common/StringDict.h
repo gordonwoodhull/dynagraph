@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef STRINGDICT_H
-#define STRINGDICT_H
+#ifndef StringDict_h
+#define StringDict_h
 
 #include "dgxep.h"
 #include "useful.h"
@@ -232,4 +232,6 @@ struct DictStringLost : DGException {
   {}
 };
 
-#endif // STRINGDICT_H
+int ds2int(const DString &s);
+
+#endif // StringDict_h

@@ -142,7 +142,7 @@ struct RankLess {
 	}
 };
 #define TIRE 6
-void HybridOptimizer2::Reorder(Layout &nodes,Layout &edges) {
+void HybridOptimizer2::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	vector<int> affectedRanks;
 	{
 		NodeV optimVec;

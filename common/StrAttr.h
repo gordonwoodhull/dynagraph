@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef strattr_h
-#define strattr_h
+#ifndef StrAttr_h
+#define StrAttr_h
 
 // string attributes & names are not used directly by the dynagraph layout engines;
 // they are used by the command-line tool to name & tag things the way dot does.
@@ -247,4 +247,4 @@ protected:
 };
 
 typedef NamedGraph<NamedAttrs,NamedAttrs,NamedAttrs> StrGraph;
-#endif // strattr_h
+#endif // StrAttr_h
