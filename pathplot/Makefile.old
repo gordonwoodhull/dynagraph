@@ -1,0 +1,30 @@
+all: libpathplot.a
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+INCS =	-I.. -I../.. \
+	-I../../cdt \
+	-I../../pathplan
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = PolyBarriers.o Route.o Shortest.o Solvers.o
+
+HFILES = PathPlot.h Solvers.h BezCoeffs.h
+
+libpathplot.a : $(OBJS)
+	$(AR) cr libpathplot.a $(OBJS)
+	$(RANLIB) libpathplot.a
+
+$(OBJS) : $(HFILES)
+
+install: libpathplot.a
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libpathplot.a $(LIBDIR)
+
+clean:
+	$(RM) *.o core
+
+distclean: clean
+	$(RM) *.a lib*.so.*
