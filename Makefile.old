@@ -1,13 +1,13 @@
 all : dynagraph gengraph graphsearch/graphsearch
 
-include ../Config.mk
-include ../makearch/$(ARCH)
+include ./Config.mk
+include ./makearch/$(ARCH)
 
 SUBDIRS = common dynadag incrface fdp voronoi shortspline graphsearch
 
 INCS = -I. \
 	-I.. -I../cdt \
-	-I../agraph
+	-I/usr/local/graphviz/include
 
 DEFINES = -DHAVE_CONFIG_H
 

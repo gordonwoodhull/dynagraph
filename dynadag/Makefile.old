@@ -1,11 +1,10 @@
 all: libdynadag.a
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+include ../Config.mk
+include ../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I../../pathplan \
-	-I../../cdt
+	-I/usr/local/graphviz/include 
 
 DEFINES = -DHAVE_CONFIG_H
 

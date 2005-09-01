@@ -1,12 +1,10 @@
 all: libincrface.a
 
-include ../../Config.mk
+include ../Config.mk
 include ../../makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I../../agraph \
-	-I../../pathplan \
-	-I../../cdt
+	-I/usr/local/graphviz/include
 
 DEFINES = -DHAVE_CONFIG_H
 
