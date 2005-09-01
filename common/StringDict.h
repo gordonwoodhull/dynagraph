@@ -111,8 +111,8 @@ public:
         return val?std::string(val):std::string();
 	}
 	// these are what make this super-cool: single-word compare!
-    // (obviously this is not a typological sort, but no one wants
-    // attributes in alphabetical order just to look them up quickly)
+    // (obviously this is not a typological sort, but one rarely wants
+    // attributes in alphabetical order, usually just to look them up quickly)
 	bool operator <(const DString &ds) const {
 		return val<ds.val;
 	}
@@ -121,6 +121,9 @@ public:
 	}
 	bool operator !=(const DString &ds) const {
 		return val!=ds.val;
+	}
+	operator bool() const {
+		return val!=0;
 	}
 	const char *c_str() const {
 		return val;

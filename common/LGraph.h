@@ -25,7 +25,6 @@
 #include <stack>
 #include <vector>
 
-/*
 // convert c-style int compare() to bool less()
 template<typename Comp>
 struct ComparesLess {
@@ -43,29 +42,32 @@ struct set_order : ST {
 };
 
 struct ADTisSTL {
-    typedef set_order<std::set<typename Graph::Edge*,ComparesLess<typename Graph::SeqComp<typename Graph::Edge> > > > edge_order;
-	typedef set_order<std::set<typename Graph::Edge*,ComparesLess<typename Graph::HeadSeqComp> > > edge_by_head_order;
-	typedef edge_order inedge_order;
-	typedef edge_order outedge_order;
+	template<typename Edge,typename Node,typename EdgeCompare,typename HeadCompare,typename NodeCompare>
+	struct defs {
+		typedef set_order<std::set<Edge*,ComparesLess<EdgeCompare> > > edge_order;
+		typedef set_order<std::set<Edge*,ComparesLess<HeadCompare> > > edge_by_head_order;
+		typedef edge_order inedge_order;
+		typedef edge_order outedge_order;
 
-    typedef set_order<std::set<typename Graph::Node*,ComparesLess<typename Graph::SeqComp<typename Graph::Node> > > > node_order;
+		typedef set_order<std::set<Node*,ComparesLess<NodeCompare> > > node_order;
 
-    struct graph_adtdata {
-        node_order m_nodes;
-        typename node_order::iterator get_iter(typename Graph::Node *n) {
-    		return m_nodes.find(n);
-        }
-    };
+		struct graph_adtdata {
+			node_order m_nodes;
+			typename node_order::iterator get_iter(Node *n) {
+				return m_nodes.find(n);
+			}
+		};
 
-    struct edge_parent {};
-    struct node_parent {
-	    inedge_order m_ins;
-	    outedge_order m_outs;
-	    edge_by_head_order m_outFinder; // used exclusively by find_edge(t,h)
-        node_parent(Graph *g) {}
-    };
+		struct edge_parent {};
+		struct node_parent {
+			inedge_order m_ins;
+			outedge_order m_outs;
+			edge_by_head_order m_outFinder; // used exclusively by find_edge(t,h)
+			node_parent(graph_adtdata &gadt) {}
+		};
+	};
 };
-*/
+
 struct Nothing {};
 
 /*
@@ -98,12 +100,12 @@ struct NodeData {
 };
 typedef NodeData<void> StoredNodeData;
 typedef LGraph<... StoredNodeData ...> Graph;
-typedef NodeData<Graph::Node *> RealNodeData;
+typedef NodeData<Node *> RealNodeData;
 
 then either use gd2<RealNodeData,StoredNodeData>
 or better, specialize gd for your type:
 template<>
-RealNodeData &gd<RealNodeData,Graph::Node>(Graph::Node *n) {
+RealNodeData &gd<RealNodeData,Node>(Node *n) {
     return gd2<RealNodeData,StoredNodeData>(n);
 }
 */
