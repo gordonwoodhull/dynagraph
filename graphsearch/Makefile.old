@@ -1,12 +1,16 @@
 all: graphsearch
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I../../agraph \
-	-I../../cdt \
-	-I../../../boost
+	-I/usr/local/graphviz/include \
+	-I/usr/local/include
+	
+LIBS = -L../common -ldynagraph \
+	-L/usr/local/graphviz/lib \
+	-lagraph -l cdt
 
 DEFINES = -DHAVE_CONFIG_H
 
@@ -15,7 +19,7 @@ OBJS = gsscan.o gsgram.o graphsearch.o gscmds.o Pattern.o Search.o
 HFILES = Pattern.h Search.h gscmds.h gsxep.h gsgram.h
 
 graphsearch: $(OBJS)
-	$(CPPSLD) -o graphsearch $(OBJS) ../common/libdynagraph.a ../../agraph/libagraph.a ../../cdt/libcdt.a
+	$(CPPSLD) -o graphsearch $(OBJS) $(LIBS)
 
 $(OBJS) : $(HFILES)
 

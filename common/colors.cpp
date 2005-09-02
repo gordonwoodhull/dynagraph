@@ -22,12 +22,13 @@
 #include "colors.h"
 using namespace std;
 
+// graphviz's generated color table
 typedef struct hsbcolor_t {
 	char			*name;
 	unsigned char	h,s,b;
 } hsbcolor_t;
 
-#include "../../tools/src/colortbl.h"
+#include "colortbl.h"
 
 typedef map<DString,Color> named_colors;
 named_colors g_namedColors;

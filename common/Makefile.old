@@ -1,7 +1,8 @@
 all: libdynagraph.a
 
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
 	-I/usr/local/graphviz/include \
@@ -39,6 +40,8 @@ libdynagraph.a : $(OBJS)
 $(OBJS) : $(HFILES)
 
 install: libdynagraph.a
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) *.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libdynagraph.a $(LIBDIR)
 
