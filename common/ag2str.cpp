@@ -86,9 +86,9 @@ StrGraph *ag2str(Agraph_t *g) {
 				char *val = agget(e,sym->name);
 				if(val&&*val)
                     if(!strcmp(sym->name,"id"))
-                        (Name)nattr = val;
+                        static_cast<Name&>(nattr) = val;
                     else
-					    ((StrAttrs)nattr)[sym->name] = val;
+					    static_cast<StrAttrs&>(nattr)[sym->name] = val;
 			}
 			try {
 				gg->create_edge(tail,head,nattr).first;

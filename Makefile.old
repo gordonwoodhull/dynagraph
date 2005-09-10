@@ -59,8 +59,8 @@ install: dynagraph gengraph
 	(for i in ${SUBDIRS}; do (cd $$i; make install); done)       
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dynagraph $(BINDIR)
-	$(MKPATH) $(MANDIR)
-	$(INSTALL) $(MANS) $(MANDIR)
+#	$(MKPATH) $(MANDIR)
+#	$(INSTALL) $(MANS) $(MANDIR)
 
 distclean clean:
 	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
