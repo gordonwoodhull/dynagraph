@@ -1,38 +1,34 @@
-all : dynagraph 
-#gengraph graphsearch/graphsearch
+all : dynagraph gengraph graphsearch/graphsearch
 
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=.
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-SUBDIRS = common dynadag incrface pathplot
-#fdp voronoi shortspline graphsearch
+SUBDIRS = common dynadag incrface pathplot shortspline graphsearch
 
 INCS = -I. \
 	-I.. -I../cdt \
-	-I../agraph
+	-I/usr/local/graphviz/include
 
 DEFINES = -DHAVE_CONFIG_H
 
 BASELIBS = -Lcommon -ldynagraph \
-       -L../agraph -lagraph \
-       -L../cdt -lcdt
-#       -L../pathplan -lpathplan \
+       -L/usr/local/graphviz/lib \
+       -lagraph -lpathplan -lcdt
 
 GLIBS = -Lcommon -ldynagraph \
-       -L../cdt -lcdt \
-	   -L../agraph -lagraph
+       -L/usr/local/graphviz/lib \
+       -lcdt -lagraph
 
 OTHERLIBS = -Lincrface -lincrface \
+	-Lfdp -lfdp \
     -Ldynadag -ldynadag \
-	-Lpathplot -lpathplot
-#	-Lfdp -lfdp \
-#	-Lshortspline -lshortspline \
-#	-Lvoronoi -lvoronoi
+	-Lshortspline -lshortspline \
+	-Lvoronoi -lvoronoi
 
 MANS = 
 
-# libfdp.a libvoronoi.a libshortspline.a
-dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libpathplot.a
+dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) main.o $(OTHERLIBS) $(BASELIBS) -o dynagraph
 
 gengraph : gengraph.o libdynagraph.a
@@ -49,9 +45,6 @@ libdynadag.a :
 
 libincrface.a :
 	(cd incrface; make)
-	
-libpathplot.a :
-	(cd pathplot; make)
 
 libfdp.a :
 	(cd fdp; make)
@@ -66,8 +59,8 @@ install: dynagraph gengraph
 	(for i in ${SUBDIRS}; do (cd $$i; make install); done)       
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dynagraph $(BINDIR)
-	$(MKPATH) $(MANDIR)
-	$(INSTALL) $(MANS) $(MANDIR)
+#	$(MKPATH) $(MANDIR)
+#	$(INSTALL) $(MANS) $(MANDIR)
 
 distclean clean:
 	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       

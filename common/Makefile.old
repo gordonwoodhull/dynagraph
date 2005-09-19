@@ -1,12 +1,11 @@
 all: libdynagraph.a
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I../../agraph \
-	-I../../cdt \
-	-I../../../boost
+	-I/usr/local/graphviz/include 
 
 DEFINES = -DHAVE_CONFIG_H
 

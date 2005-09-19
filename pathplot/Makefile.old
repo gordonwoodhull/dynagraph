@@ -1,11 +1,11 @@
 all: libpathplot.a
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I../../cdt \
-	-I../../pathplan
+	-I/usr/local/graphviz/include
 
 DEFINES = -DHAVE_CONFIG_H
 

@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef LGraph_h
-#define LGraph_h
+#ifndef LGRAPH_H
+#define LGRAPH_H
 
 #include <list>
 #include <map>
@@ -89,7 +89,7 @@ inline D &igd(GO *go) {
 // LGraph graphs, nodes, and edges carry data that has been aggregated using
 // multiple inheritance.  the gd function accesses part of a graph, node, or
 // edge's data by specifying one of the aggregated classes.
-	
+
 /* because LGraph nodes' and edges' types depend on the data within,
     it's not possible to specify directly that the data will contain pointers to
     other nodes and edges.  a cast is necessary.
@@ -100,12 +100,12 @@ struct NodeData {
 };
 typedef NodeData<void> StoredNodeData;
 typedef LGraph<... StoredNodeData ...> Graph;
-typedef NodeData<Node *> RealNodeData;
+typedef NodeData<Graph::Node *> RealNodeData;
 
 then either use gd2<RealNodeData,StoredNodeData>
 or better, specialize gd for your type:
 template<>
-RealNodeData &gd<RealNodeData,Node>(Node *n) {
+RealNodeData &gd<RealNodeData,Graph::Node>(Graph::Node *n) {
     return gd2<RealNodeData,StoredNodeData>(n);
 }
 */
@@ -175,7 +175,7 @@ struct LGraph {
 	};
 	struct Edge;
 	struct Node;
-	typedef typename ADTPolicy::defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
+	typedef typename ADTPolicy::template defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
     struct ND2 : NodeDatum, Seq {
 		ND2(const NodeDatum &d) : NodeDatum(d) {}
 	};
@@ -299,12 +299,6 @@ struct LGraph {
 		bool operator !=(nodeedge_iter other) {
 			return !(*this==other);
 		}
-		inedge_iter inIter() {
-			return head()->inIter(this);
-		}
-		outedge_iter outIter() {
-			return tail()->outIter(this);
-		}
 	};
 	// workaround for circular typing problems w/ friend decl: do not call!
 	static nodeedge_iter ne_iter(inedge_order *i,outedge_order *o) {
@@ -313,39 +307,43 @@ struct LGraph {
     class Node : public ADTDefs::node_parent
 	{
 	  friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
-	  Node(LGraph *g,ND2 *dat) : ADTDefs::node_parent(g->m_adtdata),
+	  Node(LGraph *g,ND2 *dat) : nodeData_(g->m_adtdata),
 	  g(g),
 	  dat(dat) {}
 	  ~Node() {}
-	  
+
+		typename ADTDefs::node_data nodeData_;
 	public:
 		LGraph * const g;
 		ND2 * const dat;
 		NodeIDat idat;
 
 		inedge_order &ins() {
-			return m_ins;
+			return nodeData_.m_ins;
 		}
 		outedge_order &outs() {
-			return m_outs;
+			return nodeData_.m_outs;
+		}
+		edge_by_head_order &outFinder() {
+			return nodeData_.m_outFinder;
 		}
 		pseudo_seq<nodeedge_iter> alledges() {
-			return pseudo_seq<nodeedge_iter>(ne_iter(&m_ins,&m_outs),ne_iter(0,0));
+			return pseudo_seq<nodeedge_iter>(ne_iter(&nodeData_.m_ins,&nodeData_.m_outs),ne_iter(0,0));
 		};
 
 		int degree() {
-			return m_ins.size() + m_outs.size();
+			return nodeData_.m_ins.size() + nodeData_.m_outs.size();
 		}
 		bool amMain() { return g->amMain(); }
 		inedge_iter inIter(Edge *e) {
 			if(e->head!=this)
 				throw WrongNode();
-			return m_ins.make_iter(static_cast<typename ADTDefs::inseqlink*>(e));
+			return nodeData_.m_ins.make_iter(static_cast<typename ADTDefs::inseqlink*>(e));
 		}
 		inedge_iter outIter(Edge *e) {
 			if(e->tail!=this)
 				throw WrongNode();
-			return m_outs.make_iter(static_cast<typename ADTDefs::outseqlink*>(e));
+			return nodeData_.m_outs.make_iter(static_cast<typename ADTDefs::outseqlink*>(e));
 		}
 		template<typename D>
 		D &gd() {
@@ -411,7 +409,7 @@ public:
 		return m_subs;
 	}
 	template<typename GD>
-	
+
 	// to iterate on all edges in a graph
 	struct graphedge_set;
 	struct graphedge_iter {
@@ -508,9 +506,9 @@ public:
         }
         else
             gd<Seq>(ret).id = m_eNumber-1;
-		tail->m_outs.insert(ret);
-		tail->m_outFinder.insert(ret);
-		head->m_ins.insert(ret);
+		tail->outs().insert(ret);
+		tail->outFinder().insert(ret);
+		head->ins().insert(ret);
 		return std::make_pair(ret,true);
 	}
 	// methods available only on subgraphs
@@ -535,9 +533,9 @@ public:
 			*h = insert_subnode(e->head).first;
 		Edge *ret = new Edge(this,t,h,e->dat);
 		ret->idat = e->idat;
-		t->m_outs.insert(ret);
-		t->m_outFinder.insert(ret);
-		h->m_ins.insert(ret);
+		t->outs().insert(ret);
+		t->outFinder().insert(ret);
+		h->ins().insert(ret);
 		return std::make_pair(ret,true);
 	}
 	std::pair<Node*,bool> insert(Node *n) {
@@ -561,10 +559,10 @@ public:
 				return false;
 		for(typename subgraph_list::iterator i = m_subs.begin(); i!=m_subs.end(); ++i)
 			(*i)->erase_node(n);
-		while(!n->m_outs.empty())
-			erase_edge(*n->m_outs.begin());
-		while(!n->m_ins.empty())
-			erase_edge(*n->m_ins.begin());
+		while(!n->outs().empty())
+			erase_edge(*n->outs().begin());
+		while(!n->ins().empty())
+			erase_edge(*n->ins().begin());
 		nodes().erase(n);
         if(!parent) {
             m_recycleNodeIds.push(gd<Seq>(n).id);
@@ -581,9 +579,9 @@ public:
 				return false;
 		for(typename subgraph_list::iterator i = m_subs.begin(); i!=m_subs.end(); ++i)
 			(*i)->erase_edge(e);
-		e->tail->m_outs.erase(e);
-		e->tail->m_outFinder.erase(e);
-		e->head->m_ins.erase(e);
+		e->tail->outs().erase(e);
+		e->tail->outFinder().erase(e);
+		e->head->ins().erase(e);
         if(!parent) {
             m_recycleEdgeIds.push(gd<Seq>(e).id);
 			delete e->dat;
@@ -605,8 +603,8 @@ public:
 			if(!(head = find_nodeimage(head)))
 				return 0;
 		Edge key(0,0,head,0);
-		typename edge_by_head_order::iterator i = tail->m_outFinder.find(&key);
-		if(i==tail->m_outFinder.end())
+		typename edge_by_head_order::iterator i = tail->outFinder().find(&key);
+		if(i==tail->outFinder().end())
 			return 0;
 		else
 			return *i;
@@ -622,8 +620,8 @@ public:
 		node_iter i = nodes().find(e->tail);
 		if(i==nodes().end())
 			return 0;
-		outedge_iter j = (*i)->m_outs.find(e);
-		if(j==(*i)->m_outs.end())
+		outedge_iter j = (*i)->outs().find(e);
+		if(j==(*i)->outs().end())
 			return 0;
 		else
 			return *j;
@@ -669,7 +667,7 @@ public:
 				remember[*ni] = n;
 			}
 			for(ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni)
-				for(outedge_iter ei = (*ni)->m_outs.begin(); ei!=(*ni)->m_outs.end(); ++ei) {
+				for(outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end(); ++ei) {
 					Node *t = remember[(*ei)->tail],
 						*h = remember[(*ei)->head];
 					Edge *e = create_edge(t,h,*(*ei)->dat).first;
@@ -711,4 +709,4 @@ public:
 	}
 };
 
-#endif //LGraph_h
+#endif
