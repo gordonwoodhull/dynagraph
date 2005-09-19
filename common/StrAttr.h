@@ -206,11 +206,11 @@ struct NamedGraph : LGraph<ADTisCDT,GData,NData,EData> {
     }
 	void oopsRefreshDictionary() {
 		ndict.clear();
-		for(typename Graph::node_iter ni = nodes().begin(); ni!=nodes().end(); ++ni)
+		for(typename Graph::node_iter ni = Graph::nodes().begin(); ni!=Graph::nodes().end(); ++ni)
 			ndict[gd<Name>(*ni)] = *ni;
 	}
 	void readSubgraph(NamedGraph *what) {
-		std::map<DString,typename Graph::Node*> &pardict = static_cast<NamedGraph*>(parent)->ndict;
+		std::map<DString,typename Graph::Node*> &pardict = static_cast<NamedGraph*>(Graph::parent)->ndict;
 		for(typename Graph::node_iter ni = what->nodes().begin(); ni!=what->nodes().end(); ++ni) {
 			typename Graph::Node *n = *ni,*found = pardict[gd<Name>(n)];
 			if(!found)
@@ -221,7 +221,7 @@ struct NamedGraph : LGraph<ADTisCDT,GData,NData,EData> {
 			typename Graph::Edge *e = *ei;
 			typename Graph::Node *tail = pardict[gd<Name>(e->tail)],
 				*head = pardict[gd<Name>(e->head)];
-			typename Graph::Edge *found = parent->find_edge(tail,head);
+			typename Graph::Edge *found = Graph::parent->find_edge(tail,head);
 			if(!found)
 				throw EdgeNotFound(gd<Name>(e->tail),gd<Name>(e->head));
 			insert(found);

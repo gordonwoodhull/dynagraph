@@ -86,11 +86,13 @@ struct ADTisCDT {
 			}
 		};
 		struct edge_parent : inseqlink,outseqlink,intreelink,outtreelink,headtreelink {};
-		struct node_parent : cdt::seqtreelink {
+		struct edge_data {};
+		struct node_parent : cdt::seqtreelink {};
+		struct node_data {
 			inedge_order m_ins;
 			outedge_order m_outs;
 			edge_by_head_order m_outFinder; // used exclusively by find_edge(t,h)
-			node_parent(graph_adtdata &gadt) :
+			node_data(graph_adtdata &gadt) :
 				m_ins(gadt.m_inedgetreedisc,gadt.m_inedgetreedict),
 				m_outs(gadt.m_outedgetreedisc,gadt.m_outedgetreedict),
 				m_outFinder(gadt.m_headdisc,gadt.m_headtreedict)

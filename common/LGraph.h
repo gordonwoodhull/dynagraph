@@ -89,7 +89,7 @@ inline D &igd(GO *go) {
 // LGraph graphs, nodes, and edges carry data that has been aggregated using
 // multiple inheritance.  the gd function accesses part of a graph, node, or
 // edge's data by specifying one of the aggregated classes.
-	
+
 /* because LGraph nodes' and edges' types depend on the data within,
     it's not possible to specify directly that the data will contain pointers to
     other nodes and edges.  a cast is necessary.
@@ -175,7 +175,7 @@ struct LGraph {
 	};
 	struct Edge;
 	struct Node;
-	typedef typename ADTPolicy::defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
+	typedef typename ADTPolicy::template defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
     struct ND2 : NodeDatum, Seq {
 		ND2(const NodeDatum &d) : NodeDatum(d) {}
 	};
@@ -299,12 +299,6 @@ struct LGraph {
 		bool operator !=(nodeedge_iter other) {
 			return !(*this==other);
 		}
-		inedge_iter inIter() {
-			return head()->inIter(this);
-		}
-		outedge_iter outIter() {
-			return tail()->outIter(this);
-		}
 	};
 	// workaround for circular typing problems w/ friend decl: do not call!
 	static nodeedge_iter ne_iter(inedge_order *i,outedge_order *o) {
@@ -317,35 +311,36 @@ struct LGraph {
 	  g(g),
 	  dat(dat) {}
 	  ~Node() {}
-	  
+
+		typename ADTDefs::node_data nodeData_;
 	public:
 		LGraph * const g;
 		ND2 * const dat;
 		NodeIDat idat;
 
 		inedge_order &ins() {
-			return m_ins;
+			return nodeData_.m_ins;
 		}
 		outedge_order &outs() {
-			return m_outs;
+			return nodeData_.m_outs;
 		}
 		pseudo_seq<nodeedge_iter> alledges() {
-			return pseudo_seq<nodeedge_iter>(ne_iter(&m_ins,&m_outs),ne_iter(0,0));
+			return pseudo_seq<nodeedge_iter>(ne_iter(&nodeData_.m_ins,&nodeData_.m_outs),ne_iter(0,0));
 		};
 
 		int degree() {
-			return m_ins.size() + m_outs.size();
+			return nodeData_.m_ins.size() + nodeData_.m_outs.size();
 		}
 		bool amMain() { return g->amMain(); }
 		inedge_iter inIter(Edge *e) {
 			if(e->head!=this)
 				throw WrongNode();
-			return m_ins.make_iter(static_cast<typename ADTDefs::inseqlink*>(e));
+			return nodeData_.m_ins.make_iter(static_cast<typename ADTDefs::inseqlink*>(e));
 		}
 		inedge_iter outIter(Edge *e) {
 			if(e->tail!=this)
 				throw WrongNode();
-			return m_outs.make_iter(static_cast<typename ADTDefs::outseqlink*>(e));
+			return nodeData_.m_outs.make_iter(static_cast<typename ADTDefs::outseqlink*>(e));
 		}
 		template<typename D>
 		D &gd() {
@@ -411,7 +406,7 @@ public:
 		return m_subs;
 	}
 	template<typename GD>
-	
+
 	// to iterate on all edges in a graph
 	struct graphedge_set;
 	struct graphedge_iter {
@@ -622,8 +617,8 @@ public:
 		node_iter i = nodes().find(e->tail);
 		if(i==nodes().end())
 			return 0;
-		outedge_iter j = (*i)->m_outs.find(e);
-		if(j==(*i)->m_outs.end())
+		outedge_iter j = (*i)->outs().find(e);
+		if(j==(*i)->outs().end())
 			return 0;
 		else
 			return *j;
