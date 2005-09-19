@@ -5,8 +5,7 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I/usr/local/graphviz/include \
-	-I../../../boost
+	-I/usr/local/graphviz/include 
 
 DEFINES = -DHAVE_CONFIG_H
 
