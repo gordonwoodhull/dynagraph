@@ -28,8 +28,10 @@ libincrface.a : $(OBJS)
 $(OBJS) : $(HFILES)
 
 install: libincrface.a
-#	$(MKPATH) $(LIBDIR)
-#	$(INSTALL) libincrface.a $(LIBDIR)
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) IncrLangEvents.h $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libincrface.a $(LIBDIR)
 
 incrscan.cpp: incrscan.lpp
 	$(FLEX) incrscan.lpp
