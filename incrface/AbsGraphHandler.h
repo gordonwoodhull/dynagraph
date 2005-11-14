@@ -81,7 +81,7 @@ bool AbsGraphHandler<NGraph>::incr_ev_close_graph() {
 }
 template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_mod_graph(const StrAttrs &attrs) {
-    gd<StrAttrs>(g) = attrs;
+    gd<StrAttrs>(g) += attrs;
     maybe_go();
     return true;
 }

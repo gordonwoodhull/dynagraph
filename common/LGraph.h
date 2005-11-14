@@ -59,11 +59,13 @@ struct ADTisSTL {
 		};
 
 		struct edge_parent {};
-		struct node_parent {
+		struct edge_data {};
+		struct node_parent {};
+		struct node_data {
 			inedge_order m_ins;
 			outedge_order m_outs;
 			edge_by_head_order m_outFinder; // used exclusively by find_edge(t,h)
-			node_parent(graph_adtdata &gadt) {}
+			node_data(graph_adtdata &gadt) {}
 		};
 	};
 };

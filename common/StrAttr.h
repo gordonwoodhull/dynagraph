@@ -17,9 +17,11 @@
 
 #ifndef strattr_h
 #define strattr_h
-
-// string attributes & names are not used directly by the dynagraph layout engines;
+// string attributes & names are (mostly) not used directly by the dynagraph layout engines;
 // they are used by the command-line tool to name & tag things the way dot does.
+
+#include "LGraph.h"
+#include "LGraph-cdt.h"
 #include "StringDict.h"
 #include "traversal.h"
 #include <map>
