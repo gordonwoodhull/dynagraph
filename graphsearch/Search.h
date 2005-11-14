@@ -36,7 +36,7 @@ struct SearchStage {
 	DString weightattr;
 	SearchStage(StrGraph *parent) : result(parent),done(false),limit(0),pattern(0),
 		goIn(true),goOut(true),firstOnly(false),shortest(false) {}
-	SearchStage(const SearchStage &o) : type(o.type),pattern(o.pattern),result(o.result),done(false),limit(o.limit),
+	SearchStage(const SearchStage &o) : type(o.type),result(o.result),done(false),limit(o.limit),pattern(o.pattern),
 		goIn(o.goIn),goOut(o.goOut),firstOnly(o.firstOnly),shortest(o.shortest),weightattr(o.weightattr) {}
 };
 // edge names match pattern's start state name(s) or "a" or "b" for PathInquiry

@@ -1,7 +1,7 @@
 # configuration for good old make.
 # select an architecture from makearch/*
 # ...one of:  sgi.mips3 sgi.mips2 sol.sun4 sol6.sun4 sun4 linux.i386
-ARCH=osx
+ARCH=linux.i386
 
 # specify root directory for installation
 INSTALLROOT=/usr/local/dynagraph
@@ -56,19 +56,3 @@ TK_LIBDIR=$(TKDIR)/lib
 TK_INCDIR=$(TKDIR)/include
 
 VERSION=2.6
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
-VERSION=
