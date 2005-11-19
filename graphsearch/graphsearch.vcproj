@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\inorganic\dynagraph\debug"
-			IntermediateDirectory="\inorganic\dynagraph\debug\graphsearch"
+			OutputDirectory="debug"
+			IntermediateDirectory="debug\graphsearch"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,16 +23,16 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix; ../boost"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix; ../boost"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
-				PrecompiledHeaderFile="\inorganic\dynagraph\debug\graphsearch/graphsearch.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\debug\graphsearch/"
-				ObjectFile="\inorganic\dynagraph\debug\graphsearch/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\debug\graphsearch/"
+				PrecompiledHeaderFile="debug\graphsearch/graphsearch.pch"
+				AssemblerListingLocation="debug\graphsearch/"
+				ObjectFile="debug\graphsearch/"
+				ProgramDataBaseFileName="debug\graphsearch/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -45,7 +45,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="\inorganic\dynagraph\debug\graphsearch.exe"
+				OutputFile="debug\graphsearch.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
@@ -78,8 +78,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\inorganic\dynagraph\release"
-			IntermediateDirectory="\inorganic\dynagraph\release\graphsearch"
+			OutputDirectory="release"
+			IntermediateDirectory="release\graphsearch"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -88,14 +88,14 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix; ../boost"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix; ../boost"
 				PreprocessorDefinitions="WIN32,_DEBUG,_CONSOLE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\debug\graphsearch/graphsearch.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\debug\graphsearch/"
-				ObjectFile="\inorganic\dynagraph\debug\graphsearch/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\debug\graphsearch/"
+				PrecompiledHeaderFile="debug\graphsearch/graphsearch.pch"
+				AssemblerListingLocation="debug\graphsearch/"
+				ObjectFile="debug\graphsearch/"
+				ProgramDataBaseFileName="debug\graphsearch/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -108,7 +108,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="\inorganic\dynagraph\release\graphsearch.exe"
+				OutputFile="release\graphsearch.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="FALSE"
@@ -150,28 +150,28 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\Collapse.cpp">
+				RelativePath="Collapse.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\graphsearch.cpp">
+				RelativePath="graphsearch.cpp">
 			</File>
 			<File
 				RelativePath="graphsearch.rc">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\gscmds.cpp">
+				RelativePath="gscmds.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\gsgram.cpp">
+				RelativePath="gsgram.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\gsscan.cpp">
+				RelativePath="gsscan.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\Pattern.cpp">
+				RelativePath="Pattern.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\graphsearch\Search.cpp">
+				RelativePath="Search.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool

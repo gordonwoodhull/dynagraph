@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="dg"
+	Name="dynagraph"
 	ProjectGUID="{08770A00-374D-484A-B4E4-9168297EBA07}"
 	SccProjectName=""
 	SccLocalPath="">
@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\Inorganic\dynagraph\debug\dg"
-			IntermediateDirectory="\Inorganic\dynagraph\debug\dg"
+			OutputDirectory="\Inorganic\dynagraph\debug\dynagraph"
+			IntermediateDirectory="\Inorganic\dynagraph\debug\dynagraph"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,17 +23,17 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix;../graphviz/pathplan"
+				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="\Inorganic\dynagraph\debug\dg/dg.pch"
-				AssemblerListingLocation="\Inorganic\dynagraph\debug\dg/"
-				ObjectFile="\Inorganic\dynagraph\debug\dg/"
-				ProgramDataBaseFileName="\Inorganic\dynagraph\debug\dg/"
+				PrecompiledHeaderFile="\Inorganic\dynagraph\debug\dynagraph/dynagraph.pch"
+				AssemblerListingLocation="\Inorganic\dynagraph\debug\dynagraph/"
+				ObjectFile="\Inorganic\dynagraph\debug\dynagraph/"
+				ProgramDataBaseFileName="\Inorganic\dynagraph\debug\dynagraph/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -79,8 +79,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\Inorganic\dynagraph\release\dg"
-			IntermediateDirectory="\Inorganic\dynagraph\release\dg"
+			OutputDirectory="\Inorganic\dynagraph\release\dynagraph"
+			IntermediateDirectory="\Inorganic\dynagraph\release\dynagraph"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -90,16 +90,16 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix;../graphviz/pathplan"
+				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
 				PreprocessorDefinitions="NDEBUG,_CONSOLE,__IMPORT__=extern,WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="\Inorganic\dynagraph\release\dg/dg.pch"
-				AssemblerListingLocation="\Inorganic\dynagraph\release\dg/"
-				ObjectFile="\Inorganic\dynagraph\release\dg/"
-				ProgramDataBaseFileName="\Inorganic\dynagraph\release\dg/"
+				PrecompiledHeaderFile="\Inorganic\dynagraph\release\dynagraph/dynagraph.pch"
+				AssemblerListingLocation="\Inorganic\dynagraph\release\dynagraph/"
+				ObjectFile="\Inorganic\dynagraph\release\dynagraph/"
+				ProgramDataBaseFileName="\Inorganic\dynagraph\release\dynagraph/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -157,7 +157,7 @@
 				RelativePath="dynagraph.rc">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\example_no_incrface.cpp">
+				RelativePath="example_no_incrface.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="TRUE">
@@ -172,7 +172,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\example_with_incrface.cpp">
+				RelativePath="example_with_incrface.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="TRUE">
@@ -187,7 +187,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\main.cpp">
+				RelativePath="main.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool

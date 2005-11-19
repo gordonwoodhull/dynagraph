@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\inorganic\dynagraph\debug\shortspline"
-			IntermediateDirectory="\inorganic\dynagraph\debug\shortspline"
+			OutputDirectory="debug\shortspline"
+			IntermediateDirectory="debug\shortspline"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,17 +23,17 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/pathplan;../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\debug\shortspline/shortspline.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\debug\shortspline/"
-				ObjectFile="\inorganic\dynagraph\debug\shortspline/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\debug\shortspline/"
+				PrecompiledHeaderFile="debug\shortspline/shortspline.pch"
+				AssemblerListingLocation="debug\shortspline/"
+				ObjectFile="debug\shortspline/"
+				ProgramDataBaseFileName="debug\shortspline/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -44,7 +44,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\debug\shortspline\shortspline.lib"
+				OutputFile="debug\shortspline\shortspline.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -72,8 +72,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\inorganic\dynagraph\release\shortspline"
-			IntermediateDirectory="\inorganic\dynagraph\release\shortspline"
+			OutputDirectory="release\shortspline"
+			IntermediateDirectory="release\shortspline"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -83,16 +83,16 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/pathplan;../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\release\shortspline/shortspline.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\release\shortspline/"
-				ObjectFile="\inorganic\dynagraph\release\shortspline/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\release\shortspline/"
+				PrecompiledHeaderFile="release\shortspline/shortspline.pch"
+				AssemblerListingLocation="release\shortspline/"
+				ObjectFile="release\shortspline/"
+				ProgramDataBaseFileName="release\shortspline/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -102,7 +102,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\release\shortspline\shortspline.lib"
+				OutputFile="release\shortspline\shortspline.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -138,13 +138,13 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\graphviz\dynagraph\shortspline\legal_arrangement.c">
+				RelativePath="legal_arrangement.c">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\shortspline\ObAvSplinerEngine.cpp">
+				RelativePath="ObAvSplinerEngine.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\shortspline\ObstacleAvoiderSpliner.cpp">
+				RelativePath="ObstacleAvoiderSpliner.cpp">
 			</File>
 		</Filter>
 		<Filter

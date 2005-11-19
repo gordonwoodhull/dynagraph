@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\inorganic\dynagraph\debug\voronoi"
-			IntermediateDirectory="\inorganic\dynagraph\debug\voronoi"
+			OutputDirectory="debug\voronoi"
+			IntermediateDirectory="debug\voronoi"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,16 +23,16 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
-				PrecompiledHeaderFile="\inorganic\dynagraph\debug\voronoi/voronoi.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\debug\voronoi/"
-				ObjectFile="\inorganic\dynagraph\debug\voronoi/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\debug\voronoi/"
+				PrecompiledHeaderFile="debug\voronoi/voronoi.pch"
+				AssemblerListingLocation="debug\voronoi/"
+				ObjectFile="debug\voronoi/"
+				ProgramDataBaseFileName="debug\voronoi/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -43,7 +43,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\debug\voronoi\voronoi.lib"
+				OutputFile="debug\voronoi\voronoi.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -71,8 +71,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\inorganic\dynagraph\release\voronoi"
-			IntermediateDirectory="\inorganic\dynagraph\release\voronoi"
+			OutputDirectory="release\voronoi"
+			IntermediateDirectory="release\voronoi"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -82,16 +82,16 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\release\voronoi/voronoi.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\release\voronoi/"
-				ObjectFile="\inorganic\dynagraph\release\voronoi/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\release\voronoi/"
+				PrecompiledHeaderFile="release\voronoi/voronoi.pch"
+				AssemblerListingLocation="release\voronoi/"
+				ObjectFile="release\voronoi/"
+				ProgramDataBaseFileName="release\voronoi/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -101,7 +101,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\release\voronoi\voronoi.lib"
+				OutputFile="release\voronoi\voronoi.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -137,25 +137,25 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\edges.cpp">
+				RelativePath="edges.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\heap.cpp">
+				RelativePath="heap.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\hedges.cpp">
+				RelativePath="hedges.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\info.cpp">
+				RelativePath="info.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\process.cpp">
+				RelativePath="process.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\site.cpp">
+				RelativePath="site.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\voronoi\voronoi.cpp">
+				RelativePath="voronoi.cpp">
 			</File>
 		</Filter>
 		<Filter

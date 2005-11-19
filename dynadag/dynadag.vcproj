@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\inorganic\dynagraph\release\dynadag"
-			IntermediateDirectory="\inorganic\dynagraph\release\dynadag"
+			OutputDirectory="release\dynadag"
+			IntermediateDirectory="release\dynadag"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -24,16 +24,16 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix;../graphviz/pathplan"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\release\dynadag/dynadag.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\release\dynadag/"
-				ObjectFile="\inorganic\dynagraph\release\dynadag/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\release\dynadag/"
+				PrecompiledHeaderFile="release\dynadag/dynadag.pch"
+				AssemblerListingLocation="release\dynadag/"
+				ObjectFile="release\dynadag/"
+				ProgramDataBaseFileName="release\dynadag/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -44,7 +44,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\release\dynadag\dynadag.lib"
+				OutputFile="release\dynadag\dynadag.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -74,8 +74,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\inorganic\dynagraph\debug\dynadag"
-			IntermediateDirectory="\inorganic\dynagraph\debug\dynadag"
+			OutputDirectory="debug\dynadag"
+			IntermediateDirectory="debug\dynadag"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -84,17 +84,17 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix;../graphviz/pathplan"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\debug\dynadag/dynadag.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\debug\dynadag/"
-				ObjectFile="\inorganic\dynagraph\debug\dynadag/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\debug\dynadag/"
+				PrecompiledHeaderFile="debug\dynadag/dynadag.pch"
+				AssemblerListingLocation="debug\dynadag/"
+				ObjectFile="debug\dynadag/"
+				ProgramDataBaseFileName="debug\dynadag/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
@@ -104,7 +104,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\debug\dynadag\dynadag.lib"
+				OutputFile="debug\dynadag\dynadag.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -138,16 +138,16 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Check.cpp">
+				RelativePath="Check.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Config.cpp">
+				RelativePath="Config.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\ConstraintGraph.cpp">
+				RelativePath="ConstraintGraph.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\DotlikeOptimizer.cpp">
+				RelativePath="DotlikeOptimizer.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -158,40 +158,40 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\DynaDAG.cpp">
+				RelativePath="DynaDAG.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\FlexiSpline.cpp">
+				RelativePath="FlexiSpline.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\getCrossoptModelNodes.cpp">
+				RelativePath="getCrossoptModelNodes.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Measurements.cpp">
+				RelativePath="Measurements.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Medians.cpp">
+				RelativePath="Medians.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Ranker.cpp">
+				RelativePath="Ranker.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\SetYs.cpp">
+				RelativePath="SetYs.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\SiftMatrix.cpp">
+				RelativePath="SiftMatrix.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Spline.cpp">
+				RelativePath="Spline.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\Update.cpp">
+				RelativePath="Update.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\UVCross.cpp">
+				RelativePath="UVCross.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\dynadag\XSolver.cpp">
+				RelativePath="XSolver.cpp">
 			</File>
 		</Filter>
 		<Filter

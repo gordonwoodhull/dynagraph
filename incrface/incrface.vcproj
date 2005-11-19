@@ -12,15 +12,15 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\inorganic\dynagraph\debug\incrface"
-			IntermediateDirectory="\inorganic\dynagraph\debug\incrface"
+			OutputDirectory="debug\incrface"
+			IntermediateDirectory="debug\incrface"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix;../graphviz/pathplan"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
@@ -35,7 +35,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\debug\incrface\incrface.lib"/>
+				OutputFile="debug\incrface\incrface.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\$(ProjectName).tlb"
@@ -60,8 +60,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\inorganic\dynagraph\release\incrface"
-			IntermediateDirectory="\inorganic\dynagraph\release\incrface"
+			OutputDirectory="release\incrface"
+			IntermediateDirectory="release\incrface"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
@@ -70,7 +70,7 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix;../graphviz/pathplan"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -84,7 +84,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\release\incrface\incrface.lib"/>
+				OutputFile="release\incrface\incrface.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName="$(InputName).tlb"
@@ -117,10 +117,10 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\createLayoutServer.cpp">
+				RelativePath="createLayoutServer.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\DinoMachineHandler.cpp">
+				RelativePath="DinoMachineHandler.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -128,7 +128,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\DynaView.cpp">
+				RelativePath="DynaView.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -136,16 +136,16 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\incrcmds.cpp">
+				RelativePath="incrcmds.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\incrgram.cpp">
+				RelativePath="incrgram.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\incrout.cpp">
+				RelativePath="incrout.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\incrface\incrscan.cpp">
+				RelativePath="incrscan.cpp">
 			</File>
 		</Filter>
 		<Filter

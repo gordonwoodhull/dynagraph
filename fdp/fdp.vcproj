@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\inorganic\dynagraph\debug\fdp"
-			IntermediateDirectory="\inorganic\dynagraph\debug\fdp"
+			OutputDirectory="debug\fdp"
+			IntermediateDirectory="debug\fdp"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,17 +23,17 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\debug\fdp/fdp.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\debug\fdp/"
-				ObjectFile="\inorganic\dynagraph\debug\fdp/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\debug\fdp/"
+				PrecompiledHeaderFile="debug\fdp/fdp.pch"
+				AssemblerListingLocation="debug\fdp/"
+				ObjectFile="debug\fdp/"
+				ProgramDataBaseFileName="debug\fdp/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -44,7 +44,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\debug\fdp\fdp.lib"
+				OutputFile="debug\fdp\fdp.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -72,8 +72,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\inorganic\dynagraph\release\fdp"
-			IntermediateDirectory="\inorganic\dynagraph\release\fdp"
+			OutputDirectory="release\fdp"
+			IntermediateDirectory="release\fdp"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -83,16 +83,16 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="\inorganic\dynagraph\release\fdp/fdp.pch"
-				AssemblerListingLocation="\inorganic\dynagraph\release\fdp/"
-				ObjectFile="\inorganic\dynagraph\release\fdp/"
-				ProgramDataBaseFileName="\inorganic\dynagraph\release\fdp/"
+				PrecompiledHeaderFile="release\fdp/fdp.pch"
+				AssemblerListingLocation="release\fdp/"
+				ObjectFile="release\fdp/"
+				ProgramDataBaseFileName="release\fdp/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -103,7 +103,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\inorganic\dynagraph\release\fdp\fdp.lib"
+				OutputFile="release\fdp\fdp.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -139,13 +139,13 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\graphviz\dynagraph\fdp\grid.cpp">
+				RelativePath="grid.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\fdp\layout.cpp">
+				RelativePath="layout.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\fdp\process.cpp">
+				RelativePath="process.cpp">
 			</File>
 		</Filter>
 		<Filter

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="dgcore"
+	Name="dynagraphlib"
 	ProjectGUID="{099FC3A1-5508-44EF-A60A-C0E27DD5CA7A}"
 	SccProjectName=""
 	SccLocalPath="">
@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\Inorganic\dynagraph\debug\dgcore"
-			IntermediateDirectory="\Inorganic\dynagraph\debug\dgcore"
+			OutputDirectory="debug\dynagraphlib"
+			IntermediateDirectory="debug\dynagraphlib"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,16 +23,16 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
-				PrecompiledHeaderFile="\Inorganic\dynagraph\debug\dgcore/dgcore.pch"
-				AssemblerListingLocation="\Inorganic\dynagraph\debug\dgcore/"
-				ObjectFile="\Inorganic\dynagraph\debug\dgcore/"
-				ProgramDataBaseFileName="\Inorganic\dynagraph\debug\dgcore/"
+				PrecompiledHeaderFile="debug\dynagraphlib/dynagraphlib.pch"
+				AssemblerListingLocation="debug\dynagraphlib/"
+				ObjectFile="debug\dynagraphlib/"
+				ProgramDataBaseFileName="debug\dynagraphlib/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -43,7 +43,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\Inorganic\dynagraph\debug\dgcore\dgcore.lib"
+				OutputFile="debug\dynagraphlib\dynagraphlib.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -71,8 +71,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\Inorganic\dynagraph\release\dgcore"
-			IntermediateDirectory="\Inorganic\dynagraph\release\dgcore"
+			OutputDirectory="release\dynagraphlib"
+			IntermediateDirectory="release\dynagraphlib"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -82,15 +82,15 @@
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="FALSE"
 				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../graphviz/dynagraph;../graphviz/agraph;../graphviz/cdt;./fauxunix"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
-				PrecompiledHeaderFile="\Inorganic\dynagraph\release\dgcore/dgcore.pch"
-				AssemblerListingLocation="\Inorganic\dynagraph\release\dgcore/"
-				ObjectFile="\Inorganic\dynagraph\release\dgcore/"
-				ProgramDataBaseFileName="\Inorganic\dynagraph\release\dgcore/"
+				PrecompiledHeaderFile="release\dynagraphlib/dynagraphlib.pch"
+				AssemblerListingLocation="release\dynagraphlib/"
+				ObjectFile="release\dynagraphlib/"
+				ProgramDataBaseFileName="release\dynagraphlib/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -101,7 +101,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="\Inorganic\dynagraph\release\dgcore\dgcore.lib"
+				OutputFile="release\dynagraphlib\dynagraphlib.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -137,55 +137,55 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\graphviz\dynagraph\common\ag2str.cpp">
+				RelativePath="ag2str.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\ColorByAge.cpp">
+				RelativePath="ColorByAge.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\colors.cpp">
+				RelativePath="colors.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Dynagraph.cpp">
+				RelativePath="Dynagraph.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\ellipse2bezier.cpp">
+				RelativePath="ellipse2bezier.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\FindChangeRect.cpp">
+				RelativePath="FindChangeRect.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\genpoly.cpp">
+				RelativePath="genpoly.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\LabelPlacer.cpp">
+				RelativePath="LabelPlacer.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Line.cpp">
+				RelativePath="Line.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\parsestr.cpp">
+				RelativePath="parsestr.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\PolyBarriers.cpp">
+				RelativePath="PolyBarriers.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Region.cpp">
+				RelativePath="Region.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Route.cpp">
+				RelativePath="Route.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\ShapeGenerator.cpp">
+				RelativePath="ShapeGenerator.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Shortest.cpp">
+				RelativePath="Shortest.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Solvers.cpp">
+				RelativePath="Solvers.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\StringDict.cpp">
+				RelativePath="StringDict.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
@@ -194,41 +194,41 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\stringsIn.cpp">
+				RelativePath="stringsIn.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\stringsOut.cpp">
+				RelativePath="stringsOut.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\time-o-matic.cpp">
+				RelativePath="time-o-matic.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Transform.cpp">
+				RelativePath="Transform.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\useful.cpp">
+				RelativePath="useful.cpp">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\xlines.c">
+				RelativePath="xlines.c">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Dynagraph.h">
+				RelativePath="Dynagraph.h">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Geometry.h">
+				RelativePath="Geometry.h">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Strattr.h">
+				RelativePath="Strattr.h">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\traversal.h">
+				RelativePath="traversal.h">
 			</File>
 			<File
-				RelativePath="..\graphviz\dynagraph\common\Useful.h">
+				RelativePath="Useful.h">
 			</File>
 		</Filter>
 	</Files>
