@@ -5,7 +5,8 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I/usr/local/graphviz/include
+	-I/usr/local/graphviz/include \
+	-I/usr/local/include
 	
 LIBS = -L../common -ldynagraph \
 	-L/usr/local/graphviz/lib \
@@ -40,7 +41,7 @@ install: graphsearch
 #	$(INSTALL) graphsearch $(BINDIR)
 
 clean:
-	$(RM) *.o core
+	$(RM) *.o core gsgram.h gsgram.cpp gsscan.cpp
 
 distclean: clean
 	$(RM) *.a lib*.so.* graphsearch gsgram.cpp gsgram.h gsscan.cpp
