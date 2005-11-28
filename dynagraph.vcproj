@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\Inorganic\dynagraph\debug\dynagraph"
-			IntermediateDirectory="\Inorganic\dynagraph\debug\dynagraph"
+			OutputDirectory="debug"
+			IntermediateDirectory="debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -30,10 +30,10 @@
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="\Inorganic\dynagraph\debug\dynagraph/dynagraph.pch"
-				AssemblerListingLocation="\Inorganic\dynagraph\debug\dynagraph/"
-				ObjectFile="\Inorganic\dynagraph\debug\dynagraph/"
-				ProgramDataBaseFileName="\Inorganic\dynagraph\debug\dynagraph/"
+				PrecompiledHeaderFile="debug/dynagraph.pch"
+				AssemblerListingLocation="debug/"
+				ObjectFile="debug/"
+				ProgramDataBaseFileName="debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -46,7 +46,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="\Inorganic\dynagraph\debug\dynagraph.exe"
+				OutputFile="debug\dynagraph.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
@@ -79,8 +79,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\Inorganic\dynagraph\release\dynagraph"
-			IntermediateDirectory="\Inorganic\dynagraph\release\dynagraph"
+			OutputDirectory="release"
+			IntermediateDirectory="release"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -96,10 +96,10 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="\Inorganic\dynagraph\release\dynagraph/dynagraph.pch"
-				AssemblerListingLocation="\Inorganic\dynagraph\release\dynagraph/"
-				ObjectFile="\Inorganic\dynagraph\release\dynagraph/"
-				ProgramDataBaseFileName="\Inorganic\dynagraph\release\dynagraph/"
+				PrecompiledHeaderFile="release/dynagraph.pch"
+				AssemblerListingLocation="release/"
+				ObjectFile="release/"
+				ProgramDataBaseFileName="release/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -112,7 +112,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="\Inorganic\dynagraph\release\dynagraph.exe"
+				OutputFile="release\dynagraph.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="FALSE"
@@ -188,11 +188,6 @@
 			</File>
 			<File
 				RelativePath="main.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
