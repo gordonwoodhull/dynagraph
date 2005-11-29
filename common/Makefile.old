@@ -10,8 +10,8 @@ INCS =	-I.. -I../.. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	Line.o          Region.o \
-	StringDict.o \
+	Line.o          	Region.o \
+	StringDict.o 		Solvers.o 		LineTricks.o \
 	Transform.o             ag2str.o                Colors.o \
 	ellipse2bezier.o        genpoly.o               parsestr.o \
 	stringsIn.o             stringsOut.o            time-o-matic.o \
@@ -29,7 +29,7 @@ HFILES = \
 	engine_replacement.h    freelist.h              genpoly.h               moremath.h \
 	parsestr.h              randomName.h            reorient.h              stringsIn.h \
 	stringsOut.h            time-o-matic.h          traversal.h             useful.h \
-	weightedMedian.h
+	weightedMedian.h	Solvers.h
 
 libdynagraph.a : $(OBJS)
 	$(AR) cr libdynagraph.a $(OBJS)

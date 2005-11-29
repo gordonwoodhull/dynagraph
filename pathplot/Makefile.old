@@ -9,9 +9,9 @@ INCS =	-I.. -I../.. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = PolyBarriers.o Route.o Shortest.o Solvers.o
+OBJS = PolyBarriers.o Route.o Shortest.o
 
-HFILES = PathPlot.h Solvers.h BezCoeffs.h
+HFILES = PathPlot.h BezCoeffs.h
 
 libpathplot.a : $(OBJS)
 	$(AR) cr libpathplot.a $(OBJS)

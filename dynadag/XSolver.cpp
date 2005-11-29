@@ -160,7 +160,7 @@ void XSolver::doEdgeCost(DynaDAGLayout *subLayout) {
 	}
 }
 
-	// restore around changed nodes
+// restore around changed nodes
 void XSolver::fixLostEdges(DynaDAGLayout *subLayout) {
 	for(DynaDAGLayout::node_iter ni = subLayout->nodes().begin(); ni!=subLayout->nodes().end(); ++ni) {
 	  report(r_xsolver,"fixing multinode %p\n",DDp(*ni));

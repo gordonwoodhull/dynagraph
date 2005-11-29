@@ -19,7 +19,6 @@
 
 #include <math.h>
 #define W_DEGREE 5
-// in Route.cpp
 extern int splineIntersectsLine(const Coord *sps, Segment seg,double *roots); // both * are array[4]
 
 // adapted from incr/edgeclip.c

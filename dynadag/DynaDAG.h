@@ -421,6 +421,7 @@ inline unsigned crosslight(Crossings cc) {
 	return cc.edgeEdgeCross + cc.nodeEdgeCross + cc.nodeNodeCross;
 }
 struct Optimizer {
+	virtual ~Optimizer() {}
 	virtual void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) = 0;
 	virtual double Reopt(DDModel::Node *n,UpDown dir) = 0;
 };
@@ -882,7 +883,7 @@ void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out)
 struct XSolver : XConstraintOwner {
 	XSolver(Config &config, double xRes) :
 		xScale(1.0/xRes),config(config) {}
-        virtual ~XSolver() {} // to shut gcc up
+	virtual ~XSolver() {} 
 	const double xScale;
 	void Place(DDChangeQueue &changeQ);
 	void RemoveEdgeConstraints(DDModel::Edge *e);

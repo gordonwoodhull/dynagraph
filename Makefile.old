@@ -21,14 +21,15 @@ GLIBS = -Lcommon -ldynagraph \
        -lcdt -lagraph
 
 OTHERLIBS = -Lincrface -lincrface \
+	-Ldynadag -ldynadag \
+	-Lpathplot -lpathplot
 #	-Lfdp -lfdp \
-    -Ldynadag -ldynadag \
 #	-Lshortspline -lshortspline \
 #	-Lvoronoi -lvoronoi
 
 MANS = 
 
-dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a 
+dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libpathplot.a
 #libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) main.o $(OTHERLIBS) $(BASELIBS) -o dynagraph
 
@@ -46,6 +47,9 @@ libdynadag.a :
 
 libincrface.a :
 	(cd incrface; make)
+
+libpathplot.a :
+	(cd pathplot; make)
 
 #libfdp.a :
 #	(cd fdp; make)
