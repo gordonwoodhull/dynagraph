@@ -311,7 +311,7 @@ public:
 				t = l->create_node();
 				init_node(t);
 				Q.InsNode(t);
-				sprintf(buf,"n%d",l->nodes().size());
+				sprintf(buf,"n%u",l->nodes().size());
 				gd<Name>(t) = buf;
 			}
 			Q.InsNode(h);
@@ -613,7 +613,7 @@ int main(int argc, char *args[]) {
 					break;
 				}
 				catch(DGException2 dgx) {
-					fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype);
+					fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype,dgx.param);
 					break;
 				}
 				catch(DGException dgx) {

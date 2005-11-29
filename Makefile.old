@@ -1,4 +1,5 @@
-all : dynagraph gengraph graphsearch/graphsearch
+all : dynagraph gengraph 
+#graphsearch/graphsearch
 
 ROOT=.
 include $(ROOT)/Config.mk

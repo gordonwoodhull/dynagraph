@@ -1,7 +1,7 @@
 # configuration for good old make.
 # select an architecture from makearch/*
 # ...one of:  sgi.mips3 sgi.mips2 sol.sun4 sol6.sun4 sun4 linux.i386
-ARCH=linux.i386
+ARCH=osx
 
 # specify root directory for installation
 INSTALLROOT=/usr/local/dynagraph
@@ -42,17 +42,5 @@ PKGMANDIR=$(INSTALLROOT)/man/mann
 
 # postscipt and html docs
 DOCDIR=$(INSTALLROOT)/doc
-
-# location of libtcl.a
-TCL_LIBDIR=$(TCLDIR)/lib
-# location of tcl.h
-TCL_INCDIR=$(TCLDIR)/include
-# location to install tcl packages
-TCL_PKGDIR=$(LIBDIR)
-
-# location of libtk.a
-TK_LIBDIR=$(TKDIR)/lib
-# location of tk.h
-TK_INCDIR=$(TKDIR)/include
 
 VERSION=1.0
