@@ -15,11 +15,11 @@
 **********************************************************/
 
 
-#ifndef traversal_h
-#define traversal_h
-
 // so as not to mess with callbacks, this is iterators returning *both* node and edge
 // the edge was followed to get to the node, unless the traversal didn't follow an edge to get there.
+
+#ifndef TRAVERSAL_H
+#define TRAVERSAL_H
 
 #include <stack>
 #include <queue>
@@ -30,7 +30,7 @@
 // its operator*() returns both a Node* and an Edge*
 
 // embedded tag for simultaneous traversals
-const int MAX_TRAVERSAL = sizeof(unsigned long)*8; // this is the min for bitset
+const unsigned MAX_TRAVERSAL = sizeof(unsigned long)*8; // this is the min for bitset
 typedef std::bitset<MAX_TRAVERSAL> hitflags;
 typedef hitflags Hit;
 template<class G>
@@ -84,10 +84,10 @@ struct DFS : Traversal<G> {
 	}
 	DFS &operator++() {
 		if(m_curr.e)
-			gd<Hit>(m_curr.e)[m_hitpos] = true;
+			gd<Hit>(m_curr.e)[Traversal<G>::m_hitpos] = true;
 		else {
 			assert(m_curr.n);
-			gd<Hit>(m_curr.n)[m_hitpos] = true;
+			gd<Hit>(m_curr.n)[Traversal<G>::m_hitpos] = true;
 		}
 		// try edges
 		if(m_curr.n && follow())
@@ -106,10 +106,6 @@ struct DFS : Traversal<G> {
 	bool stopped() {
 		return m_stopped;
 	}
-    void start(Node *n = 0) {
-		m_nodeiter = n?g->iter(n):g->nodes().begin();
-		m_stopped = !next();
-    }
 	DFS(G *g,bool travAll=false,bool outward=true,bool inward=true,bool outsfirst=true) :
 		Traversal<G>(g),m_outward(outward),m_inward(inward),m_outsfirst(outsfirst),m_travAll(travAll),m_stopped(false)
 	{
@@ -151,10 +147,10 @@ private:
 	}
 	bool outs(typename G::outedge_iter start) {
 		for(typename G::outedge_iter ei = start; ei!=m_curr.n->outs().end(); ++ei)
-			if(!gd<Hit>(*ei)[m_hitpos]) {
+			if(!gd<Hit>(*ei)[Traversal<G>::m_hitpos]) {
 				m_stack.push(m_curr);
 				m_curr.e = *ei;
-				if(!gd<Hit>(m_curr.e->head)[m_hitpos])
+				if(!gd<Hit>(m_curr.e->head)[Traversal<G>::m_hitpos])
 					m_curr.n = m_curr.e->head;
 				else
 					m_curr.n = 0;
@@ -164,10 +160,10 @@ private:
 	}
 	bool ins(typename G::inedge_iter start) {
 		for(typename G::inedge_iter ei = start; ei!=m_curr.n->ins().end(); ++ei)
-			if(!gd<Hit>(*ei)[m_hitpos]) {
+			if(!gd<Hit>(*ei)[Traversal<G>::m_hitpos]) {
 				m_stack.push(m_curr);
 				m_curr.e = *ei;
-				if(!gd<Hit>(m_curr.e->tail)[m_hitpos])
+				if(!gd<Hit>(m_curr.e->tail)[Traversal<G>::m_hitpos])
 					m_curr.n = m_curr.e->tail;
 				else
 					m_curr.n = 0;
@@ -188,8 +184,8 @@ private:
 		return true;
 	}
 	bool next() {
-		for(;m_nodeiter!=m_g->parent->nodes().end();++m_nodeiter)
-			if(!gd<Hit>(*m_nodeiter)[m_hitpos]) {
+		for(;m_nodeiter!=Traversal<G>::m_g->parent->nodes().end();++m_nodeiter)
+			if(!gd<Hit>(*m_nodeiter)[Traversal<G>::m_hitpos]) {
 				m_curr.e = 0;
 				m_curr.n = *m_nodeiter;
 				m_nodeiter++;
@@ -213,30 +209,30 @@ struct BFS : Traversal<G> {
 		if(last.n) {
 			if(m_inwards)
 				for(typename G::inedge_iter ei = last.n->ins().begin(); ei!=last.n->ins().end(); ++ei)
-					if(!gd<Hit>(*ei)[m_hitpos]) {
+					if(!gd<Hit>(*ei)[Traversal<G>::m_hitpos]) {
 						Node *t = (*ei)->tail;
-						if(gd<Hit>(t)[m_hitpos])
+						if(gd<Hit>(t)[Traversal<G>::m_hitpos])
 							t = 0;
 						else
-							gd<Hit>(t)[m_hitpos] = true;
+							gd<Hit>(t)[Traversal<G>::m_hitpos] = true;
 						m_queue.push(V(*ei,t));
-						gd<Hit>(*ei)[m_hitpos] = true;
+						gd<Hit>(*ei)[Traversal<G>::m_hitpos] = true;
 					}
 			if(m_outwards)
 				for(typename G::outedge_iter ei = last.n->outs().begin(); ei!=last.n->outs().end(); ++ei)
-					if(!gd<Hit>(*ei)[m_hitpos]) {
+					if(!gd<Hit>(*ei)[Traversal<G>::m_hitpos]) {
 						Node *h = (*ei)->head;
-						if(gd<Hit>(h)[m_hitpos])
+						if(gd<Hit>(h)[Traversal<G>::m_hitpos])
 							h = 0;
 						else
-							gd<Hit>(h)[m_hitpos] = true;
+							gd<Hit>(h)[Traversal<G>::m_hitpos] = true;
 						m_queue.push(V(*ei,h));
-						gd<Hit>(*ei)[m_hitpos] = true;
+						gd<Hit>(*ei)[Traversal<G>::m_hitpos] = true;
 					}
 		}
 		if(m_queue.empty() && m_travAll)
-			for(;m_nodeiter!=m_g->nodes().end(); ++m_nodeiter)
-				if(!gd<Hit>(*m_nodeiter)[m_hitpos])
+			for(;m_nodeiter!=Traversal<G>::m_g->nodes().end(); ++m_nodeiter)
+				if(!gd<Hit>(*m_nodeiter)[Traversal<G>::m_hitpos])
                     add(*m_nodeiter);
 		return *this;
 	}
@@ -245,19 +241,19 @@ struct BFS : Traversal<G> {
 	}
     void start(typename G::Node *n = 0) {
         if(m_travAll) {
-		    m_nodeiter = m_g->nodes().begin();
-            if(!n && m_nodeiter!=m_g->nodes().end())
+		    m_nodeiter = Traversal<G>::m_g->nodes().begin();
+            if(!n && m_nodeiter!=Traversal<G>::m_g->nodes().end())
                 n = *m_nodeiter;
         }
         if(n)
             add(n);
     }
     void add(Node *n) {
-        gd<Hit>(n)[m_hitpos] = true;
+        gd<Hit>(n)[Traversal<G>::m_hitpos] = true;
         m_queue.push(V(0,n));
 	}
 	BFS(G *g,bool travAll = false,bool inwards=true,bool outwards=true) :
-        Traversal<G>(g),m_travAll(travAll), m_inwards(inwards),m_outwards(outwards) {
+        Traversal<G>(g), m_inwards(inwards),m_outwards(outwards),m_travAll(travAll) {
 	}
 private:
 	bool m_inwards,m_outwards,m_travAll;
@@ -267,4 +263,4 @@ private:
 
 };
 
-#endif // traversal_h
+#endif // TRAVERSAL_H

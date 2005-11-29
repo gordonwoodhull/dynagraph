@@ -23,7 +23,7 @@
 
 template<typename G>
 void emitGraph(std::ostream &os,G *g) {
-  os << "digraph " << mquote(gd<Name>(g)) << " {" << endl;
+  os << "digraph " << mquote(gd<Name>(g)) << " {" << std::endl;
   StrAttrs gattrs = gd<StrAttrs>(g);
   if(!gattrs.empty())
       os << "\tgraph " << gattrs << std::endl;
@@ -55,7 +55,7 @@ void emitGraph2(std::ostream &os,G *g) {
 	Name &gname = (ati!=gd<StrAttrs>(g).end())?ati->second:gd<Name>(g);
 
 	os << "digraph " << mquote(gname);
-    os << " {" << endl;
+    os << " {" << std::endl;
     StrAttrs gattrs = gd<StrAttrs>(g);
     if(!gattrs.empty())
         os << "\tgraph " << gattrs << std::endl;

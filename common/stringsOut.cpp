@@ -21,7 +21,6 @@
 #include <iomanip>
 using namespace std;
 
-const unsigned int AllFlags = 0xffffffff;
 // these write dynagraph Geom changes to the StrAttrs and StrAttrChanges attributes
 DString g_NLPNames[5] = {"center","right","top","left","bottom"};
 
@@ -69,7 +68,7 @@ void stringifyPos(const Position &p,Transform *trans,const Coord &res,StrAttrs2 
 	ostringstream o;
 	initStream(o,res);
 	if(p.valid) {
-		Position p2 = trans?trans->out(p):p;
+		Position p2 = trans?Position(trans->out(p)):p;
 		o << p2.x << ',' << p2.y;
 	}
 	out.put("pos",o.str());

@@ -218,10 +218,10 @@ struct MultiNode : Chain<N,E> {
 		typename Chain<N,E>::edge_iter ei;
 	};
 	node_iter nBegin() {
-		return node_iter(eBegin(),false);
+		return node_iter(Chain<N,E>::eBegin(),false);
 	}
 	node_iter nEnd() {
-		return node_iter(eEnd(),true);
+		return node_iter(Chain<N,E>::eEnd(),true);
 	}
 	Position pos() {
 		if(!top() || !DDd(top()).cur.valid)
@@ -229,14 +229,14 @@ struct MultiNode : Chain<N,E> {
 		return Position(DDd(top()).cur.x,(DDd(top()).cur.y+DDd(bottom()).cur.y)/2.0);
 	}
 	N *top() {
-		return node?node:first->tail;
+		return node?node:Chain<N,E>::first->tail;
 	}
 	N *bottom() {
-		return node?node:last->head;
+		return node?node:Chain<N,E>::last->head;
 	}
 	int len() {
 		int n=0;
-		for(node_iter ni = nBegin(); ni!=nEnd(); ++ni,++n);
+		for(node_iter ni = Chain<N,E>::nBegin(); ni!=Chain<N,E>::nEnd(); ++ni,++n);
 		return n;
 	}
 };

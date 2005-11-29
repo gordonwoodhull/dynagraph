@@ -66,9 +66,9 @@ Server<Layout> *createLayoutServer(Layout *client,Layout *current) {
 		creators<Layout> &the_creators = creators<Layout>::the_creators;
 		typename ServerCreator<Layout>::create_fn crea = the_creators[*ei];
 		if(!crea) {
-			cout << the_creators.size() << " creators:" << endl;
+			std::cout << the_creators.size() << " creators:" << std::endl;
 			for(typename creators<Layout>::iterator ci = the_creators.begin(); ci!=the_creators.end(); ++ci)
-				std::cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << endl;
+				std::cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
 			delete eng;
 			throw DGNonFatalException("engine name not known",strdup(ei->c_str())); // excuse me
 		}

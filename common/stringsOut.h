@@ -17,6 +17,8 @@
 #ifndef stringsOut_h
 #define stringsOut_h
 
+const unsigned int AllFlags = 0xffffffff;
+
 void stringifyDrawn(const Drawn &d,StrAttrs2 &out);
 void outBounds(std::ostream &o,const Bounds &b);
 void stringifyBounds(const Bounds &b,Transform *trans,const Coord &res,StrAttrs2 &out);

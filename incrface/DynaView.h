@@ -298,13 +298,13 @@ bool DynaView<Layout>::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
     if(!dgserver)
         return false;
     incr_set_handler(gd<Name>(&layout) = graph,this);
-	cout << (isModify?"modify":"open") << " graph " << graph << " " << gd<StrAttrs2>(&layout) << endl;
+	std::cout << (isModify?"modify":"open") << " graph " << graph << " " << gd<StrAttrs2>(&layout) << std::endl;
 	gd<StrAttrChanges>(&layout).clear();
     return true;
 }
 template<typename Layout>
 bool DynaView<Layout>::incr_ev_close_graph() {
-    cout << "close graph " << gd<Name>(&layout) << endl;
+    std::cout << "close graph " << gd<Name>(&layout) << std::endl;
     return true;
 }
 template<typename Layout>
@@ -426,8 +426,8 @@ bool DynaView<Layout>::incr_ev_del_edge(DString name) {
 }
 template<typename Layout>
 bool DynaView<Layout>::incr_ev_req_graph() {
-	cout << "fulfil graph " << gd<Name>(&layout) << endl;
-	emitGraph(cout,&layout);
+	std::cout << "fulfil graph " << gd<Name>(&layout) << std::endl;
+	emitGraph(std::cout,&layout);
     return true;
 }
 template<typename Layout>
@@ -435,7 +435,7 @@ bool DynaView<Layout>::incr_ev_req_node(DString name) {
     typename Layout::Node *n = getNode(name).first;
     if(!n)
         throw DVNodeDoesNotExist(name.c_str());
-	cout << "fulfil node " << gd<Name>(&layout) << " " << name << " " << gd<StrAttrs>(n);
+	std::cout << "fulfil node " << gd<Name>(&layout) << " " << name << " " << gd<StrAttrs>(n);
     return true;
 }
 template<typename Layout>
@@ -443,7 +443,7 @@ bool DynaView<Layout>::incr_ev_req_edge(DString name) {
     typename Layout::Edge *e = getEdge(name);
     if(!e)
         throw DVEdgeDoesNotExist(name.c_str());
-    cout << "fulfil edge " << gd<Name>(&layout) << " " << name << " " << gd<StrAttrs>(e);
+    std::cout << "fulfil edge " << gd<Name>(&layout) << " " << name << " " << gd<StrAttrs>(e);
     return true;
 }
 template<typename Layout>

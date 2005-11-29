@@ -21,14 +21,15 @@ GLIBS = -Lcommon -ldynagraph \
        -lcdt -lagraph
 
 OTHERLIBS = -Lincrface -lincrface \
-	-Lfdp -lfdp \
+#	-Lfdp -lfdp \
     -Ldynadag -ldynadag \
-	-Lshortspline -lshortspline \
-	-Lvoronoi -lvoronoi
+#	-Lshortspline -lshortspline \
+#	-Lvoronoi -lvoronoi
 
 MANS = 
 
-dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libfdp.a libvoronoi.a libshortspline.a
+dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a 
+#libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) main.o $(OTHERLIBS) $(BASELIBS) -o dynagraph
 
 gengraph : gengraph.o libdynagraph.a
@@ -46,21 +47,19 @@ libdynadag.a :
 libincrface.a :
 	(cd incrface; make)
 
-libfdp.a :
-	(cd fdp; make)
+#libfdp.a :
+#	(cd fdp; make)
 
-libvoronoi.a :
-	(cd voronoi; make)
+#libvoronoi.a :
+#	(cd voronoi; make)
 
-libshortspline.a :
-	(cd shortspline; make)
+#libshortspline.a :
+#	(cd shortspline; make)
 
 install: dynagraph gengraph
 	(for i in ${SUBDIRS}; do (cd $$i; make install); done)       
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dynagraph $(BINDIR)
-#	$(MKPATH) $(MANDIR)
-#	$(INSTALL) $(MANS) $(MANDIR)
 
 distclean clean:
 	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
