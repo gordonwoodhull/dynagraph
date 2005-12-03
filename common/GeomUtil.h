@@ -112,4 +112,4 @@ inline Position intersection( Coord a, Coord b, Coord c, Coord d) {
     else ret.valid = false;
 	return ret;
 }
-#endif GeomUtil_h
+#endif //GeomUtil_h

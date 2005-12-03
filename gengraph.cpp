@@ -99,7 +99,6 @@ int main(int narg,char *argh[]) {
 			}
 			gd<StrAttrs>(e)["color"] = color;
 		}
-		char buf[10];
 		if(maxweight) {
 			ostringstream os;
 			os << rand()%maxweight;
