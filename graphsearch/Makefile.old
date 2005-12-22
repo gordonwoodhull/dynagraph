@@ -5,12 +5,11 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I/usr/local/graphviz/include \
-	-I/usr/local/include
+	-I$(GRAPHVIZ_INC) \
+	-I$(BOOST_INC)
 	
 LIBS = -L../common -ldynagraph \
-	-L/usr/local/graphviz/lib \
-	-lagraph -l cdt
+	-L$(GRAPHVIZ_LIB) -lagraph -lcdt
 
 DEFINES = -DHAVE_CONFIG_H
 
