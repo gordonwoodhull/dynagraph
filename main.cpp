@@ -311,7 +311,7 @@ public:
 				t = l->create_node();
 				init_node(t);
 				Q.InsNode(t);
-				sprintf(buf,"n%u",l->nodes().size());
+				sprintf(buf,"n%u",(unsigned)l->nodes().size());
 				gd<Name>(t) = buf;
 			}
 			Q.InsNode(h);
