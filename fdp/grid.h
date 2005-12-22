@@ -51,6 +51,7 @@ struct Grid : derivable_dt { // cells indexed by (i,j)
 	Cell* find(int i, int j);
 	void walk(int(*walkf)(Dt_t *dt,void *cell,void *grid));
 	struct Visitor {
+		virtual ~Visitor() {}
 		virtual int VisitCell(Cell *cell,Grid *grid) = 0;
 	};
 	void walk(Visitor *visitor);

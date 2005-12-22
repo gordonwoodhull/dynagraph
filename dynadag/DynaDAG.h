@@ -417,10 +417,12 @@ inline unsigned crosslight(Crossings cc) {
 	return cc.edgeEdgeCross + cc.nodeEdgeCross + cc.nodeNodeCross;
 }
 struct Optimizer {
+	virtual ~Optimizer() {}
 	virtual void Reorder(Layout &nodes,Layout &edges) = 0;
 	virtual double Reopt(DDModel::Node *n,UpDown dir) = 0;
 };
 struct DynaDAGServices {
+	virtual ~DynaDAGServices() {}
 	virtual std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(Layout::Node *layoutN) = 0;
 	virtual void CloseModelNode(DDModel::Node *n) = 0;
 	virtual std::pair<DDPath*,DDModel::Edge*> OpenModelEdge(DDModel::Node *u, DDModel::Node *v, Layout::Edge *layoutE) = 0;
@@ -431,6 +433,7 @@ struct DynaDAGServices {
 // config needs to erase x ordering constraints but otherwise doesn't "do" constraints.
 // thus XSolver should handle it.
 struct XConstraintOwner {
+	virtual ~XConstraintOwner() {}
 	virtual void RemoveNodeConstraints(DDModel::Node *n) = 0;
 	//virtual void InvalidatePathConstraints(DDPath *path) = 0;
 	virtual void DeleteLRConstraint(DDModel::Node *u, DDModel::Node *v) = 0;
@@ -697,6 +700,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	IndexV newRanks,oldRanks;
 };
 struct XGenerator {
+	virtual ~XGenerator() {}
 	virtual double xval(double y) = 0;
 };
 struct Config {
@@ -878,7 +882,7 @@ void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out);
 struct XSolver : XConstraintOwner {
 	XSolver(Config &config, double xRes) :
 		xScale(1.0/xRes),config(config) {}
-        virtual ~XSolver() {} // to shut gcc up
+        virtual ~XSolver() {} 
 	const double xScale;
 	void Place(ChangeQueue &changeQ);
 	void RemoveEdgeConstraints(DDModel::Edge *e);
