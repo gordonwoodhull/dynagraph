@@ -49,7 +49,7 @@ struct DinoMachNode : NamedAttrs {
     IncrLangEvents *handler;
     DinoMachNode(Name name = Name()) : NamedAttrs(name),handler(0) {}
     ~DinoMachNode() {
-        if(handler)
+        if(handler && g_incrCallback)
             g_incrCallback->incr_cb_destroy_handler(handler);
     }
 };

@@ -62,12 +62,15 @@ struct IncrCalledBack : IncrCallbacks {
     IncrCalledBack() {
         g_incrCallback = this;
     }
+    ~IncrCalledBack() {
+	g_incrCallback = 0;
+    }
     IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
     	return new TextView(name);
-	}
-	void incr_cb_destroy_handler(IncrLangEvents *h) {
-		delete h;
-	}
+    }
+    void incr_cb_destroy_handler(IncrLangEvents *h) {
+	delete h;
+    }
     // echo all fulfils (prob from another server not client!)
     void incr_cb_fulfil_graph(DString name,StrGraph *sg) {
         cout << "fulfil graph " << name << endl;
