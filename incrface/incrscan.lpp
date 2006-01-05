@@ -94,7 +94,7 @@ ID		({NAME}|{NUMBER})
 void yyerror(const char *str)
 {
 	char buf[300];
-	sprintf(buf,"incr: %s in line %d near '%s'\n",str,line_num,yytext);
+	sprintf(buf,"incr: %s in line %d near '%s'",str,line_num,yytext);
 	throw IncrError(buf);
 }
 /* must be here to see flex's macro defns */

@@ -605,7 +605,7 @@ int main(int argc, char *args[]) {
 		if(traversal_mode==dynamic) {
 			while(1) {
 				try {
-					incr_yyparse();
+					incr_yyparse(); 
 					break; // end of stream
 				}
 				catch(DGNonFatalException dvx) { // DynaView exceptions are recoverable
@@ -613,15 +613,16 @@ int main(int argc, char *args[]) {
 				}
 				catch(IncrError ie) { // parser error
 					fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
-					break;
 				}
 				catch(DGException2 dgx) {
 					fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype,dgx.param);
-					break;
+					if(dgx.fatal)
+						break;
 				}
 				catch(DGException dgx) {
 					fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype);
-					break;
+					if(dgx.fatal)
+						break;
 				}
 			}
 			fprintf(stdout,"message \"dynagraph closing\"\n");

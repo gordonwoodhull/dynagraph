@@ -94,6 +94,10 @@ pair<Layout::Edge*,bool> DynaView::getEdge(DString name,DString tail,DString hea
 	assert(tail.size()&&head.size());
 	Layout::Node *t = getNode(tail,false).first,
 		*h = getNode(head,false).first;
+	if(!t)
+		throw DVEdgeTailDoesNotExist(tail.c_str());
+	if(!h)
+		throw DVEdgeHeadDoesNotExist(head.c_str());
 	return getEdge(name,t,h,create);
 }
 Layout::Edge *DynaView::getEdge(DString name,DString tail,DString head) {

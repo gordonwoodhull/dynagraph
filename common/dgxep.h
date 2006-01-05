@@ -19,13 +19,14 @@
 #define DGXEP_H
 // a base for all exceptions so we can report the basics
 struct DGException {
+	bool fatal;
     const char *exceptype;
-    DGException(const char *exceptype) : exceptype(exceptype) {}
+    DGException(const char *exceptype,bool fatal = false) : exceptype(exceptype),fatal(fatal) {}
 };
 // pretty dopey - eliminate a few more chars in xep defs
 struct DGException2 : DGException {
     const char *param;
-    DGException2(const char *exceptype,const char *param) : DGException(exceptype),param(param) {}
+    DGException2(const char *exceptype,const char *param,bool fatal = false) : DGException(exceptype,fatal),param(param) {}
 };
 // so that main knows when to continue and when to bail out
 struct DGNonFatalException : DGException2 {
