@@ -230,7 +230,7 @@ inline std::ostream &operator <<(std::ostream &os,const DString &s) {
 struct DictStringLost : DGException {
 	const char *s;
 	DictStringLost(const char *s) :
-	  DGException("StringDict internal exception: string lost"),
+	  DGException("StringDict internal exception: string lost",true),
 	  s(s)
   {}
 };

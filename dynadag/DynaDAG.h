@@ -23,7 +23,7 @@
 namespace DynaDAG {
 
 struct InternalErrorException : DGException {
-  InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints") {}
+  InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints",true) {}
 };
 
 // future template parameters?

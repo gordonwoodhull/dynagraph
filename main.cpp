@@ -608,9 +608,6 @@ int main(int argc, char *args[]) {
 					incr_yyparse(); 
 					break; // end of stream
 				}
-				catch(DGNonFatalException dvx) { // DynaView exceptions are recoverable
-					fprintf(stdout,"message \"%s: %s\"\n",dvx.exceptype,dvx.param);;
-				}
 				catch(IncrError ie) { // parser error
 					fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
 				}

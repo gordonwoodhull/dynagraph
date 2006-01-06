@@ -45,7 +45,7 @@ inline bool assign(T &a,const T &b) {
 struct Assertion : DGException {
 	char *file;
 	int line;
-	Assertion(char *file,int line) : DGException("assertion failure") {}
+	Assertion(char *file,int line) : DGException("assertion failure",true),file(file),line(line) {}
 };
 #undef assert
 #undef check

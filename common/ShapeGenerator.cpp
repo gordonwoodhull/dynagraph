@@ -29,7 +29,8 @@ void ShapeGenerator::Process(ChangeQueue &Q) {
         try {
 		    genpoly(gd<PolyDef>(n),gd<Drawn>(n));
         }
-        catch(GenPolyXep) {
+        catch(GenPolyXep xep) {
+			cout << "message \"" << xep.exceptype << '"' << endl;
 			// bad or incomplete definitions: just leave blank
         }
 		NodeGeom &ng = gd<NodeGeom>(n);

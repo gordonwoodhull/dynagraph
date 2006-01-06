@@ -51,10 +51,10 @@ inline FDPModel::Edge *&modelP(Layout::Edge *e) {
 	return reinterpret_cast<FDPModel::Edge*&>(gd<ModelPointer>(e).model);
 }
 struct Inconsistency : DGException {
-  Inconsistency() : DGException("fdp's internal model has become inconsistent with the client graph") {}
+  Inconsistency() : DGException("fdp's internal model has become inconsistent with the client graph",true) {}
 };
 struct StillHasEdges : DGException {
-  StillHasEdges() : DGException("a node was deleted without all of its edges being deleted (impossible!)") {}
+  StillHasEdges() : DGException("a node was deleted without all of its edges being deleted (impossible!)",true) {}
 };
 
 #include "grid.h"

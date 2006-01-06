@@ -28,8 +28,4 @@ struct DGException2 : DGException {
     const char *param;
     DGException2(const char *exceptype,const char *param,bool fatal = false) : DGException(exceptype,fatal),param(param) {}
 };
-// so that main knows when to continue and when to bail out
-struct DGNonFatalException : DGException2 {
-	DGNonFatalException(const char *exceptype,const char *param) : DGException2(exceptype,param) {}
-};
 #endif

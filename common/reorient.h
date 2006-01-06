@@ -16,7 +16,7 @@
 
 
 struct ReorientBadDir : DGException {
-	ReorientBadDir() : DGException("bad direction argument to reorient()") {}
+	ReorientBadDir() : DGException("bad direction argument to reorient()",true) {}
 };
 Coord reorient(Coord val,bool in,Orientation dir) {
 	Coord ret;

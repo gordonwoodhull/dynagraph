@@ -67,7 +67,7 @@ Server *createLayoutServer(Layout *client,Layout *current) {
 			for(creators::iterator ci = g_creators.begin(); ci!=g_creators.end(); ++ci)
 				cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << endl;
 			delete eng;
-			throw DGNonFatalException("engine name not known",strdup(ei->c_str())); // excuse me
+			throw DGException("engine name not known",strdup(ei->c_str())); // excuse me
 		}
 		Server *server = crea(client,current);
 		eng->actors.push_back(server);

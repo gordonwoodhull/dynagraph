@@ -29,7 +29,7 @@ struct DVException : DGException2 {
 	DVException(const char *xep,const char *parm) : DGException2(xep,parm,false) {}
 };
 struct DVReopenXep : DVException {
-    DVReopenXep(const char *name) : DVException("Tried to reopen DynaView",name) {}
+    DVReopenXep(const char *name) : DVException("Tried to reopen graph",name) {}
 };
 struct DVEdgeReopen : DVException {
     DVEdgeReopen(const char *name) : DVException("The edge name has already been used",name) {}

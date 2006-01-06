@@ -22,12 +22,12 @@ namespace PathPlan {
 	typedef std::vector<Line> LineV;
 
     struct InvalidBoundary : DGException {
-	  InvalidBoundary() : DGException("the shortest path algorithm requires a polygon boundary") {}
+	  InvalidBoundary() : DGException("the shortest path algorithm requires a polygon boundary",true) {}
 	};
 	struct EndpointNotInPolygon : DGException {
 	  bool which;
 	  EndpointNotInPolygon(bool which) :
-	    DGException("the shortest path algorithm requires end-points within the boundary polygon"),
+	    DGException("the shortest path algorithm requires end-points within the boundary polygon",true),
 	    which(which) {}
 	};
 	/* find shortest euclidean path within a simple polygon */

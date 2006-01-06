@@ -30,5 +30,5 @@ struct ObstacleAvoiderSpliner {
 	void make_barriers(int pp, int qp, Pedge_t **barriers, int *n_barriers);
 };
 struct ClockwiseShapes : DGException {
-	ClockwiseShapes() : DGException("node shapes must be counter-clockwise") {}
+	ClockwiseShapes() : DGException("node shapes must be counter-clockwise",true) {}
 };
