@@ -19,8 +19,8 @@
 #define DGXEP_H
 // a base for all exceptions so we can report the basics
 struct DGException {
-	bool fatal;
     const char *exceptype;
+    bool fatal;
     DGException(const char *exceptype,bool fatal = false) : exceptype(exceptype),fatal(fatal) {}
 };
 // pretty dopey - eliminate a few more chars in xep defs
