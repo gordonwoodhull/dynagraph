@@ -63,9 +63,11 @@ Server *createLayoutServer(Layout *client,Layout *current) {
     for(vector<DString>::iterator ei = engs.begin(); ei!=engs.end(); ++ei) {
 		creatorf crea = g_creators[*ei];
 		if(!crea) {
-			cout << g_creators.size() << " creators:" << endl;
+			/*
+			cout << (int)g_creators.size() << " creators:" << endl;
 			for(creators::iterator ci = g_creators.begin(); ci!=g_creators.end(); ++ci)
 				cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << endl;
+			*/
 			delete eng;
 			throw DGException("engine name not known",strdup(ei->c_str())); // excuse me
 		}
