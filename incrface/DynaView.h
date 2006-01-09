@@ -35,16 +35,22 @@
 
 // all these exceptions are recoverable: report error to client and ignore
 struct DVException : DGException2 {
-	DVException(const char *xep,const char *parm) : DGException2(xep,parm) {}
+	DVException(const char *xep,const char *parm) : DGException2(xep,parm,false) {}
 };
 struct DVReopenXep : DVException {
-    DVReopenXep(const char *name) : DVException("Tried to reopen DynaView",name) {}
+    DVReopenXep(const char *name) : DVException("Tried to reopen graph",name) {}
 };
 struct DVEdgeReopen : DVException {
-    DVEdgeReopen(const char *name) : DVException("The name has already been used",name) {}
+    DVEdgeReopen(const char *name) : DVException("The edge name has already been used",name) {}
 };
 struct DVNodeReopen : DVException {
-    DVNodeReopen(const char *name) : DVException("The name has already been used",name) {}
+    DVNodeReopen(const char *name) : DVException("The node name has already been used",name) {}
+};
+struct DVEdgeTailDoesNotExist : DVException {
+	DVEdgeTailDoesNotExist(const char *name) : DVException("Tried to open edge but tail does not exist",name) {}
+};
+struct DVEdgeHeadDoesNotExist : DVException {
+	DVEdgeHeadDoesNotExist(const char *name) : DVException("Tried to open edge but head does not exist",name) {}
 };
 struct DVEdgeNameMismatch : DVException {
     DVEdgeNameMismatch(const char *name) : DVException("Tried to re-open edge under new name",name) {}
@@ -198,6 +204,10 @@ std::pair<typename Layout::Edge*,bool> DynaView<Layout>::getEdge(DString name,DS
 	assert(tail.size()&&head.size());
 	typename Layout::Node *t = getNode(tail,false).first,
 		*h = getNode(head,false).first;
+	if(!t)
+		throw DVEdgeTailDoesNotExist(tail.c_str());
+	if(!h)
+		throw DVEdgeHeadDoesNotExist(head.c_str());
 	return getEdge(name,t,h,create);
 }
 template<typename Layout>

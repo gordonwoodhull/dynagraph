@@ -101,35 +101,35 @@ struct NamedAttrs : StrAttrs,Name,Hit {
 struct DuplicateNodeName : DGException {
   DString name;
   DuplicateNodeName(DString name) :
-    DGException("names of StrGraph nodes must be unique"),
+    DGException("names of StrGraph nodes must be unique",true),
     name(name)
   {}
 };
 struct DuplicateEdgeName : DGException {
   DString name;
   DuplicateEdgeName(DString name) :
-    DGException("names of StrGraph edges must be unique"),
+    DGException("names of StrGraph edges must be unique",true),
     name(name)
   {}
 };
 struct ParallelEdgesUnsupported : DGException {
 	DString name;
 	ParallelEdgesUnsupported(DString name) :
-		DGException("LGraph does not allow multiple edges between the same tail and head"),
+		DGException("LGraph does not allow multiple edges between the same tail and head",true),
 		name(name)
 	{}
 };
 struct EndNodesDontMatch : DGException {
   DString name;
   EndNodesDontMatch(DString name) :
-    DGException("get_node on this edge with new end nodes"),
+    DGException("get_node on this edge with new end nodes",true),
     name(name)
   {}
 };
 struct NodeNotFound : DGException {
   DString name;
   NodeNotFound(DString name) :
-    DGException("StrGraph::readSubgraph encountered a node not in the parent"),
+    DGException("StrGraph::readSubgraph encountered a node not in the parent",true),
     name(name)
   {}
 };

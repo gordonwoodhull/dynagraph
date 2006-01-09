@@ -24,7 +24,7 @@ extern "C" {
 }
 
 struct ClockwiseShapes : DGException {
-	ClockwiseShapes() : DGException("node shapes must be counter-clockwise") {}
+	ClockwiseShapes() : DGException("node shapes must be counter-clockwise",true) {}
 };
 
 struct ObstacleAvoiderSpliner {

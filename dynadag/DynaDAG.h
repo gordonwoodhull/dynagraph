@@ -27,7 +27,7 @@ namespace DynaDAG {
 typedef ChangeQueue<DynaDAGLayout> DDChangeQueue;
 
 struct InternalErrorException : DGException {
-  InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints") {}
+  InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints",true) {}
 };
 
 // future template parameters?
@@ -426,6 +426,7 @@ struct Optimizer {
 	virtual double Reopt(DDModel::Node *n,UpDown dir) = 0;
 };
 struct DynaDAGServices {
+	virtual ~DynaDAGServices() {}
 	virtual std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN) = 0;
 	virtual void CloseModelNode(DDModel::Node *n) = 0;
 	virtual std::pair<DDPath*,DDModel::Edge*> OpenModelEdge(DDModel::Node *u, DDModel::Node *v, DynaDAGLayout::Edge *layoutE) = 0;
@@ -436,6 +437,7 @@ struct DynaDAGServices {
 // config needs to erase x ordering constraints but otherwise doesn't "do" constraints.
 // thus XSolver should handle it.
 struct XConstraintOwner {
+	virtual ~XConstraintOwner() {}
 	virtual void RemoveNodeConstraints(DDModel::Node *n) = 0;
 	//virtual void InvalidatePathConstraints(DDPath *path) = 0;
 	virtual void DeleteLRConstraint(DDModel::Node *u, DDModel::Node *v) = 0;
@@ -702,6 +704,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	IndexV newRanks,oldRanks;
 };
 struct XGenerator {
+	virtual ~XGenerator() {}
 	virtual double xval(double y) = 0;
 };
 struct Config {

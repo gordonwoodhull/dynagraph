@@ -61,12 +61,15 @@ struct IncrCalledBack : IncrCallbacks {
     IncrCalledBack() {
         g_incrCallback = this;
     }
+    ~IncrCalledBack() {
+	g_incrCallback = 0;
+    }
     IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
     	return new TextView(name);
-	}
-	void incr_cb_destroy_handler(IncrLangEvents *h) {
-		delete h;
-	}
+    }
+    void incr_cb_destroy_handler(IncrLangEvents *h) {
+        delete h;
+    }
     // echo all fulfils (prob from another server not client!)
     void incr_cb_fulfil_graph(DString name,StrGraph *sg) {
         cout << "fulfil graph " << name << endl;
@@ -602,23 +605,21 @@ int main(int argc, char *args[]) {
 		if(traversal_mode==dynamic) {
 			while(1) {
 				try {
-					incr_yyparse();
+					incr_yyparse(); 
 					break; // end of stream
-				}
-				catch(DGNonFatalException dvx) { // DynaView exceptions are recoverable
-					fprintf(stdout,"message \"%s: %s\"\n",dvx.exceptype,dvx.param);;
 				}
 				catch(IncrError ie) { // parser error
 					fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
-					break;
 				}
 				catch(DGException2 dgx) {
 					fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype,dgx.param);
-					break;
+					if(dgx.fatal)
+						break;
 				}
 				catch(DGException dgx) {
 					fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype);
-					break;
+					if(dgx.fatal)
+						break;
 				}
 			}
 			fprintf(stdout,"message \"dynagraph closing\"\n");

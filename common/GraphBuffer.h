@@ -20,7 +20,7 @@
 struct GraphBufferXep : DGException {
   DString description;
   EndNodesDontMatch(DString description) :
-    DGException("GraphBuffer exception"),
+    DGException("GraphBuffer exception",true),
     description(description)
   {}
 };

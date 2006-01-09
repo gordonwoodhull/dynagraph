@@ -93,16 +93,16 @@ struct ChangeQueue {
 
 	// insertions must not already be inserted; modifications & deletions must already be inserted
 	struct InsertInserted : DGException {
-	  InsertInserted() : DGException("insertion of an already inserted object") {}
+	  InsertInserted() : DGException("insertion of an already inserted object",true) {}
 	};
 	struct ModifyUninserted : DGException {
-	  ModifyUninserted() : DGException("modify of an uninserted object") {}
+	  ModifyUninserted() : DGException("modify of an uninserted object",true) {}
 	};
 	struct DeleteUninserted : DGException {
-	  DeleteUninserted() : DGException("deletion of an uninserted object") {}
+	  DeleteUninserted() : DGException("deletion of an uninserted object",true) {}
 	};
 	struct EndnodesNotInserted : DGException {
-	  EndnodesNotInserted() : DGException("insertion of edge without nodes") {}
+	  EndnodesNotInserted() : DGException("insertion of edge without nodes",true) {}
 	};
 };
 template<typename Layout>
