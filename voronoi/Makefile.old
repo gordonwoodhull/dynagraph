@@ -7,7 +7,7 @@ include $(ROOT)/makearch/$(ARCH)
 INCS =	-I.. -I../.. \
 	-I$(GRAPHVIZ_INC)
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = 
 
 OBJS = edges.o heap.o hedges.o info.o process.o site.o voronoi.o
 

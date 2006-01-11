@@ -11,7 +11,7 @@ INCS =	-I.. -I../.. \
 LIBS = -L../common -ldynagraph \
 	-L$(GRAPHVIZ_LIB) -lagraph -lcdt
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = 
 
 OBJS = gsscan.o gsgram.o graphsearch.o gscmds.o Pattern.o Search.o
 

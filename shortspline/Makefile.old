@@ -7,7 +7,7 @@ include $(ROOT)/makearch/$(ARCH)
 INCS =	-I.. -I../.. \
 	-I$(GRAPHVIZ_INC)
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = 
 
 OBJS = ObAvSplinerEngine.o ObstacleAvoiderSpliner.o legal_arrangement.o
 

@@ -5,13 +5,14 @@ ROOT=.
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
-SUBDIRS = common dynadag incrface fdp voronoi shortspline graphsearch
+SUBDIRS = common dynadag incrface fdp voronoi shortspline 
+#graphsearch
 
 INCS = -I. \
 	-I.. -I../cdt \
 	-I$(GRAPHVIZ_INC)
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = 
 
 BASELIBS = -Lcommon -ldynagraph \
        -L$(GRAPHVIZ_LIB) -lagraph -lpathplan -lcdt
