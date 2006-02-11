@@ -27,6 +27,7 @@ struct ClockwiseShapes : DGException {
 	ClockwiseShapes() : DGException("node shapes must be counter-clockwise",true) {}
 };
 
+template<typename Layout>
 struct ObstacleAvoiderSpliner {
 	ObstacleAvoiderSpliner *impl_;
 	std::vector<Ppoly_t*> obs_;
@@ -34,7 +35,6 @@ struct ObstacleAvoiderSpliner {
 	std::vector<Line> polydat_;
 	vconfig_t	*vconfig_;
 
-	template<typename Layout>
 	ObstacleAvoiderSpliner(Layout *layout);
 	void FindSpline(Coord a,Coord b,Line &ret);
 	void make_barriers(int pp, int qp, Pedge_t **barriers, int *n_barriers);

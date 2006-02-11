@@ -18,9 +18,12 @@
 #ifndef INFO_H
 #define INFO_H
 
-#include "common/Dynagraph.h"
 #include "common/freelist.h"
 #include "site.h"
+
+#include "fdp/FDPLayout.h"
+#include "common/ChangeQueue.h"
+#include "common/DynagraphServer.h"
 
 namespace Voronoi {
 
@@ -30,7 +33,7 @@ struct PtItem {           /* Point std::list */
 	PtItem() : next(0) {}
 };
 struct Info {                  /* Info concerning site */
-	Layout::Node *layoutN;     /* libgraph node */
+	FDP::FDPLayout::Node *layoutN;     /* dynagraph node */
 	Site site;                 /* site used by voronoi code */
 	bool overlaps;             /* true if node overlaps other nodes */
 	PtItem *verts;             /* sorted std::list of vertices of */

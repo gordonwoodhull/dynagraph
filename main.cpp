@@ -22,10 +22,12 @@
 #include "dynadag/DynaDAG.h"
 #include "incrface/incrout.h"
 #include "incrface/incrparse.h"
+#include "TestTraversals.h"
 
 using namespace std;
 using DynaDAG::DDChangeQueue;
 using DynaDAG::DynaDAGLayout;
+using FDP::FDPLayout;
 #define CATCH_XEP
 
 Transform *g_transform;
@@ -33,7 +35,8 @@ bool g_useDotDefaults;
 char *g_outdot=0;
 int g_count=1;
 struct CouldntOpen {};
-void doOutdot(DynaDAGLayout *l) {
+template<typename Layout>
+void doOutdot(Layout *l) {
 	if(g_outdot) {
 		char filename[100];
 		sprintf(filename,"%s%d.dot",g_outdot,g_count);
@@ -47,26 +50,59 @@ void doOutdot(DynaDAGLayout *l) {
 	}
 }
 
-struct TextView : DynaView<DynaDAGLayout> {
+template<typename Layout>
+struct TextView : DynaView<Layout> {
 	void IncrHappened() {
-		emitChanges(cout,Q,gd<Name>(&layout).c_str());
-		Q.Okay(true);
-		doOutdot(&current);
+		DynaView<Layout> &dad = *this;
+		emitChanges(cout,dad.Q,gd<Name>(&dad.layout).c_str());
+		dad.Q.Okay(true);
+		doOutdot(&dad.current);
 	}
-	void IncrNewNode(DynaDAGLayout::Node *n) {}
-	void IncrNewEdge(DynaDAGLayout::Edge *e) {}
-	TextView(Name name) : DynaView<DynaDAGLayout>(name,g_transform,g_useDotDefaults) {}
+	void IncrNewNode(typename Layout::Node *n) {}
+	void IncrNewEdge(typename Layout::Edge *e) {}
+	TextView(Name name) : DynaView<Layout>(name,g_transform,g_useDotDefaults) {}
 };
 struct IncrCalledBack : IncrCallbacks {
     IncrCalledBack() {
         g_incrCallback = this;
     }
     ~IncrCalledBack() {
-	g_incrCallback = 0;
+		g_incrCallback = 0;
     }
     IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
-    	return new TextView(name);
-    }
+		StrAttrs::const_iterator ai = attrs.find("type");
+		DString type,setEngs;
+		if(ai!=attrs.end()) 
+			type = ai->second;
+		else {
+			StrAttrs::const_iterator ai = attrs.find("engines");
+			DString engines;
+			if(ai!=attrs.end())
+				engines = ai->second;
+			else
+				setEngs = engines = "shapegen,dynadag,labels";
+			if(engines.find("dynadag",0)!=DString::npos)
+				type = "dynadag";
+			else if(engines.find("fdp",0)!=DString::npos)
+				type = "fdp";
+			else
+				throw DGException2("could not deduce graph type from engine list",engines.c_str());
+		}
+		IncrLangEvents *ret;
+		if(type=="dynadag") {
+			TextView<DynaDAGLayout> *view = new TextView<DynaDAGLayout>(name);
+			if(setEngs)
+				gd<StrAttrs2>(&view->layout).put("engines",setEngs);
+			ret = view;
+		}
+		else if(type=="fdp") {
+			TextView<FDPLayout> *view = new TextView<FDPLayout>(name);
+			if(setEngs)
+				gd<StrAttrs2>(&view->layout).put("engines",setEngs);
+			ret = view;
+		}
+    	return ret;
+	}
     void incr_cb_destroy_handler(IncrLangEvents *h) {
         delete h;
     }
@@ -87,251 +123,6 @@ struct IncrCalledBack : IncrCallbacks {
 	}
 };
 IncrCalledBack g_incrPhone;
-struct Stepper {
-	virtual void Step(DDChangeQueue &Q) = 0;
-	virtual bool Done() = 0;
-	virtual ~Stepper() {} // to evade warnings for derived
-};
-
-class Wandering : public Stepper {
-	typedef pair<DynaDAGLayout::Node*,DynaDAGLayout::Edge*> gob; // maybe both; neither=>done
-	DynaDAGLayout::node_iter ni;
-	DynaDAGLayout *l;
-	DynaDAGLayout::Node *n;
-	DynaDAGLayout::Edge *e;
-	DynaDAGLayout hit;
-	DynaDAGLayout::Edge *next_edge(DynaDAGLayout::Node *n) {
-		for(DynaDAGLayout::outedge_iter ei = n->outs().begin(); ei!=n->outs().end();++ei)
-			if(!hit.find(*ei))
-				return *ei;
-		return 0;
-	}
-	gob next_thing() {
-		for(;ni!=l->nodes().end(); ++ni) {
-			if(!hit.find(*ni))
-				return gob(*ni,0);
-			if(DynaDAGLayout::Edge *e = next_edge(*ni)) {
-				if(!hit.find(e->head))
-					return gob(e->head,e);
-				else
-					return gob(0,e);
-			}
-		}
-		return gob(0,0);
-	}
-	void advance(DynaDAGLayout::Node *curr) {
-		if((e = next_edge(curr))) {
-			n = 0;
-			if(!hit.find(e->head))
-				n = e->head;
-		}
-		else {
-			gob t = next_thing();
-			n = t.first;
-			e = t.second;
-		}
-	}
-public:
-	Wandering(DynaDAGLayout *l) : l(l),hit(l) {
-		ni = l->nodes().begin();
-		if(ni!=l->nodes().end())
-			n = *ni;
-		else
-			n = 0;
-		e = 0;
-	}
-	void Step(DDChangeQueue &Q) {
-		if(n && !e) { // starting from a node
-			assert(hit.insert(n).second);
-			Q.InsNode(n);
-			advance(n);
-		}
-		else if(n && e) { // travelling to a new node: first return node
-			assert(hit.insert(n).second);
-			Q.InsNode(n);
-			n = 0;
-		}
-		else if(!n && e) { // then edge
-			assert(hit.insert(e).second);
-			Q.InsEdge(e);
-			advance(e->head);
-		}
-		else {
-			assert(!n && !e);
-		}
-	}
-	bool Done() {
-		return !n && !e;
-	}
-};
-class NodesFirst : public Stepper {
-	DynaDAGLayout *l;
-	DynaDAGLayout::node_iter ni;
-	DynaDAGLayout::graphedge_iter ei;
-public:
-	NodesFirst(DynaDAGLayout *l) : l(l),ni(l->nodes().begin()),ei(l->edges().begin()) {}
-	void Step(DDChangeQueue &Q) {
-		if(ni!=l->nodes().end())
-			Q.InsNode(*ni++);
-		else if(ei!=l->edges().end())
-			Q.InsEdge(*ei++);
-	}
-	bool Done() {
-		return ni==l->nodes().end() && ei==l->edges().end();
-	}
-};
-class Batch : public Stepper {
-	DynaDAGLayout *l;
-	bool  done;
-public:
-	Batch(DynaDAGLayout *l) : l(l),done(false) {}
-	void Step(DDChangeQueue &Q) {
-		if(!done) {
-			for(DynaDAGLayout::node_iter ni = l->nodes().begin(); ni!=l->nodes().end(); ++ni)
-				Q.InsNode(*ni);
-			for(DynaDAGLayout::graphedge_iter ei = l->edges().begin(); ei!=l->edges().end(); ++ei)
-				Q.InsEdge(*ei);
-			done = true;
-		}
-	}
-	bool Done() {
-		return done;
-	}
-};
-template<class Trav>
-class TraversalStep : public Stepper {
-	Trav i;
-public:
-	TraversalStep(DynaDAGLayout *l) : i(l,true) {}
-	bool Done() {
-		return i.stopped();
-	}
-	void Step(DDChangeQueue &Q) {
-		typename Trav::V ins = *i;
-		if(ins.n)
-			Q.InsNode(ins.n);
-		if(ins.e)
-			Q.InsEdge(ins.e);
-		++i;
-	}
-};
-void init_node(DynaDAGLayout::Node *n) {
-    // give it default attributes by assigning it.. nothing!
-	StrAttrs attrs;
-	// template parameter deduction doesn't work here?  must learn more
-	stringsIn<DynaDAGLayout>(g_transform,n,attrs,false);  
-}
-DynaDAGLayout::Node *randomNode(DynaDAGLayout *l) {
-	int N = l->nodes().size();
-	if(!N)
-		return 0;
-	int i = rand()%N;
-	DynaDAGLayout::node_iter ni = l->nodes().begin();
-	while(i--) ++ni;
-	return *ni;
-}
-// this keeps an array of nodes which might have new edges... selects one randomly, looks for the new edge
-// if there, it inserts it.  otherwise it removes the node from the array.
-class RandomTraversal : public Stepper {
-	typedef vector<DynaDAGLayout::Node*> Nodes;
-	Nodes nodes;
-	DynaDAGLayout *l;
-	unsigned m_hitpos;
-	bool started;
-public:
-	RandomTraversal(DynaDAGLayout *l) : l(l) {
-		for(m_hitpos = 0;m_hitpos<MAX_TRAVERSAL;++m_hitpos)
-			if(!gd<Hit>(l)[m_hitpos])
-				break;
-		assert(m_hitpos<MAX_TRAVERSAL);
-		gd<Hit>(l)[m_hitpos] = true;
-		started = false;
-		if(l->nodes().begin()==l->nodes().end()) // empty
-			started = true;
-	}
-	void Step(DDChangeQueue &Q) {
-		if(!started) {
-			DynaDAGLayout::Node *n = randomNode(l);
-			if(n) {
-				Q.InsNode(n);
-				gd<Hit>(n)[m_hitpos] = true;
-				nodes.push_back(n);
-				started = true;
-			}
-		}
-		else if(nodes.size()) {
-			while(nodes.size()) {
-				int i = rand()%nodes.size();
-				DynaDAGLayout::Node *n = nodes[i];
-				for(DynaDAGLayout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei)
-					if(!gd<Hit>(*ei)[m_hitpos]) {
-						DynaDAGLayout::Node *o = (*ei)->other(n);
-						if(!gd<Hit>(o)[m_hitpos]) {
-							Q.InsNode(o);
-							gd<Hit>(o)[m_hitpos] = true;
-							nodes.push_back(o);
-						}
-						Q.InsEdge(*ei);
-						gd<Hit>(*ei)[m_hitpos] = true;
-						return;
-					}
-					nodes.erase(nodes.begin()+i); // no new edges found so
-			}
-		}
-	}
-	bool Done() {
-		return started && nodes.empty();
-	}
-};
-class RandomDrawer : public Stepper {
-	DynaDAGLayout *l;
-	int limit;
-	double reconnectProbability;
-public:
-	RandomDrawer(DynaDAGLayout *l,int limit,double reconnectProbability) : l(l),limit(limit),reconnectProbability(reconnectProbability) { srand(17); }
-	void Step(DDChangeQueue &Q) {
-		if(!limit)
-			return;
-		int N = l->nodes().size();
-		double r = double(rand())/double(RAND_MAX);
-		pair<DynaDAGLayout::Edge*,bool> newe;
-		if(N>3 && r<reconnectProbability) {
-			DynaDAGLayout::Node *t,*h;
-			do h = randomNode(l),t = randomNode(l);
-			while(h==t || l->find_edge(h,t)||l->find_edge(t,h));
-			newe = l->create_edge(t,h);
-			assert(newe.second);
-			Q.InsEdge(newe.first);
-		}
-		else {
-			DynaDAGLayout::Node *t = randomNode(l),
-				*h = l->create_node();
-			char buf[10];
-			sprintf(buf,"n%d",N+1);
-			gd<Name>(h) = buf;
-			init_node(h);
-			if(!t) {
-				t = l->create_node();
-				init_node(t);
-				Q.InsNode(t);
-				sprintf(buf,"n%d",(int)l->nodes().size());
-				gd<Name>(t) = buf;
-			}
-			Q.InsNode(h);
-			newe = l->create_edge(t,h);
-			assert(newe.second);
-			Q.InsEdge(newe.first);
-		}
-		int E = l->edges().size();
-		char buf[10];
-		sprintf(buf,"e%d",E);
-		gd<Name>(newe.first) = buf;
-		limit--;
-	}
-	bool Done() {
-		return limit==0;
-	}
-};
 void optimizeAll(DDChangeQueue &Q,DynaDAGLayout *current) {
 	for(DynaDAGLayout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni) {
 		gd<NodeGeom>(*ni).pos.invalidate();
@@ -367,22 +158,23 @@ switchval<enum travmode> g_traversals[] = {
 	{'r',random_insert,"random"}
 };
 int g_ntraversals = sizeof(g_traversals)/sizeof(switchval<enum travmode>);
-Stepper *createStepper(enum travmode type,DynaDAGLayout *l,int N,double reconnectProbability) {
+template<typename Layout>
+Stepper<Layout> *createStepper(enum travmode type,Layout *l,int N,double reconnectProbability) {
 	switch(type) {
   case nodes_first:
-	  return new NodesFirst(l);
+	  return new NodesFirst<Layout>(l);
   case wandering:
-	  return new Wandering(l);
+	  return new Wandering<Layout>(l);
   case all:
-	  return new Batch(l);
+	  return new Batch<Layout>(l);
   case depth_first:
-	  return new TraversalStep<DFS<DynaDAGLayout> >(l);
+	  return new TraversalStep<Layout,DFS<Layout> >(l);
   case breadth_first:
-	  return new TraversalStep<BFS<DynaDAGLayout> >(l);
+	  return new TraversalStep<Layout,BFS<Layout> >(l);
   case create:
-	  return new RandomDrawer(l,N,reconnectProbability);
+	  return new RandomDrawer<Layout>(l,N,reconnectProbability);
   case random_insert:
-	  return new RandomTraversal(l);
+	  return new RandomTraversal<Layout>(l);
   default:
 	  return 0;
 	}
@@ -663,7 +455,7 @@ int main(int argc, char *args[]) {
 		}
 		gd<Name>(&layout) = "unnamed";
 
-		Stepper *stepper=createStepper(traversal_mode,&layout,generateN,reconnectProbability);
+		Stepper<DynaDAGLayout> *stepper=createStepper<DynaDAGLayout>(traversal_mode,&layout,generateN,reconnectProbability);
 		double startLayout = timer.Now(r_progress,"Starting layout\n");
 		try {
 			while(!stepper->Done()) {

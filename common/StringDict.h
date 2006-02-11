@@ -169,6 +169,13 @@ public:
 		else
 			return i-begin();
 	}
+	size_type find(char const *str,size_type pos) const {
+		const_iterator i = std::search(begin()+pos,end(),str,str+strlen(str));
+		if(i==end())
+			return npos;
+		else
+			return i-begin();		
+	}
 	DString substr(size_type pos,size_type len=npos) const {
 		DString ret;
 		if(pos>=size())

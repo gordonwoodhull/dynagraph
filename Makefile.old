@@ -5,7 +5,7 @@ ROOT=.
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
-SUBDIRS = common dynadag incrface pathplot shortspline graphsearch
+SUBDIRS = common dynadag incrface pathplot shortspline graphsearch fdp shortspline voronoi
 
 INCS = -I. \
 	-I.. -I../cdt \
@@ -23,15 +23,14 @@ GLIBS = -Lcommon -ldynagraph \
 
 OTHERLIBS = -Lincrface -lincrface \
 	-Ldynadag -ldynadag \
-	-Lpathplot -lpathplot
-#	-Lfdp -lfdp \
-#	-Lshortspline -lshortspline \
-#	-Lvoronoi -lvoronoi
+	-Lpathplot -lpathplot \
+	-Lfdp -lfdp \
+	-Lshortspline -lshortspline \
+	-Lvoronoi -lvoronoi
 
 MANS = 
 
-dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libpathplot.a
-#libfdp.a libvoronoi.a libshortspline.a
+dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) main.o $(OTHERLIBS) $(BASELIBS) -o dynagraph
 
 gengraph : gengraph.o libdynagraph.a
@@ -52,14 +51,14 @@ libincrface.a :
 libpathplot.a :
 	(cd pathplot; make)
 
-#libfdp.a :
-#	(cd fdp; make)
+libfdp.a :
+	(cd fdp; make)
 
-#libvoronoi.a :
-#	(cd voronoi; make)
+libvoronoi.a :
+	(cd voronoi; make)
 
-#libshortspline.a :
-#	(cd shortspline; make)
+libshortspline.a :
+	(cd shortspline; make)
 
 install: dynagraph gengraph
 	(for i in ${SUBDIRS}; do (cd $$i; make install); done)       

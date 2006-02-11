@@ -21,12 +21,12 @@
  */
 //#include "fdp.h"
 //#include "options.h"
-#include "common/Dynagraph.h"
 #include "voronoi.h"
 #include "info.h"
 #include "edges.h"
 
 using namespace std;
+using FDP::FDPLayout;
 
 namespace Voronoi {
 
@@ -56,10 +56,10 @@ void VoronoiServer::makeInfo() {
 	int N = current->nodes().size();
     infos.nodes.resize(N);
 
-	Layout::node_iter ni = current->nodes().begin();
+	FDPLayout::node_iter ni = current->nodes().begin();
     vector<Info>::iterator ii = infos.nodes.begin();
     for(; ni!=current->nodes().end(); ++ni,++ii) {
-		Layout::Node *n = *ni;
+		FDPLayout::Node *n = *ni;
 
         ii->site.coord = gd<NodeGeom>(n).pos;
 
@@ -171,7 +171,7 @@ void VoronoiServer::newpos(Info* ip) {
 	if(anchor && anchor->next && anchor->next->next) {
 #ifdef VORLINES
 		{
-		Layout *l = infos.nodes.front().layoutN->g;
+		FDPLayout *l = infos.nodes.front().layoutN->g;
 		Line seg;
 		seg.degree = 1;
 		for(PtItem *p = anchor; p; p = p->next)
@@ -365,7 +365,7 @@ sAdjust ()
  /* updateGraph:
   * Enter new node positions into the graph
   */
-void VoronoiServer::updateLayout(ChangeQueue &Q) {
+void VoronoiServer::updateLayout(ChangeQueue<FDPLayout> &Q) {
     for(vector<Info>::iterator ii = infos.nodes.begin(); ii!=infos.nodes.end(); ++ii) {
 		gd<NodeGeom>(ii->layoutN).pos = ii->site.coord;
 		Q.ModNode(ii->layoutN,DG_UPD_MOVE);
@@ -402,7 +402,7 @@ normalize(graph_t *g)
 	}
 }
 */
-void VoronoiServer::Process(ChangeQueue &Q) {
+void VoronoiServer::Process(ChangeQueue<FDPLayout> &Q) {
 	//Q.UpdateCurrent();
     makeInfo();
 

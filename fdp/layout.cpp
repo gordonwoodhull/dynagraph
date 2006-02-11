@@ -28,7 +28,7 @@ namespace FDP {
 double FDPServer::cool(int t) {
   return (T0*(numIters-t))/numIters;
 }
-inline double localK2(Layout::Node *a,Layout::Node *b) {
+inline double localK2(FDPLayout::Node *a,FDPLayout::Node *b) {
 	Coord tot(0,0);
 	int n=0;
 	if(gd<NodeGeom>(a).region.boundary.valid)
@@ -40,7 +40,7 @@ inline double localK2(Layout::Node *a,Layout::Node *b) {
 	tot += gd<GraphGeom>(a->g).separation/2;
 	return tot%tot;
 }
-inline double localK(Layout::Node *a,Layout::Node *b) {
+inline double localK(FDPLayout::Node *a,FDPLayout::Node *b) {
 	return sqrt(localK2(a,b));
 }
 

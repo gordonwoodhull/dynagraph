@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "dynadag/DynaDAGLayout.h"
+#include "fdp/FDPLayout.h"
 #include "common/FindChangeRect.h"
 #include "common/breakList.h"
 
@@ -39,13 +40,11 @@ struct creators<DynaDAG::DynaDAGLayout> : std::map<DString,ServerCreator<DynaDAG
 	static creators the_creators;
 };
 
-/*
 template<>
-struct creators<FDPLayout> : map<DString,ServerCreator<FDPLayout>::create_fn> {
+struct creators<FDP::FDPLayout> : std::map<DString,ServerCreator<FDP::FDPLayout>::create_fn> {
 	creators();
 	static creators the_creators;
 };
-*/
 
 // creates the servers specified in gd<StrAttrs>(client)["engines"]
 template<typename Layout>
@@ -56,21 +55,21 @@ Server<Layout> *createLayoutServer(Layout *client,Layout *current) {
     FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(client,current,fcrdata);
 	eng->actors.push_back(fcrbefore);
 	eng->actors.push_back(new UpdateCurrent<Layout>(client,current)); 
-	DString serverlist = gd<StrAttrs>(client)["engines"];
-	if(serverlist.empty())
-		gd<StrAttrs2>(client).put("engines",serverlist = "shapegen,dynadag,labels");
+	DString engines = gd<StrAttrs>(client)["engines"];
+	if(engines.empty())
+		throw DGException("engine(s) were not specified on call to createLayoutServer");
     //gd<StrAttrs>(client)["agecolors"] = "green,blue,black";
     std::vector<DString> engs;
-    breakList(serverlist,engs);
+    breakList(engines,engs);
+	creators<Layout> &the_creators = creators<Layout>::the_creators;
     for(std::vector<DString>::iterator ei = engs.begin(); ei!=engs.end(); ++ei) {
-		creators<Layout> &the_creators = creators<Layout>::the_creators;
 		typename ServerCreator<Layout>::create_fn crea = the_creators[*ei];
 		if(!crea) {
 			std::cout << the_creators.size() << " creators:" << std::endl;
 			for(typename creators<Layout>::iterator ci = the_creators.begin(); ci!=the_creators.end(); ++ci)
 				std::cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
 			delete eng;
-			throw DGException2("engine name not known",strdup(ei->c_str())); // excuse me
+			throw DGException2("engine name not known or not appropriate for graph type",strdup(ei->c_str())); // excuse me
 		}
 		Server<Layout> *server = crea(client,current);
 		eng->actors.push_back(server);

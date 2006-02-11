@@ -9,7 +9,7 @@ INCS =	-I.. -I../.. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = ObAvSplinerEngine.o legal_arrangement.o
+OBJS = legal_arrangement.o
 
 HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h simple.h
 

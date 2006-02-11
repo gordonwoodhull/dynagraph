@@ -27,7 +27,7 @@ Position FDPServer::findMedianSize() {
 	if(N==0)
 		return Position();
 	vector<double> Xs(N),Ys(N);
-	for(Layout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni,++i)
+	for(FDPLayout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni,++i)
 		if(gd<NodeGeom>(*ni).region.boundary.valid)
 			Xs[i] = gd<NodeGeom>(*ni).region.boundary.Width(),
 			Ys[i] = gd<NodeGeom>(*ni).region.boundary.Height();
@@ -54,7 +54,7 @@ void FDPServer::setParams(Coord avgsize) {
 	}
 }
 
-void FDPServer::createModelNode(Layout::Node *n) {
+void FDPServer::createModelNode(FDPLayout::Node *n) {
 	if(modelP(n))
 		throw Inconsistency();
 	n = client->find(n);
@@ -62,7 +62,7 @@ void FDPServer::createModelNode(Layout::Node *n) {
 	gd<FDPNode>(fn).layoutN = n;
 	modelP(n) = fn;
 }
-void FDPServer::createModelEdge(Layout::Edge *e) {
+void FDPServer::createModelEdge(FDPLayout::Edge *e) {
 	if(modelP(e))
 		throw Inconsistency();
 	e = client->find(e);
@@ -74,7 +74,7 @@ void FDPServer::createModelEdge(Layout::Edge *e) {
 	gd<FDPEdge>(fe).layoutE = e;
 	modelP(e) = fe;
 }
-void FDPServer::deleteModelNode(Layout::Node *n) {
+void FDPServer::deleteModelNode(FDPLayout::Node *n) {
 	if(!modelP(n))
 		throw Inconsistency();
 	FDPModel::Node *fn = modelP(n);
@@ -83,14 +83,14 @@ void FDPServer::deleteModelNode(Layout::Node *n) {
 	model.erase(fn);
 	modelP(n) = 0;
 }
-void FDPServer::deleteModelEdge(Layout::Edge *e) {
+void FDPServer::deleteModelEdge(FDPLayout::Edge *e) {
 	if(!modelP(e))
 		throw Inconsistency();
 	FDPModel::Edge *fe = modelP(e);
 	model.erase(fe);
 	modelP(e) = 0;
 }
-inline void readPos(Layout::Node *n) {
+inline void readPos(FDPLayout::Node *n) {
 	FDPNode &fdpn = gd<FDPNode>(modelP(n));
 	Position pos = gd<NodeGeom>(n).pos;
 	if(!pos.valid)
@@ -98,11 +98,11 @@ inline void readPos(Layout::Node *n) {
 	fdpn.pos[0] = pos.x;
 	fdpn.pos[1] = pos.y;
 }
-void FDPServer::Process(ChangeQueue &Q) {
+void FDPServer::Process(ChangeQueue<FDPLayout> &Q) {
 	// this is not incremental, really: just respond to events, run,
 	// and then say "everything changed"!
-	Layout::node_iter ni;
-	Layout::graphedge_iter ei;
+	FDPLayout::node_iter ni;
+	FDPLayout::graphedge_iter ei;
 	for(ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni) {
 		createModelNode(*ni);
 		readPos(*ni);
