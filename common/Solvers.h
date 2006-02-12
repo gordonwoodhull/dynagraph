@@ -17,6 +17,10 @@
 #ifndef Solvers_h
 #define Solvers_h
 
+namespace Dynagraph {
+
 extern int solve3(double coeff[4], double roots[3]);
+
+} // namespace Dynagraph
 
 #endif //Solvers_h

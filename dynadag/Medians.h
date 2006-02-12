@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+// (namespace Dynagraph::DynaDAG, included within DynaDAG.h mmmf)
 
 void InvalidateMVal(DDModel::Node *n, UpDown dir);
 bool MValExists(DDModel::Node *n, UpDown dir);

@@ -19,6 +19,8 @@
 #include "common/FindChangeRect.h"
 #include "common/breakList.h"
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct ServerCreator {
 	typedef Server<Layout>* (*create_fn)(Layout *cli,Layout *curr);
@@ -65,10 +67,12 @@ Server<Layout> *createLayoutServer(Layout *client,Layout *current) {
     for(std::vector<DString>::iterator ei = engs.begin(); ei!=engs.end(); ++ei) {
 		typename ServerCreator<Layout>::create_fn crea = the_creators[*ei];
 		if(!crea) {
+			/*
 			std::cout << the_creators.size() << " creators:" << std::endl;
 			for(typename creators<Layout>::iterator ci = the_creators.begin(); ci!=the_creators.end(); ++ci)
 				std::cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
 			delete eng;
+			*/
 			throw DGException2("engine name not known or not appropriate for graph type",strdup(ei->c_str())); // excuse me
 		}
 		Server<Layout> *server = crea(client,current);
@@ -78,3 +82,5 @@ Server<Layout> *createLayoutServer(Layout *client,Layout *current) {
 
 	return eng;
 }
+
+} // namespace Dynagraph

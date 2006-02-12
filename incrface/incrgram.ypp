@@ -36,69 +36,69 @@ command		:
 			| ful_graph | ful_node | ful_edge
 			| message
 			| nop
-			|  error	{incr_abort(IF_ERR_SYNTAX);}
+			|  error	{Dynagraph::incr_abort(IF_ERR_SYNTAX);}
 			;
 
 open_graph	:	T_open T_graph open_graph2 {}
 			;
 
-open_graph2 : graphid attrlist	{incr_open_graph($1);}
+open_graph2 : graphid attrlist	{Dynagraph::incr_open_graph($1);}
 			;
 
-close_graph	:	T_close T_graph graphid		{incr_close_graph($3);}
+close_graph	:	T_close T_graph graphid		{Dynagraph::incr_close_graph($3);}
 			;
 
-mod_graph	:	T_modify T_graph graphid attrlist {incr_mod_graph($3);}
+mod_graph	:	T_modify T_graph graphid attrlist {Dynagraph::incr_mod_graph($3);}
 			;
 
-lock_graph : T_lock T_graph graphid {incr_lock($3);}
+lock_graph : T_lock T_graph graphid {Dynagraph::incr_lock($3);}
 			;
 
-unlock_graph : T_unlock T_graph graphid {incr_unlock($3);}
+unlock_graph : T_unlock T_graph graphid {Dynagraph::incr_unlock($3);}
 			;
 
-segue : T_segue T_graph graphid {incr_segue($3);} /* dot graph follows */
+segue : T_segue T_graph graphid {Dynagraph::incr_segue($3);} /* dot graph follows */
                         ; 
 
-ins_node	:	T_insert T_node graphid T_id attrlist	{incr_ins_node($3,$4);}
+ins_node	:	T_insert T_node graphid T_id attrlist	{Dynagraph::incr_ins_node($3,$4);}
 			;
 
-ins_edge	:	T_insert T_edge graphid T_id T_id T_id attrlist {incr_ins_edge($3,$4,$5,$6);}
+ins_edge	:	T_insert T_edge graphid T_id T_id T_id attrlist {Dynagraph::incr_ins_edge($3,$4,$5,$6);}
 			;
 
-mod_node	:	T_modify T_node graphid T_id attrlist	{incr_mod_node($3,$4);}
+mod_node	:	T_modify T_node graphid T_id attrlist	{Dynagraph::incr_mod_node($3,$4);}
 			;
 
-mod_edge	:	T_modify T_edge graphid T_id attrlist {incr_mod_edge($3,$4);}
+mod_edge	:	T_modify T_edge graphid T_id attrlist {Dynagraph::incr_mod_edge($3,$4);}
 			;
 
-del_node	:	T_delete T_node graphid T_id	{incr_del_node($3,$4);}
+del_node	:	T_delete T_node graphid T_id	{Dynagraph::incr_del_node($3,$4);}
 			;
 
-del_edge	:	T_delete T_edge graphid T_id	{incr_del_edge($3,$4);}
+del_edge	:	T_delete T_edge graphid T_id	{Dynagraph::incr_del_edge($3,$4);}
 			;
 
-req_graph	:	T_request T_graph graphid {incr_req_graph($3);}
+req_graph	:	T_request T_graph graphid {Dynagraph::incr_req_graph($3);}
 
-req_node	:	T_request T_node graphid T_id {incr_req_node($3,$4);}
+req_node	:	T_request T_node graphid T_id {Dynagraph::incr_req_node($3,$4);}
 
-req_edge	:	T_request T_edge graphid T_id {incr_req_edge($3,$4);}
+req_edge	:	T_request T_edge graphid T_id {Dynagraph::incr_req_edge($3,$4);}
 
-ful_graph	:	T_fulfil T_graph T_id {incr_ful_graph($3);} /* dot graph follows */
+ful_graph	:	T_fulfil T_graph T_id {Dynagraph::incr_ful_graph($3);} /* dot graph follows */
 
-ful_node	:	T_fulfil T_node graphid T_id attrlist {incr_ful_node($3,$4);}
+ful_node	:	T_fulfil T_node graphid T_id attrlist {Dynagraph::incr_ful_node($3,$4);}
 
-ful_edge	:	T_fulfil T_edge graphid T_id attrlist {incr_ful_edge($3,$4);}
+ful_edge	:	T_fulfil T_edge graphid T_id attrlist {Dynagraph::incr_ful_edge($3,$4);}
 
-message		:	T_message T_id {incr_message($2);}
+message		:	T_message T_id {Dynagraph::incr_message($2);}
 			;
 
 nop			:	/* empty */
 			;
 
 
-attrlist	: 	'[' {incr_reset_attrs();} optattrdefs ']'
-			|	{incr_reset_attrs();} /* empty */
+attrlist	: 	'[' {Dynagraph::incr_reset_attrs();} optattrdefs ']'
+			|	{Dynagraph::incr_reset_attrs();} /* empty */
 			;
 
 optattrdefs	: 	attrdefs
@@ -109,7 +109,7 @@ attrdefs	:  attritem
 			|  attrdefs optsep attritem
 			;
 
-attritem	:  T_id '=' T_id			{incr_append_attr($1,$3);}
+attritem	:  T_id '=' T_id			{Dynagraph::incr_append_attr($1,$3);}
 			;
 
 optsep 		:  ';' | ',' | /*empty*/ ;

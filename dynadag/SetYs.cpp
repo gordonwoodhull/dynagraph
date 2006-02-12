@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 void Config::resetRankBox(Rank *rank) {
@@ -108,3 +109,4 @@ void Config::SetYs() {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

@@ -18,7 +18,11 @@
 #define LineTricks_h
 
 #include <math.h>
+
+namespace Dynagraph {
+
 #define W_DEGREE 5
+
 extern int splineIntersectsLine(const Coord *sps, Segment seg,double *roots); // both * are array[4]
 
 // adapted from incr/edgeclip.c
@@ -264,5 +268,7 @@ inline Position lines_intersect(Segment L0, Segment L1) {
 		case GEMS_DONT_INTERSECT:	return Position();
 	}
 }
+
+} // namespace Dynagraph
 
 #endif //LineTricks_h

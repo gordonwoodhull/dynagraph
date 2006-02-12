@@ -22,6 +22,7 @@
 #include "Transform.h"
 #include "AttrValues.h"
 
+namespace Dynagraph {
 
 struct NonSizeableShape {};
 struct UnknownShape {};
@@ -268,5 +269,7 @@ void applyStrGraph(Transform *trans,bool useDotDefaults,StrGraph *g,Layout *out,
 	stringsIn<Layout>(trans,e,attrs,false);
   }
 }
+
+} // namespace Dynagraph
 
 #endif // stringsIn_h

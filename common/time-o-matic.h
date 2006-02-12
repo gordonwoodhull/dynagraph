@@ -23,6 +23,8 @@
 #include <map>
 #include <stdarg.h>
 
+namespace Dynagraph {
+
 struct Timer {
 	double Start();
 	double Elapsed(int rt,double start,char *s,...);
@@ -40,5 +42,7 @@ private:
 	std::vector<double> m_looplasts;
 };
 extern Timer timer;
+
+} // namespace Dynagraph
 
 #endif //time_o_matic_h

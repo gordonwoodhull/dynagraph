@@ -17,9 +17,10 @@
 #ifndef emitGraph_h
 #define emitGraph_h
 
-
 #include "LayoutAttrs.h"
 #include "parsestr.h"
+
+namespace Dynagraph {
 
 template<typename G>
 void emitGraph(std::ostream &os,G *g) {
@@ -88,5 +89,7 @@ void emitGraph2(std::ostream &os,G *g) {
 	}
 	os << "}\n";
 }
+
+} // namespace Dynagraph
 
 #endif //emitGraph_h

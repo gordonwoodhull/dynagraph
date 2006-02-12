@@ -27,6 +27,8 @@
 
 using namespace std;
 
+namespace Dynagraph {
+
 DString DinoMachineHandler::incr_ev_ins_node(DString name, const StrAttrs &attrs, bool merge) {
     DString ret = AbsGraphHandler<DinoMachine>::incr_ev_ins_node(name,attrs,merge);
     modify_node(name,attrs);
@@ -97,3 +99,5 @@ void DinoMachineHandler::modify_edge(DString name,const StrAttrs &attrs) {
                 handler = new DinoPatternLookOut<DynaDAGLayout>(handler,de);
     }
 }
+
+} // namespace Dynagraph

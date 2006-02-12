@@ -26,6 +26,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 
 std::vector<FILE*> g_files;
 bool g_shush = false;
@@ -120,3 +121,5 @@ void LoopMinder::Cancel() {
 	for(FieldSets::iterator fi = m_fieldSets.begin(); fi!=m_fieldSets.end(); ++fi)
 		fi->second.state = FieldSet::done;
 }
+
+} // namespace Dynagraph

@@ -20,6 +20,8 @@
 
 #include "Geometry.h"
 
+namespace Dynagraph {
+
 /*
  *	shape generators
  */
@@ -60,4 +62,6 @@ struct BadInputPoly : GenPolyXep {
 
 //bezier_t *genellipse(polyreq_t *arg);
 
-#endif
+} // namespace Dynagraph
+
+#endif // genpoly_h

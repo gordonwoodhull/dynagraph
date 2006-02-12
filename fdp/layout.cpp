@@ -19,8 +19,8 @@
 #include <math.h>
 #include "macros.h"
 
+namespace Dynagraph {
 namespace FDP {
-
 
 /*cool:
  *Reduce temperature
@@ -252,3 +252,4 @@ void FDPServer::layout() {
 }
 
 } // namespace FDP
+} // namespace Dynagraph

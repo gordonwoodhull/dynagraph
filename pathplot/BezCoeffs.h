@@ -17,6 +17,8 @@
 #ifndef BezCooeffs_h
 #define BezCooeffs_h
 
+namespace Dynagraph {
+namespace PathPlot {
 
 inline double B0(double t) {
     double tmp = 1.0 - t;
@@ -46,5 +48,8 @@ inline double B23(double t) {
     double tmp = 1.0 - t;
     return t * t *(3 * tmp + t);
 }
+
+} // namespace PathPlot
+} // namespace Dynagraph
 
 #endif // BezCooeffs_h

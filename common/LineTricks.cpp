@@ -17,6 +17,8 @@
 #include "Geometry.h"
 #include "Solvers.h"
 
+namespace Dynagraph {
+
 #define EPSILON1 1E-6
 #define EPSILON2 1E-6
 
@@ -108,3 +110,4 @@ int splineIntersectsLine(const Coord *sps, Segment seg,double *roots) {
     }
 }
 
+} // namespace Dynagraph

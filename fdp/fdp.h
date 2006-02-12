@@ -18,48 +18,21 @@
 #ifndef FDP_H
 #define FDP_H
 
-#include "FDPLayout.h"
 #include "common/ChangeQueue.h"
 #include "common/DynagraphServer.h"
+#include "FDPLayout.h"
+#include "FDPModel.h"
+#include "grid.h"
 
+namespace Dynagraph {
 namespace FDP {
 
-#define NDIM 2
-
-struct FDPEdge {
-	FDPLayout::Edge *layoutE;
-
-	FDPEdge() : layoutE(0) {}
-};
-
-struct FDPNode {
-	FDPLayout::Node *layoutN;
-    bool fixed; // true if node should not move
-    double pos[NDIM], // new position
-		disp[NDIM]; // incremental displacement
-
-	FDPNode() : layoutN(0),fixed(false) {
-		for(int i = 0; i<NDIM; ++i)
-			pos[i] = disp[i] = 0.0;
-	}
-};
-
-typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
-
-inline FDPModel::Node *&modelP(FDPLayout::Node *n) {
-	return reinterpret_cast<FDPModel::Node*&>(gd<ModelPointer>(n).model);
-}
-inline FDPModel::Edge *&modelP(FDPLayout::Edge *e) {
-	return reinterpret_cast<FDPModel::Edge*&>(gd<ModelPointer>(e).model);
-}
 struct Inconsistency : DGException {
   Inconsistency() : DGException("fdp's internal model has become inconsistent with the client graph",true) {}
 };
 struct StillHasEdges : DGException {
   StillHasEdges() : DGException("a node was deleted without all of its edges being deleted (impossible!)",true) {}
 };
-
-#include "grid.h"
 
 struct FDPServer : Server<FDPLayout>,Grid::Visitor {
 	int numIters;
@@ -117,4 +90,6 @@ private:
 };
 
 } // namespace FDP
+} // namespace Dynagraph
+
 #endif // FDP_H

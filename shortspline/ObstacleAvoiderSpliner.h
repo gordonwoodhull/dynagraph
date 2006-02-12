@@ -14,14 +14,14 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-// (this is disabled code because of the horrible include dependencies)
-
 extern "C" {
 #include "pathplan.h"
 #include "vispath.h"
 #include "pathutil.h"
 #include "legal_arrangement.h"
 }
+
+namespace Dynagraph {
 
 struct ClockwiseShapes : DGException {
 	ClockwiseShapes() : DGException("node shapes must be counter-clockwise",true) {}
@@ -138,3 +138,5 @@ void ObstacleAvoiderSpliner<Layout>::make_barriers(int pp, int qp, Pedge_t **bar
 	*barriers = bar;
 	*n_barriers = n;
 }
+
+} // namespace Dynagraph

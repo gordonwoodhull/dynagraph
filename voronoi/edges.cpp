@@ -18,6 +18,7 @@
 #include "edges.h"
 
 
+namespace Dynagraph {
 namespace Voronoi {
 
 Edge *Edges::bisect(Site *s1, Site *s2) {
@@ -275,3 +276,4 @@ void Edges::endpoint(Edge *e, EdgeEnd lr, Site *s) {
 
 
 } // namespace Voronoi
+} // namespace Dynagraph

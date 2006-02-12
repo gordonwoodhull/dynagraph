@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 // act like a string graph but adjust the real thing too
 struct DinoMachineHandler : AbsGraphHandler<DinoMachine> {
@@ -29,3 +30,5 @@ struct DinoMachineHandler : AbsGraphHandler<DinoMachine> {
     void modify_node(DString name,const StrAttrs &attrs);
     void modify_edge(DString name,const StrAttrs &attrs);
 };
+
+} // namespace Dynagraph

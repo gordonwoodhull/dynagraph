@@ -17,6 +17,8 @@
 #ifndef GeomUtil_h
 #define GeomUtil_h
 
+namespace Dynagraph {
+
 #define ISCCW 1
 #define ISCW  2
 #define ISON  3
@@ -112,4 +114,7 @@ inline Position intersection( Coord a, Coord b, Coord c, Coord d) {
     else ret.valid = false;
 	return ret;
 }
+
+} // namespace Dynagraph
+
 #endif //GeomUtil_h

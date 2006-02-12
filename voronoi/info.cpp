@@ -17,8 +17,8 @@
 
 #include "info.h"
 
+namespace Dynagraph {
 namespace Voronoi {
-
 
 /* compare:
  * returns -1 if p < q
@@ -180,3 +180,4 @@ void Infos::addVertex (Site* s, Coord c) {
 }
 
 } // namespace Voronoi
+} // namespace Dynagraph

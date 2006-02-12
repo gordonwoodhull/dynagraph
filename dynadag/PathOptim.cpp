@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 void PathOptim::optPath(DDPath *path) {
@@ -155,3 +156,4 @@ double PathOptim::Reopt(DDModel::Node *n,UpDown dir) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

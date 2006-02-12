@@ -15,9 +15,12 @@
 **********************************************************/
 
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 Crossings calculateCrossings(Config &config);
 std::pair<int,Coord> calculateTotalEdgeLength(Config &config);
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

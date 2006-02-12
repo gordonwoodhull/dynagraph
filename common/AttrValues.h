@@ -17,6 +17,8 @@
 #ifndef AttrValues_h
 #define AttrValues_h
 
+namespace Dynagraph {
+
 extern DString g_NLPNames[5]; // in stringsOut.cpp
 inline NodeLabelAlignment string2nlp(DString s) {
 	for(int i=0;i<5;++i)
@@ -24,5 +26,7 @@ inline NodeLabelAlignment string2nlp(DString s) {
 			return static_cast<NodeLabelAlignment>(i);
 	return DG_NODELABEL_CENTER;
 }
+
+} // namespace Dynagraph
 
 #endif //AttrValues_h

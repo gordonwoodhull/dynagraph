@@ -17,6 +17,8 @@
 #ifndef FindChangeRect_h
 #define FindChangeRect_h
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct FCRData {
 	Layout changeN,changeE; // subgraph union of ins,mod,del
@@ -54,4 +56,7 @@ void FCRAfter<Layout>::Process(ChangeQueue<Layout> &Q) {
 	if(assign(gd<GraphGeom>(Q.current).changerect,changerect))
 		Q.GraphUpdateFlags() |= DG_UPD_CHANGERECT;
 }
+
+} // namespace Dynagraph
+
 #endif //FindChangeRect_h

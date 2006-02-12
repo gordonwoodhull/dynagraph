@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 template<typename Layout>
 struct MatchNames : DinoInternalChanges {
@@ -112,3 +113,5 @@ struct MatchNames : DinoInternalChanges {
         desthand->incr_ev_unlock();
     }
 };
+
+} // namespace Dynagraph

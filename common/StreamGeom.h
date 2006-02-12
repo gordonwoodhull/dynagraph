@@ -18,6 +18,9 @@
 #define StreamGeom_h
 
 #include <iostream>
+
+namespace Dynagraph {
+
 struct GeomParseError : DGException {
 	std::string val;
 	GeomParseError(std::string val = std::string()) :
@@ -136,5 +139,7 @@ inline std::ostream & operator <<(std::ostream &os,const Lines &write) {
 		os << *li << ';';
 	return os;
 }
+
+} // namespace Dynagraph
 
 #endif //StreamGeom_h

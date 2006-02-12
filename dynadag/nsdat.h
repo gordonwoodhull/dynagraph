@@ -14,6 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
+namespace NS {
+
+enum {INEDGE,OUTEDGE};
 
 template<typename N, typename E>
 struct NSNode {
@@ -64,3 +68,6 @@ struct NSData {
 		finger = 0;
 	}
 };
+
+} // namespace NS
+} // namespace Dynagraph

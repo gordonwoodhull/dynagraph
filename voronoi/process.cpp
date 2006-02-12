@@ -19,15 +19,14 @@
  * Routines for repositioning nodes after initial layout in
  * order to reduce/remove node overlaps.
  */
-//#include "fdp.h"
-//#include "options.h"
 #include "voronoi.h"
 #include "info.h"
 #include "edges.h"
 
 using namespace std;
-using FDP::FDPLayout;
+using Dynagraph::FDP::FDPLayout;
 
+namespace Dynagraph {
 namespace Voronoi {
 
 /* chkBoundBox:
@@ -417,3 +416,4 @@ void VoronoiServer::Process(ChangeQueue<FDPLayout> &Q) {
 }
 
 } // namespace Voronoi
+} // namespace Dynagraph

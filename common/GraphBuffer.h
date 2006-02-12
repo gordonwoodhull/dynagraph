@@ -17,6 +17,8 @@
 #ifndef GraphBuffer_h
 #define GraphBuffer_h
 
+namespace Dynagraph {
+
 struct GraphBufferXep : DGException {
   DString description;
   EndNodesDontMatch(DString description) :
@@ -115,4 +117,7 @@ struct GraphBuffer {
 		...
 
 };
+
+} // namespace Dynagraph
+
 #endif //GraphBuffer_h

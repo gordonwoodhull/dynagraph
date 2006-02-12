@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 // translation of dag/order.c
@@ -379,7 +380,7 @@ void Config::moveOldNodes(DDChangeQueue &changeQ) {
 			double x;
 			DDMultiNode::node_iter ni;
 			// move all nodes to either specified X or percolated X
-			if(igd< ::Update>(vn).flags & DG_UPD_MOVE && ng.pos.valid ||
+			if(igd<Dynagraph::Update>(vn).flags & DG_UPD_MOVE && ng.pos.valid ||
 					gd<NodeGeom>(vn).nail & DG_NAIL_X) {
 				if(!ng.pos.valid)
 					throw NailWithoutPos(vn);
@@ -449,7 +450,7 @@ void Config::moveOldNodes(DDChangeQueue &changeQ) {
 }
 void Config::moveOldEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		if(igd< ::Update>(*ei).flags&DG_UPD_MOVE) { // yes that space in < :: is necessary >:(
+		if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { // yes that space in < :: is necessary >:(
 			DynaDAGLayout::Edge *ve = client->find(*ei);
 			if((*ei)->head==(*ei)->tail)
 				; // ignore self-edges
@@ -588,3 +589,4 @@ void Config::Update(DDChangeQueue &changeQ) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

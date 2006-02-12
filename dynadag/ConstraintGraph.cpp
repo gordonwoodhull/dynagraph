@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 ConstraintGraph::ConstraintGraph() : anchor(create_node()) {
@@ -68,3 +69,4 @@ void ConstraintGraph::RemoveNodeConstraints(NodeConstraints &nc) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

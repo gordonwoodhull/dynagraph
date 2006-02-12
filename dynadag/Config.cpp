@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 const double EPSILON = 1.0e-5; // DBL_EPSILON*10; // 1.0e-36;
@@ -273,3 +274,4 @@ void Config::Restore(Ranks &backup) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

@@ -21,6 +21,8 @@
 #include <iomanip>
 using namespace std;
 
+namespace Dynagraph {
+
 // these write dynagraph Geom changes to the StrAttrs and StrAttrChanges attributes
 DString g_NLPNames[5] = {"center","right","top","left","bottom"};
 
@@ -166,3 +168,5 @@ void stringifyEdgePos(const Line &ep,Transform *trans,const Coord &res,StrAttrs2
     o << ends;
 	out.put("pos",o.str());
 }
+
+} // namespace Dynagraph

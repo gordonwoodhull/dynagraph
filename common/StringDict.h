@@ -26,10 +26,18 @@
 
 // adaptation of agraph's refstr
 
-// I know, there's a more modern way to do this....
+// I'm sure there's a more modern way to do this....
 //#define STRINGDICT_USE_STL
 #ifndef STRINGDICT_USE_STL
 #include "cdt.h"
+#else
+#include <map>
+#include <string>
+#endif
+
+namespace Dynagraph {
+
+#ifndef STRINGDICT_USE_STL
 struct StringDict {
 	StringDict();
 	void init();
@@ -40,8 +48,6 @@ private:
 	Dict_t *dict;
 };
 #else
-#include <map>
-#include <string>
 struct StringDict {
 	typedef std::map<std::string,int> mapstrs;
 	StringDict() { init(); }
@@ -78,7 +84,8 @@ struct StringDict {
 private:
 	mapstrs *strs;
 };
-#endif
+#endif // STRINGDICT_USE_STL
+
 // in StringDict.cpp, or define your own if DSTRING_USE_STL
 extern StringDict g_stringDict;
 
@@ -243,5 +250,7 @@ struct DictStringLost : DGException {
 };
 
 int ds2int(const DString &s);
+
+} // namespace Dynagraph
 
 #endif // StringDict_h

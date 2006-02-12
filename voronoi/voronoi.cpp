@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace Voronoi {
 
 void VoronoiServer::voronoi(const vector<Site*> &order) {
@@ -119,3 +120,4 @@ void VoronoiServer::voronoi(const vector<Site*> &order) {
 }
 
 } // namespace Voronoi
+} // namespace Dynagraph

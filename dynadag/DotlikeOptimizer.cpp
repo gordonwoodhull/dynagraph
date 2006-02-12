@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 //#define DOUBLE_MEDIANS
@@ -303,3 +304,4 @@ double DotlikeOptimizer::Reopt(DDModel::Node *n,UpDown dir) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

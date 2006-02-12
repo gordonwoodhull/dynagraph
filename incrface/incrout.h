@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
+
 template<typename Layout>
 void emitChanges(std::ostream &os,ChangeQueue<Layout> &Q,const char *view) {
 	os << "lock graph " << view << std::endl;
@@ -57,3 +59,5 @@ void emitChanges(std::ostream &os,ChangeQueue<Layout> &Q,const char *view) {
 		}
 	os << "unlock graph " << view << std::endl;
 }
+
+} // namespace Dynagraph

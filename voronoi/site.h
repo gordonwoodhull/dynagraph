@@ -21,6 +21,7 @@
 #include "common/Geometry.h"
 #include "common/freelist.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 struct Site {
@@ -43,4 +44,6 @@ struct Sites {
 };
 
 } // namespace Voronoi
+} // namespace Dynagraph
+
 #endif // SITE_H

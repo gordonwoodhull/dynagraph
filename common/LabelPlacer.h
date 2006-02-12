@@ -17,6 +17,8 @@
 #ifndef LabelPlacer_h
 #define LabelPlacer_h
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct LabelPlacer : Server<Layout> {
 	void Process(ChangeQueue<Layout> &Q);
@@ -144,4 +146,7 @@ void LabelPlacer<Layout>::Process(ChangeQueue<Layout> &Q) {
 		if(igd<Update>(*ni).flags&(DG_UPD_MOVE|DG_UPD_LABEL|DG_UPD_REGION|DG_UPD_POLYDEF|DG_UPD_DRAWN))
 			placeLabels<Layout>(*ni);
 }
+
+} // namespace Dynagraph
+
 #endif //LabelPlacer_h

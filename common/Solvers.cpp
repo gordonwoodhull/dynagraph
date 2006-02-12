@@ -19,6 +19,8 @@
 #include "common/Geometry.h"
 #include "Solvers.h"
 
+namespace Dynagraph {
+
 inline bool near0(double x) {
 	return absol(x)<1E-7;
 }
@@ -103,3 +105,5 @@ int solve1(double coeff[2], double *root) {
     *root = -b / a;
     return 1;
 }
+
+} // namespace Dynagraph

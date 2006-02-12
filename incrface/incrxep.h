@@ -14,6 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef INCRXEP_H
+#define INCRXEP_H
+
+namespace Dynagraph {
 
 struct IncrError : DGException {
   DString descrip;
@@ -24,3 +28,6 @@ struct IncrGraphNotOpen : DGException {
 	IncrGraphNotOpen(const char *graph) : DGException("incr: graph not open",graph) {}
 };
 
+} // namespace Dynagraph
+
+#endif // INCRXEP_H

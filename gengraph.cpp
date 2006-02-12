@@ -24,6 +24,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace Dynagraph;
 
 void usage() {
 	fprintf(stderr,"gengraph\n"

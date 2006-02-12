@@ -25,6 +25,7 @@
 #include "common/ChangeQueue.h"
 #include "common/DynagraphServer.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 struct PtItem {           /* Point std::list */
@@ -52,8 +53,10 @@ struct Infos {
 	void addVertex (Site*, Coord);
 };
 inline double dist(Site *s, Site *t) {
-	return ::dist(s->coord,t->coord);
+	return Dynagraph::dist(s->coord,t->coord);
 }
 
 } // namespace Voronoi
+} // namespace Dynagraph
+
 #endif // INFO_H

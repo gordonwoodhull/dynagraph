@@ -23,6 +23,7 @@
 #include "edges.h"
 #include "hedges.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 // this could actually be templated on FDP::FDPLayout, which would turn all of voronoi
@@ -75,5 +76,6 @@ private:
 };
 
 } // namespace Voronoi
+} // namespace Dynagraph
 
 #endif // VORONOI_H

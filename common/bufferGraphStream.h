@@ -17,9 +17,11 @@
 #ifndef bufferGraphStream_h
 #define bufferGraphStream_h
 
-
 //#include <io.h>
 #include <fcntl.h>
+
+namespace Dynagraph {
+
 // at one point i was able to nest two yacc parsers okay, but it stopped working,
 // ag_yyparse seems to mess up the state of the input stream for gs_yyparse.
 // so just make a brand new stream for each agread.
@@ -56,5 +58,7 @@ struct bufferGraphStream {
 			fclose(fin);
 	}
 };
+
+} // namespace Dynagraph
 
 #endif //bufferGraphStream_h

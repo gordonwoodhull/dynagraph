@@ -24,16 +24,20 @@
 #include "incrface/incrparse.h"
 #include "TestTraversals.h"
 
+#define CATCH_XEP
+
 using namespace std;
+using namespace Dynagraph;
+
 using DynaDAG::DDChangeQueue;
 using DynaDAG::DynaDAGLayout;
 using FDP::FDPLayout;
-#define CATCH_XEP
 
 Transform *g_transform;
 bool g_useDotDefaults;
 char *g_outdot=0;
 int g_count=1;
+
 struct CouldntOpen {};
 template<typename Layout>
 void doOutdot(Layout *l) {
@@ -205,6 +209,7 @@ pair<bool,char*> findDescription(switchval<V> *array,int n,V v) {
 			return make_pair(true,array[i].desc);
 	return make_pair(false,(char*)0);
 }
+
 int main(int argc, char *args[]) {
 	enum travmode traversal_mode = unspecified;
 	enableReport(r_error,stderr);

@@ -25,6 +25,9 @@
 #include "common/ShapeGenerator.h"
 
 using namespace std;
+
+namespace Dynagraph {
+
 using DynaDAG::DynaDAGLayout;
 using FDP::FDPLayout;
 
@@ -47,3 +50,5 @@ creators<FDPLayout>::creators() {
 	me["shapegen"] = ServerCreatorInstance<ShapeGenerator<FDPLayout> >::create;
 	me["colorbyage"] = ServerCreatorInstance<ColorByAge<FDPLayout> >::create;
 }
+
+} // namespace Dynagraph

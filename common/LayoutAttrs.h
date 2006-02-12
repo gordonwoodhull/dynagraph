@@ -24,6 +24,8 @@
 #include "Geometry.h"
 #include "genpoly.h"
 
+namespace Dynagraph {
+
 /*
         UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this
 	modify subgraph specific flag.
@@ -223,5 +225,7 @@ typedef std::vector<EdgeLabel> EdgeLabels;
 struct GraphAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,GraphGeom,Translation,StaticLabels {};
 struct NodeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,NodeGeom,NodeLabels,IfPolyDef {};
 struct EdgeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,EdgeGeom,EdgeLabels {};
+
+} // namespace Dynagraph
 
 #endif //LayoutAttrs_h

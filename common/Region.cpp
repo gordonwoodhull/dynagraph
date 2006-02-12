@@ -16,10 +16,12 @@
 
 
 #include "Geometry.h"
+#include <algorithm>
 
 using namespace std;
 
-#include <algorithm>
+namespace Dynagraph {
+
 void Region::updateBounds() {
 	if(!shape.size()) {
 		boundary.l = boundary.t = boundary.r = boundary.b = 0.0;
@@ -64,7 +66,7 @@ bool Region::sameSide(const Coord &p0, const Coord &p1, int seg) const {
 			i1 = (seg + 1) % (shape.size()-1);
 		const Coord &L0 = shape[i],
 			&L1 = shape[i1];
-		return ::sameSide(p0,p1,L0,L1);
+		return Dynagraph::sameSide(p0,p1,L0,L1);
 	}
 	case 3: {
 		double roots[4];
@@ -100,7 +102,7 @@ bool Region::Hit(Coord P) const {
 	if(shape.degree==1) {
 		const Coord &Q = shape[i],
 			&R = shape[i1];
-		if((s = ::sameSide(P,Q,R,O)) && ::sameSide(P,R,O,Q))
+		if((s = Dynagraph::sameSide(P,Q,R,O)) && Dynagraph::sameSide(P,R,O,Q))
 			return true;
 		j = 1;
 	}
@@ -129,3 +131,5 @@ bool Region::Overlaps(Coord ofs1,Coord ofs2,const Region &r) {
 		r.boundary.Contains(sum1[0]-ofs2)&&r.Hit(sum1[0]-ofs2) ||
 		sum1&&sum2;
 }
+
+} // namespace Dynagraph

@@ -16,6 +16,8 @@
 
 
 #include "DynaDAG.h"
+
+namespace Dynagraph {
 namespace DynaDAG {
 
 void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out) {
@@ -31,4 +33,6 @@ void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out)
 
 }
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

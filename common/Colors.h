@@ -17,6 +17,8 @@
 #ifndef Colors_h
 #define Colors_h
 
+namespace Dynagraph {
+
 struct HSVColor {
 	float h,s,v;
 };
@@ -167,5 +169,7 @@ struct Color {
         return ret;
     }
 };
+
+} // namespace Dynagraph
 
 #endif //Colors_h

@@ -19,6 +19,8 @@
 #include <sstream>
 #include "breakList.h"
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct ColorByAge : Server<Layout> {
 	void Process(ChangeQueue<Layout> &Q);
@@ -50,5 +52,7 @@ void ColorByAge<Layout>::Process(ChangeQueue<Layout> &Q) {
     for(typename Layout::graphedge_iter ei = Q.current->edges().begin(); ei!=Q.current->edges().end(); ++ei)
         rotateColor(colors,gd<StrAttrs2>(*ei));
 }
+
+} // namespace Dynagraph
 
 #endif //ColorByAge_h

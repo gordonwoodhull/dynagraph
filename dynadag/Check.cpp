@@ -19,6 +19,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 void FlexiRanks::Check() {
@@ -340,4 +341,6 @@ CLcnt++;
 }
 */
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

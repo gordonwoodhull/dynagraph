@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 template<typename Layout>
 struct DinoSearchLookIn : DinoInternalChanges {
@@ -111,3 +112,5 @@ struct DinoSearchLookOut : DinoInternalChanges {
         }
     }
 };
+
+} // namespace Dynagraph

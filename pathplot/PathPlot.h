@@ -17,26 +17,30 @@
 
 #include "common/Geometry.h"
 
+namespace Dynagraph {
 namespace PathPlot {
-	typedef std::vector<Segment> SegmentV;
-	typedef std::vector<Line> LineV;
 
-    struct InvalidBoundary : DGException {
-	  InvalidBoundary() : DGException("the shortest path algorithm requires a polygon boundary",true) {}
-	};
-	struct EndpointNotInPolygon : DGException {
-	  bool which;
-	  EndpointNotInPolygon(bool which) :
-	    DGException("the shortest path algorithm requires end-points within the boundary polygon",true),
-	    which(which) {}
-	};
-	/* find shortest euclidean path within a simple polygon */
-	void Shortest(const Line &boundary, Segment endpoints, Line &out);
+typedef std::vector<Segment> SegmentV;
+typedef std::vector<Line> LineV;
 
-	/* fit a spline to an input polyline, without touching barrier segments */
-	bool Route(const SegmentV &barriers, const Line &inputRoute,
-		Segment endSlopes,Line &out);
+struct InvalidBoundary : DGException {
+  InvalidBoundary() : DGException("the shortest path algorithm requires a polygon boundary",true) {}
+};
+struct EndpointNotInPolygon : DGException {
+  bool which;
+  EndpointNotInPolygon(bool which) :
+	DGException("the shortest path algorithm requires end-points within the boundary polygon",true),
+	which(which) {}
+};
+/* find shortest euclidean path within a simple polygon */
+void Shortest(const Line &boundary, Segment endpoints, Line &out);
 
-	/* utility function to convert from a set of polygonal obstacles to barriers */
-	void PolyBarriers(const LineV &polygons, SegmentV &out);
-}
+/* fit a spline to an input polyline, without touching barrier segments */
+bool Route(const SegmentV &barriers, const Line &inputRoute,
+	Segment endSlopes,Line &out);
+
+/* utility function to convert from a set of polygonal obstacles to barriers */
+void PolyBarriers(const LineV &polygons, SegmentV &out);
+
+} // namespace PathPlot
+} // namespace Dynagraph

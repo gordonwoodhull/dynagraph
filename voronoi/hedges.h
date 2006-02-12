@@ -21,6 +21,7 @@
 #include "site.h"
 #include "edges.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 struct Halfedge {
@@ -77,4 +78,6 @@ inline Halfedge *right(Halfedge*he) {
 }
 
 } // namespace Voronoi
+} // namespace Dynagraph
+
 #endif

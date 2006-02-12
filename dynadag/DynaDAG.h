@@ -22,6 +22,7 @@
 #include "ns.h"
 #include <float.h>
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 typedef ChangeQueue<DynaDAGLayout> DDChangeQueue;
@@ -1006,3 +1007,4 @@ struct BackForth : DGException {
 
 
 } // namespace DynaDAG
+} // namespace Dynagraph

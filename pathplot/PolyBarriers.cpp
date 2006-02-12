@@ -17,7 +17,10 @@
 
 #include "PathPlot.h"
 
-void PathPlot::PolyBarriers(const LineV &polygons, SegmentV &out) {
+namespace Dynagraph {
+namespace PathPlot {
+
+void PolyBarriers(const LineV &polygons, SegmentV &out) {
 	unsigned n = 0,i;
 	for(i = 0; i < polygons.size(); i++)
 		n += polygons[i].size();
@@ -32,3 +35,6 @@ void PathPlot::PolyBarriers(const LineV &polygons, SegmentV &out) {
 	}
 	assert(out.size() == n);
 }
+
+} // namespace PathPlot
+} // namespace Dynagraph

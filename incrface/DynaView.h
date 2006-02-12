@@ -28,6 +28,8 @@
 #include "common/Transform.h"
 #include "DinoMachine.h"
 
+namespace Dynagraph {
+
 // basic stuff to handle an engine/layout pair with named nodes & edges.
 // applications (e.g. the dynagraph executable & dynagraph COM component)
 // derive from this and override the Incr...() methods to share a basic
@@ -511,3 +513,5 @@ void DynaView<Layout>::incr_ev_load_strgraph(StrGraph *sg,bool merge, bool del) 
     }
     incr_ev_unlock();
 }
+
+} // namespace Dynagraph

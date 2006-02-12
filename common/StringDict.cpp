@@ -21,6 +21,8 @@
 
 #include "StringDict.h"
 
+namespace Dynagraph {
+
 StringDict g_stringDict;
 const DString::size_type DString::npos = DString::size_type(-1);
 
@@ -125,5 +127,7 @@ int ds2int(const DString &s) {
 			i = i*10 + s[j]-'0';
 	return i;
 }
+
+} // namespace Dynagraph
 
 #endif

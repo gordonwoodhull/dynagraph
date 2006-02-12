@@ -23,6 +23,9 @@
 #include "common/freelist.h"
 #include <list>
 
+namespace Dynagraph {
+namespace FDP {
+
 struct gridpt {
 	int i, j;
 };
@@ -57,5 +60,8 @@ struct Grid : derivable_dt { // cells indexed by (i,j)
 };
 
 extern int gLength (Cell* p);
+
+} // namespace FDP
+} // namespace Dynagraph
 
 #endif

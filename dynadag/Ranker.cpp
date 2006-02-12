@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 void Ranker::RemoveLayoutNodeConstraints(DDMultiNode *m) {
@@ -347,3 +348,4 @@ void Ranker::Rerank(DDChangeQueue &changeQ) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

@@ -19,6 +19,8 @@
 #ifndef freelist_h
 #define freelist_h
 
+namespace Dynagraph {
+
 #define COUNT_ALLOCATED
 template<typename T>
 struct Freelist {
@@ -80,4 +82,7 @@ public:
 	int allocated;
 #endif
 };
+
+} // namespace Dynagraph
+
 #endif // freelist_h

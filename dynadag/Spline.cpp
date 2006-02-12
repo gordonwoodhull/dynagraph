@@ -20,6 +20,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 /*
@@ -438,3 +439,4 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

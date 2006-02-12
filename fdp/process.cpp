@@ -20,6 +20,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace FDP {
 
 Position FDPServer::findMedianSize() {
@@ -140,3 +141,4 @@ void FDPServer::Process(ChangeQueue<FDPLayout> &Q) {
 }
 
 } // namespace FDP
+} // namespace Dynagraph

@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+// (namespace Dynagraph::DynaDAG, included within DynaDAG.h mmmf)
 
 struct SiftMatrix {
 	bool m_light;

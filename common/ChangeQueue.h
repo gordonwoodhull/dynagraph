@@ -17,6 +17,10 @@
 #ifndef ChangeQueue_h
 #define ChangeQueue_h
 
+#include "LayoutAttrs.h"
+
+namespace Dynagraph {
+
 /*
 	CHANGE QUEUE
 */
@@ -204,5 +208,7 @@ ChangeQueue<Layout> &ChangeQueue<Layout>::operator+=(ChangeQueue<Layout> &Q) {
 	GraphUpdateFlags() |= Q.GraphUpdateFlags();
 	return *this;
 }
+
+} // namespace Dynagraph
 
 #endif // ChangeQueue_h

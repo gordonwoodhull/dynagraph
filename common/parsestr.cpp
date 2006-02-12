@@ -20,6 +20,8 @@
 
 using namespace std;
 
+namespace Dynagraph {
+
 inline bool needsQuotes(const DString &s) {
 	return needsQuotes(s.c_str());
 }
@@ -32,3 +34,5 @@ ostream &operator<<(ostream &os,const mquote &mq) {
 		os << mq.s;
 	return os;
 }
+
+} // namespace Dynagraph

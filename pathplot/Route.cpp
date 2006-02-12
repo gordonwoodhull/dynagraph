@@ -24,6 +24,7 @@
 #define EPSILON1 1E-6
 #define EPSILON2 1E-6
 
+namespace Dynagraph {
 namespace PathPlot {
 
 struct TnA : Segment {
@@ -248,4 +249,6 @@ static bool splineIsInside(const SegmentV &barriers, Coord sps[4]) {
     }
     return true;
 }
-} // namespace Path
+
+} // namespace PathPlot
+} // namespace Dynagraph

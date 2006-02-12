@@ -26,6 +26,8 @@
 #include <float.h>
 #include "StringDict.h"
 
+namespace Dynagraph {
+
 struct Coord {
 	double x,y;
     Coord() : x(-17),y(-17) {}
@@ -288,6 +290,8 @@ private:
 };
 // check that e.g. YIntersection exists
 inline Coord checkPos(Position p) { check(p.valid); return p; }
+
+} // namespace Dynagraph
 
 #include "GeomUtil.h"
 #include "LineTricks.h"

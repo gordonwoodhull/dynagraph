@@ -20,8 +20,11 @@
 #include "common/ag2str.h"
 //#include "common/bufferGraphStream.h"
 #include "incrxep.h"
+#include "incrparse.h"
 
 using namespace std;
+
+namespace Dynagraph {
 
 static StrAttrs g_currAttrs;
 DinoMachine g_dinoMachine;
@@ -88,7 +91,6 @@ void incr_unlock(const char *graph) {
     h->incr_ev_unlock();
 }
 
-extern FILE *incr_yyin;
 void incr_segue(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
@@ -228,4 +230,4 @@ void incr_abort(int code)
     incr_error(code,0);
 }
 
-//}
+} // namespace Dynagraph

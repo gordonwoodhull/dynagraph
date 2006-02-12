@@ -19,6 +19,7 @@
 #include "fdp.h"
 #include "macros.h"
 
+namespace Dynagraph {
 namespace FDP {
 
 #ifndef offsetof
@@ -109,4 +110,5 @@ int gLength(Cell *p) {
 	return p->nodes.size();
 }
 
-}
+} // namespace FDP
+} // namespace Dynagraph

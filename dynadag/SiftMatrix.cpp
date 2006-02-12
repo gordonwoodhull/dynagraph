@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 void SiftMatrix::recompute() {
@@ -193,4 +194,6 @@ void SiftMatrix::checkWithConfig() {
 	}
 }
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

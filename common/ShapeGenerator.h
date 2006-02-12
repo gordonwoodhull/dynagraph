@@ -19,6 +19,8 @@
 
 #include "reorient.h"
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct ShapeGenerator : Server<Layout> {
 	void Process(ChangeQueue<Layout> &Q);
@@ -56,5 +58,7 @@ void ShapeGenerator<Layout>::Process(ChangeQueue<Layout> &Q) {
       }
     }
 }
+
+} // namespace Dynagraph
 
 #endif //ShapeGenerator_h

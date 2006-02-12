@@ -17,6 +17,8 @@
 
 #include "Geometry.h"
 
+namespace Dynagraph {
+
 int Line::GetSeg(double y) {
 	for(unsigned i = 0; i < size() - 1; i += degree)
 		if(sequence(double(at(i).y),y,double(at(i+degree).y)) ||
@@ -243,3 +245,5 @@ bool Line::operator &&(const Line &l2) const {
     return 0;
 
 }
+
+} // namespace Dynagraph

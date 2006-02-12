@@ -23,6 +23,8 @@
 
 using namespace std;
 
+namespace Dynagraph {
+
 bool attrChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs, const DString &name) {
 	return newAttrs.find(name)!=newAttrs.end();
   /*
@@ -209,3 +211,5 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
 	ret.exterior_box = trans->inSize(ret.exterior_box);
 	return ret;
 }
+
+} // namespace Dynagraph

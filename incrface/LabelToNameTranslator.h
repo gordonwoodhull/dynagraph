@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 template<typename Layout>
 struct LabelToNameTranslator : DinoInternalChanges {
@@ -179,3 +180,5 @@ struct LabelToNameTranslator : DinoInternalChanges {
         desthand->incr_ev_unlock();
     }
 };
+
+} // namespace Dynagraph

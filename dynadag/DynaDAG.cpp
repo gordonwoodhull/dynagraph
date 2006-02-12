@@ -20,6 +20,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 DynaDAGServer::~DynaDAGServer() {
@@ -442,3 +443,4 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

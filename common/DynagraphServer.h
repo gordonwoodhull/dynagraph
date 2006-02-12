@@ -17,6 +17,8 @@
 #ifndef DynagraphServer_h
 #define DynagraphServer_h
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct Server {
 	typedef Layout LayoutType;
@@ -57,5 +59,7 @@ struct UpdateCurrent : Server<Layout> {
 		Q.UpdateCurrent();
 	}
 };
+
+} // namespace Dynagraph
 
 #endif //DynagraphServer_h

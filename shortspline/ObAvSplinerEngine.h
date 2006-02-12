@@ -21,6 +21,8 @@
 
 #include "ObstacleAvoiderSpliner.h"
 
+namespace Dynagraph {
+
 template<typename Layout>
 struct ObAvSplinerEngine : Server<Layout> {
 	ObAvSplinerEngine(Layout *client,Layout *current) : Server<Layout>(client,current) {}
@@ -64,3 +66,5 @@ struct ObAvSplinerEngine : Server<Layout> {
 	}
 
 };
+
+} // namespace Dynagraph

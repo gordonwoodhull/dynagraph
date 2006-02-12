@@ -14,11 +14,14 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+// UNLIVING CODE
 
 // how to map between all the graphs (of many different types) being handled
 // through one incrface interpreter
 
 #include "two_way_map.h"
+
+namespace Dynagraph {
 
 struct NEID {
     bool isEdge;
@@ -38,3 +41,5 @@ struct NEID {
 typedef two_way_map<NEID> NEID_map;
 
 typedef LGraph<ADTisCDT,Nothing,Name,NEID_map>
+
+} // namespace Dynagraph

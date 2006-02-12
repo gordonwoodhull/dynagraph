@@ -22,6 +22,7 @@ using namespace std;
 // changing incrementally is buggy.  not so expensive to rewrite all constraints.
 #define REDO_ALL
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 // XConstraintOwner (Config & DynaDAG call-ins)
@@ -283,3 +284,4 @@ void XSolver::Place(DDChangeQueue &changeQ) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

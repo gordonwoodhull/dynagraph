@@ -17,6 +17,8 @@
 #ifndef stringsOut_h
 #define stringsOut_h
 
+namespace Dynagraph {
+
 const unsigned int AllFlags = 0xffffffff;
 
 void stringifyDrawn(const Drawn &d,StrAttrs2 &out);
@@ -106,5 +108,7 @@ void stringsOut(Transform *trans,ChangeQueue<Layout> &Q) {
 			stringifyEdgeChanges<Layout>(trans,*ei,igd<Update>(*ei));
 	}
 }
+
+} // namespace Dynagraph
 
 #endif // stringsOut_h

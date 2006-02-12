@@ -20,6 +20,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 struct RouteBounds {
@@ -263,4 +264,6 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	return true;
 }
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

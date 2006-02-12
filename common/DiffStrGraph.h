@@ -17,6 +17,8 @@
 #ifndef DiffStrGraph_h
 #define DiffStrGraph_h
 
+namespace Dynagraph {
+
 StrAttrs *diffAttr(StrAttrs &a1,StrAttrs &a2) {
 	StrAttrs *ret = 0;
 	for(StrAttrs::iterator i1 = a1.begin(),i2 = a2.begin(); i1!=a1.end() || i2!=a2.end();)
@@ -125,5 +127,7 @@ StrGraph *DiffStrGraph(StrGraph *sg1,StrGraph *sg2) {
 	}
 	return ret;
 }
+
+} // namespace Dynagraph
 
 #endif //DiffStrGraph_h

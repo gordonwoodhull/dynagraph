@@ -22,6 +22,8 @@
 
 using namespace std;
 
+namespace Dynagraph {
+
 // lackadaisical C goes head to head with obsessive C++ here
 inline char *kc(const char *val) { // kill const
   return const_cast<char*>(val);
@@ -145,3 +147,5 @@ Agraph_t *str2ag(StrGraph *gg) {
 		doSubgraph(g,gg,static_cast<StrGraph*>(*si));
   return g;
 }
+
+} // namespace Dynagraph

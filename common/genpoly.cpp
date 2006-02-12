@@ -20,6 +20,8 @@
 
 using namespace std;
 
+namespace Dynagraph {
+
 //#include <limits>
 
 #define	GEMS_DONT_INTERSECT    0
@@ -566,3 +568,5 @@ void genpoly(const PolyDef &arg,Lines &out) {
      if(fits)
      jostle(*rv,arg.exterior_box);*/
 }
+
+} // namespace Dynagraph

@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 int calcIN(SiftMatrix &matrix,DDModel::Node *u,DDModel::Node *v) {
@@ -138,3 +139,4 @@ double Sifter::Reopt(DDModel::Node *n,UpDown dir) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

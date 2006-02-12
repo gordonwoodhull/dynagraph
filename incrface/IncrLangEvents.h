@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 struct IncrLangEvents {
 	virtual DString dinotype() = 0; // returns "layout" "abstract" etc so xlators etc can downcast
@@ -43,3 +44,5 @@ struct IncrCallbacks {
 	virtual void incr_cb_message(const char *msg) = 0;
 };
 extern IncrCallbacks *g_incrCallback; // in incrcmds.cpp; fill this before calling incr_yyparse
+
+} // namespace Dynagraph

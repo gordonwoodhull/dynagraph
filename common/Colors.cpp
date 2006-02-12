@@ -22,6 +22,8 @@
 #include "colors.h"
 using namespace std;
 
+namespace Dynagraph {
+
 typedef struct hsbcolor_t {
 	char			*name;
 	unsigned char	h,s,b;
@@ -43,3 +45,5 @@ Color findColor(DString s) {
         throw ColorNotFound(s);
     return ci->second;
 }
+
+} // namespace Dynagraph

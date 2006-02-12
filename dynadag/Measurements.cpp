@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 Crossings calculateCrossings(Config &config) {
@@ -45,4 +46,6 @@ pair<int,Coord> calculateTotalEdgeLength(Config &config) {
 	return make_pair(count,d);
 }
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

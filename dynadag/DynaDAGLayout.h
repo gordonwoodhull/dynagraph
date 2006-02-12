@@ -19,10 +19,13 @@
 
 #include "common/LayoutAttrs.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 typedef LGraph<ADTisCDT,GraphAttrs,NodeAttrs,EdgeAttrs,Update,Update,Update> DynaDAGLayout;
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+
 
 #endif // DynaDAGLayout_h

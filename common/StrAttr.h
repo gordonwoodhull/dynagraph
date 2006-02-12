@@ -26,6 +26,9 @@
 #include "traversal.h"
 #include <map>
 #include "parsestr.h"
+
+namespace Dynagraph {
+
 typedef DString Name;
 struct StrAttrs : std::map<DString,DString> {
 	DString look(DString attr,DString defval=DString()) const {
@@ -249,4 +252,7 @@ protected:
 };
 
 typedef NamedGraph<NamedAttrs,NamedAttrs,NamedAttrs> StrGraph;
+
+} // namespace Dynagraph
+
 #endif // strattr_h

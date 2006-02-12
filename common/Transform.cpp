@@ -18,6 +18,8 @@
 #include "Geometry.h"
 #include "Transform.h"
 
+namespace Dynagraph {
+
 Transform g_dotRatios(Coord(72,72), // node sizes in inches
 						Coord(1,1)); // position in up-positive points
 
@@ -30,3 +32,5 @@ bool transformShape(Transform *trans,Line &shape) {
 	}
 	return nonzero;
 }
+
+} // namespace Dynagraph
