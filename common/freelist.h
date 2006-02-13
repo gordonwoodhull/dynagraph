@@ -30,10 +30,10 @@ struct Freelist {
 #ifdef COUNT_ALLOCATED
 			allocated+=amount;
 #endif
-			Blockheader *mem = reinterpret_cast<Blockheader*>(::malloc(amount));
+			Blockheader *mem = reinterpret_cast<Blockheader*>(malloc(amount));
 			char *cp = reinterpret_cast<char*>(mem) + sizeof(Blockheader);
 			for(int i=0; i<blocksize; i++)
-				::free(reinterpret_cast<T*>(cp) + i);
+				this->free(reinterpret_cast<T*>(cp) + i);
 			mem->next = blocks;
 			blocks = mem;
 		}
