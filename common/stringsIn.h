@@ -243,6 +243,13 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 				    skip = true;
             }
 		}
+		else if(ai->first=="minlen") {
+			double len = atof(ai->second.c_str());
+			if(len>.0)
+				eg.minLength = len;
+			else
+				skip = true;
+		}
 		if(!skip)
 			gd<StrAttrs2>(e).put(ai->first,ai->second);
 	}
