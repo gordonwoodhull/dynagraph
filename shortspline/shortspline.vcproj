@@ -143,9 +143,6 @@
 			<File
 				RelativePath="ObAvSplinerEngine.cpp">
 			</File>
-			<File
-				RelativePath="ObstacleAvoiderSpliner.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

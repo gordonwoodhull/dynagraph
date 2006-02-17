@@ -94,7 +94,19 @@ struct DynaView : IncrLangEvents {
     // complete an engine replacement by changing the insertions into new engine into modifies
     // (call after dgserver->Process but before dealing with Q
     void completeReplacement();
-	std::pair<typename Layout::Node*,bool> getNode(DString id,bool create=false);
+	std::pair<typename Layout::Node*,bool> getNode(DString name,bool create=false) {
+		if(name.empty())
+			name = randomName('n');
+		typename Layout::Node *n = nodes[name];
+		if(n)
+			return std::make_pair(n,false);
+		if(!create)
+			return std::make_pair<typename Layout::Node*>(0,false);
+		n = layout.create_node();
+		gd<Name>(n) = name;
+		nodes[name] = n;
+		return std::make_pair(n,true);
+	}
 	std::pair<typename Layout::Edge*,bool> getEdge(DString id,typename Layout::Node *t,typename Layout::Node *h,bool create);
 	std::pair<typename Layout::Edge*,bool> getEdge(DString id,DString tail,DString head,bool create);
 	typename Layout::Edge *getEdge(DString id,DString tail,DString head);
@@ -165,20 +177,10 @@ template<typename Layout>
 void DynaView<Layout>::completeReplacement() {
 	//post_engine_replacement(Q,old);
 }
+/*
 template<typename Layout>
-std::pair<typename Layout::Node*,bool> DynaView<Layout>::getNode(DString name,bool create) {
-	if(name.empty())
-		name = randomName('n');
-	typename Layout::Node *n = nodes[name];
-	if(n)
-		return std::make_pair(n,false);
-	if(!create)
-		return std::make_pair<typename Layout::Node*>(0,false);
-	n = layout.create_node();
-	gd<Name>(n) = name;
-	nodes[name] = n;
-	return std::make_pair(n,true);
-}
+std::pair<typename Layout::Node*,bool> DynaView<Layout>::getNode(DString name,bool create)
+*/
 template<typename Layout>
 std::pair<typename Layout::Edge*,bool> DynaView<Layout>::getEdge(DString name,typename Layout::Node *t,typename Layout::Node *h,bool create) {
 	typename Layout::Edge *e=0;

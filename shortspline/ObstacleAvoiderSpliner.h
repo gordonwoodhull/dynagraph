@@ -56,7 +56,7 @@ ObstacleAvoiderSpliner<Layout>::ObstacleAvoiderSpliner(Layout *layout) {
 		polydat_[i] = gd<NodeGeom>(*ni).region.shape + gd<NodeGeom>(*ni).pos;
 		reverse(polydat_[i].begin(),polydat_[i].end()); // pathplan wants CW
 		polys_[i].ps = reinterpret_cast<Ppoint_t*>(&*polydat_[i].begin());
-		polys_[i].pn = polydat_[i].size()-1;
+		polys_[i].pn = (int)polydat_[i].size()-1;
 		++i;
 	}
 	assert(i==N);
@@ -114,7 +114,7 @@ void ObstacleAvoiderSpliner<Layout>::make_barriers(int pp, int qp, Pedge_t **bar
 	int     i, j, k, n, b;
 	Pedge_t *bar;
 	Ppoly_t **poly = &*obs_.begin();
-	int npoly = obs_.size();
+	int npoly = (int)obs_.size();
 	n = 0;
 	for (i = 0; i < npoly; i++) {
 		if (i == pp) continue;

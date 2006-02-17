@@ -38,10 +38,10 @@ void placeLabels(typename Layout::Edge *e) {
 	Line &l = eg.pos;
 	if(l.empty())
 		return;
-	segsizes sizes(&*l.begin(),l.size(),l.degree);
+	segsizes sizes(&*l.begin(),(int)l.size(),l.degree);
 	for(EdgeLabels::iterator il = el.begin(); il!=el.end(); ++il)
 		if(l.size()) {
-			std::pair<Coord,Coord> pc = secant(&*l.begin(),l.size(),l.degree,sizes,il->where,il->length);
+			std::pair<Coord,Coord> pc = secant(&*l.begin(),(int)l.size(),l.degree,sizes,il->where,il->length);
 			if(il->shape) {
 				Coord dq = pc.second-pc.first,
 					dp = il->pos2 - il->pos1;

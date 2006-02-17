@@ -140,46 +140,25 @@
 				RelativePath="ag2str.cpp">
 			</File>
 			<File
-				RelativePath="ColorByAge.cpp">
-			</File>
-			<File
 				RelativePath="colors.cpp">
-			</File>
-			<File
-				RelativePath="Dynagraph.cpp">
 			</File>
 			<File
 				RelativePath="ellipse2bezier.cpp">
 			</File>
 			<File
-				RelativePath="FindChangeRect.cpp">
-			</File>
-			<File
 				RelativePath="genpoly.cpp">
-			</File>
-			<File
-				RelativePath="LabelPlacer.cpp">
 			</File>
 			<File
 				RelativePath="Line.cpp">
 			</File>
 			<File
+				RelativePath=".\LineTricks.cpp">
+			</File>
+			<File
 				RelativePath="parsestr.cpp">
 			</File>
 			<File
-				RelativePath="PolyBarriers.cpp">
-			</File>
-			<File
 				RelativePath="Region.cpp">
-			</File>
-			<File
-				RelativePath="Route.cpp">
-			</File>
-			<File
-				RelativePath="ShapeGenerator.cpp">
-			</File>
-			<File
-				RelativePath="Shortest.cpp">
 			</File>
 			<File
 				RelativePath="Solvers.cpp">

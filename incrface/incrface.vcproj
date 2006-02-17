@@ -121,28 +121,12 @@
 			</File>
 			<File
 				RelativePath="DinoMachineHandler.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="DynaView.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="incrcmds.cpp">
 			</File>
 			<File
 				RelativePath="incrgram.cpp">
-			</File>
-			<File
-				RelativePath="incrout.cpp">
 			</File>
 			<File
 				RelativePath="incrscan.cpp">

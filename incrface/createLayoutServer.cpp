@@ -31,7 +31,7 @@ namespace Dynagraph {
 using DynaDAG::DynaDAGLayout;
 using FDP::FDPLayout;
 
-creators<DynaDAGLayout>::creators creators<DynaDAGLayout>::the_creators;
+creators<DynaDAGLayout> creators<DynaDAGLayout>::the_creators;
 
 creators<DynaDAGLayout>::creators()  {
 	creators &me = *this;
@@ -40,7 +40,7 @@ creators<DynaDAGLayout>::creators()  {
 	me["shapegen"] = ServerCreatorInstance<ShapeGenerator<DynaDAGLayout> >::create;
 	me["colorbyage"] = ServerCreatorInstance<ColorByAge<DynaDAGLayout> >::create;
 }
-creators<FDPLayout>::creators creators<FDPLayout>::the_creators;
+creators<FDPLayout> creators<FDPLayout>::the_creators;
 creators<FDPLayout>::creators() {
 	creators &me = *this;
 	me["fdp"] = ServerCreatorInstance<FDP::FDPServer>::create;
