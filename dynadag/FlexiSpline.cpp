@@ -176,8 +176,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		*hd = DDp(e->head)->top();
 
 	bool reversed = DDd(tl).rank > DDd(hd).rank,
-		flat = false;
-	if(reversed) {
+		flat = DDd(tl).rank==DDd(hd).rank;
+	if(reversed && !flat) {
 		tl = DDp(e->head)->bottom();
 		hd = DDp(e->tail)->top();
 		if(DDd(tl).rank>DDd(hd).rank)

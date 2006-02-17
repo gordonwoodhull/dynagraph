@@ -42,17 +42,17 @@ void Ranker::makeStrongConstraint(DDPath *path) {
 	DynaDAGLayout::Edge *layoutE = path->layoutE;
 	gd<EdgeGeom>(layoutE).constraint = true;
 
-	int length = rankLength(layoutE);
 	DDCGraph::Node *tvar = cg.GetVar(DDp(layoutE->tail)->bottomC),
 		*hvar = cg.GetVar(DDp(layoutE->head)->topC);
 
 	DDCGraph::Edge *constr = cg.create_edge(tvar,hvar).first;
 	path->strong = constr;
 	DDNS::NSE &nse = DDNS::NSd(constr);
+	double length = max(0.,gd<EdgeGeom>(layoutE).minLength);
 #ifdef FLEXIRANKS
 	nse.minlen = ROUND(gd<GraphGeom>(config.client).separation.y*length/config.ranking.div);
 #else
-	nse.minlen = rankLength(layoutE);
+	nse.minlen = length;
 #endif
 	nse.weight = EDGELENGTH_WEIGHT;
 }
@@ -68,10 +68,11 @@ void Ranker::makeWeakConstraint(DDPath *path) {
 	NSEdgePair ep(path->weak,tvar,hvar);
 	DDNS::NSd(ep.e[0]).minlen = 0;
 	DDNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
+	double length = max(0.,gd<EdgeGeom>(layoutE).minLength);
 #ifdef FLEXIRANKS
-	DDNS::NSd(ep.e[1]).minlen = ROUND(gd<GraphGeom>(config.client).separation.y*rankLength(layoutE)/config.ranking.div);
+	DDNS::NSd(ep.e[1]).minlen = ROUND(gd<GraphGeom>(config.client).separation.y*length/config.ranking.div);
 #else
-	DDNS::NSd(ep.e[1]).minlen = rankLength(layoutE);
+	DDNS::NSd(ep.e[1]).minlen = length;
 #endif
 }
 // change edge strengths around a node
@@ -256,7 +257,8 @@ bool Ranker::simpleCase(DDChangeQueue &changeQ) {
 			if(u->ins().size()) {
 				DynaDAGLayout::Edge *e = *u->ins().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
-					int r = DDd(DDp(e->tail)->bottom()).rank + rankLength(e);
+					// this use of minLength ...
+					int r = DDd(DDp(e->tail)->bottom()).rank + (int)gd<EdgeGeom>(e).minLength;
 					if(!ng.pos.valid || r > newTopRank)
 						newTopRank = r;
 				}
@@ -264,7 +266,8 @@ bool Ranker::simpleCase(DDChangeQueue &changeQ) {
 			else if(u->outs().size()) {
 				DynaDAGLayout::Edge *e = *u->outs().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
-					int r = DDd(DDp(e->head)->top()).rank - rankLength(e);
+					// ... and this one would would have to fixed if this function was enabled
+					int r = DDd(DDp(e->head)->top()).rank - (int)gd<EdgeGeom>(e).minLength;
 					if(!ng.pos.valid || r < newTopRank)
 						newTopRank = r;
 				}

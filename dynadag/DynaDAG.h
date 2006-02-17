@@ -796,9 +796,6 @@ struct ConstraintGraph : DDCGraph {
 	void Unstabilize(NodeConstraints &nc);
 	void RemoveNodeConstraints(NodeConstraints &nc);
 };
-inline int rankLength(DynaDAGLayout::Edge *e) {
-	return std::max(0,int(gd<EdgeGeom>(e).minLength));
-}
 struct Ranker {
 	Ranker(DynaDAGServices *dynaDAG,Config &config) : dynaDAG(dynaDAG),config(config),top(cg.create_node()) {}
 	// called by DynaDAG
