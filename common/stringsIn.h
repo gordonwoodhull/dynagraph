@@ -245,7 +245,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 		}
 		else if(ai->first=="minlen") {
 			double len = atof(ai->second.c_str());
-			if(len>.0)
+			if(len>=.0)
 				eg.minLength = len;
 			else
 				skip = true;

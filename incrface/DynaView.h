@@ -94,7 +94,7 @@ struct DynaView : IncrLangEvents {
     // complete an engine replacement by changing the insertions into new engine into modifies
     // (call after dgserver->Process but before dealing with Q
     void completeReplacement();
-	std::pair<typename Layout::Node*,bool> getNode(DString name,bool create=false) {
+	std::pair<typename Layout::Node*,bool> getNode(DString name,bool create=false) { // vc++ gave me erroneous errors when i outalined
 		if(name.empty())
 			name = randomName('n');
 		typename Layout::Node *n = nodes[name];
