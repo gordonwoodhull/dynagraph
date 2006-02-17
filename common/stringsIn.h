@@ -173,7 +173,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 			gd<IfPolyDef>(n).whether = false;
 			ret.flags |= DG_UPD_REGION|DG_UPD_DRAWN;
 		}
-		else if((ai = att.find("shape"))!=att.end() && ai->second=="plaintext") {
+		else if((ai = att.find("shape"))!=att.end() && (ai->second=="none" || ai->second=="plaintext")) {
 			Coord size;
 			ai = att.find("labelsize");
 			if(ai != att.end()) {
