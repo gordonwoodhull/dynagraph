@@ -147,6 +147,15 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath=".\ObAvSplinerEngine.h">
+			</File>
+			<File
+				RelativePath=".\ObstacleAvoiderSpliner.h">
+			</File>
+			<File
+				RelativePath=".\simple.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

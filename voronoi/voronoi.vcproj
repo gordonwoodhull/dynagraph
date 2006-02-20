@@ -161,6 +161,21 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath=".\edges.h">
+			</File>
+			<File
+				RelativePath=".\hedges.h">
+			</File>
+			<File
+				RelativePath=".\info.h">
+			</File>
+			<File
+				RelativePath=".\site.h">
+			</File>
+			<File
+				RelativePath=".\voronoi.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
