@@ -87,6 +87,7 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	}
 	StrAttrs::iterator ai;
 	Coord size = trans->outSize(gd<GraphGeom>(n->g).defaultSize);
+	std::cout << "message \"default size is " << size.x << "," << size.y << '"' << std::endl;
     if((ai=att.find("width"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.x);
 	if((ai=att.find("height"))!=att.end() && !ai->second.empty())
@@ -105,8 +106,9 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	// new strategy: allow zero size if shape=none or plaintext
 	// otherwise use resolution as a minimum 
 	if(shape!="none" && shape!="plaintext") {
-		size.x = max(size.x,gd<GraphGeom>(n->g).resolution.x);
-		size.y = max(size.y,gd<GraphGeom>(n->g).resolution.y);
+		Coord mini = trans->outSize(gd<GraphGeom>(n->g).resolution);
+		size.x = std::max(size.x,mini.x);
+		size.y = std::max(size.y,mini.y);
 	}
 	else {
 		if(size.x<0) size.x = .0;
