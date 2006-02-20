@@ -85,7 +85,7 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 		    ret.flags |= DG_UPD_REGION;
 	}
 	StrAttrs::iterator ai;
-	Coord size(0,0);
+	Coord size(.0,0.);
     if((ai=att.find("width"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.x);
 	if((ai=att.find("height"))!=att.end() && !ai->second.empty())
@@ -180,6 +180,8 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 				istringstream stream(ai->second);
 				stream >> size;
 			}
+			else
+				size = Coord(0.,.0);
 			size = trans->inSize(size);
 			gd<Drawn>(n).clear();
 			ng.region.shape.Clear();
