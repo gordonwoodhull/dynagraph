@@ -33,6 +33,8 @@ MANS =
 dynagraph : main.o libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) main.o $(OTHERLIBS) $(BASELIBS) -o dynagraph
 
+main.o: common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
+
 gengraph : gengraph.o libdynagraph.a
 	$(CPPSLD) $(LDFLAGS) gengraph.o $(GLIBS) -o gengraph
 

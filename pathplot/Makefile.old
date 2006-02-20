@@ -11,7 +11,7 @@ DEFINES = -DHAVE_CONFIG_H
 
 OBJS = PolyBarriers.o Route.o Shortest.o
 
-HFILES = PathPlot.h BezCoeffs.h
+HFILES = PathPlot.h BezCoeffs.h ../common/*.h
 
 libpathplot.a : $(OBJS)
 	$(AR) cr libpathplot.a $(OBJS)

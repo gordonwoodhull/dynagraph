@@ -13,7 +13,8 @@ OBJS = Check.o Config.o ConstraintGraph.o DotlikeOptimizer.o DynaDAG.o \
     FlexiSpline.o getCrossoptModelNodes.o Measurements.o Medians.o Ranker.o \
     SetYs.o SiftMatrix.o Spline.o Update.o UVCross.o XSolver.o
 
-HFILES = DynaDAG.h Measurements.h Medians.h SiftMatrix.h ns.h nsdat.h
+HFILES = DynaDAG.h Measurements.h Medians.h SiftMatrix.h ns.h nsdat.h \
+	../common/*.h ../pathplot/*.h ../shortspline/*.h
 
 libdynadag.a : $(OBJS)
 	$(AR) cr libdynadag.a $(OBJS)

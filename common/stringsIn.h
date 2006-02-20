@@ -79,17 +79,20 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	Update ret;
 	StrAttrs &att = gd<StrAttrs>(n);
 	StrAttrs2 &att2 = gd<StrAttrs2>(n);
-	if(att["shape"].empty()) {
+	DString &shape = att["shape"];
+	if(shape.empty()) {
         DString value = (att.find("sides")!=att.end())?"polygon":"ellipse";
         if(att2.put("shape",value))
 		    ret.flags |= DG_UPD_REGION;
 	}
 	StrAttrs::iterator ai;
-	Coord size(.0,0.);
+	Coord size = trans->outSize(gd<GraphGeom>(n->g).defaultSize);
     if((ai=att.find("width"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.x);
 	if((ai=att.find("height"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.y);
+	/*
+	// old strategy: make a square if only one dimension specified
 	if(size.x&&size.y)
 		return ret;
 	if(size.x||size.y) {
@@ -98,8 +101,17 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 		if(!size.x)
 			size.x = size.y;
 	}
-	else
-		size = trans->outSize(gd<GraphGeom>(n->g).defaultSize);
+	*/
+	// new strategy: allow zero size if shape=none or plaintext
+	// otherwise use resolution as a minimum 
+	if(shape!="none" && shape!="plaintext") {
+		size.x = max(size.x,gd<GraphGeom>(n->g).resolution.x);
+		size.y = max(size.y,gd<GraphGeom>(n->g).resolution.y);
+	}
+	else {
+		if(size.x<0) size.x = .0;
+		if(size.y<0) size.y = 0.;
+	}
 	char buf[20];
 	sprintf(buf,"%f",size.x);
 	bool ch = att2.put("width",buf);
@@ -180,8 +192,11 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 				istringstream stream(ai->second);
 				stream >> size;
 			}
-			else
-				size = Coord(0.,.0);
+			else {
+				// assureAttrs has made sure we have explicit width & height
+				size.x = atof(att["width"].c_str());
+				size.y = atof(att["height"].c_str());
+			}
 			size = trans->inSize(size);
 			gd<Drawn>(n).clear();
 			ng.region.shape.Clear();

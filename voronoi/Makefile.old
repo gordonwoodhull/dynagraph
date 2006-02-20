@@ -11,7 +11,7 @@ DEFINES = -DHAVE_CONFIG_H
 
 OBJS = edges.o heap.o hedges.o info.o process.o site.o voronoi.o
 
-HFILES = edges.h hedges.h info.h site.h voronoi.h 
+HFILES = edges.h hedges.h info.h site.h voronoi.h ../common/*.h
 
 libvoronoi.a : $(OBJS)
 	$(AR) cr libvoronoi.a $(OBJS)

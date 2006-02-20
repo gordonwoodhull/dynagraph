@@ -11,7 +11,8 @@ DEFINES = -DHAVE_CONFIG_H
 
 OBJS = legal_arrangement.o
 
-HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h simple.h
+HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h \
+	simple.h ../common/*.h
 
 libshortspline.a : $(OBJS)
 	$(AR) cr libshortspline.a $(OBJS)
