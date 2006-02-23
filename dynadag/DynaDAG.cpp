@@ -211,6 +211,32 @@ void DynaDAGServer::findChangedNodes(DDChangeQueue &changeQ) {
 	loops.Field(r_stability,"node x movement",moved.x);
 	loops.Field(r_stability,"node y movement",moved.y);
 }
+void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
+	if(!gd<NodeGeom>(mn->layoutN).flow) {
+		mn->flowSlope = Coord(0,0);
+		return;
+	}
+	Coord avgIn(0,0),avgOut(0,0);
+	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei)
+		avgIn += (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
+	if(mn->top()->ins().size())
+		avgIn /= mn->top()->ins().size();
+	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei)
+		avgOut += (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
+	if(mn->bottom()->outs().size())
+		avgOut /= mn->bottom()->outs().size();
+	mn->flowSlope = (avgIn+avgOut)/2*gd<NodeGeom>(mn->layoutN).flow;
+}
+void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
+		findFlowSlope(DDp((*ei)->tail));
+		findFlowSlope(DDp((*ei)->head));
+	}
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei) {
+		findFlowSlope(DDp((*ei)->tail));
+		findFlowSlope(DDp((*ei)->head));
+	}
+}
 bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 	if(path->unclippedPath.Empty()) // new edge
 		return true;
@@ -407,6 +433,8 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 
 	// find node & edge moves
 	findChangedNodes(changeQ);
+	
+	findFlowSlopes(changeQ);
 
 	redrawEdges(changeQ,changeQ.GraphUpdateFlags()&DG_UPD_EDGESTYLE);
 	timer.LoopPoint(r_timing,"draw splines");

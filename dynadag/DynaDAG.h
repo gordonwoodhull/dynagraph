@@ -155,9 +155,10 @@ struct MultiNode : Chain<N,E> {
 		oldTopRank,	// previous rank assignment
 		oldBottomRank;
 	bool rankFixed; // whether nailed in Y
+	Coord flowSlope; // for flow nodes, the slope at which edges should enter/exit
 	//	coordFixed; // whether a good place in X has been found
 	MultiNode() : node(0),layoutN(0),hit(false),newTopRank(0),newBottomRank(0),
-		oldTopRank(0),oldBottomRank(0),rankFixed(false) /*,coordFixed(false)*/ {}
+		oldTopRank(0),oldBottomRank(0),rankFixed(false),flowSlope(0,0) /*,coordFixed(false)*/ {}
 	struct node_iter {
 		N *operator *() {
 			switch(state) {
@@ -975,6 +976,8 @@ private:
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
 	void findChangedNodes(DDChangeQueue &changeQ);
+	void DynaDAGServer::findFlowSlope(DDMultiNode *mn);
+	void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
 	void redrawEdges(DDChangeQueue &changeQ,bool force);

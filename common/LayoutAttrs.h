@@ -135,7 +135,8 @@ struct NodeGeom {
 	Position pos;
 	Region region;
 	NailType nail;
-	NodeGeom() : nail(DG_NONAIL) {}
+	double flow;
+	NodeGeom() : nail(DG_NONAIL),flow(0.0) {}
 	Bounds BoundingBox() {
 		if(!pos.valid)
 			return Bounds();
@@ -197,11 +198,11 @@ struct EdgeGeom {
 	Line pos;
 	Port tailPort,headPort;
 	bool tailClipped,headClipped;
-	// DynaDAG attributes
+	// DynaDAG-specific attributes (consider moving into DynaDAG now that we have typed graphs)
 	double minLength; // minimum Y-spanning of edge (multiplied by GraphGeom::separation::y)
 	bool fromBottom, // how to measure length
 		toTop; // default both true: measure from bottom of tail to top of head
-	bool constraint, // whether this edge affects ranking; set true by DynaDAG if last in loop & set false if a node is nailed
+	bool constraint, // whether this edge affects ranking; set false by DynaDAG if last in cycle or if a node is nailed
 		manualRoute; // try to use the line specified in pos
 	EdgeGeom() : tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),tailClipped(true),
 		headClipped(true),minLength(1.0),fromBottom(true),toTop(true),constraint(true),

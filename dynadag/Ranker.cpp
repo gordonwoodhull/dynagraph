@@ -321,17 +321,18 @@ void Ranker::recomputeRanks(DDChangeQueue &changeQ) {
 }
 #ifdef FLEXIRANKS
 void Ranker::makeRankList(DDChangeQueue &changeQ) {
-	Config::Ranks::IndexV rankvec;
+	Config::Ranks::IndexV &newRanks = config.ranking.newRanks;
+	// the ranks consist of tops of nodes, bottoms of nodes, 
+	// and places where phantom nodes for S-shaped back-edges, 
+	// fanning order, and parallel/2-cycle edges go
 	for(DynaDAGLayout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
-			rankvec.push_back(DDp(*ni)->newTopRank);
-			rankvec.push_back(DDp(*ni)->newBottomRank);
+			newRanks.push_back(DDp(*ni)->newTopRank);
+			newRanks.push_back(DDp(*ni)->newBottomRank);
 		}
-	sort(rankvec.begin(),rankvec.end());
-	config.ranking.newRanks.clear();
-	for(Config::Ranks::IndexV::iterator ii = rankvec.begin(); ii!=rankvec.end(); ++ii)
-		if(config.ranking.newRanks.empty()||*ii!=config.ranking.newRanks.back())
-			config.ranking.newRanks.push_back(*ii);
+	sort(newRanks.begin(),newRanks.end());
+	Config::Ranks::IndexV::iterator uniquend = unique(newRanks.begin(),newRanks.end());
+	newRanks.resize(uniquend-newRanks.begin());
 }
 #endif
 void Ranker::Rerank(DDChangeQueue &changeQ) {

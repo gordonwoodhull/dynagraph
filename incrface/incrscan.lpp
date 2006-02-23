@@ -95,6 +95,15 @@ void yyerror(const char *str)
 {
 	char buf[300];
 	sprintf(buf,"incr: %s in line %d near '%s'",str,line_num,yytext);
+	while(1) {
+		char *nl = std::find(buf,buf+strlen(buf),'\n');
+		if(!*nl)
+			break;
+		for(char *r = buf+strlen(buf)+1; r!=nl; --r)
+			*r = *(r-1);
+		*nl = '\\';
+		nl[1] = 'n';
+	}
 	throw Dynagraph::IncrError(buf);
 }
 /* must be here to see flex's macro defns */

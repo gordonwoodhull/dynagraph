@@ -149,6 +149,8 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
             }
 			ret.flags |= DG_UPD_MOVE;
 		}
+		else if(ai->first=="flow")
+			ng.flow = atof(ai->second.c_str());
 		else if(ai->first.compare(0,9,"labelsize")==0) {
 			int i=ds2int(ai->first.substr(9));
 			if(i>=0) {

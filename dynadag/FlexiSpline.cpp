@@ -230,7 +230,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 					PathPlot::SegmentV barriers;
 					PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
 
-					Segment endSlopes(Coord(0.0,0.0),Coord(0.0,0.0));
+					cout << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
+					Segment endSlopes(DDp(e->tail)->flowSlope,DDp(e->head)->flowSlope);
 					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
