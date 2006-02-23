@@ -20,6 +20,8 @@
 #include "IncrLangEvents.h"
 #include "two_way_map.h"
 
+namespace Dynagraph {
+
 // node or edge ID
 struct NEID {
     bool isEdge;
@@ -49,7 +51,7 @@ struct DinoMachNode : NamedAttrs {
     IncrLangEvents *handler;
     DinoMachNode(Name name = Name()) : NamedAttrs(name),handler(0) {}
     ~DinoMachNode() {
-        if(handler && g_incrCallback)
+        if(handler)
             g_incrCallback->incr_cb_destroy_handler(handler);
     }
 };
@@ -129,3 +131,5 @@ struct DinoMachine : NamedGraph<NamedAttrs,DinoMachNode,DinoMachEdge> {
     }
 };
 extern DinoMachine g_dinoMachine;
+
+} // namespace Dynagraph

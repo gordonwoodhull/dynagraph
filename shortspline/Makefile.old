@@ -5,13 +5,14 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I$(GRAPHVIZ_INC)
+	-I/usr/local/graphviz/include
 
-DEFINES = 
+DEFINES = -DHAVE_CONFIG_H
 
-OBJS = ObAvSplinerEngine.o ObstacleAvoiderSpliner.o legal_arrangement.o
+OBJS = legal_arrangement.o
 
-HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h simple.h
+HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h \
+	simple.h ../common/*.h
 
 libshortspline.a : $(OBJS)
 	$(AR) cr libshortspline.a $(OBJS)

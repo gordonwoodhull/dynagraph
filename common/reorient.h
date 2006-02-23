@@ -13,7 +13,10 @@
 *               This version available from               *
 *                   http://dynagraph.org                  *
 **********************************************************/
+#ifndef REORIENT_H
+#define REORIENT_H
 
+namespace Dynagraph {
 
 struct ReorientBadDir : DGException {
 	ReorientBadDir() : DGException("bad direction argument to reorient()",true) {}
@@ -48,3 +51,7 @@ Coord reorient(Coord val,bool in,Orientation dir) {
 	}
 	return ret;
 }
+
+} // namespace Dynagraph
+
+#endif // REORIENT_H

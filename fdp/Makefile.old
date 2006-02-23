@@ -5,13 +5,13 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I$(GRAPHVIZ_INC)
+	-I/usr/local/graphviz/include
 
-DEFINES = 
+DEFINES = -DHAVE_CONFIG_H
 
 OBJS = grid.o layout.o process.o
 
-HFILES = FVSCombo.h fdp.h grid.h macros.h
+HFILES = fdp.h grid.h macros.h ../common/*.h 
 
 libfdp.a : $(OBJS)
 	$(AR) cr libfdp.a $(OBJS)

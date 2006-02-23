@@ -23,6 +23,8 @@
 #include <windows.h>
 #endif
 
+namespace Dynagraph {
+
 Timer timer;
 
 Timer::Timer() {
@@ -117,3 +119,5 @@ void Timer::EndLoop(int rt) {
 	report(rt,"\n");
 }
 */
+
+} // namespace Dynagraph

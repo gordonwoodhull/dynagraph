@@ -17,6 +17,7 @@
 
 #include "info.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 
@@ -40,3 +41,4 @@ void Sites::ref(Site *v) {
 }
 
 } // namespace Voronoi
+} // namespace Dynagraph

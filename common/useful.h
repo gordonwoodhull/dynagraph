@@ -17,8 +17,11 @@
 
 #ifndef useful_h
 #define useful_h
+
 #include "time-o-matic.h"
 #include <stdio.h>
+
+namespace Dynagraph {
 
 template<typename T>
 inline bool sequence(T a,T b,T c) {
@@ -90,5 +93,7 @@ private:
 	void doField(FieldSet &f,char *colname,double val);
 };
 extern LoopMinder loops;
+
+} // namespace Dynagraph
 
 #endif

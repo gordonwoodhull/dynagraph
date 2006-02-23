@@ -15,8 +15,11 @@
 **********************************************************/
 
 
-#ifndef DGXEP_H
-#define DGXEP_H
+#ifndef dgxep_h
+#define dgxep_h
+
+namespace Dynagraph {
+
 // a base for all exceptions so we can report the basics
 struct DGException {
     const char *exceptype;
@@ -28,4 +31,7 @@ struct DGException2 : DGException {
     const char *param;
     DGException2(const char *exceptype,const char *param,bool fatal = false) : DGException(exceptype,fatal),param(param) {}
 };
-#endif
+
+} // namespace Dynagraph
+
+#endif //dgxep_h

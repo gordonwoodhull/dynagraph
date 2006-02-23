@@ -16,6 +16,9 @@
 
 
 #include <common/diff_strgraph.h>
+
+namespace Dynagraph {
+
 struct AbGNodeUnknown : DGException2 {
     AbGNodeUnknown(const char *name) : DGException2("tried to modify unknown node",name) {}
 };
@@ -81,7 +84,7 @@ bool AbsGraphHandler<NGraph>::incr_ev_close_graph() {
 }
 template<typename NGraph>
 bool AbsGraphHandler<NGraph>::incr_ev_mod_graph(const StrAttrs &attrs) {
-    gd<StrAttrs>(g) += attrs;
+    gd<StrAttrs>(g) = attrs;
     maybe_go();
     return true;
 }
@@ -194,3 +197,5 @@ void AbsGraphHandler<NGraph>::incr_ev_load_strgraph(StrGraph *sg,bool merge, boo
     diff_strgraph(g,sg,react);
     incr_ev_unlock();
 }
+
+} // namespace Dynagraph

@@ -19,12 +19,13 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 const double EPSILON = 1.0e-5; // DBL_EPSILON*10; // 1.0e-36;
 
 Region &getRegion(DDModel::Node *n) {
-	Layout::Node *vn = DDd(n).multi->layoutN;
+	DynaDAGLayout::Node *vn = DDd(n).multi->layoutN;
 	return gd<NodeGeom>(vn).region;
 }
 double Config::LeftExtent(DDModel::Node *n) {
@@ -44,7 +45,7 @@ double Config::RightExtent(DDModel::Node *n) {
 	double r = 0.0;
 	if(getRegion(n).boundary.valid)
 		r = getRegion(n).boundary.r;
-	Layout::Node *ln = DDd(n).multi->layoutN;
+	DynaDAGLayout::Node *ln = DDd(n).multi->layoutN;
 	if(current->find_edge(ln,ln))
 		r += gd<GraphGeom>(client).separation.x;
 	return max(r,EPSILON);
@@ -77,7 +78,7 @@ Coord Config::NodeSize(DDModel::Node *n) {
 		ret.y = EPSILON;
 	}
 	else {
-		Layout::Node *vn = DDd(n).multi->layoutN;
+		DynaDAGLayout::Node *vn = DDd(n).multi->layoutN;
 		Region *region = gd<NodeGeom>(vn).region;
 		ret.x = ret.y = 0;
 		if(region) {
@@ -273,3 +274,4 @@ void Config::Restore(Ranks &backup) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

@@ -14,5 +14,13 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ellipse2bezier_h
+#define ellipse2bezier_h
+
+namespace Dynagraph {
 
 void ellipse2bezier(Rect &r, Line &out);
+
+} // namespace Dynagraph
+
+#endif //ellipse2bezier_h

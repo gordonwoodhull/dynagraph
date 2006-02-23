@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include "hedges.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 int Halfedges::PQbucket(Halfedge *he) {
@@ -123,4 +124,5 @@ void PQdump()
 */
 
 } // namespace Voronoi
+} // namespace Dynagraph
 

@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 //#define DOUBLE_MEDIANS
@@ -142,7 +143,7 @@ struct RankLess {
 	}
 };
 #define TIRE 6
-void HybridOptimizer2::Reorder(Layout &nodes,Layout &edges) {
+void HybridOptimizer2::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	vector<int> affectedRanks;
 	{
 		NodeV optimVec;
@@ -298,3 +299,4 @@ double HybridOptimizer2::Reopt(DDModel::Node *n,UpDown dir) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

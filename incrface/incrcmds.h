@@ -22,6 +22,8 @@
 #include <malloc.h>
 #endif
 
+namespace Dynagraph {
+
 void incr_open_graph(const char *id);
 void incr_close_graph(const char *id);
 void incr_mod_graph(const char *id);
@@ -49,6 +51,8 @@ const char *incr_get_attr(const char *name);
 void incr_error(int code, const char *msg);
 void incr_lexeof();
 
+} // namespace Dynagraph
+
 // in incrscan
 void incr_yyerror(const char *str);
 int incr_yylex(void);
@@ -72,3 +76,4 @@ int incr_yylex(void);
 #ifndef streq
 #define streq(s,t) (!strcmp(s,t))
 #endif
+

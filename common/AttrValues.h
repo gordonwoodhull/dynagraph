@@ -14,33 +14,19 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef AttrValues_h
+#define AttrValues_h
 
-#include "StringDict.h"
-#include <map>
-#include <stdio.h>
-#include <stdlib.h>
-#include "colors.h"
-using namespace std;
+namespace Dynagraph {
 
-// graphviz's generated color table
-typedef struct hsbcolor_t {
-	char			*name;
-	unsigned char	h,s,b;
-} hsbcolor_t;
-
-#include "colortbl.h"
-
-typedef map<DString,Color> named_colors;
-named_colors g_namedColors;
-void initNamed() {
-    for(size_t i = 0; i<sizeof(color_lib)/sizeof(hsbcolor_t); ++i)
-        g_namedColors[color_lib[i].name] = Color(color_lib[i].h/255.0f,color_lib[i].s/255.0f,color_lib[i].b/255.0f);
+extern DString g_NLPNames[5]; // in stringsOut.cpp
+inline NodeLabelAlignment string2nlp(DString s) {
+	for(int i=0;i<5;++i)
+		if(g_NLPNames[i]==s)
+			return static_cast<NodeLabelAlignment>(i);
+	return DG_NODELABEL_CENTER;
 }
-Color findColor(DString s) {
-    if(g_namedColors.empty())
-        initNamed();
-    named_colors::iterator ci = g_namedColors.find(s);
-    if(ci==g_namedColors.end())
-        throw ColorNotFound(s);
-    return ci->second;
-}
+
+} // namespace Dynagraph
+
+#endif //AttrValues_h

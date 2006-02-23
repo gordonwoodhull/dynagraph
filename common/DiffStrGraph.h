@@ -14,6 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef DiffStrGraph_h
+#define DiffStrGraph_h
+
+namespace Dynagraph {
 
 StrAttrs *diffAttr(StrAttrs &a1,StrAttrs &a2) {
 	StrAttrs *ret = 0;
@@ -123,3 +127,7 @@ StrGraph *DiffStrGraph(StrGraph *sg1,StrGraph *sg2) {
 	}
 	return ret;
 }
+
+} // namespace Dynagraph
+
+#endif //DiffStrGraph_h

@@ -151,6 +151,21 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath=".\fdp.h">
+			</File>
+			<File
+				RelativePath=".\FDPLayout.h">
+			</File>
+			<File
+				RelativePath=".\FDPModel.h">
+			</File>
+			<File
+				RelativePath=".\grid.h">
+			</File>
+			<File
+				RelativePath=".\macros.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

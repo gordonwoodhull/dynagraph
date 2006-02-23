@@ -22,6 +22,8 @@
 
 using namespace std;
 
+namespace Dynagraph {
+
 // lackadaisical C goes head to head with obsessive C++ here
 inline char *kc(const char *val) { // kill const
   return const_cast<char*>(val);
@@ -86,9 +88,9 @@ StrGraph *ag2str(Agraph_t *g) {
 				char *val = agget(e,sym->name);
 				if(val&&*val)
                     if(!strcmp(sym->name,"id"))
-                        static_cast<Name&>(nattr) = val;
+                        (Name)nattr = val;
                     else
-					    static_cast<StrAttrs&>(nattr)[sym->name] = val;
+					    ((StrAttrs)nattr)[sym->name] = val;
 			}
 			try {
 				gg->create_edge(tail,head,nattr).first;
@@ -145,3 +147,5 @@ Agraph_t *str2ag(StrGraph *gg) {
 		doSubgraph(g,gg,static_cast<StrGraph*>(*si));
   return g;
 }
+
+} // namespace Dynagraph

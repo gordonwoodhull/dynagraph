@@ -18,38 +18,15 @@
 #ifndef FDP_H
 #define FDP_H
 
-#include "common/Dynagraph.h"
+#include "common/ChangeQueue.h"
+#include "common/DynagraphServer.h"
+#include "FDPLayout.h"
+#include "FDPModel.h"
+#include "grid.h"
 
+namespace Dynagraph {
 namespace FDP {
 
-#define NDIM 2
-
-struct FDPEdge {
-	Layout::Edge *layoutE;
-
-	FDPEdge() : layoutE(0) {}
-};
-
-struct FDPNode {
-	Layout::Node *layoutN;
-    bool fixed; // true if node should not move
-    double pos[NDIM], // new position
-		disp[NDIM]; // incremental displacement
-
-	FDPNode() : layoutN(0),fixed(false) {
-		for(int i = 0; i<NDIM; ++i)
-			pos[i] = disp[i] = 0.0;
-	}
-};
-
-typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
-
-inline FDPModel::Node *&modelP(Layout::Node *n) {
-	return reinterpret_cast<FDPModel::Node*&>(gd<ModelPointer>(n).model);
-}
-inline FDPModel::Edge *&modelP(Layout::Edge *e) {
-	return reinterpret_cast<FDPModel::Edge*&>(gd<ModelPointer>(e).model);
-}
 struct Inconsistency : DGException {
   Inconsistency() : DGException("fdp's internal model has become inconsistent with the client graph",true) {}
 };
@@ -57,9 +34,7 @@ struct StillHasEdges : DGException {
   StillHasEdges() : DGException("a node was deleted without all of its edges being deleted (impossible!)",true) {}
 };
 
-#include "grid.h"
-
-struct FDPServer : Server,Grid::Visitor {
+struct FDPServer : Server<FDPLayout>,Grid::Visitor {
 	int numIters;
 	bool useComp,
 		useGrid;
@@ -74,8 +49,8 @@ struct FDPServer : Server,Grid::Visitor {
 		Rfact2, // Phase 2 RepFactor
 		Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node
 
-	FDPServer(Layout *client, Layout *current) :
-	  Server(client,current),
+	FDPServer(FDPLayout *client, FDPLayout *current) :
+	  Server<FDPLayout>(client,current),
 	  numIters(40),
 	  useComp(false),
 	  useGrid(true),
@@ -90,16 +65,16 @@ struct FDPServer : Server,Grid::Visitor {
 	  Radius2(0.0) {}
 	~FDPServer() {}
 	// Server
-	void Process(ChangeQueue &changeQ);
+	void Process(ChangeQueue<FDPLayout> &changeQ);
 	// Grid::Visitor
 	int VisitCell(Cell *cell,Grid *grid);
 private:
 	FDPModel model;
 
-	void createModelNode(Layout::Node *n);
-	void createModelEdge(Layout::Edge *e);
-	void deleteModelNode(Layout::Node *n);
-	void deleteModelEdge(Layout::Edge *e);
+	void createModelNode(FDPLayout::Node *n);
+	void createModelEdge(FDPLayout::Edge *e);
+	void deleteModelNode(FDPLayout::Node *n);
+	void deleteModelEdge(FDPLayout::Edge *e);
 
 	Position findMedianSize();
 	void setParams(Coord avgsize);
@@ -115,4 +90,6 @@ private:
 };
 
 } // namespace FDP
+} // namespace Dynagraph
+
 #endif // FDP_H

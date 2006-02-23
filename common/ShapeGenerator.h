@@ -14,23 +14,32 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ShapeGenerator_h
+#define ShapeGenerator_h
 
-#include "Dynagraph.h"
 #include "reorient.h"
-#include <sstream>
-using namespace std;
-void ShapeGenerator::Process(ChangeQueue &Q) {
+
+namespace Dynagraph {
+
+template<typename Layout>
+struct ShapeGenerator : Server<Layout> {
+	void Process(ChangeQueue<Layout> &Q);
+	ShapeGenerator(Layout *client,Layout *currentLayout) : Server<Layout>(client,currentLayout) {}
+	~ShapeGenerator() {}
+};
+template<typename Layout>
+void ShapeGenerator<Layout>::Process(ChangeQueue<Layout> &Q) {
   Layout *subs[2] = {&Q.insN,&Q.modN};
   for(int i=0; i<2; ++i)
-    for(Layout::node_iter ni = subs[i]->nodes().begin(); ni !=subs[i]->nodes().end(); ++ni) {
-      Layout::Node *n = *ni;
+    for(typename Layout::node_iter ni = subs[i]->nodes().begin(); ni !=subs[i]->nodes().end(); ++ni) {
+      typename Layout::Node *n = *ni;
       if((i==0 || igd<Update>(n).flags&DG_UPD_POLYDEF) && gd<IfPolyDef>(n).whether) {
 		gd<Drawn>(n).clear();
         try {
 		    genpoly(gd<PolyDef>(n),gd<Drawn>(n));
         }
         catch(GenPolyXep xep) {
-			cout << "message \"" << xep.exceptype << '"' << endl;
+			std::cout << "message \"" << xep.exceptype << '"' << std::endl;
 			// bad or incomplete definitions: just leave blank
         }
 		NodeGeom &ng = gd<NodeGeom>(n);
@@ -49,3 +58,7 @@ void ShapeGenerator::Process(ChangeQueue &Q) {
       }
     }
 }
+
+} // namespace Dynagraph
+
+#endif //ShapeGenerator_h

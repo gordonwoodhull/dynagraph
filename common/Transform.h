@@ -18,6 +18,8 @@
 #ifndef Transform_h
 #define Transform_h
 
+namespace Dynagraph {
+
 // dynagraph uses dimensionless up-positive coords, but not everyone else does!
 // so when it reads or writes .dot files or talks over a pipe, it uses one of these:
 // multiplies by relevant ratios on read, divides on write
@@ -54,5 +56,9 @@ public:
 // dot transform: node size in inches, coords in down-positive points
 // (dynagraph will do calcs in up-positive points)
 extern Transform g_dotRatios;
+
+bool transformShape(Transform *trans,Line &shape);
+
+} // namespace Dynagraph
 
 #endif // Transform_h

@@ -15,14 +15,16 @@
 **********************************************************/
 
 
-#ifndef Dynagraph_h
-#define Dynagraph_h
+#ifndef LayoutAttrs_h
+#define LayoutAttrs_h
 
 #include "LGraph-cdt.h"
 #include "StrAttr.h"
 #include "traversal.h"
 #include "Geometry.h"
 #include "genpoly.h"
+
+namespace Dynagraph {
 
 /*
         UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this
@@ -115,8 +117,6 @@ struct Translation {
 	Translation() : orientation(DG_ORIENT_DOWN) {}
 };
 
-struct GraphAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,GraphGeom,Translation,StaticLabels {};
-
 // generated shapes for nodes (relative to NodeGeom::pos);
 // this (unlike NodeGeom::region), is not translated according to Translation::orientation
 // in other words, translate dynagraph coords first, then add these.
@@ -189,7 +189,6 @@ struct IfPolyDef : PolyDef {
 	bool whether; // whether to use, else client has other way to fill NodeGeom::region
 	IfPolyDef() : whether(true) {}
 };
-struct NodeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,NodeGeom,NodeLabels,IfPolyDef {};
 
 /*
 	EDGE attributes
@@ -218,117 +217,15 @@ struct EdgeLabel {
 	EdgeLabel(double where = 0.5f,double length = 0.0f) : where(where),length(length),shape(0) {}
 };
 typedef std::vector<EdgeLabel> EdgeLabels;
-struct EdgeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,EdgeGeom,EdgeLabels {
 
-};
 
-/*
-	LAYOUT (spec & geom graph)
-*/
-typedef LGraph<ADTisCDT,GraphAttrs,NodeAttrs,EdgeAttrs,Update,Update,Update> Layout;
+// These are the recommended basic attributes for a Dynagraph Layout graph
+// Most are required by the common Dynagraph template libraries
+// Further refactoring could reduce these dependencies
+struct GraphAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,GraphGeom,Translation,StaticLabels {};
+struct NodeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,NodeGeom,NodeLabels,IfPolyDef {};
+struct EdgeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,EdgeGeom,EdgeLabels {};
 
-/*
-	CHANGE QUEUE
-*/
-struct ChangeQueue {
-	// the client edits this supergraph of server's current layout
-	// then calls the methods below to signal the changes in the subgraphs
-	Layout * const client, * const current;
-	Layout insN,modN,delN,
-		insE,modE,delE;
+} // namespace Dynagraph
 
-	ChangeQueue(Layout *client,Layout *current);
-	ChangeQueue(ChangeQueue &copy); // compiler never gets these right
-	void InsNode(Layout::Node *n);
-	void InsEdge(Layout::Edge *e);
-	void ModNode(Layout::Node *n,Update u); // ORs u into the igd<Update> of modN subnode
-	void ModEdge(Layout::Edge *e,Update u);
-	void DelNode(Layout::Node *n);
-	void DelEdge(Layout::Edge *e);
-	unsigned &GraphUpdateFlags() { return igd<Update>(&modN).flags; }
-
-	// called by server to update current subgraph based on current changes
-	void UpdateCurrent();
-	void CalcBounds();
-
-	// called by client after server processing clear subgraphs and maybe do deletions
-	void Okay(bool doDelete = false);
-
-	bool Empty() { return insN.nodes().empty()&&modN.nodes().empty()&&delN.nodes().empty()&&
-		insE.nodes().empty()&&modE.nodes().empty()&&delE.nodes().empty()&&GraphUpdateFlags()==0; }
-
-	// copy
-	ChangeQueue &operator=(ChangeQueue &Q);
-	// accumulate
-	ChangeQueue &operator+=(ChangeQueue &Q);
-
-	// Exceptions
-
-	// insertions must not already be inserted; modifications & deletions must already be inserted
-	// these xeptions indicate programming error and thus are fatal
-	struct InsertInserted : DGException {
-	  InsertInserted() : DGException("insertion of an already inserted object",true) {}
-	};
-	struct ModifyUninserted : DGException {
-	  ModifyUninserted() : DGException("modify of an uninserted object",true) {}
-	};
-	struct DeleteUninserted : DGException {
-	  DeleteUninserted() : DGException("deletion of an uninserted object",true) {}
-	};
-	struct EndnodesNotInserted : DGException {
-	  EndnodesNotInserted() : DGException("insertion of edge without nodes",true) {}
-	};
-};
-/*
-	SERVER (e.g. topology layout, edge layout, label layout)
-*/
-struct Server {
-	// shared by all actors in a system;  represents everything currently inserted
-	// note this is a subgraph of the client layout
-	Layout *const client, *const current;
-
-	virtual void Process(ChangeQueue &Q) = 0;
-	Server(Layout *client,Layout *current) : client(client), current(current) {}
-	virtual ~Server() {}
-};
-struct CompoundServer : Server {
-	typedef std::vector<Server*> ServerV;
-	ServerV actors;
-	void Process(ChangeQueue &Q);
-	CompoundServer(Layout *client,Layout *currentLayout) : Server(client,currentLayout) {}
-	~CompoundServer();
-};
-// simple server that just updates the current subgraph based on changes.
-// this must only be done once, that's why individual layout servers can't be responsible.
-struct UpdateCurrent : Server {
-	UpdateCurrent(Layout *client,Layout *currentLayout) : Server(client,currentLayout) {}
-	void Process(ChangeQueue &Q) {
-		Q.UpdateCurrent();
-	}
-};
-struct LabelPlacer : Server {
-	void Process(ChangeQueue &Q);
-	LabelPlacer(Layout *client,Layout *currentLayout) : Server(client,currentLayout) {}
-	~LabelPlacer() {}
-};
-struct ShapeGenerator : Server {
-	void Process(ChangeQueue &Q);
-	ShapeGenerator(Layout *client,Layout *currentLayout) : Server(client,currentLayout) {}
-	~ShapeGenerator() {}
-};
-/*
-	EXCEPTIONS
-*/
-struct NailWithoutPos : DGException {
-	Layout::Node *n;
-	NailWithoutPos(Layout::Node *n) :
-	  DGException("nailing a node without specifying a position"),
-	  n(n) {}
-};
-struct BackForth : DGException {
-	Layout::Edge *e;
-	BackForth(Layout::Edge *e) : DGException("dynadag can't handle a->b->a  (a->b->c->a is okay)"),
-	  e(e) {}
-};
-
-#endif
+#endif //LayoutAttrs_h

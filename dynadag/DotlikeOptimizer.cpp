@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 //#define DOUBLE_MEDIANS
@@ -144,7 +145,7 @@ struct RankLess {
 	}
 };
 #define TIRE 6
-void DotlikeOptimizer::Reorder(Layout &nodes,Layout &edges) {
+void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	vector<int> affectedRanks;
 	{
 		NodeV optimVec;
@@ -303,3 +304,4 @@ double DotlikeOptimizer::Reopt(DDModel::Node *n,UpDown dir) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

@@ -14,6 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef Colors_h
+#define Colors_h
+
+namespace Dynagraph {
 
 struct HSVColor {
 	float h,s,v;
@@ -23,7 +27,7 @@ struct RGBAColor {
 };
 struct ColorNotFound : DGException { DString s; ColorNotFound(DString s) : DGException("color not found"),s(s) {} };
 struct Color;
-Color findColor(DString s);
+extern Color findColor(DString s);
 struct Color {
     bool isHSV,hasAlpha;
     union {
@@ -165,3 +169,7 @@ struct Color {
         return ret;
     }
 };
+
+} // namespace Dynagraph
+
+#endif //Colors_h

@@ -95,7 +95,7 @@ void yyerror(const char *str)
 {
 	char buf[300];
 	sprintf(buf,"incr: %s in line %d near '%s'",str,line_num,yytext);
-	throw IncrError(buf);
+	throw Dynagraph::IncrError(buf);
 }
 /* must be here to see flex's macro defns */
 void lexeof() { unput(GRAPH_EOF_TOKEN); }

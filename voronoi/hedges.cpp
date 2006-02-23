@@ -17,6 +17,7 @@
 
 #include "hedges.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 const Edge *DELETED = reinterpret_cast<Edge*>(-2);
@@ -214,3 +215,4 @@ Site *Halfedges::rightreg(Halfedge *he) {
 
 
 } // namespace Voronoi
+} // namespace Dynagraph

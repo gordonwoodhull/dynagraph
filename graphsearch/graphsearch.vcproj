@@ -184,7 +184,28 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\FindAllPaths.h">
+			</File>
+			<File
+				RelativePath=".\findShortestPaths.h">
+			</File>
+			<File
+				RelativePath=".\gscmds.h">
+			</File>
+			<File
+				RelativePath=".\gsgraph.h">
+			</File>
+			<File
+				RelativePath=".\gsxep.h">
+			</File>
+			<File
+				RelativePath=".\Pattern.h">
+			</File>
+			<File
 				RelativePath="resource.h">
+			</File>
+			<File
+				RelativePath=".\Search.h">
 			</File>
 		</Filter>
 		<Filter

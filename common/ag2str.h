@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ag2str_h
+#define ag2str_h
 
 // a silly translation deal until i make a native agread
 
@@ -23,6 +25,8 @@
 extern "C" {
 	#include "agraph.h"
 };
+
+namespace Dynagraph {
 
 StrGraph *ag2str(Agraph_t *g);
 Agraph_t *str2ag(StrGraph *gg);
@@ -34,3 +38,7 @@ inline StrGraph *readStrGraph(FILE *f) {
 		return 0;//throw agreadError();
 	return ag2str(g);
 }
+
+} // namespace Dynagraph
+
+#endif //ag2str_h

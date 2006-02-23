@@ -5,20 +5,21 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I$(GRAPHVIZ_INC) \
-	-I$(BOOST_INC)
+	-I/usr/local/graphviz/include \
+	-I/usr/local/include
 	
 LIBS = -L../common -ldynagraph \
-	-L$(GRAPHVIZ_LIB) -lagraph -lcdt
+	-L/usr/local/graphviz/lib \
+	-lagraph -l cdt
 
-DEFINES = 
+DEFINES = -DHAVE_CONFIG_H
 
 OBJS = gsscan.o gsgram.o graphsearch.o gscmds.o Pattern.o Search.o
 
-HFILES = Pattern.h Search.h gscmds.h gsxep.h gsgram.h
+HFILES = Pattern.h Search.h gscmds.h gsxep.h gsgram.h ../common/*.h
 
 graphsearch: $(OBJS)
-	$(CPPSLD) -o graphsearch $(OBJS) $(LIBS)
+	$(CPPSLD) -o graphsearch $(OBJS) ../common/libdynagraph.a ../../agraph/libagraph.a ../../cdt/libcdt.a
 
 $(OBJS) : $(HFILES)
 
@@ -40,7 +41,7 @@ install: graphsearch
 #	$(INSTALL) graphsearch $(BINDIR)
 
 clean:
-	$(RM) *.o core gsgram.h gsgram.cpp gsscan.cpp
+	$(RM) *.o core
 
 distclean: clean
 	$(RM) *.a lib*.so.* graphsearch gsgram.cpp gsgram.h gsscan.cpp

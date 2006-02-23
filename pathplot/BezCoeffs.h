@@ -14,19 +14,42 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef BezCooeffs_h
+#define BezCooeffs_h
 
-#include "Dynagraph.h"
-#include "FindChangeRect.h"
-void FCRBefore::Process(ChangeQueue &Q) {
-	data->changeN = Q.insN|Q.modN|Q.delN;
-	data->changeE = Q.insE|Q.modE|Q.delE;
+namespace Dynagraph {
+namespace PathPlot {
+
+inline double B0(double t) {
+    double tmp = 1.0 - t;
+    return tmp * tmp * tmp;
 }
-void FCRAfter::Process(ChangeQueue &Q) {
-	Bounds changerect;
-	for(Layout::node_iter ni = data->changeN.nodes().begin(); ni!=data->changeN.nodes().end(); ++ni)
-		changerect |= gd<NodeGeom>(*ni).BoundingBox();
-	for(Layout::graphedge_iter ei = data->changeE.edges().begin(); ei!=data->changeE.edges().end(); ++ei)
-		changerect |= gd<EdgeGeom>(*ei).pos.BoundingBox();
-	if(assign(gd<GraphGeom>(Q.current).changerect,changerect))
-		Q.GraphUpdateFlags() |= DG_UPD_CHANGERECT;
+
+inline double B1(double t) {
+    double tmp = 1.0 - t;
+    return 3 * t * tmp * tmp;
 }
+
+inline double B2(double t) {
+    double tmp = 1.0 - t;
+    return 3 * t * t * tmp;
+}
+
+inline double B3(double t) {
+    return t * t * t;
+}
+
+inline double B01(double t) {
+    double tmp = 1.0 - t;
+    return tmp * tmp *(tmp + 3 * t);
+}
+
+inline double B23(double t) {
+    double tmp = 1.0 - t;
+    return t * t *(3 * tmp + t);
+}
+
+} // namespace PathPlot
+} // namespace Dynagraph
+
+#endif // BezCooeffs_h

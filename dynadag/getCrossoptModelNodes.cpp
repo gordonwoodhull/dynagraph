@@ -16,14 +16,16 @@
 
 
 #include "DynaDAG.h"
+
+namespace Dynagraph {
 namespace DynaDAG {
 
-void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out) {
-	for(Layout::node_iter ni = nodes.nodes().begin(); ni!=nodes.nodes().end(); ++ni)
+void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out) {
+	for(DynaDAGLayout::node_iter ni = nodes.nodes().begin(); ni!=nodes.nodes().end(); ++ni)
 		for(DDMultiNode::node_iter mnni = DDp(*ni)->nBegin(); mnni!=DDp(*ni)->nEnd(); ++ mnni)
 			out.push_back(*mnni);
 	int ec=0;
-	for(Layout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei,++ec)
+	for(DynaDAGLayout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei,++ec)
 		for(DDPath::node_iter pni = DDp(*ei)->nBegin(); pni!=DDp(*ei)->nEnd(); ++ pni)
 			out.push_back(*pni);
 	loops.Field(r_crossopt,"layout nodes for crossopt",nodes.nodes().size());
@@ -31,4 +33,6 @@ void getCrossoptModelNodes(Layout &nodes,Layout &edges,NodeV &out) {
 
 }
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

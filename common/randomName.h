@@ -14,6 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef RANDOMNAME_H
+#define RANDOMNAME_H
+
+namespace Dynagraph {
 
 // tricky problem: if client doesn't specify a name, we need to generate one
 // can't use e.g. e17 because the client might already have something named that!
@@ -43,3 +47,7 @@ inline bool poorEdgeName(const char *name) {
 			return false;
 	return true;
 }
+
+} // namespace Dynagraph
+
+#endif //RANDOMNAME_H

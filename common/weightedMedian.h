@@ -14,6 +14,10 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef weightedMedian_h
+#define weightedMedian_h
+
+namespace Dynagraph {
 
 typedef std::vector<double> doubV;
 
@@ -52,3 +56,7 @@ inline T weightedMedian(std::vector<T> &vec) {
 	}
 	return m;
 }
+
+} // namespace Dynagraph
+
+#endif //weightedMedian_h

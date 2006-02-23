@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 // maintains a two-way map such that A[a] contains b iff B[b] contains a
 // it is intended that one side be a condensation of the other
@@ -66,3 +67,5 @@ struct two_way_map {
         check(M.erase(v)==1);
     }
 };
+
+} // namespace Dynagraph

@@ -121,19 +121,6 @@
 			</File>
 			<File
 				RelativePath="DinoMachineHandler.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="DynaView.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="incrcmds.cpp">
@@ -142,15 +129,63 @@
 				RelativePath="incrgram.cpp">
 			</File>
 			<File
-				RelativePath="incrout.cpp">
-			</File>
-			<File
 				RelativePath="incrscan.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
+			<File
+				RelativePath=".\AbsGraphHandler.h">
+			</File>
+			<File
+				RelativePath=".\createLayoutServer.h">
+			</File>
+			<File
+				RelativePath=".\DinoMachine.h">
+			</File>
+			<File
+				RelativePath=".\DinoMachineHandler.h">
+			</File>
+			<File
+				RelativePath=".\DinoPatternLook.h">
+			</File>
+			<File
+				RelativePath=".\DinoSearchLook.h">
+			</File>
+			<File
+				RelativePath=".\DynaView.h">
+			</File>
+			<File
+				RelativePath=".\incrcmds.h">
+			</File>
+			<File
+				RelativePath=".\incrgram.h">
+			</File>
+			<File
+				RelativePath=".\IncrLangEvents.h">
+			</File>
+			<File
+				RelativePath=".\IncrMappings.h">
+			</File>
+			<File
+				RelativePath=".\incrout.h">
+			</File>
+			<File
+				RelativePath=".\incrparse.h">
+			</File>
+			<File
+				RelativePath=".\incrxep.h">
+			</File>
+			<File
+				RelativePath=".\LabelToNameTranslator.h">
+			</File>
+			<File
+				RelativePath=".\MatchNames.h">
+			</File>
+			<File
+				RelativePath=".\two_way_map.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

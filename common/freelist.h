@@ -14,9 +14,12 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#include <stdlib.h>
 
 #ifndef freelist_h
 #define freelist_h
+
+namespace Dynagraph {
 
 #define COUNT_ALLOCATED
 template<typename T>
@@ -30,7 +33,7 @@ struct Freelist {
 			Blockheader *mem = reinterpret_cast<Blockheader*>(malloc(amount));
 			char *cp = reinterpret_cast<char*>(mem) + sizeof(Blockheader);
 			for(int i=0; i<blocksize; i++)
-				free(reinterpret_cast<T*>(cp) + i);
+				this->free(reinterpret_cast<T*>(cp) + i);
 			mem->next = blocks;
 			blocks = mem;
 		}
@@ -79,4 +82,7 @@ public:
 	int allocated;
 #endif
 };
+
+} // namespace Dynagraph
+
 #endif // freelist_h

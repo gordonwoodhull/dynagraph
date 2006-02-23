@@ -21,6 +21,7 @@
 #include "site.h"
 #include "info.h"
 
+namespace Dynagraph {
 namespace Voronoi {
 
 struct Edge {
@@ -62,4 +63,6 @@ private:
 struct Whattux {};
 
 } // namespace Voronoi
+} // namespace Dynagraph
+
 #endif

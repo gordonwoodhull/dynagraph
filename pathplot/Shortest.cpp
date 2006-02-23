@@ -18,9 +18,12 @@
 #include <limits.h>
 #include <deque>
 #include <algorithm>
-#include "PathPlan.h"
+#include "PathPlot.h"
 
 using namespace std;
+
+namespace Dynagraph {
+namespace PathPlot {
 
 struct PnL {
 	const Coord *pp;
@@ -118,7 +121,7 @@ static bool isDiagonal(PnLPV &pnls,unsigned pnli, unsigned pnlip2);
 static void connectTris(Triangle &tri1, Triangle &tri2);
 static bool markTriPath(Triangle &tri1, Triangle &tri2);
 
-void PathPlan::Shortest(const Line &boundary, Segment endpoints, Line &out) {
+void Shortest(const Line &boundary, Segment endpoints, Line &out) {
 	// former globals(!!!)
 	PnLV pnls;
 	PnLPV pnlps;
@@ -284,7 +287,7 @@ static void triangulate(PnLPV &pnlps,TriangleV &out) {
                 return;
             }
         }
-        throw PathPlan::InvalidBoundary();
+        throw PathPlot::InvalidBoundary();
     } else
         out.push_back(Triangle(pnlps[0], pnlps[1], pnlps[2]));
 }
@@ -342,3 +345,6 @@ static bool markTriPath(Triangle &tri1, Triangle &tri2) {
     tri1.mark = 0;
     return false;
 }
+
+} // namespace PathPlot
+} // namespace Dynagraph

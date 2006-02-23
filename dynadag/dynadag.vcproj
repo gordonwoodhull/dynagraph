@@ -197,6 +197,27 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath=".\DynaDAG.h">
+			</File>
+			<File
+				RelativePath=".\DynaDAGLayout.h">
+			</File>
+			<File
+				RelativePath=".\Measurements.h">
+			</File>
+			<File
+				RelativePath=".\Medians.h">
+			</File>
+			<File
+				RelativePath=".\ns.h">
+			</File>
+			<File
+				RelativePath=".\nsdat.h">
+			</File>
+			<File
+				RelativePath=".\SiftMatrix.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

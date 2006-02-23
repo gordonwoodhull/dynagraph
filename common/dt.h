@@ -15,8 +15,8 @@
 **********************************************************/
 
 
-#ifndef DT_H
-#define DT_H
+#ifndef dt_h
+#define dt_h
 
 extern "C" {
 #include "cdt.h"
@@ -346,4 +346,4 @@ struct ordering : Tree,Sequence {
 };
 
 };
-#endif // DT_H
+#endif //dt_h

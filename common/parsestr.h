@@ -15,8 +15,10 @@
 **********************************************************/
 
 
-#ifndef PARSESTR_H
-#define PARSESTR_H
+#ifndef parsestr_h
+#define parsestr_h
+
+namespace Dynagraph {
 
 // overload >> DString for better-delimited tokens
 // returns one token or one delimeter
@@ -227,4 +229,6 @@ inline std::istream &operator>>(std::istream &in,match &m) {
     return in;
 }
 
-#endif // PARSESTR_H
+} // namespace Dynagraph
+
+#endif // parsestr_h

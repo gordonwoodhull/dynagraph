@@ -19,14 +19,14 @@
 #include <limits.h>
 
 #include "common/StrAttr.h"
+#include "nsdat.h"
 
+namespace Dynagraph {
 namespace NS {
-enum {INEDGE,OUTEDGE};
 const int SearchSize = 20;
 
 #pragma inline_recursion(off)
 
-#include "nsdat.h"
 
 // minimum data for this alg:
 // typedef LGraph<ADTisCDT,NSData<void*,void*>,NSNode<void*,void*>,NSEdge<void*,void*> > NSGraph;
@@ -672,4 +672,5 @@ private:
 				NSd(*ni).rank = NSd(*ni).rank - minr;
 	}
 };
-}; // namespace NS
+} // namespace NS
+} // namespace Dynagraph

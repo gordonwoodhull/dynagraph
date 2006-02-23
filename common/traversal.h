@@ -26,6 +26,8 @@
 #include <bitset>
 #include <vector>
 
+namespace Dynagraph {
+
 // a traversal is an expensive iterator with bool stopped() instead of an end() iterator
 // its operator*() returns both a Node* and an Edge*
 
@@ -262,5 +264,7 @@ private:
 	typename G::node_iter m_nodeiter;
 
 };
+
+} // namespace Dynagraph
 
 #endif // TRAVERSAL_H

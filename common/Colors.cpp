@@ -15,20 +15,35 @@
 **********************************************************/
 
 
-#include "PathPlan.h"
+#include "StringDict.h"
+#include <map>
+#include <stdio.h>
+#include <stdlib.h>
+#include "colors.h"
+using namespace std;
 
-void PathPlan::PolyBarriers(const LineV &polygons, SegmentV &out) {
-	unsigned n = 0,i;
-	for(i = 0; i < polygons.size(); i++)
-		n += polygons[i].size();
+namespace Dynagraph {
 
-	out.reserve(n);
-	for(i = 0; i < polygons.size(); i++) {
-		const Line &pp = polygons[i];
-		for(unsigned j = 0; j < pp.size(); j++) {
-			int k = (j + 1)%pp.size();
-			out.push_back(Segment(pp[j],pp[k]));
-		}
-	}
-	assert(out.size() == n);
+typedef struct hsbcolor_t {
+	char			*name;
+	unsigned char	h,s,b;
+} hsbcolor_t;
+
+#include "colortbl.h"
+
+typedef map<DString,Color> named_colors;
+named_colors g_namedColors;
+void initNamed() {
+    for(size_t i = 0; i<sizeof(color_lib)/sizeof(hsbcolor_t); ++i)
+        g_namedColors[color_lib[i].name] = Color(color_lib[i].h/255.0f,color_lib[i].s/255.0f,color_lib[i].b/255.0f);
 }
+Color findColor(DString s) {
+    if(g_namedColors.empty())
+        initNamed();
+    named_colors::iterator ci = g_namedColors.find(s);
+    if(ci==g_namedColors.end())
+        throw ColorNotFound(s);
+    return ci->second;
+}
+
+} // namespace Dynagraph

@@ -16,10 +16,11 @@
 
 
 #include "DynaDAG.h"
-#include "common/PathPlan.h"
+#include "pathplot/PathPlot.h"
 
 using namespace std;
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 struct RouteBounds {
@@ -167,16 +168,16 @@ void RouteBounds::path(DDModel::Edge *e) {
 		hy = config.ranking.GetRank(DDd(e->head).rank)->yBase;
 	appendQuad(tl,tr,hl,hr,ty,hy);
 }
-bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoiderSpliner &obav) {
+bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
 	assert(path->unclippedPath.Empty());
 
-	Layout::Edge *e = path->layoutE;
+	DynaDAGLayout::Edge *e = path->layoutE;
 	DDModel::Node *tl = DDp(e->tail)->bottom(),
 		*hd = DDp(e->head)->top();
 
 	bool reversed = DDd(tl).rank > DDd(hd).rank,
-		flat = false;
-	if(reversed) {
+		flat = DDd(tl).rank==DDd(hd).rank;
+	if(reversed && !flat) {
 		tl = DDp(e->head)->bottom();
 		hd = DDp(e->tail)->top();
 		if(DDd(tl).rank>DDd(hd).rank)
@@ -194,13 +195,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoid
 			*right = hd;
 		if(DDd(left).order>DDd(right).order)
 			swap(left,right);
-		obav.FindSpline(tailpt,headpt,unclipped);
-		/*
+		// disabled because of header dependencies (needs more work)
+		// obav.FindSpline(tailpt,headpt,unclipped);
+
 		// hope that no nodes are in the way (calculating path to avoid 'em will be difficult)
 		unclipped.degree = 1;
 		unclipped.push_back(tailpt);
 		unclipped.push_back(headpt);
-		*/
 	}
 	else { // normal edge
 		assert(path->first); // no flat or self edges!
@@ -224,13 +225,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoid
 		case DG_SPLINELEVEL_SPLINE: {
 			try {
 				Line polylineRoute;
-				PathPlan::Shortest(region,Segment(tailpt,headpt),polylineRoute);
+				PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
 				if(level==DG_SPLINELEVEL_SPLINE) {
-					PathPlan::SegmentV barriers;
-					PathPlan::PolyBarriers(PathPlan::LineV(1,region),barriers);
+					PathPlot::SegmentV barriers;
+					PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
 
 					Segment endSlopes(Coord(0.0,0.0),Coord(0.0,0.0));
-					check(PathPlan::Route(barriers,polylineRoute,endSlopes,unclipped));
+					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
 					unclipped = polylineRoute;
@@ -263,4 +264,6 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level,ObstacleAvoid
 	return true;
 }
 
-}
+} // namespace DynaDAG
+} // namespace Dynagraph
+

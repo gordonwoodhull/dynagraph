@@ -5,13 +5,13 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I$(GRAPHVIZ_INC)
+	-I/usr/local/graphviz/include
 
-DEFINES = 
+DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	DinoMachineHandler.o    DynaView.o              createLayoutServer.o \
-	incrcmds.o              incrgram.o              incrout.o \
+	DinoMachineHandler.o    createLayoutServer.o \
+	incrcmds.o              incrgram.o \
 	incrscan.o
 
 HFILES = \
@@ -19,7 +19,10 @@ HFILES = \
 	DinoSearchLook.h        DynaView.h              IncrLangEvents.h        IncrMappings.h \
 	LabelToNameTranslator.h MatchNames.h            createLayoutServer.h    incrcmds.h \
 	incrgram.h              incrout.h               incrparse.h             incrxep.h \
-	two_way_map.h
+	two_way_map.h \
+	../common/*.h		../fdp/*.h		../dynadag/*.h 		../voronoi/*.h \
+	../pathplot/*.h		../shortspline/*.h
+	
 
 libincrface.a : $(OBJS)
 	$(AR) cr libincrface.a $(OBJS)
@@ -28,10 +31,8 @@ libincrface.a : $(OBJS)
 $(OBJS) : $(HFILES)
 
 install: libincrface.a
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) IncrLangEvents.h $(INCDIR)
-	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libincrface.a $(LIBDIR)
+#	$(MKPATH) $(LIBDIR)
+#	$(INSTALL) libincrface.a $(LIBDIR)
 
 incrscan.cpp: incrscan.lpp
 	$(FLEX) incrscan.lpp

@@ -15,13 +15,26 @@
 **********************************************************/
 
 
-#include "fdp.h"
-#include "voronoi/voronoi.h"
-#include "shortspline/ObAvSplinerEngine.h"
-struct FVSCombo : CompoundServer {
-	FVSCombo(Layout *client,Layout *current) : CompoundServer(client,current) {
-		actors.push_back(new FDP::FDPServer(client,current));
-		actors.push_back(new Voronoi::VoronoiServer(client,current));
-		actors.push_back(new ObAvSplinerEngine(client,current));
+#include "PathPlot.h"
+
+namespace Dynagraph {
+namespace PathPlot {
+
+void PolyBarriers(const LineV &polygons, SegmentV &out) {
+	unsigned n = 0,i;
+	for(i = 0; i < polygons.size(); i++)
+		n += polygons[i].size();
+
+	out.reserve(n);
+	for(i = 0; i < polygons.size(); i++) {
+		const Line &pp = polygons[i];
+		for(unsigned j = 0; j < pp.size(); j++) {
+			int k = (j + 1)%pp.size();
+			out.push_back(Segment(pp[j],pp[k]));
+		}
 	}
-};
+	assert(out.size() == n);
+}
+
+} // namespace PathPlot
+} // namespace Dynagraph

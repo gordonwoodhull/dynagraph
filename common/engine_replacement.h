@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+namespace Dynagraph {
 
 // To replace a layout engine, re-insert everything into a new engine and delete the old
 // These functions manipulate the queue to make it look like everything just moved
@@ -48,3 +49,5 @@ inline void post_engine_replacement(ChangeQueue &Q,Layout &oldCurrent) {
     }
 	oldCurrent.clear();
 }
+
+} // namespace Dynagraph

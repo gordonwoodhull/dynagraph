@@ -14,6 +14,9 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef derivable_dt_h
+#define derivable_dt_h
+
 
 // cdt does not allow you to allocate your own Dt_t, which is annoying
 // because you always want to put something with it for all the callbacks!
@@ -31,3 +34,5 @@ struct derivable_dt : Dt_t {
 		dtclose(cp);
 	}
 };
+
+#endif //derivable_dt_h

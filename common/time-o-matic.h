@@ -14,11 +14,16 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef time_o_matic_h
+#define time_o_matic_h
+
 
 #include <string>
 #include <vector>
 #include <map>
 #include <stdarg.h>
+
+namespace Dynagraph {
 
 struct Timer {
 	double Start();
@@ -37,3 +42,7 @@ private:
 	std::vector<double> m_looplasts;
 };
 extern Timer timer;
+
+} // namespace Dynagraph
+
+#endif //time_o_matic_h

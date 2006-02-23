@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 Crossings uvcross(DDModel::Node *v, DDModel::Node *w, bool use_in, bool use_out) {
@@ -35,3 +36,4 @@ Crossings uvcross(DDModel::Node *v, DDModel::Node *w, bool use_in, bool use_out)
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph

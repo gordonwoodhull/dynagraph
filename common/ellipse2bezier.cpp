@@ -3,6 +3,8 @@
 
 #include "Geometry.h"
 
+namespace Dynagraph {
+
 // Create points to simulate ellipse using beziers
 // senses coordinate translation, generates CW (swap top and bottom for CCW)
 void ellipse2bezier(Rect &r, Line &out) {
@@ -45,3 +47,5 @@ void ellipse2bezier(Rect &r, Line &out) {
     out[12].y =
     out[6].y  = center.y;
 }
+
+} // namespace Dynagraph

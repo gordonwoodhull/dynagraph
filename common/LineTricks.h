@@ -14,10 +14,15 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef LineTricks_h
+#define LineTricks_h
 
 #include <math.h>
+
+namespace Dynagraph {
+
 #define W_DEGREE 5
-// in Route.cpp
+
 extern int splineIntersectsLine(const Coord *sps, Segment seg,double *roots); // both * are array[4]
 
 // adapted from incr/edgeclip.c
@@ -264,3 +269,6 @@ inline Position lines_intersect(Segment L0, Segment L1) {
 	}
 }
 
+} // namespace Dynagraph
+
+#endif //LineTricks_h

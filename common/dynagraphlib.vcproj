@@ -140,46 +140,25 @@
 				RelativePath="ag2str.cpp">
 			</File>
 			<File
-				RelativePath="ColorByAge.cpp">
-			</File>
-			<File
 				RelativePath="colors.cpp">
-			</File>
-			<File
-				RelativePath="Dynagraph.cpp">
 			</File>
 			<File
 				RelativePath="ellipse2bezier.cpp">
 			</File>
 			<File
-				RelativePath="FindChangeRect.cpp">
-			</File>
-			<File
 				RelativePath="genpoly.cpp">
-			</File>
-			<File
-				RelativePath="LabelPlacer.cpp">
 			</File>
 			<File
 				RelativePath="Line.cpp">
 			</File>
 			<File
+				RelativePath=".\LineTricks.cpp">
+			</File>
+			<File
 				RelativePath="parsestr.cpp">
 			</File>
 			<File
-				RelativePath="PolyBarriers.cpp">
-			</File>
-			<File
 				RelativePath="Region.cpp">
-			</File>
-			<File
-				RelativePath="Route.cpp">
-			</File>
-			<File
-				RelativePath="ShapeGenerator.cpp">
-			</File>
-			<File
-				RelativePath="Shortest.cpp">
 			</File>
 			<File
 				RelativePath="Solvers.cpp">
@@ -216,19 +195,142 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\ag2str.h">
+			</File>
+			<File
+				RelativePath=".\AttrValues.h">
+			</File>
+			<File
+				RelativePath=".\BoostLGraph.h">
+			</File>
+			<File
+				RelativePath=".\breakList.h">
+			</File>
+			<File
+				RelativePath=".\bufferGraphStream.h">
+			</File>
+			<File
+				RelativePath=".\ChangeQueue.h">
+			</File>
+			<File
+				RelativePath=".\ColorByAge.h">
+			</File>
+			<File
+				RelativePath=".\Colors.h">
+			</File>
+			<File
+				RelativePath=".\colortbl.h">
+			</File>
+			<File
+				RelativePath=".\derivable_dt.h">
+			</File>
+			<File
+				RelativePath=".\dgxep.h">
+			</File>
+			<File
+				RelativePath=".\diff_strgraph.h">
+			</File>
+			<File
+				RelativePath=".\DiffStrGraph.h">
+			</File>
+			<File
+				RelativePath=".\dt.h">
+			</File>
+			<File
 				RelativePath="Dynagraph.h">
+			</File>
+			<File
+				RelativePath=".\DynagraphServer.h">
+			</File>
+			<File
+				RelativePath=".\ellipse2bezier.h">
+			</File>
+			<File
+				RelativePath=".\emitGraph.h">
+			</File>
+			<File
+				RelativePath=".\engine_replacement.h">
+			</File>
+			<File
+				RelativePath=".\FindChangeRect.h">
+			</File>
+			<File
+				RelativePath=".\freelist.h">
+			</File>
+			<File
+				RelativePath=".\genpoly.h">
 			</File>
 			<File
 				RelativePath="Geometry.h">
 			</File>
 			<File
+				RelativePath=".\GeomUtil.h">
+			</File>
+			<File
+				RelativePath=".\GraphBuffer.h">
+			</File>
+			<File
+				RelativePath=".\LabelPlacer.h">
+			</File>
+			<File
+				RelativePath=".\LayoutAttrs.h">
+			</File>
+			<File
+				RelativePath=".\LGraph-cdt.h">
+			</File>
+			<File
+				RelativePath=".\LGraph.h">
+			</File>
+			<File
+				RelativePath=".\LineTricks.h">
+			</File>
+			<File
+				RelativePath=".\moremath.h">
+			</File>
+			<File
+				RelativePath=".\parsestr.h">
+			</File>
+			<File
+				RelativePath=".\randomName.h">
+			</File>
+			<File
+				RelativePath=".\reorient.h">
+			</File>
+			<File
+				RelativePath=".\ShapeGenerator.h">
+			</File>
+			<File
+				RelativePath=".\Solvers.h">
+			</File>
+			<File
 				RelativePath="Strattr.h">
+			</File>
+			<File
+				RelativePath=".\StreamGeom.h">
+			</File>
+			<File
+				RelativePath=".\StringDict.h">
+			</File>
+			<File
+				RelativePath=".\stringsIn.h">
+			</File>
+			<File
+				RelativePath=".\stringsOut.h">
+			</File>
+			<File
+				RelativePath=".\time-o-matic.h">
+			</File>
+			<File
+				RelativePath=".\Transform.h">
 			</File>
 			<File
 				RelativePath="traversal.h">
 			</File>
 			<File
 				RelativePath="Useful.h">
+			</File>
+			<File
+				RelativePath=".\weightedMedian.h">
 			</File>
 		</Filter>
 	</Files>

@@ -18,6 +18,7 @@
 #include "DynaDAG.h"
 #include "common/weightedMedian.h"
 
+namespace Dynagraph {
 namespace DynaDAG {
 
 void autoMVal(DDModel::Node *n, UpDown dir) {
@@ -81,3 +82,4 @@ void InvalidateAdjMVals(DDModel::Node *n) {
 }
 
 } // namespace DynaDAG
+} // namespace Dynagraph
