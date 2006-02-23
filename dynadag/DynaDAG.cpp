@@ -225,6 +225,7 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 		avgOut += (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
 	if(mn->bottom()->outs().size())
 		avgOut /= mn->bottom()->outs().size();
+	//cout << "avgIn " << avgIn << " avgOut " << avgOut << endl;
 	mn->flowSlope = (avgIn+avgOut)/2*gd<NodeGeom>(mn->layoutN).flow;
 }
 void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {

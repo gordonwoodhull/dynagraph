@@ -87,7 +87,6 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	}
 	StrAttrs::iterator ai;
 	Coord size = trans->outSize(gd<GraphGeom>(n->g).defaultSize);
-	std::cout << "message \"default size is " << size.x << "," << size.y << '"' << std::endl;
     if((ai=att.find("width"))!=att.end() && !ai->second.empty())
 		sscanf(ai->second.c_str(),"%lf",&size.x);
 	if((ai=att.find("height"))!=att.end() && !ai->second.empty())
