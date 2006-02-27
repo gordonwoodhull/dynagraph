@@ -385,22 +385,6 @@ DString DynaView<Layout>::incr_ev_ins_edge(DString name, DString tailname, DStri
         Q.ModEdge(eb.first,upd);
     maybe_go();
     return gd<Name>(eb.first);
-        /*
-        pair<typename Layout::Edge*,bool> eb = getEdge(name,tail,head,true);
-        if(!eb.second && gd<Name>(eb.first)!=name) {
-            incr_error(IF_ERR_NAME_MISMATCH,graph);
-            return;
-        }
-        Update upd = stringsIn(m_transform,eb.first,attrs,true);
-        if(!current.find(eb.first)) {
-		    if(eb.second)
-			    IncrNewEdge(eb.first);
-            Q.InsEdge(eb.first);
-        }
-        else
-            Q.ModEdge(eb.first,upd);
-        maybe_go();
-        */
 }
 template<typename Layout>
 bool DynaView<Layout>::incr_ev_mod_node(DString name,const StrAttrs &attrs) {

@@ -57,10 +57,9 @@ void doOutdot(Layout *l) {
 template<typename Layout>
 struct TextView : DynaView<Layout> {
 	void IncrHappened() {
-		DynaView<Layout> &dad = *this;
-		emitChanges(cout,dad.Q,gd<Name>(&dad.layout).c_str());
-		dad.Q.Okay(true);
-		doOutdot(&dad.current);
+		emitChanges(cout,this->Q,gd<Name>(&this->layout).c_str());
+		this->Q.Okay(true);
+		doOutdot(&this->current);
 	}
 	void IncrNewNode(typename Layout::Node *n) {}
 	void IncrNewEdge(typename Layout::Edge *e) {}
