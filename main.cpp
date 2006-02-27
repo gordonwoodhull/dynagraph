@@ -59,6 +59,7 @@ struct TextView : DynaView<Layout> {
 	void IncrHappened() {
 		emitChanges(cout,this->Q,gd<Name>(&this->layout).c_str());
 		this->Q.Okay(true);
+		igd<Update>(&this->layout) = 0;
 		doOutdot(&this->current);
 	}
 	void IncrNewNode(typename Layout::Node *n) {}
@@ -479,6 +480,7 @@ int main(int argc, char *args[]) {
 					eng.Process(Q);
 					assert(current.nodes().empty());
 					Q.Okay(false);
+					igd<Update>(Q.client) = 0;
 					Q.insN = layout;
 					for(DynaDAGLayout::graphedge_iter ei = layout.edges().begin(); ei!=layout.edges().end(); ++ei)
 						Q.InsEdge(*ei);
@@ -496,12 +498,14 @@ int main(int argc, char *args[]) {
 				catch(DynaDAG::BackForth bf) {
 					loops.Cancel();
 					Q.Okay(true);
+					igd<Update>(Q.client) = 0;
 					layout.erase(bf.e);
 					continue;
 				}
 				loops.Field(r_stability,"percent of nodes moved",double(Q.modN.nodes().size())/double(current.nodes().size()));
 				stringsOut(g_transform,Q);
 				Q.Okay(true);
+				igd<Update>(Q.client) = 0;
 				if(reportEnabled(r_readability)) {
 					Bounds b = gd<GraphGeom>(&layout).bounds;
 					if(!b.valid)

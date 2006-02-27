@@ -24,15 +24,15 @@ namespace Dynagraph {
 /*
 	CHANGE QUEUE
 */
-template<typename Layout>
+template<typename Graph>
 struct ChangeQueue {
 	// the client edits this supergraph of server's current layout
 	// then calls the methods below to signal the changes in the subgraphs
-	Layout * const client, * const current;
-	Layout insN,modN,delN,
+	Graph * const client, * const current;
+	Graph insN,modN,delN,
 		insE,modE,delE;
 
-	ChangeQueue(Layout *client,Layout *current) : client(client),current(current),
+	ChangeQueue(Graph *client,Graph *current) : client(client),current(current),
 	insN(client),modN(client),delN(client),insE(client),modE(client),delE(client) {}
 	ChangeQueue(ChangeQueue &copy) : client(copy.client),current(copy.current),
 	insN(client),modN(client),delN(client),insE(client),modE(client),delE(client) {
@@ -43,34 +43,38 @@ struct ChangeQueue {
 		modE = copy.modE;
 		delE = copy.delE;
 	}
-	void InsNode(typename Layout::Node *n) {
+	void InsNode(typename Graph::Node *n) {
+		if(current->find(n))
+			throw InsertInserted();
 		insN.insert(n);
 	}
-	void InsEdge(typename Layout::Edge *e) {
+	void InsEdge(typename Graph::Edge *e) {
+		if(current->find(e))
+			throw InsertInserted();
 		insE.insert(e);
 	}
-	void ModNode(typename Layout::Node *n,Update u) {
+	void ModNode(typename Graph::Node *n,Update u) {
 		if(!insN.find(n) && !delN.find(n)) { // u.flags &&
-			typename Layout::Node *n2 = modN.insert(n).first;
+			typename Graph::Node *n2 = modN.insert(n).first;
 			igd<Update>(n2).flags |= u.flags;
 		}
 	}
-	void ModEdge(typename Layout::Edge *e,Update u) {
+	void ModEdge(typename Graph::Edge *e,Update u) {
 		if(!insE.find(e) && !delE.find(e)) { // u.flags &&
-			typename Layout::Edge *e2 = modE.insert(e).first;
+			typename Graph::Edge *e2 = modE.insert(e).first;
 			igd<Update>(e2).flags |= u.flags;
 		}
 	}
-	void DelNode(typename Layout::Node *n) {
+	void DelNode(typename Graph::Node *n) {
 		insN.erase(n);
 		modN.erase(n);
 		delN.insert(n);
 		n = current->find(n); // remove edges that are currently inserted
-		for(typename Layout::nodeedge_iter i = n->alledges().begin(); i!=n->alledges().end(); ++i)
+		for(typename Graph::nodeedge_iter i = n->alledges().begin(); i!=n->alledges().end(); ++i)
 			DelEdge(*i);
 	}
 
-	void DelEdge(typename Layout::Edge *e) {
+	void DelEdge(typename Graph::Edge *e) {
 		insE.erase(e);
 		modE.erase(e);
 		delE.insert(e);
@@ -80,9 +84,8 @@ struct ChangeQueue {
 
 	// called by server to update current subgraph based on current changes
 	void UpdateCurrent();
-	void CalcBounds();
 
-	// called by client after server processing clear subgraphs and maybe do deletions
+	// called by client after server processing; clear subgraphs and maybe do deletions
 	void Okay(bool doDelete = false);
 
 	bool Empty() { return insN.nodes().empty()&&modN.nodes().empty()&&delN.nodes().empty()&&
@@ -91,7 +94,7 @@ struct ChangeQueue {
 	// copy
 	ChangeQueue &operator=(ChangeQueue &Q);
 	// accumulate
-	ChangeQueue &operator+=(ChangeQueue &Q);
+	//ChangeQueue &operator+=(ChangeQueue &Q);
 
 	// Exceptions
 
@@ -109,15 +112,15 @@ struct ChangeQueue {
 	  EndnodesNotInserted() : DGException("insertion of edge without nodes",true) {}
 	};
 };
-template<typename Layout>
-void ChangeQueue<Layout>::UpdateCurrent() {
-	typename Layout::node_iter ni;
-	typename Layout::graphedge_iter ei;
+template<typename Graph>
+void ChangeQueue<Graph>::UpdateCurrent() {
+	typename Graph::node_iter ni;
+	typename Graph::graphedge_iter ei;
 	for(ni = insN.nodes().begin(); ni!=insN.nodes().end(); ++ni)
 		if(!current->insert(*ni).second)
 			throw InsertInserted();
 	for(ei = insE.edges().begin(); ei!=insE.edges().end(); ++ei) {
-		typename Layout::Node *t =(*ei)->tail,*h = (*ei)->head;
+		typename Graph::Node *t =(*ei)->tail,*h = (*ei)->head;
 		if(!current->find(t) && !insN.find(t))
 			throw EndnodesNotInserted();
 		if(!current->find(h) && !insN.find(h))
@@ -138,34 +141,20 @@ void ChangeQueue<Layout>::UpdateCurrent() {
 		if(!current->find(*ei))
 			throw ModifyUninserted();
 }
-template<typename Layout>
-void ChangeQueue<Layout>::CalcBounds() {
-	Bounds &b = gd<GraphGeom>(current).bounds,
-		b2;
-	for(typename Layout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni)
-		b2 |= gd<NodeGeom>(*ni).BoundingBox();
-	for(typename Layout::graphedge_iter ei = current->edges().begin(); ei!=current->edges().end(); ++ei)
-		b2 |= gd<EdgeGeom>(*ei).pos.BoundingBox();
-	if(b!=b2) {
-		b = b2;
-		GraphUpdateFlags() |= DG_UPD_BOUNDS;
-	}
-}
-// clear update flags and maybe do deletions
-template<typename Layout>
-void ChangeQueue<Layout>::Okay(bool doDelete) {
+template<typename Graph>
+void ChangeQueue<Graph>::Okay(bool doDelete) {
 	insN.clear();
 	insE.clear();
 	modN.clear();
 	modE.clear();
 	if(doDelete) {
-		for(typename Layout::graphedge_iter j = delE.edges().begin(); j!=delE.edges().end();) {
-			typename Layout::Edge *e = *j++;
+		for(typename Graph::graphedge_iter j = delE.edges().begin(); j!=delE.edges().end();) {
+			typename Graph::Edge *e = *j++;
 			check(client->erase_edge(e));
 		}
         delE.clear(); // the nodes may still exist
-		for(typename Layout::node_iter i = delN.nodes().begin(); i!=delN.nodes().end();) {
-			typename Layout::Node *n = *i++;
+		for(typename Graph::node_iter i = delN.nodes().begin(); i!=delN.nodes().end();) {
+			typename Graph::Node *n = *i++;
 			check(client->erase_node(n));
 		}
 	}
@@ -173,11 +162,10 @@ void ChangeQueue<Layout>::Okay(bool doDelete) {
 		delE.clear();
 		delN.clear();
 	}
-	GraphUpdateFlags() = 0;
     assert(Empty());
 }
-template<typename Layout>
-ChangeQueue<Layout> &ChangeQueue<Layout>::operator=(ChangeQueue<Layout> &Q) {
+template<typename Graph>
+ChangeQueue<Graph> &ChangeQueue<Graph>::operator=(ChangeQueue<Graph> &Q) {
 	assert(client==Q.client);
 	insN = Q.insN;
 	modN = Q.modN;
@@ -185,14 +173,15 @@ ChangeQueue<Layout> &ChangeQueue<Layout>::operator=(ChangeQueue<Layout> &Q) {
 	insE = Q.insE;
 	modE = Q.modE;
 	delE = Q.delE;
-	GraphUpdateFlags() = Q.GraphUpdateFlags();
+	client->idat = Q.client->idat; 
 	return *this;
 }
-template<typename Layout>
-ChangeQueue<Layout> &ChangeQueue<Layout>::operator+=(ChangeQueue<Layout> &Q) {
+/*
+template<typename Graph>
+ChangeQueue<Graph> &ChangeQueue<Graph>::operator+=(ChangeQueue<Graph> &Q) {
 	assert(client==Q.client);
-	typename Layout::node_iter ni;
-	typename Layout::graphedge_iter ei;
+	typename Graph::node_iter ni;
+	typename Graph::graphedge_iter ei;
 	for(ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
 		InsNode(*ni);
 	for(ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
@@ -208,6 +197,7 @@ ChangeQueue<Layout> &ChangeQueue<Layout>::operator+=(ChangeQueue<Layout> &Q) {
 	GraphUpdateFlags() |= Q.GraphUpdateFlags();
 	return *this;
 }
+*/
 
 } // namespace Dynagraph
 

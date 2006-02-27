@@ -18,6 +18,7 @@
 #include "fdp/FDPLayout.h"
 #include "common/ChangeQueue.h"
 #include "common/DynagraphServer.h"
+#include "common/CalculateBounds.h"
 
 #include "ObstacleAvoiderSpliner.h"
 
@@ -28,7 +29,8 @@ struct ObAvSplinerEngine : Server<Layout> {
 	ObAvSplinerEngine(Layout *client,Layout *current) : Server<Layout>(client,current) {}
 	// Server
 	void Process(ChangeQueue<Layout> &changeQ) {
-		changeQ.CalcBounds();
+		if(CalculateBounds(changeQ.current))
+			changeQ.GraphUpdateFlags() |= DG_UPD_BOUNDS;
 		double		SEP = gd<GraphGeom>(changeQ.current).separation.Len();
 
 		ObstacleAvoiderSpliner<Layout> obav(Server<Layout>::current);

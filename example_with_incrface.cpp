@@ -40,6 +40,7 @@ struct EgzamplView : DynaView {
 			cout << "edge " << gd<Name>(*ei) << " deleted" << endl;
 		// IMPORTANT: Okay must be called within IncrHappened
 		Q.Okay(true);
+		igd<Update>(Q.client) = 0;
 	}
 	void IncrNewNode(Layout::Node *n) {}
 	void IncrNewEdge(Layout::Edge *e) {}
