@@ -205,7 +205,7 @@ void Ranker::insertNewEdges(DDChangeQueue &changeQ) {
 			cg.Unstabilize(DDp(ve->tail)->topC);
 	}
 }
-/* special-case when it is easy */
+/* special-case when it is easy (INACTIVE; WOULD NEED FIXES) */
 bool Ranker::simpleCase(DDChangeQueue &changeQ) {
 	/* there must be no deletions */
 	if(changeQ.delN.nodes().size() || changeQ.delE.nodes().size())
@@ -335,6 +335,25 @@ void Ranker::makeRankList(DDChangeQueue &changeQ) {
 	newRanks.resize(uniquend-newRanks.begin());
 }
 #endif
+void Ranker::findEdgeDirections() {
+	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
+		int tlr = DDp((*ei)->tail)->newBottomRank,
+			hdr = DDp((*ei)->head)->newTopRank;
+		if(tlr==hdr)
+			DDp(*ei)->direction = DDPath::flat;
+		else if(tlr>hdr) {
+			tlr = DDp((*ei)->head)->newBottomRank;
+			hdr = DDp((*ei)->tail)->newTopRank;
+			if(tlr>hdr)
+				DDp(*ei)->direction = DDPath::flat;
+			else
+				DDp(*ei)->direction = DDPath::reversed;
+		}
+		else
+			DDp(*ei)->direction = DDPath::forward;
+	}
+
+}
 void Ranker::Rerank(DDChangeQueue &changeQ) {
 	// this connection is just to keep the graph connected
 	ConstraintGraph::Edge *c = cg.create_edge(top,cg.anchor).first;
@@ -348,6 +367,7 @@ void Ranker::Rerank(DDChangeQueue &changeQ) {
 #ifdef FLEXIRANKS
 	makeRankList(changeQ);
 #endif
+	findEdgeDirections();
 	//checkStrongConstraints(changeQ);
 }
 

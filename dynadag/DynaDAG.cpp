@@ -217,15 +217,32 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 		return;
 	}
 	Coord avgIn(0,0),avgOut(0,0);
-	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei)
-		avgIn += (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
-	if(mn->top()->ins().size())
-		avgIn /= mn->top()->ins().size();
-	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei)
-		avgOut += (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
-	if(mn->bottom()->outs().size())
-		avgOut /= mn->bottom()->outs().size();
-	//cout << "avgIn " << avgIn << " avgOut " << avgOut << endl;
+	int nIns=0,nOuts=0;
+	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
+		Coord vec = (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
+		if(DDd(*ei).path->direction==DDPath::forward)
+			++nIns, avgIn += vec;
+		else
+			++nOuts, avgOut -= vec;
+	}
+	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
+		Coord vec = (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
+		if(DDd(*ei).path->direction==DDPath::forward)
+			++nOuts, avgOut += vec;
+		else
+			++nIns, avgIn -= vec;
+	}
+	// special case flat edges (they don't have model edges)
+	for(DynaDAGLayout::inedge_iter ei = mn->layoutN->ins().begin(); ei!=mn->layoutN->ins().end(); ++ei)
+		if(DDp(*ei)->direction==DDPath::flat)
+			++nIns, avgIn += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
+	for(DynaDAGLayout::outedge_iter ei = mn->layoutN->outs().begin(); ei!=mn->layoutN->outs().end(); ++ei)
+		if(DDp(*ei)->direction==DDPath::flat)
+			++nOuts, avgOut += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
+	if(nIns)
+		avgIn /= nIns;
+	if(nOuts)
+		avgOut /= nOuts;
 	mn->flowSlope = (avgIn+avgOut)/2*gd<NodeGeom>(mn->layoutN).flow;
 }
 void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {

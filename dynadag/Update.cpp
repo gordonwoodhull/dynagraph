@@ -450,7 +450,7 @@ void Config::moveOldNodes(DDChangeQueue &changeQ) {
 }
 void Config::moveOldEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { // yes that space in < :: is necessary >:(
+		if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { 
 			DynaDAGLayout::Edge *ve = client->find(*ei);
 			if((*ei)->head==(*ei)->tail)
 				; // ignore self-edges

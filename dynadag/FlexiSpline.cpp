@@ -172,31 +172,31 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	assert(path->unclippedPath.Empty());
 
 	DynaDAGLayout::Edge *e = path->layoutE;
-	DDModel::Node *tl = DDp(e->tail)->bottom(),
-		*hd = DDp(e->head)->top();
-
-	bool reversed = DDd(tl).rank > DDd(hd).rank,
-		flat = DDd(tl).rank==DDd(hd).rank;
-	if(reversed && !flat) {
-		tl = DDp(e->head)->bottom();
-		hd = DDp(e->tail)->top();
-		if(DDd(tl).rank>DDd(hd).rank)
-			flat = true;
+	DDModel::Node *tl,*hd;
+	if(path->direction==DDPath::flat) {
+		tl = DDp(e->tail)->bottom();
+		hd = DDp(e->head)->top();
+	}
+	else {
+		tl = path->first->tail;
+		hd = path->last->head;
 	}
 	EdgeGeom &eg = gd<EdgeGeom>(e);
-	Coord tailpt = eg.tailPort.pos + DDd(tl).multi->pos(),
-		headpt = eg.headPort.pos + DDd(hd).multi->pos();
+	Coord tailpt = (path->direction==DDPath::reversed?eg.tailPort:eg.headPort).pos + DDd(tl).multi->pos(),
+		headpt = (path->direction==DDPath::reversed?eg.headPort:eg.tailPort).pos + DDd(hd).multi->pos();
 
 	Line &unclipped = path->unclippedPath;
 	Line region;
 	assert(e->tail!=e->head); // DynaDAGServer should draw self-edges
-	if(flat) { // flat edge
+	if(path->direction==DDPath::flat) { // flat edge
+		/*
+		// disabled because of header dependencies (needs more work)
 		DDModel::Node *left = tl,
 			*right = hd;
 		if(DDd(left).order>DDd(right).order)
 			swap(left,right);
-		// disabled because of header dependencies (needs more work)
-		// obav.FindSpline(tailpt,headpt,unclipped);
+		obav.FindSpline(tailpt,headpt,unclipped);
+		*/
 
 		// hope that no nodes are in the way (calculating path to avoid 'em will be difficult)
 		unclipped.degree = 1;
@@ -232,6 +232,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 
 					//cout << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
 					Segment endSlopes(DDp(e->tail)->flowSlope,DDp(e->head)->flowSlope);
+					if(path->direction==DDPath::reversed) {
+						Coord t = endSlopes.b;
+						endSlopes.b = -endSlopes.a;
+						endSlopes.a = -t;
+					}
 					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
@@ -254,7 +259,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	}
 	NodeGeom &tg = gd<NodeGeom>(e->tail),
 		&hg = gd<NodeGeom>(e->head);
-	if(reversed) {
+	if(path->direction==DDPath::reversed) {
 		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);
 		reverse(eg.pos.begin(),eg.pos.end());

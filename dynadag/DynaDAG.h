@@ -249,6 +249,7 @@ struct Path : Chain<N,E> {
 	DynaDAGLayout::Edge *layoutE;
 	// the second edge of 2-cycle should be ignored, mostly
 	bool secondOfTwo;
+	enum {forward,flat,reversed} direction;
 	Line unclippedPath;
 	// ranking vars
 	DDCGraph::Node *weak;
@@ -821,6 +822,7 @@ private:
 #ifdef FLEXIRANKS
 	void makeRankList(DDChangeQueue &changeQ);
 #endif
+	void findEdgeDirections();
 	void checkStrongConstraints(DDChangeQueue &changeQ);
 };
 // the classic DynaDAG path optimizer
