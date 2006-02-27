@@ -1,0 +1,55 @@
+all: libincrface.a
+
+ROOT=..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =	-I.. -I../.. \
+	-I/usr/local/graphviz/include
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = \
+	DinoMachineHandler.o    createLayoutServer.o \
+	incrcmds.o              incrgram.o \
+	incrscan.o
+
+HFILES = \
+	AbsGraphHandler.h       DinoMachine.h           DinoMachineHandler.h    DinoPatternLook.h \
+	DinoSearchLook.h        DynaView.h              IncrLangEvents.h        IncrMappings.h \
+	LabelToNameTranslator.h MatchNames.h            createLayoutServer.h    incrcmds.h \
+	incrgram.h              incrout.h               incrparse.h             incrxep.h \
+	two_way_map.h \
+	../common/*.h		../fdp/*.h		../dynadag/*.h 		../voronoi/*.h \
+	../pathplot/*.h		../shortspline/*.h
+	
+
+libincrface.a : $(OBJS)
+	$(AR) cr libincrface.a $(OBJS)
+	$(RANLIB) libincrface.a
+
+$(OBJS) : $(HFILES)
+
+install: libincrface.a
+#	$(MKPATH) $(LIBDIR)
+#	$(INSTALL) libincrface.a $(LIBDIR)
+
+incrscan.cpp: incrscan.lpp
+	$(FLEX) incrscan.lpp
+	$(SED) "s/yy/incr_yy/g" < lex.yy.c > incrscan.cpp
+	rm lex.yy.c
+
+incrscan.o : incrgram.h
+incrgram.h : incrgram.cpp
+
+incrgram.cpp : incrgram.ypp
+	$(BISON) -dv -o incrgram.tab.c incrgram.ypp
+	$(SED) "s/yy/incr_yy/g" < incrgram.tab.c > incrgram.cpp
+	$(SED) "s/yy/incr_yy/g" < incrgram.tab.h > incrgram.h
+	rm incrgram.tab.c incrgram.tab.h
+
+clean:
+	$(RM) *.o core incrscan.cpp incrgram.cpp incrgram.h
+
+distclean: clean
+	$(RM) *.a lib*.so.*

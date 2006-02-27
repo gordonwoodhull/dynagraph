@@ -1,0 +1,31 @@
+all: libshortspline.a
+
+ROOT=..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =	-I.. -I../.. \
+	-I/usr/local/graphviz/include
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = legal_arrangement.o
+
+HFILES = ObAvSplinerEngine.h ObstacleAvoiderSpliner.h legal_arrangement.h \
+	simple.h ../common/*.h
+
+libshortspline.a : $(OBJS)
+	$(AR) cr libshortspline.a $(OBJS)
+	$(RANLIB) libshortspline.a
+
+$(OBJS) : $(HFILES)
+
+install: libshortspline.a
+#	$(MKPATH) $(LIBDIR)
+#	$(INSTALL) libshortspline.a $(LIBDIR)
+
+clean:
+	$(RM) *.o core
+
+distclean: clean
+	$(RM) *.a lib*.so.*
