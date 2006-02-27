@@ -652,10 +652,10 @@ public:
 		if(parent) {
 			// if a subgraph, we're inserting everything
 			check_common_parent(g);
-			for(node_iter ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni) 
-				insert(*ni).first->idat = (*ni)->idat;
+			for(node_iter ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni)
+				insert(*ni);
 			for(graphedge_iter ei(&g); ei!=graphedge_iter(); ++ei)
-				insert(*ei).first->idat = (*ei)->idat;
+				insert(*ei);
 		}
 		else {
 			// if not, we're copying everything
