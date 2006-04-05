@@ -130,8 +130,8 @@ void XSolver::checkEdgeConstraints() {
 }
 void Ranker::checkStrongConstraints(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
-		DDCGraph::Edge *strong = DDp(*ei)->strong;
 		/*
+		DDCGraph::Edge *strong = DDp(*ei)->strong;
 		// this is not true in flexiranks; call to this function is disabled
 		if(strong)
 			assert(DDNS::NSd(strong).minlen==gd<EdgeGeom>(*ei).minLength);

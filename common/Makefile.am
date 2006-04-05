@@ -11,7 +11,7 @@ LIBS =
 noinst_HEADERS = BezCoeffs.h ColorByAge.h Dynagraph.h GeomUtil.h Geometry.h \
 	LGraph.h LGraph.h PathPlan.h LineTricks.h \
 	Solvers.h StrAttr.h StreamGeom.h StringDict.h Transform.h \
-	ag2str.h stringsIn.h breakList.h bufferGraphStream.h colors.h \
+	ag2str.h stringsIn.h breakList.h bufferGraphStream.h Colors.h \
 	derivable_dt.h dgxep.h diff_strgraph.h dt.h ellipse2bezier.h \
 	emitGraph.h freelist.h genpoly.h moremath.h parsestr.h reorient.h \
 	stringsOut.h time-o-matic.h traversal.h useful.h weightedMedian.h

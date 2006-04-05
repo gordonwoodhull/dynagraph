@@ -19,7 +19,7 @@
 #include <map>
 #include <stdio.h>
 #include <stdlib.h>
-#include "colors.h"
+#include "Colors.h"
 using namespace std;
 
 namespace Dynagraph {

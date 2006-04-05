@@ -23,7 +23,7 @@ HFILES = \
 	Geometry.h              GraphBuffer.h           LGraph-cdt.h            LGraph.h \
 	LabelPlacer.h           LayoutAttrs.h           LineTricks.h            ShapeGenerator.h \
 	StrAttr.h               StreamGeom.h            StringDict.h \
-	Transform.h             ag2str.h                attrvalues.h            breakList.h \
+	Transform.h             ag2str.h                AttrValues.h            breakList.h \
 	bufferGraphStream.h     Colors.h                derivable_dt.h          dgxep.h \
 	diff_strgraph.h         dt.h                    ellipse2bezier.h        emitGraph.h \
 	engine_replacement.h    freelist.h              genpoly.h               moremath.h \
