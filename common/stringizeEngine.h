@@ -15,6 +15,25 @@
 **********************************************************/
 
 
-#include <math.h>
-#include "ObAvSplinerEngine.h"
+#ifndef stringizeEngine_h
+#define stringizeEngine_h
 
+#include "common/InternalTranslator.h"
+#include "common/StringLayoutTranslator.h"
+
+namespace Dynagraph {
+
+template<typename Layout>
+EnginePair<Layout> stringizeEngine(EnginePair<Layout> engines,Transform *transform,bool useDotDefaults) {
+	EnginePair<Layout> ret;
+	typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
+	typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
+	StringsInEngine *xlateIn = new StringsInEngine(StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults));
+	StringsOutEngine *xlateOut = new StringsOutEngine(transform);
+	xlateIn->next_ = engines.first;
+	engines.second->next_ = xlateOut;
+	return EnginePair<Layout>(xlateIn,xlateOut);
+}
+
+} // namespace Dynagraph
+#endif // stringizeEngine_h

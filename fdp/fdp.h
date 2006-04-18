@@ -19,7 +19,7 @@
 #define FDP_H
 
 #include "common/ChangeQueue.h"
-#include "common/DynagraphServer.h"
+#include "common/ChangeProcessor.h"
 #include "FDPLayout.h"
 #include "FDPModel.h"
 #include "grid.h"
@@ -34,7 +34,8 @@ struct StillHasEdges : DGException {
   StillHasEdges() : DGException("a node was deleted without all of its edges being deleted (impossible!)",true) {}
 };
 
-struct FDPServer : Server<FDPLayout>,Grid::Visitor {
+struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
+	FDPLayout *whole_,*current_;
 	int numIters;
 	bool useComp,
 		useGrid;
@@ -49,22 +50,22 @@ struct FDPServer : Server<FDPLayout>,Grid::Visitor {
 		Rfact2, // Phase 2 RepFactor
 		Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node
 
-	FDPServer(FDPLayout *client, FDPLayout *current) :
-	  Server<FDPLayout>(client,current),
-	  numIters(40),
-	  useComp(false),
-	  useGrid(true),
-	  Width(8.5),Height(11.0),
-	  T0(-1.0),
-	  K(1.0),K2(1.0),
-	  CellSize(0.0),
-	  RepFactor(1.0),
-	  AttFactor(1.0),
-	  Afact2(0.001),
-	  Rfact2(1.0),
-	  Radius2(0.0) {}
+	FDPServer(FDPLayout *whole, FDPLayout *current) :
+		whole_(whole),current_(current),
+		numIters(40),
+		useComp(false),
+		useGrid(true),
+		Width(8.5),Height(11.0),
+		T0(-1.0),
+		K(1.0),K2(1.0),
+		CellSize(0.0),
+		RepFactor(1.0),
+		AttFactor(1.0),
+		Afact2(0.001),
+		Rfact2(1.0),
+		Radius2(0.0) {}
 	~FDPServer() {}
-	// Server
+	// ChangeProcessor
 	void Process(ChangeQueue<FDPLayout> &changeQ);
 	// Grid::Visitor
 	int VisitCell(Cell *cell,Grid *grid);

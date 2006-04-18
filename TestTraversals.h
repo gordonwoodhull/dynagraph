@@ -14,6 +14,7 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#include "common/Transform.h"
 extern Dynagraph::Transform *g_transform;
 
 namespace Dynagraph {
@@ -232,38 +233,36 @@ public:
 		if(!limit)
 			return;
 		int N = l->nodes().size();
+		int E = l->edges().size();
+		char buf[10];
+		sprintf(buf,"e%d",E);
+		Name ename = buf;
 		double r = double(rand())/double(RAND_MAX);
 		std::pair<typename Layout::Edge*,bool> newe;
 		if(N>3 && r<reconnectProbability) {
 			typename Layout::Node *t,*h;
 			do h = randomNode(l),t = randomNode(l);
 			while(h==t || l->find_edge(h,t)||l->find_edge(t,h));
-			newe = l->create_edge(t,h);
+			newe = l->create_edge(t,h,ename);
 			assert(newe.second);
 			Q.InsEdge(newe.first);
 		}
 		else {
-			typename Layout::Node *t = randomNode(l),
-				*h = l->create_node();
 			char buf[10];
 			sprintf(buf,"n%d",N+1);
-			gd<Name>(h) = buf;
-			init_node<Layout>(h);
+			typename Layout::Node *t = randomNode(l),
+				*h = l->create_node(buf);
 			if(!t) {
-				t = l->create_node();
+				sprintf(buf,"n%d",(int)l->nodes().size());
+				t = l->create_node(buf);
 				init_node<Layout>(t);
 				Q.InsNode(t);
-				sprintf(buf,"n%d",(int)l->nodes().size());
-				gd<Name>(t) = buf;
 			}
 			Q.InsNode(h);
-			newe = l->create_edge(t,h);
+			newe = l->create_edge(t,h,ename);
 			assert(newe.second);
 			Q.InsEdge(newe.first);
 		}
-		int E = l->edges().size();
-		char buf[10];
-		sprintf(buf,"e%d",E);
 		gd<Name>(newe.first) = buf;
 		limit--;
 	}

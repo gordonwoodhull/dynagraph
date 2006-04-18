@@ -25,6 +25,7 @@
 #include <queue>
 #include <bitset>
 #include <vector>
+#include "common/useful.h"
 
 namespace Dynagraph {
 
@@ -88,7 +89,7 @@ struct DFS : Traversal<G> {
 		if(m_curr.e)
 			gd<Hit>(m_curr.e)[Traversal<G>::m_hitpos] = true;
 		else {
-			assert(m_curr.n);
+			assert(m_curr.n!=0);
 			gd<Hit>(m_curr.n)[Traversal<G>::m_hitpos] = true;
 		}
 		// try edges

@@ -9,7 +9,7 @@ INCS =	-I.. -I../.. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = grid.o layout.o process.o
+OBJS = createFDPEngine.o grid.o layout.o process.o
 
 HFILES = fdp.h grid.h macros.h ../common/*.h 
 

@@ -18,8 +18,6 @@
 #ifndef StringDict_h
 #define StringDict_h
 
-#include "dgxep.h"
-#include "useful.h"
 #include <string>
 #include <algorithm>
 #include <iostream>
@@ -37,54 +35,20 @@
 
 namespace Dynagraph {
 
-#ifndef STRINGDICT_USE_STL
 struct StringDict {
-	StringDict();
+	StringDict() { init(); }
 	void init();
 	const char *enter(const char *val);
 	void release(const char *val);
 	void ref(const char *val); // MUST have come from here!
 private:
+#ifndef STRINGDICT_USE_STL
 	Dict_t *dict;
-};
 #else
-struct StringDict {
 	typedef std::map<std::string,int> mapstrs;
-	StringDict() { init(); }
-	void init() { strs = new mapstrs; }
-	const char *enter(const char *val) {
-		if(!val)
-			return 0;
-		if(!strs)
-			init();
-		mapstrs::iterator mi = strs->insert(mapstrs::value_type(val,0)).first;
-		mi->second++;
-		return mi->first.c_str();
-	}
-	void release(const char *val) {
-		if(!val)
-			return;
-		mapstrs::iterator mi = strs->find(val);
-		if(mi==strs->end())
-			return;
-		assert(mi->second>0);
-		if(!--mi->second)
-			strs->erase(mi);
-	}
-	void ref(const char *val) {
-		if(!val)
-			return;
-		mapstrs::iterator mi = strs->find(val);
-		if(mi==strs->end())
-			return;
-		assert(mi->second>0);
-		++mi->second;
-	}
-
-private:
 	mapstrs *strs;
-};
 #endif // STRINGDICT_USE_STL
+};
 
 // in StringDict.cpp, or define your own if DSTRING_USE_STL
 extern StringDict g_stringDict;
@@ -241,14 +205,6 @@ inline std::ostream &operator <<(std::ostream &os,const DString &s) {
     os << s.c_str();
   return os;
 }
-struct DictStringLost : DGException {
-	const char *s;
-	DictStringLost(const char *s) :
-	  DGException("StringDict internal exception: string lost",true),
-	  s(s)
-  {}
-};
-
 int ds2int(const DString &s);
 
 } // namespace Dynagraph

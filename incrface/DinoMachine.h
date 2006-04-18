@@ -49,9 +49,10 @@ struct DinoInternalChanges {
 
 struct DinoMachNode : NamedAttrs {
     IncrLangEvents *handler;
-    DinoMachNode(Name name = Name()) : NamedAttrs(name),handler(0) {}
+	bool allowOneReopen,alreadyOpen;
+    DinoMachNode(Name name = Name()) : NamedAttrs(name),handler(0),allowOneReopen(false),alreadyOpen(false) {}
     ~DinoMachNode() {
-        if(handler)
+        if(handler&&g_incrCallback)
             g_incrCallback->incr_cb_destroy_handler(handler);
     }
 };
@@ -110,7 +111,7 @@ struct DinoMachEdge : NamedAttrs {
             delete handler;
     }
 };
-struct DinoMachine : NamedGraph<NamedAttrs,DinoMachNode,DinoMachEdge> {
+struct DinoMachine : NamedGraph<ADTisCDT,NamedAttrs,DinoMachNode,DinoMachEdge> {
 	// eventually this will be a real data flow model
 	// for now, it's a mess of cascading events
 	// the only check is: it won't return to the starting node

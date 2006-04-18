@@ -32,7 +32,7 @@ struct GSEdge : DijEData,NamedAttrs {
     GSEdge(DString s) : NamedAttrs(s) {}
 };
 
-typedef NamedGraph<Nothing,GSNode,GSEdge> GSGraph;
+typedef NamedGraph<ADTisCDT,Nothing,GSNode,GSEdge> GSGraph;
 
 typedef DijNDataT<GSGraph::Node> DijNData;
 template<>

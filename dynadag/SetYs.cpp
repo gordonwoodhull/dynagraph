@@ -38,8 +38,8 @@ void Config::resetRankBox(Rank *rank) {
 	rank->spaceBelow = 0;
 	//rank->deltaBelow -= rank->spaceBelow = rank->deltaBelow/10.0;
 #else
-	double maxTop = gd<GraphGeom>(config.client).separation.y / 20.0,
-		maxBottom = gd<GraphGeom>(client).separation.y / 20.0;
+	double maxTop = gd<GraphGeom>(config.whole).separation.y / 20.0,
+		maxBottom = gd<GraphGeom>(whole).separation.y / 20.0;
 	for(NodeV::iterator ni = rank->order.begin(); ni!=rank->order.end(); ++ni) {
 		if(DDd(*ni).amEdgePart())
 			continue;
@@ -53,7 +53,7 @@ void Config::resetRankBox(Rank *rank) {
 
 	rank->deltaAbove = maxTop;
 	rank->deltaBelow = maxBottom;
-	rank->spaceBelow = gd<GraphGeom>(client).separation.y;
+	rank->spaceBelow = gd<GraphGeom>(whole).separation.y;
 #endif
 }
 

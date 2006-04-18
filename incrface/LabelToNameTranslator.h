@@ -14,14 +14,17 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#include "IncrStrGraphHandler.h"
+#include "common/randomName.h"
+
 namespace Dynagraph {
 
 template<typename Layout>
 struct LabelToNameTranslator : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
-	DynaView<Layout> *m_source;
-	StrGraph *m_dest;
+	IncrStrGraphHandler<Layout> *m_source;
+	StrChGraph *m_dest;
     bool m_useNodeLabels,m_useEdgeLabels;
     LabelToNameTranslator(DinoInternalChanges *chain,DinoMachine::Edge *de,bool useNodeLabels,bool useEdgeLabels)
             : m_chain(chain),m_dinoe(de),m_useNodeLabels(useNodeLabels),m_useEdgeLabels(useEdgeLabels) {
@@ -29,8 +32,8 @@ struct LabelToNameTranslator : DinoInternalChanges {
 			*h = de->head;
 		assert(gd<DinoMachNode>(t).handler->dinotype()=="layout");
 		assert(gd<DinoMachNode>(h).handler->dinotype()=="abstract");
-		m_source = static_cast<DynaView<Layout>*>(gd<DinoMachNode>(t).handler);
-		m_dest = static_cast<AbsGraphHandler<StrGraph>*>(gd<DinoMachNode>(h).handler)->g;
+		m_source = static_cast<IncrStrGraphHandler<Layout>*>(gd<DinoMachNode>(t).handler);
+		m_dest = &static_cast<IncrStrGraphHandler<StrChGraph>*>(gd<DinoMachNode>(h).handler)->world_->whole_;
 	}
     ~LabelToNameTranslator() {
         if(m_chain)
@@ -54,7 +57,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
             if(ii->second.empty())
                 continue;
 			if(ii->first.isEdge) {
-				if(!m_source->edges[ii->first.name]) { // deleted edge
+				if(!m_source->world_->whole_.fetch_node(ii->first.name,false).first) { // deleted edge
 					NEID_map::tset &s = ii->second;
 					assert(s.size()==1);
 					DString bname = s.begin()->name;
@@ -69,7 +72,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
             if(ii->second.empty())
                 continue;
 			if(!ii->first.isEdge) {
-				if(!m_source->nodes[ii->first.name]) { // deleted node
+				if(!m_source->world_->whole_.fetch_node(ii->first.name,false).first) { // deleted node
 					NEID_map::tset &s = ii->second;
 					assert(s.size()==1);
 					DString bname = s.begin()->name;
@@ -79,15 +82,14 @@ struct LabelToNameTranslator : DinoInternalChanges {
 				}
 			}
         }
-		for(typename DynaView<Layout>::nodeDict::iterator ni = m_source->nodes.begin(); ni!=m_source->nodes.end(); ++ni) {
-            if(!ni->second)
-                continue;
-			NEID_map::tset &s = dme.tailmap()[NEID(false,ni->first)];
+		for(typename Layout::node_iter ni = m_source->world_->current_.nodes().begin(); ni!=m_source->world_->current_.nodes().end(); ++ni) {
+			Name nname = gd<Name>(*ni);
+			NEID_map::tset &s = dme.tailmap()[NEID(false,nname)];
 			DString label;
             if(m_useNodeLabels)
-                 label = gd<StrAttrs>(ni->second)["label"];
+                 label = gd<StrAttrs>(*ni)["label"];
             if(label.empty())
-                label = ni->first;
+                label = nname;
 			if(s.empty()) { // added node
                 DString newname;
                 StrAttrs attrs;
@@ -98,13 +100,13 @@ struct LabelToNameTranslator : DinoInternalChanges {
 				else
                     newname = label;
                 assert(dme.headmap()[NEID(false,newname)].size()==0);
-			    dme.connect(NEID(false,ni->first),NEID(false,newname));
+			    dme.connect(NEID(false,nname),NEID(false,newname));
                 assert(dme.headmap()[NEID(false,newname)].size()==1);
                 desthand->incr_ev_ins_node(newname,attrs,true);
                 assert(dme.headmap()[NEID(false,newname)].size()==1);
-                assert(dme.tailmap()[NEID(false,ni->first)].size()==1);
-                assert(dme.tailmap()[NEID(false,ni->first)].begin()->name==newname);
-                assert(dme.headmap()[NEID(false,newname)].begin()->name==ni->first);
+                assert(dme.tailmap()[NEID(false,nname)].size()==1);
+                assert(dme.tailmap()[NEID(false,nname)].begin()->name==newname);
+                assert(dme.headmap()[NEID(false,newname)].begin()->name==nname);
 			}
 			else {
                 // not new, but label may have changed
@@ -121,22 +123,21 @@ struct LabelToNameTranslator : DinoInternalChanges {
                         dme.rename_head(NEID(false,bname),NEID(false,label));
                         assert(dme.headmap()[NEID(false,bname)].size()==0);
                         assert(dme.headmap()[NEID(false,label)].size()==1);
-                        assert(dme.tailmap()[NEID(false,ni->first)].size()==1);
-                        assert(dme.tailmap()[NEID(false,ni->first)].begin()->name==label);
-                        assert(dme.headmap()[NEID(false,label)].begin()->name==ni->first);
+                        assert(dme.tailmap()[NEID(false,nname)].size()==1);
+                        assert(dme.tailmap()[NEID(false,nname)].begin()->name==label);
+                        assert(dme.headmap()[NEID(false,label)].begin()->name==nname);
                     }
             }
 			assert(s.size()==1);
 		}
-        for(typename DynaView<Layout>::edgeDict::iterator ei = m_source->edges.begin(); ei!=m_source->edges.end(); ++ei) {
-            if(!ei->second)
-                continue;
-			NEID_map::tset &s = dme.tailmap()[NEID(true,ei->first)];
+		for(typename Layout::graphedge_iter ei = m_source->world_->current_.edges().begin(); ei!=m_source->world_->current_.edges().end(); ++ei) {
+			Name ename = gd<Name>(*ei);
+			NEID_map::tset &s = dme.tailmap()[NEID(true,ename)];
 			DString label;
             if(m_useEdgeLabels)
-                label = gd<StrAttrs>(ei->second)["label"];
+                label = gd<StrAttrs>(*ei)["label"];
             if(label.empty())
-                label = ei->first;
+                label = ename;
 			if(s.empty()) { // added edge
                 DString newname;
                 StrAttrs attrs;
@@ -146,16 +147,16 @@ struct LabelToNameTranslator : DinoInternalChanges {
                 }
 				else
                     newname = label;
-                DString bt = dme.tailmap()[NEID(false,gd<Name>(ei->second->tail))].begin()->name,
-                    bh = dme.tailmap()[NEID(false,gd<Name>(ei->second->head))].begin()->name;
+                DString bt = dme.tailmap()[NEID(false,gd<Name>((*ei)->tail))].begin()->name,
+                    bh = dme.tailmap()[NEID(false,gd<Name>((*ei)->head))].begin()->name;
                 assert(dme.headmap()[NEID(true,newname)].size()==0);
-			    dme.connect(NEID(true,ei->first),NEID(true,newname));
+			    dme.connect(NEID(true,ename),NEID(true,newname));
                 assert(dme.headmap()[NEID(true,newname)].size()==1);
                 desthand->incr_ev_ins_edge(newname,bt,bh,attrs);
                 assert(dme.headmap()[NEID(true,newname)].size()==1);
-                assert(dme.tailmap()[NEID(true,ei->first)].size()==1);
-                assert(dme.tailmap()[NEID(true,ei->first)].begin()->name==newname);
-                assert(dme.headmap()[NEID(true,newname)].begin()->name==ei->first);
+                assert(dme.tailmap()[NEID(true,ename)].size()==1);
+                assert(dme.tailmap()[NEID(true,ename)].begin()->name==newname);
+                assert(dme.headmap()[NEID(true,newname)].begin()->name==ename);
 			}
 			else { // not new, but maybe we can grab the label name
 				assert(s.size()==1);
@@ -169,10 +170,10 @@ struct LabelToNameTranslator : DinoInternalChanges {
                         assert(dme.headmap()[NEID(true,bname)].size()==1);
                         dme.rename_head(NEID(true,bname),NEID(true,label));
                         assert(dme.headmap()[NEID(true,bname)].size()==0);
-                        assert(dme.tailmap()[NEID(true,ei->first)].size()==1);
+                        assert(dme.tailmap()[NEID(true,ename)].size()==1);
                         assert(dme.headmap()[NEID(true,label)].size()==1);
-                        assert(dme.tailmap()[NEID(true,ei->first)].begin()->name==label);
-                        assert(dme.headmap()[NEID(true,label)].begin()->name==ei->first);
+                        assert(dme.tailmap()[NEID(true,ename)].begin()->name==label);
+                        assert(dme.headmap()[NEID(true,label)].begin()->name==ename);
                     }
             }
 			assert(s.size()==1);

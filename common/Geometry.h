@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <float.h>
 #include "StringDict.h"
+#include "useful.h"
 
 namespace Dynagraph {
 

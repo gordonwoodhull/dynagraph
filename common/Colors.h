@@ -17,6 +17,8 @@
 #ifndef Colors_h
 #define Colors_h
 
+#include "dgxep.h"
+
 namespace Dynagraph {
 
 struct HSVColor {

@@ -27,7 +27,7 @@
 namespace Dynagraph {
 
 /*
-        UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this
+    UPDATE flags. use with ChangeQueue::ModNode,ModEdge to set this
 	modify subgraph specific flag.
 	(this update flag is a poor use for instance-specific data, because the data
 	is unused in the other subgraphs)
@@ -53,6 +53,18 @@ typedef enum {
 struct Update { // subgraph-specific datum
 	unsigned flags;
 	Update(unsigned flags = 0) : flags(flags) {}
+	Update operator |(const Update &other) {
+		return Update(flags|other.flags);
+	}
+	Update operator &(const Update &other) {
+		return Update(flags&other.flags);
+	}
+	Update operator |=(const Update &other) {
+		return *this = *this|other;
+	}
+	Update operator &=(const Update &other) {
+		return *this = *this&other;
+	}
 };
 
 /*
@@ -219,13 +231,51 @@ struct EdgeLabel {
 };
 typedef std::vector<EdgeLabel> EdgeLabels;
 
+// These are the basic layout description attributes
+struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels {
+	GraphAttrs(Name name) : Name(name) {}
+};
+struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef {
+	NodeAttrs(Name name) : Name(name) {}
+};
+struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels {
+	EdgeAttrs(Name name) : Name(name) {}
+};
 
-// These are the recommended basic attributes for a Dynagraph Layout graph
-// Most are required by the common Dynagraph template libraries
-// Further refactoring could reduce these dependencies
-struct GraphAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,GraphGeom,Translation,StaticLabels {};
-struct NodeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,NodeGeom,NodeLabels,IfPolyDef {};
-struct EdgeAttrs : Name,StrAttrs2,Hit,ModelPointer,Drawn,EdgeGeom,EdgeLabels {};
+// This adds the ModelPointer which is needed if the graph will be used directly with an engine
+struct EngineGraphAttrs : GraphAttrs,ModelPointer {
+	EngineGraphAttrs(Name name = Name()) : GraphAttrs(name) {}
+};
+struct EngineNodeAttrs : NodeAttrs,ModelPointer {
+	EngineNodeAttrs(Name name) : NodeAttrs(name) {}
+};
+struct EngineEdgeAttrs : EdgeAttrs,ModelPointer {
+	EngineEdgeAttrs(Name name) : EdgeAttrs(name) {}
+};
+
+// This adds string attributes, which are needed for the incrface ("for humans")
+struct GeneralGraphAttrs : GraphAttrs,StrAttrs {
+	GeneralGraphAttrs(Name name = Name()) : GraphAttrs(name) {}
+};
+struct GeneralNodeAttrs : NodeAttrs,StrAttrs {
+	GeneralNodeAttrs(Name name) : NodeAttrs(name) {}
+};
+struct GeneralEdgeAttrs : EdgeAttrs,StrAttrs {
+	GeneralEdgeAttrs(Name name) : EdgeAttrs(name) {}
+};
+
+// This combines all of the above so that the graph can be used for both incrface and with engines
+struct EverythingGraphAttrs : GraphAttrs,ModelPointer,StrAttrs {
+	EverythingGraphAttrs(Name name = Name()) : GraphAttrs(name) {}
+};
+struct EverythingNodeAttrs : NodeAttrs,ModelPointer,StrAttrs {
+	EverythingNodeAttrs(Name name) : NodeAttrs(name) {}
+};
+struct EverythingEdgeAttrs : EdgeAttrs,ModelPointer,StrAttrs {
+	EverythingEdgeAttrs(Name name) : EdgeAttrs(name) {}
+};
+
+struct LayoutUpdates : StrAttrChanges,Update {};
 
 } // namespace Dynagraph
 

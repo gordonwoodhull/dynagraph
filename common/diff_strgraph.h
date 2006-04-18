@@ -17,6 +17,8 @@
 #ifndef diff_strgraph_h
 #define diff_strgraph_h
 
+#include "randomName.h"
+
 namespace Dynagraph {
 
 inline StrAttrs *diff_attr(StrAttrs &a1,StrAttrs &a2) {

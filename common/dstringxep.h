@@ -14,21 +14,18 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef dstringxep_h
+#define dstringxep_h
+
+#include "dgxep.h"
+
 namespace Dynagraph {
 
-// act like a string graph but adjust the real thing too
-struct DinoMachineHandler : AbsGraphHandler<DinoMachine> {
-    DinoMachineHandler(DinoMachine *dino) : AbsGraphHandler<DinoMachine>(dino) {} // required!
-
-    DString incr_ev_ins_node(DString name, const StrAttrs &attrs, bool merge);
-    DString incr_ev_ins_edge(DString name, DString tailname, DString headname, const StrAttrs &attrs);
-    bool incr_ev_mod_node(DString name,const StrAttrs &attrs);
-    bool incr_ev_mod_edge(DString name,const StrAttrs &attrs);
-	bool incr_ev_del_node(DString name);
-	bool incr_ev_del_edge(DString name);
-
-    void modify_node(DString name,const StrAttrs &attrs);
-    void modify_edge(DString name,const StrAttrs &attrs);
+struct DictStringLost : DGException2 {
+	// I don't *think* this could cause some horrible recursive crash..!?
+	DictStringLost(DString s) : DGException2("StringDict internal exception: string lost",s,true) {}
 };
 
 } // namespace Dynagraph
+
+#endif // dstringxep_h

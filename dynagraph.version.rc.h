@@ -1,2 +1,3 @@
-#define DGW_VERSION 1,1,0,1
-#define DGW_VERSION_STR "1.1.0.1"
+#include "dynagraph.version.h"
+#define DGW_VERSION DYNAGRAPH_VERSION_COMMAS
+#define DGW_VERSION_STR DYNAGRAPH_VERSION_DOTS_QUOTED

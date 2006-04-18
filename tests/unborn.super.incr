@@ -1,0 +1,9 @@
+open graph V [superengines=shapegen]
+lock graph V
+insert node V n
+insert node V m
+insert edge V e m n
+delete node V n
+unlock graph V
+insert node V n
+insert edge V e m n

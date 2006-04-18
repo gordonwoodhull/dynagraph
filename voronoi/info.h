@@ -23,7 +23,7 @@
 
 #include "fdp/FDPLayout.h"
 #include "common/ChangeQueue.h"
-#include "common/DynagraphServer.h"
+#include "common/ChangeProcessor.h"
 
 namespace Dynagraph {
 namespace Voronoi {

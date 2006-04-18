@@ -19,6 +19,7 @@
 
 #include "ag2str.h"
 #include "StrAttr.h"
+#include "useful.h"
 
 using namespace std;
 
@@ -57,8 +58,11 @@ StrGraph *ag2str(Agraph_t *g) {
 	Remem remem;
 	StrGraph *gg = new StrGraph;
 	gd<Name>(gg) = agnameof(g);
+	/*
+	// BAAAD: THIS CODE CRASHED VC++ DEBUGGER.  PLEASE REINSTATE****!!!!!!!
 	for(Agsym_t *sym = agnxtattr(g,AGRAPH,0); sym; sym = agnxtattr(g,AGRAPH,sym))
 		gd<StrAttrs>(gg)[sym->name] = agget(gg,sym->name);
+		*/
 
 	int anonN(0);
 	Agnode_t *n;
@@ -95,7 +99,7 @@ StrGraph *ag2str(Agraph_t *g) {
 			try {
 				gg->create_edge(tail,head,nattr).first;
 			}
-			catch(ParallelEdgesUnsupported) {
+			catch(DGParallelEdgesNotSupported) {
 			}
 		}
 	}

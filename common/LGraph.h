@@ -198,7 +198,7 @@ struct LGraph {
 			else
 				return 0;
 		}
-		bool amMain() { return g->amMain(); }
+		bool am_main() { return g->am_main(); }
 		template<typename D>
 		D &gd() {
 			return *static_cast<D*>(dat);
@@ -333,10 +333,10 @@ struct LGraph {
 			return pseudo_seq<nodeedge_iter>(ne_iter(&nodeData_.m_ins,&nodeData_.m_outs),ne_iter(0,0));
 		};
 
-		int degree() {
+		size_t degree() {
 			return nodeData_.m_ins.size() + nodeData_.m_outs.size();
 		}
-		bool amMain() { return g->amMain(); }
+		bool am_main() { return g->am_main(); }
 		inedge_iter inIter(Edge *e) {
 			if(e->head!=this)
 				throw WrongNode();
@@ -391,7 +391,7 @@ public:
 			parent->m_subs.push_back(this);
 	    *this = other;
 	}
-	~LGraph() {
+	virtual ~LGraph() {
 		clear();
 		if(parent)
 			parent->m_subs.remove(this);
@@ -463,21 +463,11 @@ public:
 		typename outedge_order::iterator ei;
 		LGraph *g;
 	};
-	/*
-	template<typename D>
-	D &gd() {
-		return *static_cast<D*>(dat);
-	}
-	template<typename D>
-	D &igd() {
-		return static_cast<D&>(idat);
-	}
-	*/
 	pseudo_seq<graphedge_iter> edges() {
 		return pseudo_seq<graphedge_iter>(graphedge_iter(this),graphedge_iter(0));
 	}
 	// methods available only on main graphs
-	Node *create_node(const NodeDatum &d = NodeDatum()) {
+	virtual Node *create_node(const NodeDatum &d = NodeDatum()) {
 		if(parent)
 			return 0;
 		Node *ret = new Node(this,new ND2(d));
@@ -491,7 +481,7 @@ public:
 		nodes().insert(ret);
 		return ret;
 	}
-	std::pair<Edge*,bool> create_edge(Node *tail, Node *head,const EdgeDatum &d = EdgeDatum()) {
+	virtual std::pair<Edge*,bool> create_edge(Node *tail, Node *head,const EdgeDatum &d = EdgeDatum()) {
 		if(parent)
 			return std::make_pair((Edge*)0,false);
 		if(!tail) throw NullPointer();
@@ -516,7 +506,7 @@ public:
 	// methods available only on subgraphs
 	// the shorter, overloaded methods insert,erase,find are intended to
 	// mimic std::set<> operations.  it's a little less explicit what you're doing though.
-	std::pair<Node*,bool> insert_subnode(Node *n) {
+	virtual std::pair<Node*,bool> insert_subnode(Node *n) {
 		if(Node *found = find_nodeimage(n))
 			return std::make_pair(found,false);
 		if(!parent||!parent->insert_subnode(n).first)
@@ -526,7 +516,7 @@ public:
 		nodes().insert(ret);
 		return std::make_pair(ret,true);
 	}
-	std::pair<Edge*,bool> insert_subedge(Edge *e) {
+	virtual std::pair<Edge*,bool> insert_subedge(Edge *e) {
 		if(Edge *found = find_edgeimage(e))
 			return std::make_pair(found,false);
 		if(!parent||!parent->insert_subedge(e).first)
@@ -547,13 +537,13 @@ public:
 		return insert_subedge(e);
 	}
 	// methods available on both graphs and subgraphs
-	bool amMain() {
+	bool am_main() {
 		return !parent;
 	}
 	bool empty() {
 		return nodes().empty();
 	}
-	bool erase_node(Node *n) {
+	virtual bool erase_node(Node *n) {
 		if(n->g!=this)
 			if(Node *n2 = find_nodeimage(n))
 				n = n2;
@@ -573,7 +563,7 @@ public:
 		delete n;
 		return true;
 	}
-	bool erase_edge(Edge *e) {
+	virtual bool erase_edge(Edge *e) {
 		if(e->head->g!=this)
 			if(Edge *e2 = find_edgeimage(e))
 				e = e2;
@@ -589,6 +579,21 @@ public:
 			delete e->dat;
         }
 		delete e;
+		return true;
+	}
+	// if this is end-nodes' only edge, erase them too
+	bool inducing_erase_edge(Edge *e) {
+		if(e->head->g!=this)
+			if(Edge *e2 = find_edgeimage(e))
+				e = e2;
+			else
+				return false;
+		Node *t = e->tail,*h = e->head;
+		erase(e);
+		if(t->degree()==0)
+			erase(t);
+		if(h->degree()==0)
+			erase(h);
 		return true;
 	}
 	bool erase(Node *n) {
@@ -638,6 +643,9 @@ public:
 	void clear() {
 		while(!nodes().empty())
 			erase_node(*nodes().begin());
+		if(!parent)
+			*dat = GraphDatum();
+		idat = GraphIDat();
 	}
 	void check_common_parent(const LGraph &g) {
 		const LGraph *p,*p2;
@@ -652,10 +660,10 @@ public:
 		if(parent) {
 			// if a subgraph, we're inserting everything
 			check_common_parent(g);
-			for(node_iter ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni)
-				insert(*ni);
+			for(node_iter ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni) 
+				insert(*ni).first->idat = (*ni)->idat;
 			for(graphedge_iter ei(&g); ei!=graphedge_iter(); ++ei)
-				insert(*ei);
+				insert(*ei).first->idat = (*ei)->idat;
 		}
 		else {
 			// if not, we're copying everything

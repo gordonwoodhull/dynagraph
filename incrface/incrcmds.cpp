@@ -16,8 +16,8 @@
 
 
 #include "common/LayoutAttrs.h"
-#include "DynaView.h"
 #include "common/ag2str.h"
+#include "DinoMachine.h"
 //#include "common/bufferGraphStream.h"
 #include "incrxep.h"
 #include "incrparse.h"
@@ -34,7 +34,7 @@ DinoMachine g_dinoMachine;
 IncrCallbacks *g_incrCallback;
 
 void incr_set_handler(DString name,IncrLangEvents *handler) {
-    DinoMachine::Node *n = g_dinoMachine.get_node(name);
+    DinoMachine::Node *n = g_dinoMachine.fetch_node(name,true).first;
     IncrLangEvents *&h = gd<DinoMachNode>(n).handler;
     if(h!=handler) {
         if(h)
@@ -48,26 +48,48 @@ IncrLangEvents *incr_get_handler(DString name) {
         return 0;
     return gd<DinoMachNode>(n).handler;
 }
-void incr_open_graph(const char *graph)
-{
-    // look for one already there - incr_ev_open_graph will decide if this is an error
-    IncrLangEvents *h = incr_get_handler(graph);
-
+extern void incr_set_allow_reopen(DString name,bool whether) {
+    DinoMachine::Node *n = g_dinoMachine.ndict[name];
+    if(!n)
+        throw IncrSetHandlerFirst();
+    gd<DinoMachNode>(n).allowOneReopen = whether;
+}
+void incr_open_graph(const char *graph) {
+    DinoMachine::Node *n = g_dinoMachine.fetch_node(graph,true).first;
+	DinoMachNode &dmn = gd<DinoMachNode>(n);
+	if(dmn.alreadyOpen) {
+		if(!dmn.allowOneReopen)
+	        throw IncrReopenXep(graph);
+		dmn.allowOneReopen = false;
+	}
+    IncrLangEvents *h = dmn.handler;
     if(!h)
         h = g_incrCallback->incr_cb_create_handler(graph,g_currAttrs);
     if(!h)
         return;
-    if(!h->incr_ev_open_graph(graph,g_currAttrs))
+	//try 
+{
+		if(dmn.alreadyOpen)
+			h->incr_ev_mod_graph(g_currAttrs);
+		else
+			h->incr_ev_open_graph(graph,g_currAttrs);
+	}
+/*
+	catch(...) {
         delete h;
+		throw;
+	}*/
+	if(!dmn.handler)
+		dmn.handler = h;
+	dmn.alreadyOpen = true;
 }
 
-void incr_close_graph(const char *graph)
-{
+void incr_close_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
-    if(h->incr_ev_close_graph())
-        g_dinoMachine.erase(g_dinoMachine.ndict[graph]); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
+    h->incr_ev_close_graph();
+    g_dinoMachine.erase(g_dinoMachine.ndict[graph]); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
 }
 
 void incr_mod_graph(const char *graph) {
@@ -109,48 +131,42 @@ void incr_segue(const char *graph) {
         h->incr_ev_load_strgraph(sg,true,true);
 }
 
-void incr_ins_node(const char *graph,const char *id)
-{
+void incr_ins_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_ins_node(id,g_currAttrs,true);
 }
 
-void incr_ins_edge(const char *graph,const char *id, const char *tail, const char *head)
-{
+void incr_ins_edge(const char *graph,const char *id, const char *tail, const char *head) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_ins_edge(id,tail,head,g_currAttrs);
 }
 
-void incr_mod_node(const char *graph,const char *id)
-{
+void incr_mod_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_node(id,g_currAttrs);
 }
 
-void incr_mod_edge(const char *graph,const char *id)
-{
+void incr_mod_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_edge(id,g_currAttrs);
 }
 
-void incr_del_node(const char *graph,const char *id)
-{
+void incr_del_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
     h->incr_ev_del_node(id);
 }
 
-void incr_del_edge(const char *graph,const char *id)
-{
+void incr_del_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
@@ -185,20 +201,17 @@ void incr_ful_node(const char *graph,const char *id) {
 void incr_ful_edge(const char *graph,const char *id) {
     g_incrCallback->incr_cb_fulfil_edge(graph,id,g_currAttrs);
 }
-void incr_message(const char *msg)
-{
+void incr_message(const char *msg) {
     g_incrCallback->incr_cb_message(msg);
 }
 
 /* attribute scanning */
 
-void incr_reset_attrs()
-{
+void incr_reset_attrs() {
     g_currAttrs.clear();
 }
 
-void incr_append_attr(const char *name, const char *value)
-{
+void incr_append_attr(const char *name, const char *value) {
     g_currAttrs[name] = value;
 }
 
@@ -217,16 +230,14 @@ static const char *ErrMsg[] = {
         (char*)0
 } ;
 
-void incr_error(int code, const char *str)
-{
+void incr_error(int code, const char *str) {
     if (!str) str = "";
     char buf[300];
     sprintf(buf,"incr interface: %s %s\n",ErrMsg[code],str);
     throw IncrError(buf);
 }
 
-void incr_abort(int code)
-{
+void incr_abort(int code) {
     incr_error(code,0);
 }
 

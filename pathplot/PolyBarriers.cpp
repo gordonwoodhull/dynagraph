@@ -21,7 +21,7 @@ namespace Dynagraph {
 namespace PathPlot {
 
 void PolyBarriers(const LineV &polygons, SegmentV &out) {
-	unsigned n = 0,i;
+	size_t n = 0,i;
 	for(i = 0; i < polygons.size(); i++)
 		n += polygons[i].size();
 

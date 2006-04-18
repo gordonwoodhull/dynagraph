@@ -23,9 +23,12 @@ namespace Dynagraph {
 namespace FDP {
 
 // just to temporarily distinguish FDPLayout typedef from DynaDAGLayout until we get real metagraphs
-struct FDPGraphAttrs : GraphAttrs {};
+struct FDPGraphAttrs : EverythingGraphAttrs {};
 
-typedef LGraph<ADTisCDT,FDPGraphAttrs,NodeAttrs,EdgeAttrs,Update,Update,Update> FDPLayout;
+// until FDPEngine becomes a template, this is the minimal graph type 
+// that can be used both for incrface and by the engine
+typedef NamedGraph<ADTisCDT,FDPGraphAttrs,EverythingNodeAttrs,EverythingEdgeAttrs,
+	LayoutUpdates,LayoutUpdates,LayoutUpdates> FDPLayout;
 
 } // namespace FDP
 } // namespace Dynagraph

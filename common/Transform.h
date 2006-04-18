@@ -18,11 +18,14 @@
 #ifndef Transform_h
 #define Transform_h
 
+#include "Geometry.h"
+
 namespace Dynagraph {
 
 // dynagraph uses dimensionless up-positive coords, but not everyone else does!
 // so when it reads or writes .dot files or talks over a pipe, it uses one of these:
 // multiplies by relevant ratios on read, divides on write
+// wouldn't it make sense to give this responsibility for default sizes too?
 class Transform {
 	Coord nodeRatio, // for node size
 		coordRatio; // for node position, edge coords, and bounding box

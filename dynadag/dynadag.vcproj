@@ -130,6 +130,67 @@
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
+		<Configuration
+			Name="Static|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="0"
+				ImproveFloatingPointConsistency="FALSE"
+				OmitFramePointers="FALSE"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
+				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
+				StringPooling="TRUE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile="static\dynadag/dynadag.pch"
+				AssemblerListingLocation="static\dynadag/"
+				ObjectFile="static\dynadag/"
+				ProgramDataBaseFileName="static\dynadag/"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="0"
+				DisableSpecificWarnings="4068;"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="static\dynadag\dynadag.lib"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="."
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -145,6 +206,9 @@
 			</File>
 			<File
 				RelativePath="ConstraintGraph.cpp">
+			</File>
+			<File
+				RelativePath=".\createDynaDAGEngine.cpp">
 			</File>
 			<File
 				RelativePath="DotlikeOptimizer.cpp">

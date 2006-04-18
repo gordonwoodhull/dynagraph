@@ -17,15 +17,22 @@
 #ifndef INCRXEP_H
 #define INCRXEP_H
 
+#include "common/dgxep.h"
+
 namespace Dynagraph {
 
-struct IncrError : DGException {
-  DString descrip;
-  IncrError(DString descrip) :
-    DGException("incrface error"),descrip(descrip) {}
+// all these exceptions are recoverable: report error to client and ignore
+struct IncrException : DGException2 {
+	IncrException(DString xep,DString parm) : DGException2(xep,parm,false) {}
 };
-struct IncrGraphNotOpen : DGException {
-	IncrGraphNotOpen(const char *graph) : DGException("incr: graph not open",graph) {}
+struct IncrError : IncrException {
+  IncrError(DString descrip) : IncrException("Incrface syntax error",descrip) {}
+};
+struct IncrGraphNotOpen : IncrException {
+	IncrGraphNotOpen(DString graph) : IncrException("Graph not open",graph) {}
+};
+struct IncrReopenXep : IncrException {
+    IncrReopenXep(DString name) : IncrException("Tried to reopen graph",name) {}
 };
 
 } // namespace Dynagraph

@@ -1,0 +1,12 @@
+open graph V
+lock graph V
+insert node V n
+delete node V n
+insert node V n
+unlock graph V
+insert node V m
+lock graph V
+insert edge V e m n
+delete edge V e
+insert edge V e m n
+unlock graph V

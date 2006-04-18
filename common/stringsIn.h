@@ -35,10 +35,10 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs);
 template<typename Layout>
 Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	using std::istringstream;
-	StrAttrs allChanges = attrs;
+	StrAttrs allChanges;
 	if(clearOld)
 		clearRemoved(gd<StrAttrs>(l),attrs,allChanges);
-    StrAttrs2 &att = gd<StrAttrs2>(l);
+    StrAttrs &att = gd<StrAttrs>(l);
     ensureAttr(att,allChanges,"resolution");
     ensureAttr(att,allChanges,"separation");
     ensureAttr(att,allChanges,"defaultsize");
@@ -70,7 +70,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).ticks;
 		}
-		att.put(ai->first,value);
+		SetAndMark(l,ai->first,value);
 	}
 	return 0;
 }
@@ -78,11 +78,10 @@ template<typename Layout>
 Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	Update ret;
 	StrAttrs &att = gd<StrAttrs>(n);
-	StrAttrs2 &att2 = gd<StrAttrs2>(n);
 	DString &shape = att["shape"];
 	if(shape.empty()) {
         DString value = (att.find("sides")!=att.end())?"polygon":"ellipse";
-        if(att2.put("shape",value))
+        if(SetAndMark(n,"shape",value))
 		    ret.flags |= DG_UPD_REGION;
 	}
 	StrAttrs::iterator ai;
@@ -115,9 +114,9 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	}
 	char buf[20];
 	sprintf(buf,"%f",size.x);
-	bool ch = att2.put("width",buf);
+	bool ch = SetAndMark(n,"width",buf);
 	sprintf(buf,"%f",size.y);
-	ch |= att2.put("height",buf);
+	ch |= SetAndMark(n,"height",buf);
     if(ch)
 	    ret.flags |= DG_UPD_REGION;
 	return ret;
@@ -173,7 +172,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 				ret.flags |= DG_UPD_LABEL;
 			}
 		}
-		gd<StrAttrs2>(n).put(ai->first,ai->second);
+		SetAndMark(n,ai->first,ai->second);
 	}
 	ret.flags |= assureAttrs<Layout>(trans,n).flags;
 	if(ret.flags&(DG_UPD_REGION|DG_UPD_POLYDEF)) {
@@ -213,7 +212,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 			ret.flags |= DG_UPD_POLYDEF;
 		}
 	}
-	return ret.flags;
+	return ret;
 }
 template<typename Layout>
 Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs,bool clearOld) {
@@ -271,7 +270,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 				skip = true;
 		}
 		if(!skip)
-			gd<StrAttrs2>(e).put(ai->first,ai->second);
+			SetAndMark(e,ai->first,ai->second);
 	}
 	return ret;
 }
@@ -281,16 +280,15 @@ void applyStrGraph(Transform *trans,bool useDotDefaults,StrGraph *g,Layout *out,
   gd<Name>(out) = gd<Name>(g);
   std::map<DString,typename Layout::Node*> renode;
   for(StrGraph::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {
-    typename Layout::Node *n = out->create_node();
+    typename Layout::Node *n = out->create_node(gd<Name>(*ni));
     subg->insert(n);
-    renode[gd<Name>(n) = gd<Name>(*ni)] = n;
+    renode[gd<Name>(*ni)] = n;
     StrAttrs &attrs = gd<StrAttrs>(*ni);
 	stringsIn<Layout>(trans,n,attrs,false);
   }
   for(StrGraph::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
     typename Layout::Edge *e = out->create_edge(renode[gd<Name>((*ei)->tail)],
-				     renode[gd<Name>((*ei)->head)]).first;
-    gd<Name>(e) = gd<Name>(*ei);
+				     renode[gd<Name>((*ei)->head)],gd<Name>(*ei)).first;
     subg->insert(e);
     StrAttrs &attrs = gd<StrAttrs>(*ei);
 	stringsIn<Layout>(trans,e,attrs,false);

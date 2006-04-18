@@ -62,10 +62,10 @@ typedef vector<PnL> PnLV;
 typedef vector<PnL*> PnLPV;
 typedef vector<Triangle> TriangleV;
 struct PnLD {
-	PnLD(int n) : begin(n),end(n-1) {
+	PnLD(size_t n) : begin(n),end(n-1) {
 		impl.resize(n*2,0);
 	}
-	int apex;
+	size_t apex;
 	PnL *front() {
 		assert(!empty());
 		return impl[begin];
@@ -74,32 +74,32 @@ struct PnLD {
 		assert(!empty());
 		return impl[end];
 	}
-	int add_front(PnL *pnlp) {
+	size_t add_front(PnL *pnlp) {
 		if(!empty())
 			pnlp->link = front();
 		impl[--begin] = pnlp;
 		return begin;
 	}
-	int add_back(PnL *pnlp) {
+	size_t add_back(PnL *pnlp) {
 		if(!empty())
 			pnlp->link = back();
 		impl[++end] = pnlp;
 		return end;
 	}
-	void split_back(int index) {
+	void split_back(size_t index) {
         /* if the split is behind the apex, then reset apex */
 		if(index>apex)
 			apex = index;
 		begin = index;
 	}
-	void split_front(int index) {
+	void split_front(size_t index) {
         /* if the split is in front of the apex, then reset apex */
 		if(index<apex)
 			apex = index;
 		end = index;
 	}
-	int findSplit(PnL *pnlp) {
-	        int index;
+	size_t findSplit(PnL *pnlp) {
+		size_t index;
 		for(index = begin; index < apex; index++)
 			if(ccw(*impl[index+1]->pp, *impl[index]->pp, *pnlp->pp) == ISCCW)
 				return index;
@@ -110,7 +110,7 @@ struct PnLD {
 	}
 private:
 	PnLPV impl;
-	int begin,end;
+	size_t begin,end;
 	bool empty() {
 		return end<begin;
 	}
@@ -242,12 +242,12 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
         } else {
             if(dq.front() != rpnlp && dq.back() != rpnlp) {
                 /* add right point to deque */
-				int splitindex = dq.findSplit(rpnlp);
+				size_t splitindex = dq.findSplit(rpnlp);
                 dq.split_back(splitindex);
 				dq.add_front(rpnlp);
             } else {
                 /* add left point to deque */
-                int splitindex = dq.findSplit(lpnlp);
+                size_t splitindex = dq.findSplit(lpnlp);
                 dq.split_front(splitindex);
 				dq.add_back(lpnlp);
             }

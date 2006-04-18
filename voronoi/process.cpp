@@ -52,12 +52,12 @@ void VoronoiServer::chkBoundBox() {
   * For each node in the graph, create a Info data structure
   */
 void VoronoiServer::makeInfo() {
-	int N = current->nodes().size();
+	int N = current_->nodes().size();
     infos.nodes.resize(N);
 
-	FDPLayout::node_iter ni = current->nodes().begin();
+	FDPLayout::node_iter ni = current_->nodes().begin();
     vector<Info>::iterator ii = infos.nodes.begin();
-    for(; ni!=current->nodes().end(); ++ni,++ii) {
+    for(; ni!=current_->nodes().end(); ++ni,++ii) {
 		FDPLayout::Node *n = *ni;
 
         ii->site.coord = gd<NodeGeom>(n).pos;
@@ -82,7 +82,7 @@ struct scomp {
   * Fill array of pointer to sites and sort the sites using scomp
   */
 void VoronoiServer::sortSites(vector<Site*> &sort) {
-	int nsites = current->nodes().size();
+	int nsites = current_->nodes().size();
     vector<Site*>::iterator sp;
     vector<Info>::iterator ip;
 
@@ -103,14 +103,14 @@ void VoronoiServer::geomUpdate (vector<Site*> &sort) {
 
     /* compute ranges */
 	hedges.range = Rect(sort[0]->coord);
-    for(size_t i = 1; i < current->nodes().size(); i++)
+    for(size_t i = 1; i < current_->nodes().size(); i++)
 		hedges.range |= sort[i]->coord;
 }
 int VoronoiServer::countOverlap(int iter) {
     int          count = 0;
     int          i;
 
-	int nsites = current->nodes().size();
+	int nsites = current_->nodes().size();
     for (i = 0; i < nsites; ++i)
 		infos.nodes[i].overlaps = false;
 
@@ -367,7 +367,7 @@ sAdjust ()
 void VoronoiServer::updateLayout(ChangeQueue<FDPLayout> &Q) {
     for(vector<Info>::iterator ii = infos.nodes.begin(); ii!=infos.nodes.end(); ++ii) {
 		gd<NodeGeom>(ii->layoutN).pos = ii->site.coord;
-		Q.ModNode(ii->layoutN,DG_UPD_MOVE);
+		ModifyNode(Q,ii->layoutN,DG_UPD_MOVE);
 	}
 }
 /*
@@ -402,7 +402,6 @@ normalize(graph_t *g)
 }
 */
 void VoronoiServer::Process(ChangeQueue<FDPLayout> &Q) {
-	//Q.UpdateCurrent();
     makeInfo();
 
       /* establish and verify bounding box */
@@ -413,6 +412,7 @@ void VoronoiServer::Process(ChangeQueue<FDPLayout> &Q) {
 #ifdef VORLINES
 	Q.GraphUpdateFlags() |= DG_UPD_LINES;
 #endif
+	NextProcess(Q);
 }
 
 } // namespace Voronoi

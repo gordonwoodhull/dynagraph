@@ -167,7 +167,7 @@ void Rank::check(int r) {
 		dd_check_elts(*ni);
 		if(ln) {
 			assert(DDd(ln).order + 1 == DDd(*ni).order);
-			assert(DDd(ln).cur.x + BASE(view)->client->separation.x <= dd_pos(rn).x);
+			assert(DDd(ln).cur.x + BASE(view)->whole->separation.x <= dd_pos(rn).x);
 		}
 		ln = rn;
 	}

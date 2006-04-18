@@ -10,26 +10,31 @@ INCS =	-I.. -I../.. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	Line.o          	Region.o \
-	StringDict.o 		Solvers.o 		LineTricks.o \
-	Transform.o             ag2str.o                Colors.o \
-	ellipse2bezier.o        genpoly.o               parsestr.o \
-	stringsIn.o             stringsOut.o            time-o-matic.o \
-	useful.o                xlines.o
+	createGeneralEngine.o \
+	Colors.o	Line.o			LineTricks.o	Region.o \
+	Solvers.o	StringDict.o		Transform.o \
+	ag2str.o	ellipse2bezier.o	genpoly.o	parsestr.o \
+	stringsIn.o	stringsOut.o		time-o-matic.o	useful.o \
+	xlines.o
 
 HFILES = \
-	BoostLGraph.h           ChangeQueue.h           ColorByAge.h \
-	DiffStrGraph.h          DynagraphServer.h       FindChangeRect.h        GeomUtil.h \
-	Geometry.h              GraphBuffer.h           LGraph-cdt.h            LGraph.h \
-	LabelPlacer.h           LayoutAttrs.h           LineTricks.h            ShapeGenerator.h \
-	StrAttr.h               StreamGeom.h            StringDict.h \
-	Transform.h             ag2str.h                AttrValues.h            breakList.h \
-	bufferGraphStream.h     Colors.h                derivable_dt.h          dgxep.h \
-	diff_strgraph.h         dt.h                    ellipse2bezier.h        emitGraph.h \
-	engine_replacement.h    freelist.h              genpoly.h               moremath.h \
-	parsestr.h              randomName.h            reorient.h              stringsIn.h \
-	stringsOut.h            time-o-matic.h          traversal.h             useful.h \
-	weightedMedian.h	Solvers.h
+	AttrValues.h		BoostLGraph.h			CalculateBounds.h \
+	ChangeProcessor.h	ChangeQueue.h			ChangeTranslator.h \
+	ColorByAge.h		Colors.h			FindChangeRect.h \
+	GeomUtil.h		Geometry.h			InternalTranslator.h \
+	LGraph-cdt.h		LGraph.h			LabelPlacer.h \
+	LayoutAttrs.h		LayoutToLayoutTranslator.h	LineTricks.h \
+	Modify.h		NamedToNamedChangeTranslator.h	ShapeGenerator.h \
+	Solvers.h		StrAttr.h			StreamGeom.h \
+	StringDict.h		StringLayoutTranslator.h	Transform.h \
+	ag2str.h		breakList.h			bufferGraphStream.h \
+	colortbl.h		derivable_dt.h			dgxep.h \
+	diff_strgraph.h		dstringxep.h			dt.h \
+	ellipse2bezier.h	emitGraph.h			engine_replacement.h \
+	freelist.h		genpoly.h			moremath.h \
+	parsestr.h		randomName.h			reorient.h \
+	stringsIn.h		stringsOut.h			time-o-matic.h \
+	traversal.h		useful.h			weightedMedian.h
 
 libdynagraph.a : $(OBJS)
 	$(AR) cr libdynagraph.a $(OBJS)

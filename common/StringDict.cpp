@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "StringDict.h"
+#include "dstringxep.h"
 
 namespace Dynagraph {
 
@@ -57,9 +58,6 @@ agrefstrdump(void)
 }
 #endif
 
-StringDict::StringDict() {
-	init();
-}
 void StringDict::init() {
 	if(!dict)
 		dict = dtopen(&Refstrdisc,Dttree);
@@ -130,4 +128,37 @@ int ds2int(const DString &s) {
 
 } // namespace Dynagraph
 
-#endif
+#else // STRINGDICT_USE_STL
+void StringDict::init() { 
+	strs = new mapstrs; 
+}
+const char *StringDict::enter(const char *val) {
+	if(!val)
+		return 0;
+	if(!strs)
+		init();
+	mapstrs::iterator mi = strs->insert(mapstrs::value_type(val,0)).first;
+	mi->second++;
+	return mi->first.c_str();
+}
+void StringDict::release(const char *val) {
+	if(!val)
+		return;
+	mapstrs::iterator mi = strs->find(val);
+	if(mi==strs->end())
+		throw DictStringLost(val);
+	assert(mi->second>0);
+	if(!--mi->second)
+		strs->erase(mi);
+}
+void StringDict::ref(const char *val) {
+	if(!val)
+		return;
+	mapstrs::iterator mi = strs->find(val);
+	if(mi==strs->end())
+		return;
+	assert(mi->second>0);
+	++mi->second;
+}
+#endif // STRINGDICT_USE_STL
+

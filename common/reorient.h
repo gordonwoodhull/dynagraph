@@ -21,7 +21,7 @@ namespace Dynagraph {
 struct ReorientBadDir : DGException {
 	ReorientBadDir() : DGException("bad direction argument to reorient()",true) {}
 };
-Coord reorient(Coord val,bool in,Orientation dir) {
+inline Coord reorient(Coord val,bool in,Orientation dir) {
 	Coord ret;
 	switch(dir) {
 	case DG_ORIENT_UP:

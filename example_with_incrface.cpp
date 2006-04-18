@@ -1,29 +1,30 @@
-#include "common/Dynagraph.h"
-#include "incrface/DynaView.h"
+#include "common/ChangeQueue.h"
+#include "common/Transform.h"
+#include "incrface/createEngine.h"
 #include "incrface/incrparse.h"
+#include "incrface/IncrViewWatcher.h"
 #include <iostream>
 
 // This example shows the many ways to use Dynagraph via the incrface library
-// If it looks complicated, note that probably only one of these ways
-// will be relevant to your application
+// Probably only one of these ways will be relevant to your application
 
 // The cleaner way to handle lifetimes of graphs is to let incrface do it
-// (of course! "let me do that for you" is the curse of computer science, religion, and politics...)
 // but many clients will want control, so the library uses create and destroy callbacks
 // this example demonstrates both paradigms; 
 // #define CREATE_YOURSELF 
 // selects the messier but more powerful client-control way
 
 using namespace std;
+using namespace Dynagraph;
 
 // determines how to interpret string coordinates.  specify not to change them:
 Transform *g_transform = new Transform(Coord(1,1),Coord(1,1));
 // whether to use the same resolution,separation,defaultsize as dot
 bool g_useDotDefaults = false;
 
-struct EgzamplView : DynaView {
-	void IncrHappened() { 
-		// obviously the output is not essential
+template<typename Layout>
+struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
+	void Process(ChangeQueue<Layout> &Q) {
 		// often this method will need to map Layout nodes & edges to application objects
 		// sorry, there is no better way than to use a map<>
 		for(Layout::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
@@ -38,12 +39,16 @@ struct EgzamplView : DynaView {
 			cout << "node " << gd<Name>(*ni) << " deleted" << endl;
 		for(Layout::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			cout << "edge " << gd<Name>(*ei) << " deleted" << endl;
-		// IMPORTANT: Okay must be called within IncrHappened
-		Q.Okay(true);
+		// Being at the end of the processing chain, this must clear the queue
+		Q.Execute(true);
 	}
-	void IncrNewNode(Layout::Node *n) {}
-	void IncrNewEdge(Layout::Edge *e) {}
-	EgzamplView(Name name) : DynaView(name,g_transform,g_useDotDefaults) {
+	// IncrViewWatcher callbacks, not used in this example
+	void IncrOpen(ChangeQueue<Graph> &Q) {}
+	void IncrClose(ChangeQueue<Graph> &Q) {}
+	void FulfilGraph(Graph *g) {}
+	void FulfilNode(typename Graph::Node *n) {}
+	void FulfilEdge(typename Graph::Edge *e) {}
+	ExampleResponse(Name name) : DynaView(name,g_transform,g_useDotDefaults) {
 #ifdef CREATE_YOURSELF 
 		// in DIY model, constructor always gets called before incrface "open graph" command
 		incr_set_handler(gd<Name>(&layout),this);
@@ -68,7 +73,7 @@ struct IncrCalledBack : IncrCallbacks {
 		return dn?gd<DinoMachNode>(dn).handler:0;
 #else
 		// must not already be open
-		return dn?0:new EgzamplView(name);
+		return dn?0:new ExampleResponse(name);
 #endif
 	}
 	void incr_cb_destroy_handler(IncrLangEvents *h) {
@@ -89,7 +94,7 @@ void main() {
 	IncrLangEvents *view;
 	StrAttrs attrs;
 #ifdef CREATE_YOURSELF
-	view = new EgzamplView("Z");
+	view = new ExampleResponse("Z");
 #else
 	view = g_incrCalledBack.incr_cb_create_handler("Z",attrs);
 #endif
@@ -114,7 +119,7 @@ void main() {
 	// (modify)
 	Layout::Node *m = dynaview->getNode("m",false).first;
 	gd<NodeGeom>(m).pos = Coord(5,5);
-	dynaview->Q.ModNode(m,DG_UPD_MOVE);
+	ModifyNode(dynaview->Q,m,DG_UPD_MOVE);
 	dynaview->maybe_go();
 	// (create node)
 	cout << "step 2b" << endl;

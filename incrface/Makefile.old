@@ -10,16 +10,15 @@ INCS =	-I.. -I../.. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	DinoMachineHandler.o    createLayoutServer.o \
-	incrcmds.o              incrgram.o \
-	incrscan.o
+	DinoMachineTranslator.o	incrcmds.o		incrgram.o		incrscan.o
 
 HFILES = \
-	AbsGraphHandler.h       DinoMachine.h           DinoMachineHandler.h    DinoPatternLook.h \
-	DinoSearchLook.h        DynaView.h              IncrLangEvents.h        IncrMappings.h \
-	LabelToNameTranslator.h MatchNames.h            createLayoutServer.h    incrcmds.h \
-	incrgram.h              incrout.h               incrparse.h             incrxep.h \
-	two_way_map.h \
+	DinoMachine.h           DinoMachineTranslator.h DinoPatternLook.h       DinoSearchLook.h \
+	IncrLangEvents.h        IncrStrGraphHandler.h   IncrViewWatcher.h \
+	IncrWorld.h             LabelToNameTranslator.h MatchNames.h \
+	createStrWorldAndHandler.h \
+	incrcmds.h              incrgram.h		incrout.h               incrparse.h \
+	incrxep.h		two_way_map.h \
 	../common/*.h		../fdp/*.h		../dynadag/*.h 		../voronoi/*.h \
 	../pathplot/*.h		../shortspline/*.h
 	

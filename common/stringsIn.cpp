@@ -42,7 +42,7 @@ bool attrChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs, const DStrin
 void clearRemoved(const StrAttrs &current,const StrAttrs &apply,StrAttrs &ret) {
     ret = apply;
 	for(StrAttrs::const_iterator ai = current.begin(); ai!=current.end(); ++ai)
-        ret[ai->first]; // referencing will create w value blank if wasn't in apply
+        ret[ai->first]; // referencing will create w/ value blank if wasn't in apply
 }
 void ensureAttr(const StrAttrs &att,StrAttrs &A, DString name) {
     // make sure that some attributes don't get left unset

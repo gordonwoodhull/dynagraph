@@ -20,10 +20,9 @@
 namespace Dynagraph {
 
 template<typename Layout>
-struct LabelPlacer : Server<Layout> {
+struct LabelPlacer : LinkedChangeProcessor<Layout> {
+	LabelPlacer(Layout*,Layout*) {}
 	void Process(ChangeQueue<Layout> &Q);
-	LabelPlacer(Layout *client,Layout *currentLayout) : Server<Layout>(client,currentLayout) {}
-	~LabelPlacer() {}
 };
 template<typename Layout>
 void placeLabels(typename Layout::Edge *e) {
@@ -145,6 +144,7 @@ void LabelPlacer<Layout>::Process(ChangeQueue<Layout> &Q) {
 	for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
 		if(igd<Update>(*ni).flags&(DG_UPD_MOVE|DG_UPD_LABEL|DG_UPD_REGION|DG_UPD_POLYDEF|DG_UPD_DRAWN))
 			placeLabels<Layout>(*ni);
+	NextProcess(Q);
 }
 
 } // namespace Dynagraph

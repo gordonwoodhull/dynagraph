@@ -32,7 +32,7 @@ double Config::LeftExtent(DDModel::Node *n) {
 	if(!n)
 		return 0.0;
 	if(DDd(n).amEdgePart())
-		return gd<GraphGeom>(client).separation.x/2.0;
+		return gd<GraphGeom>(whole).separation.x/2.0;
 	if(getRegion(n).boundary.valid)
 		return -getRegion(n).boundary.l;
 	return EPSILON;
@@ -41,13 +41,13 @@ double Config::RightExtent(DDModel::Node *n) {
 	if(!n)
 		return 0.0;
 	if(DDd(n).amEdgePart())
-		return gd<GraphGeom>(client).separation.x/2.0;
+		return gd<GraphGeom>(whole).separation.x/2.0;
 	double r = 0.0;
 	if(getRegion(n).boundary.valid)
 		r = getRegion(n).boundary.r;
 	DynaDAGLayout::Node *ln = DDd(n).multi->layoutN;
 	if(current->find_edge(ln,ln))
-		r += gd<GraphGeom>(client).separation.x;
+		r += gd<GraphGeom>(whole).separation.x;
 	return max(r,EPSILON);
 }
 double Config::TopExtent(DDModel::Node *n) {
@@ -74,7 +74,7 @@ Coord Config::NodeSize(DDModel::Node *n) {
 	if(!n)
 		ret.x = ret.y = 0.0;
 	else if(DDd(n).amEdgePart()) {
-		ret.x = gd<GraphGeom>(client).separation.x; // separation is good enough
+		ret.x = gd<GraphGeom>(whole).separation.x; // separation is good enough
 		ret.y = EPSILON;
 	}
 	else {
@@ -96,7 +96,7 @@ Coord Config::NodeSize(DDModel::Node *n) {
 double Config::UVSep(DDModel::Node *left,DDModel::Node *right) {
 	double s0 = RightExtent(left),
 		s1 = LeftExtent(right);
-	return s0+s1 + gd<GraphGeom>(client).separation.x;
+	return s0+s1 + gd<GraphGeom>(whole).separation.x;
 }
 double Config::CoordBetween(DDModel::Node *L, DDModel::Node *R) {
 	double x;

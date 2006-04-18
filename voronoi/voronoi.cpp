@@ -35,13 +35,13 @@ void VoronoiServer::voronoi(const vector<Site*> &order) {
 		return;
 
 #ifdef VORLINES
-	gd<Drawn>(current).clear();
+	gd<Drawn>(current_).clear();
 #endif
     edges.fedges.clear();
     sites.fsites.clear();
 	hedges.fhedges.clear();
     hedges.bottomsite = *is++;
-    hedges.init(current->nodes().size());
+    hedges.init(current_->nodes().size());
 
     newsite = is==order.end()?0:*is++;
     while(1) {

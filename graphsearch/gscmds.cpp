@@ -17,7 +17,7 @@
 
 #include "common/LayoutAttrs.h"
 #include "common/ChangeQueue.h"
-#include "common/DynagraphServer.h"
+#include "common/ChangeProcessor.h"
 #include "common/ag2str.h"
 #include "common/emitGraph.h"
 #include "common/bufferGraphStream.h"

@@ -9,7 +9,7 @@ INCS =	-I.. -I../.. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = Check.o Config.o ConstraintGraph.o DotlikeOptimizer.o DynaDAG.o \
+OBJS = createDynaDAGEngine.o Check.o Config.o ConstraintGraph.o DotlikeOptimizer.o DynaDAG.o \
     FlexiSpline.o getCrossoptModelNodes.o Measurements.o Medians.o Ranker.o \
     SetYs.o SiftMatrix.o Spline.o Update.o UVCross.o XSolver.o
 

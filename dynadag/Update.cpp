@@ -87,7 +87,7 @@ void Config::insertNode(DynaDAGLayout::Node *vn) {
 }
 void Config::insertNewNodes(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni)
-		insertNode(client->find(*ni));
+		insertNode(whole->find(*ni));
 }
 Coord interpolate(Coord p0, Coord p1, double t) {
 	return p0 + (p1-p0)*t;
@@ -336,7 +336,7 @@ void Config::unfixOldSingletons(DDChangeQueue &changeQ) {
 
 void Config::insertNewEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
-		insertEdge(client->find(*ei));
+		insertEdge(whole->find(*ei));
 	unfixOldSingletons(changeQ);
 }
 /* push a node through adjacent ranks.  */
@@ -373,7 +373,7 @@ void Config::moveOldNodes(DDChangeQueue &changeQ) {
 	sort(moveOrder.begin(),moveOrder.end(),compOldRank());
 	for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) {
 		DynaDAGLayout::Node *vn = *ni,
-			*mvn = client->find(*ni);
+			*mvn = whole->find(*ni);
 		NodeGeom &ng = gd<NodeGeom>(vn);
 		DDMultiNode *n = DDp(vn);
 		if(n->newTopRank!=n->oldTopRank || n->newBottomRank!=n->oldBottomRank) {
@@ -451,7 +451,7 @@ void Config::moveOldNodes(DDChangeQueue &changeQ) {
 void Config::moveOldEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { 
-			DynaDAGLayout::Edge *ve = client->find(*ei);
+			DynaDAGLayout::Edge *ve = whole->find(*ei);
 			if((*ei)->head==(*ei)->tail)
 				; // ignore self-edges
 			else if(DDp(*ei)->secondOfTwo)

@@ -24,11 +24,11 @@ namespace Dynagraph {
 namespace FDP {
 
 Position FDPServer::findMedianSize() {
-	int N = current->nodes().size(),i=0;
+	int N = current_->nodes().size(),i=0;
 	if(N==0)
 		return Position();
 	vector<double> Xs(N),Ys(N);
-	for(FDPLayout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni,++i)
+	for(FDPLayout::node_iter ni = current_->nodes().begin(); ni!=current_->nodes().end(); ++ni,++i)
 		if(gd<NodeGeom>(*ni).region.boundary.valid)
 			Xs[i] = gd<NodeGeom>(*ni).region.boundary.Width(),
 			Ys[i] = gd<NodeGeom>(*ni).region.boundary.Height();
@@ -58,7 +58,7 @@ void FDPServer::setParams(Coord avgsize) {
 void FDPServer::createModelNode(FDPLayout::Node *n) {
 	if(modelP(n))
 		throw Inconsistency();
-	n = client->find(n);
+	n = whole_->find(n);
 	FDPModel::Node *fn = model.create_node();
 	gd<FDPNode>(fn).layoutN = n;
 	modelP(n) = fn;
@@ -66,7 +66,7 @@ void FDPServer::createModelNode(FDPLayout::Node *n) {
 void FDPServer::createModelEdge(FDPLayout::Edge *e) {
 	if(modelP(e))
 		throw Inconsistency();
-	e = client->find(e);
+	e = whole_->find(e);
 	FDPModel::Node *ft = modelP(e->tail),
 		*fh = modelP(e->head);
 	if(!ft || !fh)
@@ -128,16 +128,17 @@ void FDPServer::Process(ChangeQueue<FDPLayout> &Q) {
 	//splineEdges();
 
 	// anything that's not ins or del is modified
-	for(ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni) {
+	for(ni = current_->nodes().begin(); ni!=current_->nodes().end(); ++ni) {
 		FDPModel::Node *fn = modelP(*ni);
 		gd<NodeGeom>(*ni).pos = Coord(gd<FDPNode>(fn).pos[0],gd<FDPNode>(fn).pos[1]);
-		Q.ModNode(*ni,DG_UPD_MOVE);
+		ModifyNode(Q,*ni,DG_UPD_MOVE);
 	}
 	/*
 	this algorithm doesn't deal with edges
-	for(ei = Q.current->edges().begin(); ei!=Q.current->edges().end(); ++ei)
-		Q.ModEdge(*ei,DG_UPD_MOVE);
+	for(ei = Q.current_->edges().begin(); ei!=Q.current_->edges().end(); ++ei)
+		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	*/
+	NextProcess(Q);
 }
 
 } // namespace FDP

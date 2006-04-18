@@ -1,0 +1,10 @@
+for f in *.incr
+do
+    printf "$f..."
+    if `../dynagraph <$f >$f.out`; then 
+      printf "succeeded!\n"
+    else 
+      printf "failed.\n"
+      exit
+    fi
+done

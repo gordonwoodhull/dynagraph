@@ -1,0 +1,21 @@
+open graph V [superengines=shapegen]
+insert node V a
+insert node V b
+insert node V c
+insert node V d
+insert node V e
+insert node V f
+insert edge V z a b
+insert edge V y a c
+insert edge V x a d
+insert edge V w a e
+insert edge V v a f
+
+delete node V a
+insert node V a
+
+insert edge V z a b
+insert edge V y a c
+insert edge V x a d
+insert edge V w a e
+insert edge V v a f

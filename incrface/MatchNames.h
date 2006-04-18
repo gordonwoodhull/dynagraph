@@ -20,15 +20,15 @@ template<typename Layout>
 struct MatchNames : DinoInternalChanges {
     DinoInternalChanges *m_chain;
 	DinoMachine::Edge *m_dinoe;
-	StrGraph *m_source;
-	DynaView<Layout> *m_dest;
+	StrChGraph *m_source;
+	IncrStrGraphHandler<Layout> *m_dest;
     MatchNames(DinoInternalChanges *chain,DinoMachine::Edge *de) : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
 		assert(gd<DinoMachNode>(t).handler->dinotype()=="abstract");
 		assert(gd<DinoMachNode>(h).handler->dinotype()=="layout");
-		m_source = static_cast<AbsGraphHandler<StrGraph>*>(gd<DinoMachNode>(t).handler)->g;
-		m_dest = static_cast<DynaView<Layout>*>(gd<DinoMachNode>(h).handler);
+		m_source = &static_cast<IncrStrGraphHandler<StrChGraph>*>(gd<DinoMachNode>(t).handler)->world_->whole_;
+		m_dest = static_cast<IncrStrGraphHandler<Layout>*>(gd<DinoMachNode>(h).handler);
 	}
     ~MatchNames() {
         if(m_chain)
@@ -78,7 +78,7 @@ struct MatchNames : DinoInternalChanges {
 				}
 			}
         }
-        for(StrGraph::NDict::iterator ni = m_source->ndict.begin(); ni!=m_source->ndict.end(); ++ni) {
+        for(StrChGraph::NDict::iterator ni = m_source->ndict.begin(); ni!=m_source->ndict.end(); ++ni) {
             if(!ni->second)
                 continue;
 			NEID_map::tset &s = dme.tailmap()[NEID(false,ni->first)];
@@ -93,7 +93,7 @@ struct MatchNames : DinoInternalChanges {
                 assert(dme.headmap()[NEID(false,ni->first)].begin()->name==ni->first);
 			}
 		}
-        for(StrGraph::EDict::iterator ei = m_source->edict.begin(); ei!=m_source->edict.end(); ++ei) {
+        for(StrChGraph::EDict::iterator ei = m_source->edict.begin(); ei!=m_source->edict.end(); ++ei) {
             if(!ei->second)
                 continue;
 			NEID_map::tset &s = dme.tailmap()[NEID(true,ei->first)];

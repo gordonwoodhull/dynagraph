@@ -17,7 +17,7 @@
 
 #include "DynaDAGLayout.h"
 #include "common/ChangeQueue.h"
-#include "common/DynagraphServer.h"
+#include "common/ChangeProcessor.h"
 // #include "shortspline/ObstacleAvoiderSpliner.h"
 #include "ns.h"
 #include <float.h>
@@ -717,12 +717,12 @@ struct Config {
 	typedef ConseqRanks Ranks;
 #endif
 	Config(DynaDAGServices *dynaDAG,DDModel &model,
-	       DynaDAGLayout *client,DynaDAGLayout *current,
+	       DynaDAGLayout *whole,DynaDAGLayout *current,
 	       XConstraintOwner *xconOwner) :
-	  ranking(gd<GraphGeom>(client).resolution.y,gd<GraphGeom>(client).separation.y),
+	  ranking(gd<GraphGeom>(whole).resolution.y,gd<GraphGeom>(whole).separation.y),
 	  prevLow(INT_MAX),
 	  model(model),
-	  client(client),
+	  whole(whole),
 	  current(current),
 	  dynaDAG(dynaDAG),
 	  xconOwner(xconOwner)
@@ -752,7 +752,7 @@ struct Config {
 	Ranks ranking;
 	Ranks::index prevLow;
 	DDModel &model;
-	DynaDAGLayout *client,*current; // same as DynaDAGServer::
+	DynaDAGLayout *whole,*current; // same as DynaDAGServer::
 private:
 	DynaDAGServices *dynaDAG;
 	XConstraintOwner *xconOwner;
@@ -940,8 +940,9 @@ struct OptimizerChooser {
 	}
 };
 */
-struct DynaDAGServer : Server<DynaDAGLayout>,DynaDAGServices {
-	DDModel model; // client graph + virtual nodes & edges for tall nodes & edge chains
+struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
+	DynaDAGLayout *whole_,*current_;
+	DDModel model; // whole graph + virtual nodes & edges for tall nodes & edge chains
 	Config config;	// indexes layout nodes by rank and order
 	Ranker ranker;
 	//OptimizerChooser optChooser;
@@ -953,16 +954,16 @@ struct DynaDAGServer : Server<DynaDAGLayout>,DynaDAGServices {
 	Spliner spliner;
 #endif
 
-	DynaDAGServer(DynaDAGLayout *client,DynaDAGLayout *current) :
-		Server<DynaDAGLayout>(client,current),
+	DynaDAGServer(DynaDAGLayout *whole,DynaDAGLayout *current) :
+		whole_(whole),current_(current),
 		model(),
-		config(this,model,client,current,&xsolver),
+		config(this,model,whole,current,&xsolver),
 		ranker(this,config),
 		optimizer(new DotlikeOptimizer(config)),
 		xsolver(config,gd<GraphGeom>(current).resolution.x),
 		spliner(config) {}
 	~DynaDAGServer();
-	// Server
+	// ChangeProcessor
 	void Process(DDChangeQueue &changeQ);
 	// DynaDAGServices
 	std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN);

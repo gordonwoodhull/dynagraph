@@ -18,6 +18,7 @@
 #ifndef useful_h
 #define useful_h
 
+#include "dgxep.h"
 #include "time-o-matic.h"
 #include <stdio.h>
 

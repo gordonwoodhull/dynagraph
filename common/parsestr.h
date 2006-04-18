@@ -18,6 +18,8 @@
 #ifndef parsestr_h
 #define parsestr_h
 
+#include "dgxep.h"
+
 namespace Dynagraph {
 
 // overload >> DString for better-delimited tokens

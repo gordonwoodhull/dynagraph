@@ -33,8 +33,8 @@ struct TnA : Segment {
 };
 
 static bool reallyRouteSpline(const SegmentV &barriers,
-        const Coord *inps, int inpn, TnA *tnas, Segment endSlopes,Line &out);
-static void mkSpline(const Coord *inps, int inpn, TnA *tnas, Segment endSlopes,
+        const Coord *inps, size_t inpn, TnA *tnas, Segment endSlopes,Line &out);
+static void mkSpline(const Coord *inps, size_t inpn, TnA *tnas, Segment endSlopes,
         Coord *sp0, Coord *sv0, Coord *sp1, Coord *sv1);
 static bool splineFits(const SegmentV &barriers,Coord pa, Coord va,
         Coord pb, Coord vb, bool forceflag, Line &out);
@@ -109,9 +109,9 @@ bool Route(const SegmentV &barriers, const Line &input,Segment endSlopes,Line &o
 }
 
 static bool reallyRouteSpline(const SegmentV &barriers,
-        const Coord *inps, int inpn, TnA *tnas, Segment endSlopes,Line &out) {
+        const Coord *inps, size_t inpn, TnA *tnas, Segment endSlopes,Line &out) {
     tnas[0].t = 0;
-    int i;
+    size_t i;
     for(i = 1; i < inpn; i++)
         tnas[i].t = tnas[i - 1].t + dist(inps[i], inps[i - 1]);
     for(i = 1; i < inpn; i++)
@@ -136,7 +136,7 @@ static bool reallyRouteSpline(const SegmentV &barriers,
 		Coord p = p1*B0(t) + cp1*B1(t) + cp2*B2(t) + p2*B3(t);
 		double d = dist(p, inps[i]);
         if(d > maxd)
-            maxd = d, maxi = i;
+            maxd = d, maxi = (int)i;
     }
     int spliti = maxi;
     Coord splitv1 = (inps[spliti]-inps[spliti - 1]).Norm(),
@@ -149,12 +149,12 @@ static bool reallyRouteSpline(const SegmentV &barriers,
     return true;
 }
 
-static void mkSpline(const Coord *inps, int inpn, TnA *tnas, Segment endSlopes,
+static void mkSpline(const Coord *inps, size_t inpn, TnA *tnas, Segment endSlopes,
         Coord *sp0, Coord *sv0, Coord *sp1, Coord *sv1) {
 	const Coord &front = *inps,&back = inps[inpn-1];
 	double c[2][2] = {{0,0},{0,0}},
 		x[2] = {0,0};
-    for(int i = 0; i < inpn; i++) {
+    for(size_t i = 0; i < inpn; i++) {
         c[0][0] += tnas[i].a%tnas[i].a;
         c[0][1] += tnas[i].a%tnas[i].b;
         c[1][0] = c[0][1];

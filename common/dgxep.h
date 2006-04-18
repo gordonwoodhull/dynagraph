@@ -18,19 +18,44 @@
 #ifndef dgxep_h
 #define dgxep_h
 
+#include "StringDict.h"
+
 namespace Dynagraph {
 
 // a base for all exceptions so we can report the basics
 struct DGException {
-    const char *exceptype;
+    DString exceptype;
     bool fatal;
-    DGException(const char *exceptype,bool fatal = false) : exceptype(exceptype),fatal(fatal) {}
+    DGException(DString exceptype,bool fatal = false) : exceptype(exceptype),fatal(fatal) {}
 };
-// pretty dopey - eliminate a few more chars in xep defs
 struct DGException2 : DGException {
-    const char *param;
-    DGException2(const char *exceptype,const char *param,bool fatal = false) : DGException(exceptype,fatal),param(param) {}
+    DString param;
+    DGException2(DString exceptype,DString param,bool fatal = false) : DGException(exceptype,fatal),param(param) {}
 };
+
+// STANDARD GRAPH EXCEPTIONS
+struct DGNodeNameUsed : DGException2 {
+    DGNodeNameUsed(DString name) : DGException2("The node name has already been used",name) {}
+};
+struct DGEdgeNameUsed : DGException2 {
+    DGEdgeNameUsed(DString name) : DGException2("The edge name has already been used",name) {}
+};
+struct DGEdgeTailDoesNotExist : DGException2 {
+	DGEdgeTailDoesNotExist(DString name) : DGException2("Tail node does not exist",name) {}
+};
+struct DGEdgeHeadDoesNotExist : DGException2 {
+	DGEdgeHeadDoesNotExist(DString name) : DGException2("Head node does not exist",name) {}
+};
+struct DGNodeDoesNotExist : DGException2 {
+    DGNodeDoesNotExist(DString name) : DGException2("Node does not exist",name) {}
+};
+struct DGEdgeDoesNotExist : DGException2 {
+    DGEdgeDoesNotExist(DString name) : DGException2("Edge does not exist",name) {}
+};
+struct DGParallelEdgesNotSupported : DGException2 {
+    DGParallelEdgesNotSupported(DString name) : DGException2("Parallel edges between the same end-nodes are not yet supported",name) {}
+};
+
 
 } // namespace Dynagraph
 

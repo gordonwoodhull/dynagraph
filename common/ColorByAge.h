@@ -22,21 +22,21 @@
 namespace Dynagraph {
 
 template<typename Layout>
-struct ColorByAge : Server<Layout> {
+struct ColorByAge : LinkedChangeProcessor<Layout> {
+	ColorByAge(Layout*,Layout*) {}
 	void Process(ChangeQueue<Layout> &Q);
-	ColorByAge(Layout *client,Layout *currentLayout) : Server<Layout>(client,currentLayout) {}
-	~ColorByAge() {}
 };
 
-inline void rotateColor(std::vector<DString> colors, StrAttrs2 &attrs2) {
-  DString color = attrs2["color"];
-  if(color.empty())
-    attrs2.put("color",colors[0]);
-  else for(size_t i=0; i<colors.size()-1; ++i)
-    if(color==colors[i]) {
-      attrs2.put("color",colors[i+1]);
-      break;
-    }
+template<typename GO>
+inline void rotateColor(std::vector<DString> colors, GO *go) {
+	DString color = gd<StrAttrs>(go)["color"];
+	if(color.empty())
+		SetAndMark(go,"color",colors[0]);
+	else for(size_t i=0; i<colors.size()-1; ++i)
+		if(color==colors[i]) {
+			SetAndMark(go,"color",colors[i+1]);
+			break;
+		}
 }
 template<typename Layout>
 void ColorByAge<Layout>::Process(ChangeQueue<Layout> &Q) {
@@ -48,9 +48,10 @@ void ColorByAge<Layout>::Process(ChangeQueue<Layout> &Q) {
     if(colors.size()==0)
         return;
     for(typename Layout::node_iter ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni)
-        rotateColor(colors,gd<StrAttrs2>(*ni));
+        rotateColor(colors,*ni);
     for(typename Layout::graphedge_iter ei = Q.current->edges().begin(); ei!=Q.current->edges().end(); ++ei)
-        rotateColor(colors,gd<StrAttrs2>(*ei));
+        rotateColor(colors,*ei);
+	NextProcess(Q);
 }
 
 } // namespace Dynagraph
