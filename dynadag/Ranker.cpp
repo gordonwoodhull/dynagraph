@@ -128,7 +128,7 @@ void Ranker::insertNewNodes(DDChangeQueue &changeQ) {
 		DDModel::Node *mn = dynaDAG->OpenModelNode(config.whole->find(n)).second;
 
 		// pull loose nodes upward
-		ConstraintGraph::Edge *pull = cg.create_edge(top,cg.GetVar(DDd(mn).multi->topC)).first;
+		ConstraintGraph::Edge *pull = cg.create_edge(top,cg.GetVar(gd<DDNode>(mn).multi->topC)).first;
 		DDNS::NSd(pull).minlen = 0;
 		DDNS::NSd(pull).weight = UPWARD_TENDENCY;
 
@@ -258,7 +258,7 @@ bool Ranker::simpleCase(DDChangeQueue &changeQ) {
 				DynaDAGLayout::Edge *e = *u->ins().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
 					// this use of minLength ...
-					int r = DDd(DDp(e->tail)->bottom()).rank + (int)gd<EdgeGeom>(e).minLength;
+					int r = gd<DDNode>(DDp(e->tail)->bottom()).rank + (int)gd<EdgeGeom>(e).minLength;
 					if(!ng.pos.valid || r > newTopRank)
 						newTopRank = r;
 				}
@@ -267,7 +267,7 @@ bool Ranker::simpleCase(DDChangeQueue &changeQ) {
 				DynaDAGLayout::Edge *e = *u->outs().begin();
 				if(!ng.pos.valid || gd<EdgeGeom>(e).constraint) {
 					// ... and this one would would have to fixed if this function was enabled
-					int r = DDd(DDp(e->head)->top()).rank - (int)gd<EdgeGeom>(e).minLength;
+					int r = gd<DDNode>(DDp(e->head)->top()).rank - (int)gd<EdgeGeom>(e).minLength;
 					if(!ng.pos.valid || r < newTopRank)
 						newTopRank = r;
 				}

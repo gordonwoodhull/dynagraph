@@ -22,9 +22,9 @@ namespace DynaDAG {
 
 struct RankLess {
 	bool operator()(DDModel::Node *n1,DDModel::Node *n2) {
-		if(DDd(n1).rank == DDd(n2).rank)
-			return DDd(n1).order < DDd(n2).order;
-		return DDd(n1).rank < DDd(n2).rank;
+		if(gd<DDEdge>(n1).rank == gd<DDEdge>(n2).rank)
+			return gd<DDEdge>(n1).order < gd<DDEdge>(n2).order;
+		return gd<DDEdge>(n1).rank < gd<DDEdge>(n2).rank;
 	}
 };
 void MedianTwiddle::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
@@ -86,7 +86,7 @@ bool MedianTwiddle::rightgoing(DDModel::Node *n,UpDown dir) {
 }
 /* return new coordinate if node were installed in given rank */
 double MedianTwiddle::Reopt(DDModel::Node *n,UpDown dir) {
-	return DDd(n).cur.x;
+	return gd<DDEdge>(n).cur.x;
 }
 
 } // namespace DynaDAG

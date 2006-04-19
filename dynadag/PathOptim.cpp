@@ -99,7 +99,7 @@ void PathOptim::resetCoord(DDModel::Node *n) {
 	DDModel::Node *L = config.Left(n),
 		*R = config.Right(n);
 	if(L||R)
-		DDd(n).cur.x = config.CoordBetween(L,R);
+		gd<DDNode>(n).cur.x = config.CoordBetween(L,R);
 }
 void PathOptim::optElt(DDModel::Node *n, UpDown dir, int eq_pass) {
 	if(leftgoing(n,dir,eq_pass)) {
@@ -119,7 +119,7 @@ void PathOptim::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 }
 /* return new coordinate if node were installed in given rank */
 double PathOptim::Reopt(DDModel::Node *n,UpDown dir) {
-	double x = DDd(n).cur.x;
+	double x = gd<DDNode>(n).cur.x;
 
 	/* go left or right */
 	bool go_left = leftgoing(n,dir,false),
@@ -150,7 +150,7 @@ double PathOptim::Reopt(DDModel::Node *n,UpDown dir) {
 		rn = config.Right(n);
 	}
 
-	if(ln && (x <= DDd(ln).cur.x) || rn && (x >= DDd(rn).cur.x))
+	if(ln && (x <= gd<DDNode>(ln).cur.x) || rn && (x >= gd<DDNode>(rn).cur.x))
 		x = config.CoordBetween(ln,rn);
 	return x;
 }

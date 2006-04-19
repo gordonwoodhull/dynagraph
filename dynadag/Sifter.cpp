@@ -44,7 +44,7 @@ bool Sifter::pass(SiftMatrix &matrix,NodeV &optimOrder,enum way way) {
 	bool ret = false;
 	for(NodeV::iterator ni = optimOrder.begin(); ni!=optimOrder.end(); ++ni) {
 		DDModel::Node *v = *ni;
-		int r = DDd(v).rank;
+		int r = gd<DDNode>(v).rank;
 		Rank *rank = config.ranking.GetRank(r);
 		int numcross=0,numAllCross=0,min=0,what=-1;
 		int o;
@@ -52,7 +52,7 @@ bool Sifter::pass(SiftMatrix &matrix,NodeV &optimOrder,enum way way) {
 		// and doesn't mess up the edges we're not (numAllCross)
 		// look to right
 		numAllCross = numcross = min = 0;
-		for(o = DDd(v).order+1; o!=rank->order.size(); ++o) {
+		for(o = gd<DDNode>(v).order+1; o!=rank->order.size(); ++o) {
 			DDModel::Node *x = rank->order[o];
 			numcross += calc(matrix,x,v)-calc(matrix,v,x);
 			numAllCross += calcALL(matrix,x,v)-calc(matrix,v,x);
@@ -63,7 +63,7 @@ bool Sifter::pass(SiftMatrix &matrix,NodeV &optimOrder,enum way way) {
 		}
 		// look to left
 		numAllCross = numcross = 0;
-		for(o = DDd(v).order-1; o>=0; --o) {
+		for(o = gd<DDNode>(v).order-1; o>=0; --o) {
 			DDModel::Node *x = rank->order[o];
 			numcross += calc(matrix,v,x)-calc(matrix,x,v);
 			numAllCross += calcALL(matrix,v,x)-calc(matrix,x,v);
@@ -75,7 +75,7 @@ bool Sifter::pass(SiftMatrix &matrix,NodeV &optimOrder,enum way way) {
 		if(what!=-1) {
 			matrix.move(v,what==rank->order.size()?0:rank->order[what]);
 			config.RemoveNode(v);
-			config.InstallAtOrder(v,r,what>DDd(v).order?what-1:what);
+			config.InstallAtOrder(v,r,what>gd<DDNode>(v).order?what-1:what);
 			//matrix.check();
 			ret = true;
 		}
@@ -89,9 +89,9 @@ struct DegMore {
 };
 struct RankLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
-		if(DDd(u).rank == DDd(v).rank)
-			return DDd(u).order < DDd(v).order;
-		return DDd(u).rank < DDd(v).rank;
+		if(gd<DDNode>(u).rank == gd<DDNode>(v).rank)
+			return gd<DDNode>(u).order < gd<DDNode>(v).order;
+		return gd<DDNode>(u).rank < gd<DDNode>(v).rank;
 	}
 };
 const int MAX_TOPDOWN = 10;
@@ -135,7 +135,7 @@ void Sifter::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 }
 /* return new coordinate if node were installed in given rank */
 double Sifter::Reopt(DDModel::Node *n,UpDown dir) {
-	return DDd(n).cur.x;
+	return gd<DDNode>(n).cur.x;
 }
 
 } // namespace DynaDAG

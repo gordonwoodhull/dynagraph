@@ -35,8 +35,8 @@ namespace DynaDAG {
 
 struct OrderConstraintSwitchable {
 	bool canSwitch(DDModel::Node *l,DDModel::Node *r) {
-		return DDd(l).orderConstraint<0 || DDd(r).orderConstraint<0 ||
-			DDd(l).orderConstraint > DDd(r).orderConstraint;
+		return gd<DDNode>(l).orderConstraint<0 || gd<DDNode>(r).orderConstraint<0 ||
+			gd<DDNode>(l).orderConstraint > gd<DDNode>(r).orderConstraint;
 	}
 };
 struct MedianCompare {
@@ -61,21 +61,21 @@ struct CrossingCompare {
 		return true;
 	}
 	bool shouldSwitch(DDModel::Node *l,DDModel::Node *r) {
-		assert(DDd(l).rank==DDd(r).rank);
-		assert(DDd(l).order<DDd(r).order);
-		Rank *rank = config.ranking.GetRank(DDd(l).rank);
+		assert(gd<DDNode>(l).rank==gd<DDNode>(r).rank);
+		assert(gd<DDNode>(l).order<gd<DDNode>(r).order);
+		Rank *rank = config.ranking.GetRank(gd<DDNode>(l).rank);
 		int numcross=0;
-		for(int o = DDd(l).order; o<=DDd(r).order; ++o)
+		for(int o = gd<DDNode>(l).order; o<=gd<DDNode>(r).order; ++o)
 			numcross += matrix.allCrossings(rank->order[o],l) - matrix.allCrossings(l,rank->order[o]);
 		return numcross<0 || numcross==0&&m_allowEqual;
 	}
 };
 void moveBefore(Config &config,SiftMatrix &matrix,DDModel::Node *n,DDModel::Node *before) {
 	matrix.move(n,before);
-	int rank = DDd(n).rank;
+	int rank = gd<DDNode>(n).rank;
 	config.RemoveNode(n);
 	if(before)
-		config.InstallAtOrder(n,rank,DDd(before).order);
+		config.InstallAtOrder(n,rank,gd<DDNode>(before).order);
 	else
 		config.InstallAtRight(n,rank);
 }
@@ -139,9 +139,9 @@ void bubblePass(Config &config,SiftMatrix &matrix,const vector<int> &ranks,UpDow
 }
 struct RankLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
-		if(DDd(u).rank == DDd(v).rank)
-			return DDd(u).order < DDd(v).order;
-		return DDd(u).rank < DDd(v).rank;
+		if(gd<DDNode>(u).rank == gd<DDNode>(v).rank)
+			return gd<DDNode>(u).order < gd<DDNode>(v).order;
+		return gd<DDNode>(u).rank < gd<DDNode>(v).rank;
 	}
 };
 #define TIRE 6
@@ -157,18 +157,18 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 		for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
 			for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni)
 				if(wot!=optimVec.end() && *ni==*wot) {
-					DDd(*ni).orderConstraint = -1;
+					gd<DDNode>(*ni).orderConstraint = -1;
 					++wot;
 				}
 				else
-					DDd(*ni).orderConstraint = DDd(*ni).order;
+					gd<DDNode>(*ni).orderConstraint = gd<DDNode>(*ni).order;
 		assert(wot==optimVec.end());
 		loops.Field(r_crossopt,"model nodes for crossopt",optimVec.size());
 		loops.Field(r_crossopt,"total model nodes",optimVec.front()->g->nodes().size());
 
 		for(NodeV::iterator ni = optimVec.begin(); ni!=optimVec.end(); ++ni)
-			if(affectedRanks.empty() || affectedRanks.back()!=DDd(*ni).rank)
-				affectedRanks.push_back(DDd(*ni).rank);
+			if(affectedRanks.empty() || affectedRanks.back()!=gd<DDNode>(*ni).rank)
+				affectedRanks.push_back(gd<DDNode>(*ni).rank);
 		loops.Field(r_crossopt,"ranks for crossopt",affectedRanks.size());
 		loops.Field(r_crossopt,"total ranks",config.ranking.size());
 	}
@@ -300,7 +300,7 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	assert(score<NODECROSS_PENALTY*NODECROSS_PENALTY);
 }
 double DotlikeOptimizer::Reopt(DDModel::Node *n,UpDown dir) {
-	return DDd(n).cur.x;
+	return gd<DDNode>(n).cur.x;
 }
 
 } // namespace DynaDAG

@@ -22,6 +22,7 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
+#ifdef FLEXIRANKS
 void FlexiRanks::Check() {
 	iterator ri = begin(),
 		next;
@@ -34,16 +35,18 @@ void FlexiRanks::Check() {
 		ri = next++;
 	}
 }
+#else
 void ConseqRanks::Check() {
 }
+#endif
 void Config::checkEdges(bool strict) {
 	for(DDModel::graphedge_iter ei = model.edges().begin(); ei!=model.edges().end(); ++ei) {
 		DDModel::Node *t = (*ei)->tail,
 			*h = (*ei)->head;
 		// edges must be path parts or node parts; edges must belong to one node only
-		assert(DDd(*ei).amEdgePart() || DDd(t).amNodePart() && DDd(t).multi==DDd(h).multi);
-		Ranks::index tr = DDd(t).rank,
-			hr = DDd(h).rank;
+		assert(gd<DDEdge>(*ei).amEdgePart() || gd<DDNode>(t).amNodePart() && gd<DDNode>(t).multi==gd<DDNode>(h).multi);
+		Ranks::index tr = gd<DDNode>(t).rank,
+			hr = gd<DDNode>(h).rank;
 		if(strict) // all edges span one rank
 			assert(ranking.Down(tr)==hr);
 		else
@@ -52,12 +55,12 @@ void Config::checkEdges(bool strict) {
 	// nodes in paths belong to one path only
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDModel::Node *n = *ni;
-		if(DDd(n).amEdgePart()) {
+		if(gd<DDNode>(n).amEdgePart()) {
 			assert(n->ins().size()==1);
 			assert(n->outs().size()==1);
 			DDModel::Edge *e1 = *n->ins().begin(),
 				*e2 = *n->outs().begin();
-			assert(DDd(e1).path==DDd(e2).path);
+			assert(gd<DDEdge>(e1).path==gd<DDEdge>(e2).path);
 		}
 	}
 	// view edges' paths connect the tops & bottoms of nodes
@@ -76,9 +79,9 @@ void Config::checkX() {
 		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
 			if(ni!=r->order.begin())
 #ifdef X_STRICTLY_INCREASING
-				assert(DDd(*ni).cur.x>DDd(*(ni-1)).cur.x);
+				assert(gd<DDNode>(*ni).cur.x>gd<DDNode>(*(ni-1)).cur.x);
 #else
-				assert(DDd(*ni).cur.x>=DDd(*(ni-1)).cur.x);
+				assert(gd<DDNode>(*ni).cur.x>=gd<DDNode>(*(ni-1)).cur.x);
 #endif
 	}
 }
@@ -88,8 +91,8 @@ void XSolver::checkLRConstraints() {
 		Rank *r = *ri;
 		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
 			if(DDModel::Node *left = config.Left(*ni)) {
-				DDCGraph::Node *l = DDd(left).getXcon().n,
-					*n = DDd(*ni).getXcon().n;
+				DDCGraph::Node *l = gd<DDNode>(left).getXcon().n,
+					*n = gd<DDNode>(*ni).getXcon().n;
 				assert(l&&n);
 				DDCGraph::Edge *e = cg.find_edge(l,n);
 				if(!e) {
@@ -105,7 +108,7 @@ void XSolver::checkLRConstraints() {
 				for(DDCGraph::edge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei) {
 					DDCGraph::Edge *e2 = *ei;
 					assert(e2==e ||
-						e2->tail == DDd(*ni).getXcon().stab ||
+						e2->tail == gd<DDNode>(*ni).getXcon().stab ||
 						gd<ConstraintType>(e2->tail).why==ConstraintType::orderEdgeStraighten);
 				}
 				*/
@@ -115,14 +118,14 @@ void XSolver::checkLRConstraints() {
 }
 void XSolver::checkEdgeConstraints() {
 	for(DDModel::graphedge_iter ei = config.model.edges().begin(); ei!=config.model.edges().end(); ++ei)
-		if(DDd(*ei).amEdgePart()) {
-			DDCGraph::Node *cn = DDd(*ei).cn;
+		if(gd<DDEdge>(*ei).amEdgePart()) {
+			DDCGraph::Node *cn = gd<DDEdge>(*ei).cn;
 			assert(cn);
 			assert(cn->ins().size()==0);
 			if(cn->outs().size()!=2) {
 				report(r_error,"AARGH!  Why isn't node %p of %s %p constrained with\n",
-					(*ei)->tail,DDd((*ei)->tail).amEdgePart()?"path":"multinode",thing((*ei)->tail));
-				report(r_error,"node %p of %s %p????\n",(*ei)->head,DDd((*ei)->head).amEdgePart()?
+					(*ei)->tail,gd<DDNode>((*ei)->tail).amEdgePart()?"path":"multinode",thing((*ei)->tail));
+				report(r_error,"node %p of %s %p????\n",(*ei)->head,gd<DDNode>((*ei)->head).amEdgePart()?
 					"path":"multinode",thing((*ei)->head));
 				throw InternalErrorException();
 			}
@@ -162,12 +165,12 @@ void Rank::check(int r) {
 
 	DDModel::Node *ln=0;
 	for(NodeV::iterator ni = order.begin(); ni!=order.end(); ++ni) {
-		assert(DDd(*ni).inConfig);
-		assert(DDd(*ni).rank == r);
+		assert(gd<DDNode>(*ni).inConfig);
+		assert(gd<DDNode>(*ni).rank == r);
 		dd_check_elts(*ni);
 		if(ln) {
-			assert(DDd(ln).order + 1 == DDd(*ni).order);
-			assert(DDd(ln).cur.x + BASE(view)->whole->separation.x <= dd_pos(rn).x);
+			assert(gd<DDNode>(ln).order + 1 == gd<DDNode>(*ni).order);
+			assert(gd<DDNode>(ln).cur.x + BASE(view)->whole->separation.x <= dd_pos(rn).x);
 		}
 		ln = rn;
 	}

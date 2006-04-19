@@ -14,10 +14,20 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-// (namespace Dynagraph::DynaDAG, included within DynaDAG.h mmmf)
+#ifndef Medians_h
+#define Medians_h
+
+namespace Dynagraph {
+namespace DynaDAG {
 
 void InvalidateMVal(DDModel::Node *n, UpDown dir);
 bool MValExists(DDModel::Node *n, UpDown dir);
 double MVal(DDModel::Node *n, UpDown dir);
 void SetMVal(DDModel::Node *n, double val, UpDown dir);
 void InvalidateAdjMVals(DDModel::Node *n);
+
+
+} // namespace DynaDAG
+} // namespace Dynagraph
+
+#endif // Medians_h

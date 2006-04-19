@@ -22,16 +22,16 @@ namespace DynaDAG {
 
 struct RankLess {
 	bool operator()(DDModel::Node *n1,DDModel::Node *n2) {
-		if(DDd(n1).rank == DDd(n2).rank)
-			return DDd(n1).order<DDd(n2).order;
-		return DDd(n1).rank<DDd(n2).rank;
+		if(gd<DDNode>(n1).rank == gd<DDNode>(n2).rank)
+			return gd<DDNode>(n1).order<gd<DDNode>(n2).order;
+		return gd<DDNode>(n1).rank<gd<DDNode>(n2).rank;
 	}
 };
 struct RankMore {
 	bool operator()(DDModel::Node *n1,DDModel::Node *n2) {
-		if(DDd(n1).rank == DDd(n2).rank)
-			return DDd(n1).order>DDd(n2).order;
-		return DDd(n1).rank>DDd(n2).rank;
+		if(gd<DDNode>(n1).rank == gd<DDNode>(n2).rank)
+			return gd<DDNode>(n1).order>gd<DDNode>(n2).order;
+		return gd<DDNode>(n1).rank>gd<DDNode>(n2).rank;
 	}
 };
 struct MValLess {
@@ -66,10 +66,10 @@ bool pass(Config &config,node_iter begin,node_iter end,UpDown dir,HowOrdered ho)
 	bool ret = false;
 	node_iter ni = begin;
 	while(ni!=end) {
-		int rank = DDd(*ni).rank;
+		int rank = gd<DDNode>(*ni).rank;
 		node_iter last;
 		for(last = ni; last!=end; ++last)
-			if(DDd(*last).rank!=rank)
+			if(gd<DDNode>(*last).rank!=rank)
 				break;
 		MSGraph msg;
 		Rank *r = config.ranking.GetRank(rank);
@@ -80,7 +80,7 @@ bool pass(Config &config,node_iter begin,node_iter end,UpDown dir,HowOrdered ho)
 		for(ni2 = r->order.begin(); ni2!=r->order.end(); ++ni2)
 			if(!MValExists(*ni2,dir) || !binary_search(ni,last,*ni2,ho)) {
 				MSGraph::Node *curr = msg.create_node();
-				order[DDd(*ni2).order] = curr;
+				order[gd<DDNode>(*ni2).order] = curr;
 				gd<MSNodeData>(curr).n = *ni2;
 				if(prev) {
 					MSGraph::Edge *e = msg.create_edge(prev,curr).first;
@@ -95,7 +95,7 @@ bool pass(Config &config,node_iter begin,node_iter end,UpDown dir,HowOrdered ho)
 		int n = 0;
 		prev = 0;
 		for(ni2 = mvalSort.begin(); ni2!=mvalSort.end(); ++ni2) {
-			MSGraph::Node *&curr = order[DDd(*ni2).order];
+			MSGraph::Node *&curr = order[gd<DDNode>(*ni2).order];
 			if(!curr) {
 				curr = msg.create_node();
 				gd<MSNodeData>(curr).n = *ni2;
@@ -124,7 +124,7 @@ bool pass(Config &config,node_iter begin,node_iter end,UpDown dir,HowOrdered ho)
 			DDModel::Node *mn = gd<MSNodeData>(*msni2).n;
 			if(r->order[n]!=mn) {
 				ret = true;
-				if(DDd(mn).inConfig) {
+				if(gd<DDNode>(mn).inConfig) {
 					do config.RemoveNode(r->order[n]);
 					while(r->order[n]!=mn);
 				}
@@ -163,7 +163,7 @@ void MedianShuffle::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 }
 /* return new coordinate if node were installed in given rank */
 double MedianShuffle::Reopt(DDModel::Node *n,UpDown dir) {
-	return DDd(n).cur.x;
+	return gd<DDNode>(n).cur.x;
 }
 
 } // namespace DynaDAG

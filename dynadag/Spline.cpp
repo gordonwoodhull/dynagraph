@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 #include "pathplot/PathPlot.h"
+#include "Spliner.h"
 
 using namespace std;
 
@@ -30,14 +31,14 @@ namespace DynaDAG {
   /*
 static bool localCrossing(DDModel::Node *v, DDModel::Node *w) {
 	const int pathlen = 2;
-	bool vw_order = DDd(w).order > DDd(v).order;
+	bool vw_order = gd<DDNode>(w).order > gd<DDNode>(v).order;
 	for(int pass = 0; pass < 2; pass++) {
 		DDModel::Node *vv = v,
 			*ww = w;
 		for(int i = 0; i < pathlen; i++) {
-			if(!DDd(vv).amEdgePart())
+			if(!gd<DDNode>(vv).amEdgePart())
 				break;
-			if(!DDd(ww).amEdgePart())
+			if(!gd<DDNode>(ww).amEdgePart())
 				break;
 			if(pass==0)
 				vv = (*vv->ins().begin())->tail;
@@ -47,7 +48,7 @@ static bool localCrossing(DDModel::Node *v, DDModel::Node *w) {
 				ww = (*ww->ins().begin())->tail;
 			else
 				ww = (*ww->outs().begin())->head;
-			bool vvww_order = DDd(ww).order > DDd(vv).order;
+			bool vvww_order = gd<DDNode>(ww).order > gd<DDNode>(vv).order;
 			if(vw_order != vvww_order)
 				return true;
 		}
@@ -58,7 +59,7 @@ static bool localCrossing(DDModel::Node *v, DDModel::Node *w) {
 static DDModel::Node *boundingNode(Config &config,DDModel::Node *inp, LeftRight dir) {
 	DDModel::Node *v = inp,*w;
 	while((w = config.RelNode(v,dir))) {
-		if(DDd(w).amNodePart())
+		if(gd<DDNode>(w).amNodePart())
 			break;
 		break;
 		//if(!localCrossing(v,w)) break;
@@ -73,9 +74,9 @@ double findBound(Config &config,const Bounds &bb,DDModel::Node *u, LeftRight sid
 	double ret;
 	if(DDModel::Node *w = boundingNode(config,u,side)) {
 		if(side==LEFT)
-			ret = DDd(w).cur.x + config.RightExtent(w) + sep;
+			ret = gd<DDNode>(w).cur.x + config.RightExtent(w) + sep;
 		else
-			ret = DDd(w).cur.x - config.LeftExtent(w) - sep;
+			ret = gd<DDNode>(w).cur.x - config.LeftExtent(w) - sep;
 	}
 	else
 		ret = side==RIGHT?bb.r:bb.l;
@@ -150,7 +151,7 @@ void TempRoute::appendSide(LeftRight side, double x, double top, double bot) {
 }
 
 void TempRoute::appendVNode(DDModel::Node *virt) {
-	int r = DDd(virt).rank;
+	int r = gd<DDNode>(virt).rank;
 	double top_y = config.ranking.GetRank(config.ranking.Up(r))->yBelow(1.0),
 		bot_y = config.ranking.GetRank(r)->yBelow(0.0),
 		left_x = bound(virt, LEFT),
@@ -166,8 +167,8 @@ static DDModel::Edge *neighboringEdge(DDModel::Node *n, DDModel::Edge *e, LeftRi
 	int dir = side==LEFT?-1:1,
 		delta0 = 0;
 	for(DDModel::edge_iter ei = seq.begin(); ei!=seq.end(); ++ei)
-		if(*ei != e && !DDd(*ei).path->unclippedPath.Empty()) {
-			int delta = DDd((*ei)->other(n)).order - DDd(e->other(n)).order;
+		if(*ei != e && !gd<DDEdge>(*ei).path->unclippedPath.Empty()) {
+			int delta = gd<DDNode>((*ei)->other(n)).order - gd<DDNode>(e->other(n)).order;
 			if(delta * dir > 0) {
 				delta = absol(delta);
 				if(!rv || delta < delta0) {
@@ -182,20 +183,20 @@ static DDModel::Edge *neighboringEdge(DDModel::Node *n, DDModel::Edge *e, LeftRi
 #endif
 }
 void TempRoute::termRoute(DDModel::Node *n, DDModel::Edge *e, Coord port, double fract) {
-	int rb = (n == e->tail) ? DDd(n).rank : config.ranking.Up(DDd(n).rank);
+	int rb = (n == e->tail) ? gd<DDNode>(n).rank : config.ranking.Up(gd<DDNode>(n).rank);
 	double y_cept = config.ranking.GetRank(rb)->yBelow(fract);
 	double leftx_port, leftx_cept, rightx_port, rightx_cept;
 	DDModel::Edge *ne;
-	if((ne = neighboringEdge(n,e,LEFT)) && !DDd(ne).path->unclippedPath.Empty()) {
-		leftx_port = checkPos(DDd(ne).path->unclippedPath.YIntersection(port.y)).x;
-		leftx_cept = checkPos(DDd(ne).path->unclippedPath.YIntersection(y_cept)).x;
+	if((ne = neighboringEdge(n,e,LEFT)) && !gd<DDEdge>(ne).path->unclippedPath.Empty()) {
+		leftx_port = checkPos(gd<DDEdge>(ne).path->unclippedPath.YIntersection(port.y)).x;
+		leftx_cept = checkPos(gd<DDEdge>(ne).path->unclippedPath.YIntersection(y_cept)).x;
 	}
 	else
 		leftx_port = leftx_cept = bound(n,LEFT);
 
-	if((ne = neighboringEdge(n,e,RIGHT)) && !DDd(ne).path->unclippedPath.Empty()) {
-		rightx_port = checkPos(DDd(ne).path->unclippedPath.YIntersection(port.y)).x;
-		rightx_cept = checkPos(DDd(ne).path->unclippedPath.YIntersection(y_cept)).x;
+	if((ne = neighboringEdge(n,e,RIGHT)) && !gd<DDEdge>(ne).path->unclippedPath.Empty()) {
+		rightx_port = checkPos(gd<DDEdge>(ne).path->unclippedPath.YIntersection(port.y)).x;
+		rightx_cept = checkPos(gd<DDEdge>(ne).path->unclippedPath.YIntersection(y_cept)).x;
 	}
 	else
 		rightx_port = rightx_cept = bound(n,RIGHT);
@@ -239,15 +240,15 @@ void Spliner::forwardEdgeRegion(DDModel::Node *tl, DDModel::Node *hd,DDPath *inp
 	TempRoute route(config,gd<GraphGeom>(inp->layoutE->g).bounds);
 	assert(tl==inp->first->tail);
 	route.termRoute(tl,inp->first,tp,prev_fract);
-	int lastR = DDd(tl).rank;
+	int lastR = gd<DDNode>(tl).rank;
 	for(DDPath::node_iter ni = inp->nBegin(); ni!=inp->nEnd(); ++ni) {
-		assert(lastR<DDd(*ni).rank);
-		route.appendBox(config.ranking.Up(DDd(*ni).rank),prev_fract,1.0);
+		assert(lastR<gd<DDNode>(*ni).rank);
+		route.appendBox(config.ranking.Up(gd<DDNode>(*ni).rank),prev_fract,1.0);
 		route.appendVNode(*ni);
 		prev_fract = 0.0;
 	}
 
-	route.appendBox(config.ranking.Up(DDd(hd).rank),prev_fract,.7);
+	route.appendBox(config.ranking.Up(gd<DDNode>(hd).rank),prev_fract,.7);
 	assert(hd==inp->last->head);
 	route.termRoute(hd,inp->last,hp,.7);
 
@@ -259,7 +260,7 @@ void Spliner::flatEdgeRegion(DDModel::Node *tl, DDModel::Node *hd, Coord tp, Coo
 	out.degree = 1;
 	DDModel::Node *left, *right;
 	Coord lp,rp;
-	if(DDd(tl).order < DDd(hd).order) {
+	if(gd<DDNode>(tl).order < gd<DDNode>(hd).order) {
 		left = tl;
 		right = hd;
 		lp = tp;
@@ -271,8 +272,8 @@ void Spliner::flatEdgeRegion(DDModel::Node *tl, DDModel::Node *hd, Coord tp, Coo
 		lp = hp;
 		rp = tp;
 	}
-	int n_obstacles = DDd(right).order - DDd(left).order - 1;
-	Rank *r = config.ranking.GetRank(DDd(tl).rank);
+	int n_obstacles = gd<DDNode>(right).order - gd<DDNode>(left).order - 1;
+	Rank *r = config.ranking.GetRank(gd<DDNode>(tl).rank);
 
 	/* walk along bottom */
 	if(n_obstacles == 0) {
@@ -291,8 +292,8 @@ void Spliner::flatEdgeRegion(DDModel::Node *tl, DDModel::Node *hd, Coord tp, Coo
 #else
 			double y = r->yBase - t,
 #endif
-				xleft = DDd(obstacle).cur.x - config.LeftExtent(obstacle),
-				xright = DDd(obstacle).cur.x + config.RightExtent(obstacle);
+				xleft = gd<DDNode>(obstacle).cur.x - config.LeftExtent(obstacle),
+				xright = gd<DDNode>(obstacle).cur.x + config.RightExtent(obstacle);
 			out.push_back(Coord(xleft,y));
 			out.push_back(Coord(xright,y));
 		}
@@ -311,14 +312,14 @@ void Spliner::adjustPath(DDPath *path) {
 		DDModel::Node *left = config.Left(*ni),
 			*right = config.Right(*ni);
 		Bounds &b = gd<GraphGeom>(path->layoutE->g).bounds;
-		double y = DDd(*ni).cur.y,
+		double y = gd<DDNode>(*ni).cur.y,
 			x = checkPos(curve.YIntersection(y)).x,
 			//halfwidth = config.NodeSize(*ni).x / 2.0,
 			lb = findBound(config,b,*ni,LEFT) + config.LeftExtent(*ni),
 			rb = findBound(config,b,*ni,RIGHT) - config.RightExtent(*ni);
 		// (used to be set in a separate pass but this makes sense)
-		DDd(*ni).actualX = x;
-		DDd(*ni).actualXValid = true;
+		gd<DDNode>(*ni).actualX = x;
+		gd<DDNode>(*ni).actualXValid = true;
 		if(x < lb)
 			x = lb;
 		if(x > rb)
@@ -326,19 +327,19 @@ void Spliner::adjustPath(DDPath *path) {
 
 		/* don't move if it's too small */
 		double least_move = gd<GraphGeom>(config.whole).separation.x;
-		if(x < rb && x > lb && absol(x - DDd(*ni).cur.x) >= least_move)
-			DDd(*ni).cur.x = x;
+		if(x < rb && x > lb && absol(x - gd<DDNode>(*ni).cur.x) >= least_move)
+			gd<DDNode>(*ni).cur.x = x;
 		/* it's possible that local_crossing() swaps *ni order */
 		while((left = config.Left(*ni))) {
 				/* for testing - should never happen right now! */
-			if(DDd(left).cur.x > x) {
+			if(gd<DDNode>(left).cur.x > x) {
 				abort();
 				config.Exchange(left,*ni);
 			}
 			else break;
 		}
 		while((right = config.Right(*ni))) {
-			if(DDd(right).cur.x < x) {
+			if(gd<DDNode>(right).cur.x < x) {
 				abort();
 				config.Exchange(right,*ni);
 			}
@@ -361,14 +362,14 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 		hd = path->last->head;
 	}
 	EdgeGeom &eg = gd<EdgeGeom>(path->layoutE);
-	Coord tailpt = eg.tailPort.pos + DDd(tl).multi->pos(),
-		headpt = eg.headPort.pos + DDd(hd).multi->pos();
+	Coord tailpt = eg.tailPort.pos + gd<DDNode>(tl).multi->pos(),
+		headpt = eg.headPort.pos + gd<DDNode>(hd).multi->pos();
 
 	Line &unclipped = path->unclippedPath;
 	if(path->layoutE->tail==path->layoutE->head) {	/* self arc */
 		Coord sep = gd<GraphGeom>(config.whole).separation;
 		unclipped.degree = 3;
-		Coord farpt(DDd(tl).multi->pos().x + config.RightExtent(tl) + 2.0 * sep.x,
+		Coord farpt(gd<DDNode>(tl).multi->pos().x + config.RightExtent(tl) + 2.0 * sep.x,
 			(tailpt.y + headpt.y) / 2.0);
 		double rb = findBound(config,gd<GraphGeom>(path->layoutE->g).bounds,tl, RIGHT);
 		if(!config.Right(tl))

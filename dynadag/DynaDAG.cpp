@@ -42,7 +42,7 @@ pair<DDMultiNode*,DDModel::Node*> DynaDAGServer::OpenModelNode(DynaDAGLayout::No
 			m->node = mn;
 			DDp(layoutN) = m;
 		}
-		DDd(mn).multi = m;
+		gd<DDNode>(mn).multi = m;
 	}
 	return make_pair(m,mn);
 }
@@ -66,7 +66,7 @@ pair<DDPath*,DDModel::Edge*> DynaDAGServer::OpenModelEdge(DDModel::Node *u, DDMo
 			DDp(layoutE) = p;
 		}
 		if(me)
-			DDd(me).path = p;
+			gd<DDEdge>(me).path = p;
 	}
 	return make_pair(p,me);
 }
@@ -165,11 +165,11 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
   for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
     if((*ri)->order.size()) {
       DDModel::Node *left = (*ri)->order.front();
-      double lb = DDd(left).cur.x - config.LeftExtent(left);
+      double lb = gd<DDNode>(left).cur.x - config.LeftExtent(left);
       if(!got || glb > lb)
 	glb = lb;
       DDModel::Node *right = (*ri)->order.back();
-      double rb = DDd(right).cur.x + config.RightExtent(right);
+      double rb = gd<DDNode>(right).cur.x + config.RightExtent(right);
       if(!got || grb < rb)
 	grb = rb;
       got = true;
@@ -219,15 +219,15 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 	Coord avgIn(0,0),avgOut(0,0);
 	int nIns=0,nOuts=0;
 	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
-		Coord vec = (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
-		if(DDd(*ei).path->direction==DDPath::forward ^ gd<EdgeGeom>(DDd(*ei).path->layoutE).reversed)
+		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
+		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).reversed)
 			++nIns, avgIn += vec;
 		else
 			++nOuts, avgOut -= vec;
 	}
 	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
-		Coord vec = (DDd((*ei)->head).cur-DDd((*ei)->tail).cur).Norm();
-		if(DDd(*ei).path->direction==DDPath::forward ^ gd<EdgeGeom>(DDd(*ei).path->layoutE).reversed)
+		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
+		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).reversed)
 			++nOuts, avgOut += vec;
 		else
 			++nIns, avgIn -= vec;
@@ -269,26 +269,26 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 	double sep = gd<GraphGeom>(whole_).separation.x;
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
 		DDModel::Node *n = *ni;
-		if(!DDd(n).actualXValid)
+		if(!gd<DDNode>(n).actualXValid)
 			return true;
-		double x = DDd(n).actualX;
+		double x = gd<DDNode>(n).actualX;
 		if(DDModel::Node *left = config.Left(n)) {
-			if(DDd(left).amEdgePart()) {
-				if(DDd(left).actualXValid && DDd(left).actualX + sep > x)
+			if(gd<DDNode>(left).amEdgePart()) {
+				if(gd<DDNode>(left).actualXValid && gd<DDNode>(left).actualX + sep > x)
 					return true;
 			}
 			else {
-				if(DDd(left).cur.x + config.RightExtent(left) + sep > x)
+				if(gd<DDNode>(left).cur.x + config.RightExtent(left) + sep > x)
 					return true;
 			}
 		}
 		if(DDModel::Node *right = config.Right(n)) {
-			if(DDd(right).amEdgePart()) {
-				if(DDd(right).actualXValid && DDd(right).actualX - sep < x)
+			if(gd<DDNode>(right).amEdgePart()) {
+				if(gd<DDNode>(right).actualXValid && gd<DDNode>(right).actualX - sep < x)
 					return true;
 			}
 			else {
-				if(DDd(right).cur.x - config.LeftExtent(right) - sep < x)
+				if(gd<DDNode>(right).cur.x - config.LeftExtent(right) - sep < x)
 					return true;
 			}
 		}
@@ -304,7 +304,7 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 	assert(head!=tail); // self-edges handled in redrawEdges
 	// if a backedge (head is lower rank than tail), path->first->tail is head
 	// so we have to clip accordingly and then reverse the result (for arrowheads etc.)
-	bool reversed = path->direction==DDPath::reversed; //DDd(DDp(head)->top()).rank<DDd(DDp(tail)->bottom()).rank;
+	bool reversed = path->direction==DDPath::reversed; //gd<DDNode>(DDp(head)->top()).rank<gd<DDNode>(DDp(tail)->bottom()).rank;
 	if(reversed)
 		swap(head,tail);
 	if(!path->first) {
@@ -315,10 +315,10 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 		path->unclippedPath.push_back(DDp(head)->pos()+eg.headPort.pos);
 	}
 	else {
-		path->unclippedPath.push_back(DDd(path->first->tail).cur+eg.tailPort.pos);
+		path->unclippedPath.push_back(gd<DDNode>(path->first->tail).cur+eg.tailPort.pos);
 		for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni)
-			path->unclippedPath.push_back(DDd(*ni).cur);
-		path->unclippedPath.push_back(DDd(path->last->head).cur+eg.headPort.pos);
+			path->unclippedPath.push_back(gd<DDNode>(*ni).cur);
+		path->unclippedPath.push_back(gd<DDNode>(path->last->head).cur+eg.headPort.pos);
 	}
 	bool clipFirst = eg.headClipped,
 		clipLast = eg.tailClipped;
@@ -343,7 +343,7 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 			Coord sep = gd<GraphGeom>(whole_).separation;
 			unclipped.degree = 3;
 			DDModel::Node *tl = DDp((*ei)->tail)->bottom();
-			Coord tailpt = gd<EdgeGeom>(*ei).tailPort.pos + DDd(tl).multi->pos();
+			Coord tailpt = gd<EdgeGeom>(*ei).tailPort.pos + gd<DDNode>(tl).multi->pos();
 			Coord right = Coord(tailpt.x+config.RightExtent(tl),tailpt.y),
 				left = right - Coord(1.5*sep.x,0.0);
 #ifndef DOWN_GREATER
@@ -381,7 +381,7 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 }
 void DynaDAGServer::cleanUp() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
-		DDNode &ddn = DDd(*ni);
+		DDNode &ddn = gd<DDNode>(*ni);
 		ddn.prev = ddn.cur;
 		// ddn.orderFixed = true;
 	}
@@ -390,8 +390,8 @@ void DynaDAGServer::cleanUp() { // dd_postprocess
 		if(!n)
 			continue; // deleted
 		//n->coordFixed = true;
-		n->oldTopRank = DDd(n->top()).rank;
-		n->oldBottomRank = DDd(n->bottom()).rank;
+		n->oldTopRank = gd<DDNode>(n->top()).rank;
+		n->oldBottomRank = gd<DDNode>(n->bottom()).rank;
 	}
 }
 void DynaDAGServer::dumpModel() {
@@ -399,9 +399,9 @@ void DynaDAGServer::dumpModel() {
 		return;
 	report(r_modelDump,"digraph dynagraphModel {\n");
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni)
-		report(r_modelDump,"\t\"%p\" [label=\"%p\\n%p\"];\n",*ni,*ni,DDd(*ni).multi);
+		report(r_modelDump,"\t\"%p\" [label=\"%p\\n%p\"];\n",*ni,*ni,gd<DDNode>(*ni).multi);
 	for(DDModel::graphedge_iter ei = model.edges().begin(); ei!=model.edges().end(); ++ei)
-		report(r_modelDump,"\t\"%p\"->\"%p\" [label=\"%p\\n%p\"];\n",(*ei)->tail,(*ei)->head,*ei,DDd(*ei).path);
+		report(r_modelDump,"\t\"%p\"->\"%p\" [label=\"%p\\n%p\"];\n",(*ei)->tail,(*ei)->head,*ei,gd<DDEdge>(*ei).path);
 	report(r_modelDump,"}\n");
 }
 void DynaDAGServer::Process(DDChangeQueue &changeQ) {

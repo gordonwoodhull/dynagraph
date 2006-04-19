@@ -37,7 +37,7 @@ struct MedianOptimizer {
 	int m_strength;
 	MedianOptimizer(Config &config) : config(config),m_dir(DOWN),m_strength(0) {}
 	int improve(DDModel::Node *n) {
-		Rank *rank = config.ranking.GetRank(DDd(n).rank);
+		Rank *rank = config.ranking.GetRank(gd<DDNode>(n).rank);
 		if(MValExists(n,m_dir)) {
 			med_type nm = cvt_med(MVal(n,m_dir));
 			// find something on the left with a median greater than n's
@@ -45,7 +45,7 @@ struct MedianOptimizer {
 			// if m_strength==2, find the last thing >=
 			int i;
 			DDModel::Node *l = 0;
-			for(i = DDd(n).order-1;i!=-1;--i) {
+			for(i = gd<DDNode>(n).order-1;i!=-1;--i) {
 				DDModel::Node *v = rank->order[i];
 				if(MValExists(v,m_dir)) {
 					// is it a good (or okay) idea to move n there?
@@ -59,10 +59,10 @@ struct MedianOptimizer {
 				}
 			}
 			if(l)
-				return DDd(l).order;
+				return gd<DDNode>(l).order;
 			// same for right, with lesser medians
 			DDModel::Node *r = 0;
-			for(i = DDd(n).order+1;i!=rank->order.size(); ++i) {
+			for(i = gd<DDNode>(n).order+1;i!=rank->order.size(); ++i) {
 				DDModel::Node *v = rank->order[i];
 				if(MValExists(v,m_dir)) {
 					med_type rm = cvt_med(MVal(v,m_dir));
@@ -75,7 +75,7 @@ struct MedianOptimizer {
 				}
 			}
 			if(r)
-				return DDd(r).order+1;
+				return gd<DDNode>(r).order+1;
 		}
 		return -1;
 	}
@@ -86,13 +86,13 @@ struct SiftingOptimizer {
 	int m_strength;
 	SiftingOptimizer(Config &config) : config(config),matrix(config),m_strength(0) {}
 	int improve(DDModel::Node *n) {
-		int r = DDd(n).rank;
+		int r = gd<DDNode>(n).rank;
 		Rank *rank = config.ranking.GetRank(r);
 		int numcross=0,min=0,what=-1;
 		int o;
 		// look to right
 		numcross = min = 0;
-		for(o = DDd(n).order+1; o!=rank->order.size(); ++o) {
+		for(o = gd<DDNode>(n).order+1; o!=rank->order.size(); ++o) {
 			DDModel::Node *x = rank->order[o];
 			numcross += matrix.allCrossings(x,n)-matrix.allCrossings(n,x);
 			if(numcross<min || (m_strength==1 && numcross==0 && what==-1) || (m_strength==2 && numcross==min)) {
@@ -102,7 +102,7 @@ struct SiftingOptimizer {
 		}
 		// look to left
 		numcross = 0;
-		for(o = DDd(n).order-1; o>=0; --o) {
+		for(o = gd<DDNode>(n).order-1; o>=0; --o) {
 			DDModel::Node *x = rank->order[o];
 			numcross += matrix.allCrossings(n,x)-matrix.allCrossings(x,n);
 			if(numcross<min || (m_strength==1 && numcross==0 && what==-1) || (m_strength==2 && numcross==min)) {
@@ -113,7 +113,7 @@ struct SiftingOptimizer {
 		return what;
 	}
 	void move(DDModel::Node *n,int where) {
-		Rank *rank = config.ranking.GetRank(DDd(n).rank);
+		Rank *rank = config.ranking.GetRank(gd<DDNode>(n).rank);
 		matrix.move(n,where==rank->order.size()?0:rank->order[where]);
 	}
 };
@@ -123,7 +123,7 @@ void optim(Config &config,Iter begin,Iter end, Optimizer *opt, OptState *state) 
 		int where = opt->improve(*ni);
 		if(where!=-1) {
 			state->move(*ni,where);
-			int r = DDd(*ni).rank,o = DDd(*ni).order;
+			int r = gd<DDNode>(*ni).rank,o = gd<DDNode>(*ni).order;
 			config.RemoveNode(*ni);
 			config.InstallAtOrder(*ni,r,where>o?where-1:where);
 		}
@@ -131,9 +131,9 @@ void optim(Config &config,Iter begin,Iter end, Optimizer *opt, OptState *state) 
 }
 struct RankLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
-		if(DDd(u).rank == DDd(v).rank)
-			return DDd(u).order < DDd(v).order;
-		return DDd(u).rank < DDd(v).rank;
+		if(gd<DDNode>(u).rank == gd<DDNode>(v).rank)
+			return gd<DDNode>(u).order < gd<DDNode>(v).order;
+		return gd<DDNode>(u).rank < gd<DDNode>(v).rank;
 	}
 };
 #define TIRE 5
@@ -245,7 +245,7 @@ void HybridOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	assert(score<NODECROSS_PENALTY*NODECROSS_PENALTY);
 }
 double HybridOptimizer::Reopt(DDModel::Node *n,UpDown dir) {
-	return DDd(n).cur.x;
+	return gd<DDNode>(n).cur.x;
 }
 
 } // namespace DynaDAG

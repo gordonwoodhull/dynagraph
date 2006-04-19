@@ -14,38 +14,40 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-
-#include "DynaDAG.h"
-
-using namespace std;
+#ifndef Rank_h
+#define Rank_h
 
 namespace Dynagraph {
 namespace DynaDAG {
 
-Crossings calculateCrossings(Config &config) {
-	Crossings cc;
-	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri) {
-		Rank *r = *ri;
-		for(NodeV::iterator ni1 = r->order.begin(); ni1!=r->order.end(); ++ni1)
-			for(NodeV::iterator ni2 = ni1+1; ni2!=r->order.end(); ++ni2)
-				cc += uvcross(*ni1,*ni2,false,true);
+struct Rank {
+	NodeV order;
+	double yBase,	/* absolute */
+		deltaAbove, deltaBelow, spaceBelow;
+	Rank(double sep) : yBase(-17),deltaAbove(sep/20),
+	  deltaBelow(sep/20), spaceBelow(sep) {}
+	Rank(Rank &o) : order(o.order),yBase(o.yBase),
+	  deltaAbove(o.deltaAbove),deltaBelow(o.deltaBelow) {}
+	double yBelow(double fract) {
+#ifdef FLEXIRANKS
+		return yBase;
+#else
+		return yBase - deltaBelow - fract*spaceBelow;
+#endif
 	}
-	return cc;
-}
-pair<int,Coord> calculateTotalEdgeLength(Config &config) {
-	int count=0;
-	Coord d(0,0);
-	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
-		++count;
-		for(DDPath::edge_iter mei = DDp(*ei)->eBegin(); mei!=DDp(*ei)->eEnd(); ++mei) {
-			DDModel::Edge *e = *mei;
-			Coord d2 = gd<DDNode>(e->tail).cur-gd<DDNode>(e->head).cur;
-			d += d2.Abs();
-		}
+	double yAbove(double fract) {
+#ifdef FLEXIRANKS
+		return yBase + 2*deltaAbove;
+#else
+		return yBase + deltaAbove + fract*spaceBelow; // HACK: wrong spaceBelow but all are nodeSep.y now
+#endif
 	}
-	return make_pair(count,d);
-}
+	double Height() {
+		return deltaAbove+deltaBelow+spaceBelow;
+	}
+};
 
 } // namespace DynaDAG
 } // namespace Dynagraph
 
+#endif // Rank_h

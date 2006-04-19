@@ -72,12 +72,6 @@ struct ADTisSTL {
 
 struct Nothing {};
 
-/*
-template<typename ADT,typename D,typename GD,typename ND, typename ED,typename GID,typename NID, typename EID>
-inline D &gd(LGraph<ADT,GD,ND,ED,GID,NID,EID> *g) {
-	return *static_cast<D*>(g->dat);
-}
-*/
 template<typename D,typename GO>
 inline D &gd(GO *go) {
 	return static_cast<D&>(*go->dat);

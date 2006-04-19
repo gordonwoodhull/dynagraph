@@ -41,7 +41,7 @@ void Config::resetRankBox(Rank *rank) {
 	double maxTop = gd<GraphGeom>(config.whole).separation.y / 20.0,
 		maxBottom = gd<GraphGeom>(whole).separation.y / 20.0;
 	for(NodeV::iterator ni = rank->order.begin(); ni!=rank->order.end(); ++ni) {
-		if(DDd(*ni).amEdgePart())
+		if(gd<DDNode>(*ni).amEdgePart())
 			continue;
 		double nt = TopExtent(*ni);
 		if(maxTop < nt)
@@ -102,7 +102,7 @@ void Config::SetYs() {
 
 	for(ri = ranking.begin(); ri!=ranking.end(); ++ri)
 		for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni) {
-			DDNode &ddn = DDd(*ni);
+			DDNode &ddn = gd<DDNode>(*ni);
 			double newY = (*ri)->yBase;
 			ddn.cur.y = newY;
 		}

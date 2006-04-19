@@ -77,31 +77,31 @@ void RouteBounds::poly(Line &out) {
 			out.push_back(*pri);
 }
 double RouteBounds::side(DDModel::Node *n,int s) {
-	return DDd(n).cur.x + s*(((s==LEFT)?config.LeftExtent(n):config.RightExtent(n)) + gd<GraphGeom>(config.whole).separation.x/2.0);
+	return gd<DDNode>(n).cur.x + s*(((s==LEFT)?config.LeftExtent(n):config.RightExtent(n)) + gd<GraphGeom>(config.whole).separation.x/2.0);
 }
 bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 	const int dist=2;
-	assert(DDd(n).amEdgePart());
+	assert(gd<DDNode>(n).amEdgePart());
 	DDModel::Node *v = ud==UP?e->tail:e->head,
 		*w = n;
-	assert(DDd(v).rank==DDd(w).rank);
-	bool vw = DDd(v).order<DDd(w).order;
+	assert(gd<DDNode>(v).rank==gd<DDNode>(w).rank);
+	bool vw = gd<DDNode>(v).order<gd<DDNode>(w).order;
 	int i;
 	for(i = 0;i<dist;++i) {
 		DDModel::Node *vv,*ww;
-		if(DDd(w).amNodePart())
+		if(gd<DDNode>(w).amNodePart())
 			break;
 		ww = (*w->outs().begin())->head;
 		if(v==e->tail)
 			vv = e->head;
-		else if(DDd(v).amNodePart())
+		else if(gd<DDNode>(v).amNodePart())
 			break;
 		else
 			vv = (*v->outs().begin())->head;
 		if(vv==ww) // common end node
 			return false;
-		assert(DDd(vv).rank==DDd(ww).rank);
-		if((DDd(vv).order<DDd(ww).order) != vw)
+		assert(gd<DDNode>(vv).rank==gd<DDNode>(ww).rank);
+		if((gd<DDNode>(vv).order<gd<DDNode>(ww).order) != vw)
 			return true;
 		v = vv;
 		w = ww;
@@ -110,19 +110,19 @@ bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 	w = n;
 	for(i = 0;i<dist;++i) {
 		DDModel::Node *vv,*ww;
-		if(DDd(w).amNodePart())
+		if(gd<DDNode>(w).amNodePart())
 			break;
 		ww = (*w->ins().begin())->tail;
 		if(v==e->head)
 			vv = e->tail;
-		else if(DDd(v).amNodePart())
+		else if(gd<DDNode>(v).amNodePart())
 			break;
 		else
 			vv = (*v->ins().begin())->tail;
 		if(vv==ww) // common end node
 			return false;
-		assert(DDd(vv).rank==DDd(ww).rank);
-		if((DDd(vv).order<DDd(ww).order) != vw)
+		assert(gd<DDNode>(vv).rank==gd<DDNode>(ww).rank);
+		if((gd<DDNode>(vv).order<gd<DDNode>(ww).order) != vw)
 			return true;
 		v = vv;
 		w =ww;
@@ -133,11 +133,11 @@ double RouteBounds::bounding(DDModel::Edge *e,LeftRight lr,UpDown ud, bool skipN
 	DDModel::Node *n = ud==DOWN?e->head:e->tail;
 	DDModel::Node *q = n;
 	while((q = config.RelNode(q,lr))) {
-		if(DDd(q).amNodePart()) {
+		if(gd<DDNode>(q).amNodePart()) {
 			if(skipNodeEnds) {
-				if(q==DDd(q).multi->top() && ud==DOWN && q->ins().empty())
+				if(q==gd<DDNode>(q).multi->top() && ud==DOWN && q->ins().empty())
 					continue;
-				if(q==DDd(q).multi->bottom() && ud==UP && q->outs().empty())
+				if(q==gd<DDNode>(q).multi->bottom() && ud==UP && q->outs().empty())
 					continue;
 			}
 			break;
@@ -149,11 +149,11 @@ double RouteBounds::bounding(DDModel::Edge *e,LeftRight lr,UpDown ud, bool skipN
 }
 void RouteBounds::term(DDModel::Edge *e,Coord t, bool start) {
 	DDModel::Node *n = start?e->tail:e->head;
-	double l = DDd(n).cur.x - config.LeftExtent(n),
-		r = DDd(n).cur.x + config.RightExtent(n),
+	double l = gd<DDNode>(n).cur.x - config.LeftExtent(n),
+		r = gd<DDNode>(n).cur.x + config.RightExtent(n),
 		el = bounding(e,LEFT,start?UP:DOWN,false),
 		er = bounding(e,RIGHT,start?UP:DOWN,false);
-	double edge = config.ranking.GetRank(DDd(n).rank)->yBase;
+	double edge = config.ranking.GetRank(gd<DDNode>(n).rank)->yBase;
 	if(start)
 		appendQuad(l,r,el,er,t.y,edge);
 	else
@@ -164,8 +164,8 @@ void RouteBounds::path(DDModel::Edge *e) {
 		tr = bounding(e,RIGHT,UP,true),
 		hl = bounding(e,LEFT,DOWN,true),
 		hr = bounding(e,RIGHT,DOWN,true),
-		ty = config.ranking.GetRank(DDd(e->tail).rank)->yBase,
-		hy = config.ranking.GetRank(DDd(e->head).rank)->yBase;
+		ty = config.ranking.GetRank(gd<DDNode>(e->tail).rank)->yBase,
+		hy = config.ranking.GetRank(gd<DDNode>(e->head).rank)->yBase;
 	appendQuad(tl,tr,hl,hr,ty,hy);
 }
 bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
@@ -182,8 +182,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		hd = path->last->head;
 	}
 	EdgeGeom &eg = gd<EdgeGeom>(e);
-	Coord tailpt = (path->direction==DDPath::reversed?eg.tailPort:eg.headPort).pos + DDd(tl).multi->pos(),
-		headpt = (path->direction==DDPath::reversed?eg.headPort:eg.tailPort).pos + DDd(hd).multi->pos();
+	Coord tailpt = (path->direction==DDPath::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos(),
+		headpt = (path->direction==DDPath::reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
 
 	Line &unclipped = path->unclippedPath;
 	Line region;
@@ -193,7 +193,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		// disabled because of header dependencies (needs more work)
 		DDModel::Node *left = tl,
 			*right = hd;
-		if(DDd(left).order>DDd(right).order)
+		if(gd<DDNode>(left).order>gd<DDNode>(right).order)
 			swap(left,right);
 		obav.FindSpline(tailpt,headpt,unclipped);
 		*/
@@ -207,11 +207,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		assert(path->first); // no flat or self edges!
 		RouteBounds rb(config,gd<GraphGeom>(e->g).bounds);
 		//rb.term(path->first,tailpt,true);
-		for(DDMultiNode::edge_iter ei0 = DDd(tl).multi->eBegin(); ei0!=DDd(tl).multi->eEnd(); ++ei0)
+		for(DDMultiNode::edge_iter ei0 = gd<DDNode>(tl).multi->eBegin(); ei0!=gd<DDNode>(tl).multi->eEnd(); ++ei0)
 			rb.path(*ei0);
 		for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 			rb.path(*ei);
-		for(DDMultiNode::edge_iter ei2 = DDd(hd).multi->eBegin(); ei2!=DDd(hd).multi->eEnd(); ++ei2)
+		for(DDMultiNode::edge_iter ei2 = gd<DDNode>(hd).multi->eBegin(); ei2!=gd<DDNode>(hd).multi->eEnd(); ++ei2)
 			rb.path(*ei2);
 		//rb.term(path->last,headpt,false);
 		rb.poly(region);
@@ -250,10 +250,10 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 				//return false;
 			}
 			for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
-				double y = DDd(*ni).cur.y,
+				double y = gd<DDNode>(*ni).cur.y,
 					x = checkPos(unclipped.YIntersection(y)).x;
-				DDd(*ni).actualX = x;
-				DDd(*ni).actualXValid = true;
+				gd<DDNode>(*ni).actualX = x;
+				gd<DDNode>(*ni).actualXValid = true;
 			}
 			break;
 		}
@@ -269,7 +269,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	else
 		eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
 			hg.pos,eg.headClipped?&hg.region:0);
-	if(path->direction==DDPath::reversed ^ gd<EdgeGeom>(e).reversed) 
+	if((path->direction==DDPath::reversed) ^ gd<EdgeGeom>(e).reversed) 
 		reverse(eg.pos.begin(),eg.pos.end());
 	return true;
 }

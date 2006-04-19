@@ -14,38 +14,30 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-
-#include "DynaDAG.h"
-
-using namespace std;
+#ifndef PathOptim_h
+#define PathOptim_h
 
 namespace Dynagraph {
 namespace DynaDAG {
 
-Crossings calculateCrossings(Config &config) {
-	Crossings cc;
-	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri) {
-		Rank *r = *ri;
-		for(NodeV::iterator ni1 = r->order.begin(); ni1!=r->order.end(); ++ni1)
-			for(NodeV::iterator ni2 = ni1+1; ni2!=r->order.end(); ++ni2)
-				cc += uvcross(*ni1,*ni2,false,true);
-	}
-	return cc;
-}
-pair<int,Coord> calculateTotalEdgeLength(Config &config) {
-	int count=0;
-	Coord d(0,0);
-	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
-		++count;
-		for(DDPath::edge_iter mei = DDp(*ei)->eBegin(); mei!=DDp(*ei)->eEnd(); ++mei) {
-			DDModel::Edge *e = *mei;
-			Coord d2 = gd<DDNode>(e->tail).cur-gd<DDNode>(e->head).cur;
-			d += d2.Abs();
-		}
-	}
-	return make_pair(count,d);
-}
+// the classic DynaDAG path optimizer
+struct PathOptim : Optimizer {
+	PathOptim(Config &config) : config(config) {}
+	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
+	double Reopt(DDModel::Node *n,UpDown dir);
+private:
+	Config &config;
+	void optPath(DDPath *path);
+	bool leftgoing(DDModel::Node *n, UpDown dir, int eq_pass);
+	void shiftLeft(DDModel::Node *n);
+	bool rightgoing(DDModel::Node *n, UpDown dir, int eq_pass);
+	void shiftRight(DDModel::Node *n);
+	double coordBetween(DDModel::Node *L, DDModel::Node *R);
+	void resetCoord(DDModel::Node *n);
+	void optElt(DDModel::Node *n, UpDown dir, int eq_pass);
+};
 
 } // namespace DynaDAG
 } // namespace Dynagraph
 
+#endif // PathOptim_h
