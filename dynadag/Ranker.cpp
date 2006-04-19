@@ -339,19 +339,25 @@ void Ranker::findEdgeDirections() {
 	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
 		int tlr = DDp((*ei)->tail)->newBottomRank,
 			hdr = DDp((*ei)->head)->newTopRank;
+		DDPath *path = DDp(*ei);
 		if(tlr==hdr)
-			DDp(*ei)->direction = DDPath::flat;
+			path->direction = DDPath::flat;
 		else if(tlr>hdr) {
 			tlr = DDp((*ei)->head)->newBottomRank;
 			hdr = DDp((*ei)->tail)->newTopRank;
 			if(tlr>hdr)
-				DDp(*ei)->direction = DDPath::flat;
+				path->direction = DDPath::flat;
 			else
-				DDp(*ei)->direction = DDPath::reversed;
+				path->direction = DDPath::reversed;
 		}
 		else
-			DDp(*ei)->direction = DDPath::forward;
-	}
+			path->direction = DDPath::forward;
+		if(gd<EdgeGeom>(*ei).reversed)
+			switch(path->direction) {
+			case DDPath::forward: path->direction = DDPath::reversed; break;
+			case DDPath::reversed: path->direction = DDPath::forward; break;
+			}
+		}
 
 }
 void Ranker::Rerank(DDChangeQueue &changeQ) {
