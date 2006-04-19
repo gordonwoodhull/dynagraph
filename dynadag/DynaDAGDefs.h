@@ -36,6 +36,10 @@ struct InternalErrorException : DGException {
   InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints",true) {}
 };
 
+inline bool userDefinedMove(DynaDAGLayout::Edge *ve) {
+	return gd<EdgeGeom>(ve).manualRoute;
+	//return flags & DG_UPD_MOVE && !gd<EdgeGeom>(ve).pos.Empty();
+}
 
 typedef std::vector<DynaDAGLayout::Node*> LNodeV; // mneh
 // vertical constraint weights

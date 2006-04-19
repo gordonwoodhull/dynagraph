@@ -85,19 +85,14 @@ private:
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
 	void findChangedNodes(DDChangeQueue &changeQ);
-	void DynaDAGServer::findFlowSlope(DDMultiNode *mn);
-	void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ);
+	void findFlowSlope(DDMultiNode *mn);
+	void findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
 	void redrawEdges(DDChangeQueue &changeQ,bool force);
 	void cleanUp();
 	void dumpModel();
 };
-
-inline bool userDefinedMove(DynaDAGLayout::Edge *ve) {
-	return gd<EdgeGeom>(ve).manualRoute;
-	//return flags & DG_UPD_MOVE && !gd<EdgeGeom>(ve).pos.Empty();
-}
 
 /*
 	EXCEPTIONS
