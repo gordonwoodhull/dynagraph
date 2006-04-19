@@ -1,0 +1,8 @@
+open graph V
+insert node V n
+insert node V m
+insert node V A [flow=1,shape=none,width=0,height=0]
+insert node V B [flow=1,shape=none,width=0,height=0]
+insert edge V h A n
+insert edge V t m B
+insert edge V e A B
