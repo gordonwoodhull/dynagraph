@@ -237,6 +237,10 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 						endSlopes.b = -endSlopes.a;
 						endSlopes.a = -t;
 					}
+					if(gd<EdgeGeom>(e).reversed) {
+						endSlopes.a = -endSlopes.a;
+						endSlopes.b = -endSlopes.b;
+					}
 					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
@@ -259,14 +263,14 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	}
 	NodeGeom &tg = gd<NodeGeom>(e->tail),
 		&hg = gd<NodeGeom>(e->head);
-	if(path->direction==DDPath::reversed) {
+	if(path->direction==DDPath::reversed) 
 		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);
-		reverse(eg.pos.begin(),eg.pos.end());
-	}
 	else
 		eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
 			hg.pos,eg.headClipped?&hg.region:0);
+	if(path->direction==DDPath::reversed ^ gd<EdgeGeom>(e).reversed) 
+		reverse(eg.pos.begin(),eg.pos.end());
 	return true;
 }
 

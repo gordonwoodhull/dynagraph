@@ -352,13 +352,15 @@ void Ranker::findEdgeDirections() {
 		}
 		else
 			path->direction = DDPath::forward;
+		/*
+		// no: there's two kinds of reversedness
 		if(gd<EdgeGeom>(*ei).reversed)
 			switch(path->direction) {
 			case DDPath::forward: path->direction = DDPath::reversed; break;
 			case DDPath::reversed: path->direction = DDPath::forward; break;
 			}
-		}
-
+		*/
+	}
 }
 void Ranker::Rerank(DDChangeQueue &changeQ) {
 	// this connection is just to keep the graph connected

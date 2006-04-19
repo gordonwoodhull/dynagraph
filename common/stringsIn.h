@@ -269,6 +269,8 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 			else
 				skip = true;
 		}
+		else if(ai->first=="reversed") 
+			eg.reversed = ai->second=="true";
 		if(!skip)
 			SetAndMark(e,ai->first,ai->second);
 	}
