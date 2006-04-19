@@ -23,12 +23,14 @@
 #include "IncrLangEvents.h"
 #include "IncrViewWatcher.h"
 
+#include <memory>
+
 namespace Dynagraph {
 
 // NGraph is LGraph containing at least StrAttrs2
 template<typename NGraph> 
 struct IncrStrGraphHandler : IncrLangEvents {
-	IncrWorld<NGraph> *world_;
+	std::auto_ptr<IncrWorld<NGraph> > world_;
 	ChangeQueue<NGraph> Q_;
 	IncrViewWatcher<NGraph> *watcher_;
 	ChangeProcessor<NGraph> *next_;
@@ -37,8 +39,6 @@ struct IncrStrGraphHandler : IncrLangEvents {
     IncrStrGraphHandler(IncrWorld<NGraph> *world) : world_(world),Q_(&world_->whole_,&world_->current_),watcher_(0),next_(0),locks_(0) {}
 	~IncrStrGraphHandler() {
 		// don't delete watcher because it's probably in engine chain
-		if(world_)
-			delete world_;
 		if(next_)
 			delete next_;
 	}
