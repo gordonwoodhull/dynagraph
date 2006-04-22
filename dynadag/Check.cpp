@@ -127,7 +127,7 @@ void XSolver::checkEdgeConstraints() {
 					(*ei)->tail,gd<DDNode>((*ei)->tail).amEdgePart()?"path":"multinode",thing((*ei)->tail));
 				report(r_error,"node %p of %s %p????\n",(*ei)->head,gd<DDNode>((*ei)->head).amEdgePart()?
 					"path":"multinode",thing((*ei)->head));
-				throw InternalErrorException();
+				throw BadXConstraints();
 			}
 		}
 }

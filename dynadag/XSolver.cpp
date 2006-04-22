@@ -272,11 +272,11 @@ void XSolver::Place(DDChangeQueue &changeQ) {
 				}
 				report(r_error,"\n");
 			}
-			throw InternalErrorException();
+			throw BadXConstraints();
 		}
 		catch(DDNS::DisconnectedException) {
 			report(r_error,"internal error: disconnected constraint graph!\n");
-			throw InternalErrorException();
+			throw BadXConstraints();
 		}
 		readoutCoords();
 		// cg.inconsistent = false;

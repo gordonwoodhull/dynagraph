@@ -32,8 +32,8 @@ inline void *thing(DDModel::Node *mn) {
 
 typedef ChangeQueue<DynaDAGLayout> DDChangeQueue;
 
-struct InternalErrorException : DGException {
-  InternalErrorException() : DGException("an internal error has occurred in dynadag's x constraints",true) {}
+struct BadXConstraints : DGException {
+  BadXConstraints() : DGException("an internal error has occurred in dynadag's x constraints",true) {}
 };
 
 inline bool userDefinedMove(DynaDAGLayout::Edge *ve) {
