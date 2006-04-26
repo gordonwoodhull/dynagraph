@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 #include <fstream>
+#include <string.h>
+
 #include "common/ag2str.h"
 #include "common/emitGraph.h"
 #include "common/stringsIn.h"
@@ -193,11 +195,24 @@ void print_version() {
 	report(r_cmdline,"Dynagraph version %s\n",DYNAGRAPH_VERSION_DOTS_QUOTED);
 }
 void print_help() {
-	report(r_cmdline,"dynagraph arguments:\n"
+	report(r_cmdline,
+		"dynagraph arguments:\n"
+		"   -v (--version) print version information only\n"
+		"	-h (-?) print this help\n"
 		"   -d use dot-compatible coordinates (position in points, node size in inches)\n"
-		"   -i filename input .dot file\n"
+		"   -i filename input .dot file (static layout)\n"
+		"   -s filename input .incr file (incrface dynamic layout)\n"
 		"   -oN filename write stream N to filename\n"
-		"   -oL filename output layout steps to filename{step}.dot\n");
+		"   -oL filename output layout steps to filename{step}.dot\n"
+		"   -raN report on a to stream N\n");
+	for(int i = 0;i<g_nreports;++i)
+		report(r_cmdline,"      %c %s\n",g_reports[i].c,g_reports[i].desc);
+}
+void print_report_syntax() {
+	report(r_error,
+		"-o: specify output filename\n"
+		"   -oN filename, N is [0-9], a file # specified in -r\n"
+		"   -oL filename output layouts to filename1.dot,filename2.dot,...\n");
 }
 
 
@@ -228,12 +243,10 @@ int main(int argc, char *args[]) {
 			dotfile = args[++i];
 			break;
 		case 's': // dynamic script
-			if(i==argc-1) {
-				report(r_error,"-s must be followed by filename\n");
-				return 1;
-			}
-			if(args[i][2]) {
-				report(r_error,"syntax: -s filename\n");
+			if(i==argc-1 || args[i][2]) {
+				report(r_error,
+					"-s: specify input incrface script\n"
+					"   -s filename: use script in filename (instead of stdin)\n");
 				return 1;
 			}
 			if(!(incr_yyin = fopen(args[++i],"r"))) {
@@ -243,26 +256,22 @@ int main(int argc, char *args[]) {
 			//setvbuf(incr_yyin,0,_IONBF,0);
 			break;
 		case 'r': {// reports
-			int o;
 			char last = args[i][strlen(args[i])-1];
-			o = isdigit(last)?(last-'0'):-1;
+			int o = isdigit(last)?(last-'0'):-1;
 			for(int j = 2; args[i][j] && isalpha(args[i][j]); ++j) {
 				pair<bool,enum reportTypes> val = findSwitchVal(g_reports,g_nreports,args[i][j]);
 				if(!val.first) {
-					report(r_error,"-r: generate report\n\t'%c' not recognized\n",args[i][j]);
+					report(r_error,"-r: generate report\n"
+								   "   report code '%c' not recognized\n",args[i][j]);
 					return 1;
 				}
 				reports[val.second] = o;
 			}
 			break;
 				  }
-		case 'o': {// output files
-			if(i==argc-1) {
-				report(r_error,"-o must be followed by filename\n");
-				return 1;
-			}
-			if(!args[i][2]) {
-				report(r_error,"syntax: -o[0..9L] filename\n");
+		case 'o': // output files
+			if(i==argc-1 || !args[i][2]) {
+				print_report_syntax();
 				return 1;
 			}
 			if(toupper(args[i][2])=='L') {
@@ -270,19 +279,17 @@ int main(int argc, char *args[]) {
 				break;
 			}
 			else if(!isdigit(args[i][2])) {
-				report(r_error,"-o: output file\n"
-							   "\tsyntax: -oN filename, N is [0-9], a file # specified in -r\n"
-							   "\t\tOR -oL filename output layouts to filename1.dot,filename2.dot,...\n");
+				print_report_syntax();
 				return 1;
-			}
-			int n = args[i][2]-'0';
-			outfile[n] = fopen(args[++i],"w");
-			if(!outfile[n]) {
-				report(r_error,"-o error: couldn't open file %s for writing\n",args[i]+3);
-				return 1;
+			} else {
+				int n = args[i][2]-'0';
+				outfile[n] = fopen(args[++i],"w");
+				if(!outfile[n]) {
+					report(r_error,"-o error: couldn't open file %s for writing\n",args[i]+3);
+					return 1;
+				}
 			}
 			break;
-				  }
 		case 'd': // dot-compatible coords
 			g_transform  = &g_dotRatios;
 			g_useDotDefaults = true;
@@ -290,8 +297,15 @@ int main(int argc, char *args[]) {
 		case 'v':
 			print_version();
 			return 0;
+		case '-':
+			if(!strcmp(args[i]+2,"version")) {
+				print_version();
+				return 0;
+			}
+			//else fallthru
 		default:
-			report(r_error,"switch -%c not recognized\n",args[i][1]);
+			report(r_error,"command not recognized: %s\n",args[i]);
+			print_version();
 			print_help();
 			return 1;
 		case 'h':
