@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 #include <fstream>
+#include <string.h>
+
 #include "common/ag2str.h"
 #include "common/emitGraph.h"
 #include "common/stringsIn.h"
@@ -296,7 +298,7 @@ int main(int argc, char *args[]) {
 			print_version();
 			return 0;
 		case '-':
-			if(!stricmp(args[i]+2,"version")) {
+			if(!strcmp(args[i]+2,"version")) {
 				print_version();
 				return 0;
 			}
