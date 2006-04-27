@@ -25,7 +25,7 @@ namespace DynaDAG {
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
 	NSRanker(Layout *whole,Layout *current) 
-		: top_(cg_.create_node()),rankXlate_(gd<GraphGeom>(current).resolution.x) {}
+		: top_(cg_.create_node()),rankXlate_(gd<GraphGeom>(current).resolution.y) {}
 	void Process(ChangeQueue<Layout> &changeQ);
 private:
 	ConstraintGraph cg_;
