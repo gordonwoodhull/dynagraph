@@ -29,18 +29,10 @@ struct Rank {
 	Rank(Rank &o) : order(o.order),yBase(o.yBase),
 	  deltaAbove(o.deltaAbove),deltaBelow(o.deltaBelow) {}
 	double yBelow(double fract) {
-#ifdef FLEXIRANKS
 		return yBase;
-#else
-		return yBase - deltaBelow - fract*spaceBelow;
-#endif
 	}
 	double yAbove(double fract) {
-#ifdef FLEXIRANKS
 		return yBase + 2*deltaAbove;
-#else
-		return yBase + deltaAbove + fract*spaceBelow; // HACK: wrong spaceBelow but all are nodeSep.y now
-#endif
 	}
 	double Height() {
 		return deltaAbove+deltaBelow+spaceBelow;

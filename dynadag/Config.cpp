@@ -125,7 +125,7 @@ DDModel::Node *Config::Left(DDModel::Node *n) {
 	return RelNode(n,-1);
 }
 void Config::InstallAtRight(DDModel::Node *n, int r) {
-	Rank *rank = *ranking.EnsureRank(r);
+	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	DDModel::Node *right = rank->order.size()?rank->order.back():0;
 	double x = right?gd<DDNode>(right).cur.x + UVSep(right,n):0.0;
 	assert(!right||x>gd<DDNode>(right).cur.x);
@@ -146,7 +146,7 @@ inline bool sameNode(DDModel::Node *n1,DDModel::Node *n2) {
 }
 #endif
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
-	Rank *rank = *ranking.EnsureRank(r);
+	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	assert(o<=rank->order.size() && o>=0);
 	NodeV::iterator i = rank->order.begin()+o;
 	i = rank->order.insert(i,n);
@@ -158,27 +158,7 @@ void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 	ddn.cur.valid = true;
 	ddn.cur.x = x;
 	ddn.cur.y = rank->yBase; // estimate
-#ifndef FLEXIRANKS
-	double t = TopExtent(n),
-		b = BottomExtent(n);
-	if(t>rank->deltaAbove)
-	  rank->deltaAbove = t;
-	if(b>rank->deltaBelow)
-		rank->deltaBelow = b;
-#endif
-	/*
-#ifdef X_STRICTLY_INCREASING
-	if(i!=rank->order.begin() && !sameNode(*i,*(i-1)))
-		assert(ddn.cur.x>gd<DDNode>(*(i-1)).cur.x);
-	if(i+1!=rank->order.end() && !sameNode(*i,*(i+1)))
-		assert(ddn.cur.x<gd<DDNode>(*(i+1)).cur.x);
-#else
-	if(i!=rank->order.begin())
-		assert(ddn.cur.x>=gd<DDNode>(*(i-1)).cur.x);
-	if(i+1!=rank->order.end())
-		assert(ddn.cur.x<=gd<DDNode>(*(i+1)).cur.x);
-#endif
-		*/
+
 	for(++i; i!=rank->order.end(); ++i) {
 		gd<DDNode>(*i).order++;
 		InvalidateAdjMVals(*i);
@@ -186,7 +166,7 @@ void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 	model.dirty().insert(n);
 }
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o) {
-	Rank *rank = *ranking.EnsureRank(r);
+	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	assert(o<=rank->order.size() && o>=0);
 	DDModel::Node *L = o>0?rank->order[o-1]:0,
 		*R = o<rank->order.size()?rank->order[o]:0;
@@ -198,7 +178,7 @@ struct XLess {
 	}
 };
 NodePair Config::NodesAround(int r,double x) {
-	Rank *rank = *ranking.EnsureRank(r);
+	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	NodeV::iterator i = lower_bound(rank->order.begin(),rank->order.end(),x,XLess());
 	DDModel::Node *L = i==rank->order.begin()?0:*(i-1),
 		*R = i==rank->order.end()?0:*i;

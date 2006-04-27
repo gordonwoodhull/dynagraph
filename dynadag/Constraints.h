@@ -17,6 +17,7 @@
 #ifndef Constraints_h
 #define Constraints_h
 
+#include "ns.h"
 
 namespace Dynagraph {
 namespace DynaDAG {
@@ -34,8 +35,11 @@ struct NodeConstraints {
 		*stab; // for stability constraints
 	NodeConstraints() : n(0),stab(0) {}
 	~NodeConstraints() {
+		// these are not so when the whole system goes down at once (e.g. on shutdown)
+		/*
 		assert(!n);
 		assert(!stab);
+		*/
 	}
 };
 

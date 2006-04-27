@@ -31,14 +31,9 @@
 #include "Config.h"
 #include "SiftMatrix.h"
 #include "ConstraintGraph.h"
-#include "Ranker.h"
 #include "DotlikeOptimizer.h"
 #include "XSolver.h"
-#ifdef FLEXIRANKS
 #include "FlexiSpliner.h"
-#else
-#include "Spliner.h"
-#endif
 
 namespace Dynagraph {
 namespace DynaDAG {
@@ -51,20 +46,14 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 	DynaDAGLayout *whole_,*current_;
 	DDModel model; // whole graph + virtual nodes & edges for tall nodes & edge chains
 	Config config;	// indexes layout nodes by rank and order
-	Ranker ranker;
 	Optimizer *optimizer;
 	XSolver xsolver;
-#ifdef FLEXIRANKS
 	FlexiSpliner spliner;
-#else
-	Spliner spliner;
-#endif
 
 	DynaDAGServer(DynaDAGLayout *whole,DynaDAGLayout *current) :
 		whole_(whole),current_(current),
 		model(),
 		config(this,model,whole,current,&xsolver),
-		ranker(this,config),
 		optimizer(new DotlikeOptimizer(config)),
 		xsolver(config,gd<GraphGeom>(current).resolution.x),
 		spliner(config) {}
@@ -97,9 +86,10 @@ private:
 /*
 	EXCEPTIONS
 */
+template<typename Layout>
 struct NailWithoutPos : DGException {
-	DynaDAGLayout::Node *n;
-	NailWithoutPos(DynaDAGLayout::Node *n) :
+	typename Layout::Node *n;
+	NailWithoutPos(typename Layout::Node *n) :
 	  DGException("nailing a node without specifying a position"),
 	  n(n) {}
 };

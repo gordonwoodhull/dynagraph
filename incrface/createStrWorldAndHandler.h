@@ -30,7 +30,6 @@ struct WorldGuts {
 	DString engines_,superengines_;
 	WorldGuts(DString superengines, DString engines) : engines_(engines),superengines_(superengines) {}
 	EnginePair<GeneralLayout> operator()(ChangeQueue<GeneralLayout> &Q,IncrWorld<GeneralLayout> &world) {
-		SetAndMark(Q.ModGraph(),"engines",engines_);
 		typedef WorldInABox<GeneralLayout,Layout,LayoutToLayoutTranslator<GeneralLayout,Layout>,LayoutToLayoutTranslator<Layout,GeneralLayout> > Box;
 		Box *box = new Box;
 		box->assignEngine(engines_,world);
@@ -44,7 +43,6 @@ struct SimpleGuts {
 	DString engines_;
 	SimpleGuts(DString engines) : engines_(engines) {}
 	EnginePair<Layout> operator()(ChangeQueue<Layout> &Q,IncrWorld<Layout> &world) {
-		SetAndMark(Q.ModGraph(),"engines",engines_);
 		return createEngine(engines_,&world.whole_,&world.current_);
 	}
 };

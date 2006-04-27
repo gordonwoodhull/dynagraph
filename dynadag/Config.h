@@ -19,12 +19,7 @@
 
 #include "DynaDAGServices.h"
 
-#define FLEXIRANKS
-#ifdef FLEXIRANKS 
 #include "FlexiRanks.h"
-#else
-#include "ConseqRanks.h"
-#endif
 
 namespace Dynagraph {
 namespace DynaDAG {
@@ -44,15 +39,11 @@ struct XGenerator {
 };
 
 struct Config {
-#ifdef FLEXIRANKS // pseudo-template
 	typedef FlexiRanks Ranks;
-#else
-	typedef ConseqRanks Ranks;
-#endif
 	Config(DynaDAGServices *dynaDAG,DDModel &model,
 	       DynaDAGLayout *whole,DynaDAGLayout *current,
 	       XConstraintOwner *xconOwner) :
-	  ranking(gd<GraphGeom>(whole).resolution.y,gd<GraphGeom>(whole).separation.y),
+	  ranking(FlexiRankXlator(gd<GraphGeom>(whole).resolution.y)),
 	  prevLow(INT_MAX),
 	  model(model),
 	  whole(whole),
@@ -91,6 +82,7 @@ private:
 	XConstraintOwner *xconOwner;
 
 	// update
+	void makeRankList(DDChangeQueue &changeQ);
 	void insertNode(DynaDAGLayout::Node *vn);
 	void insertNewNodes(DDChangeQueue &changeQ);
 	void buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGenerator *xgen,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
@@ -111,9 +103,7 @@ private:
 	void moveOldEdges(DDChangeQueue &changeQ);
 	void splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, DynaDAGLayout::Edge *ve);
 	void joinRanks(DDChain *chain,DDModel::Node *n,DynaDAGLayout::Edge *ve);
-#ifdef FLEXIRANKS
 	void updateRanks(DDChangeQueue &changeQ);
-#endif
 	void reoptAllEdgesTouched(DDChangeQueue &changeQ);
         // set Ys
 	void resetRankBox(Rank *rank);

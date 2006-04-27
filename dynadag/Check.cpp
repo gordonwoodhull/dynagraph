@@ -22,7 +22,6 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
-#ifdef FLEXIRANKS
 void FlexiRanks::Check() {
 	iterator ri = begin(),
 		next;
@@ -35,10 +34,6 @@ void FlexiRanks::Check() {
 		ri = next++;
 	}
 }
-#else
-void ConseqRanks::Check() {
-}
-#endif
 void Config::checkEdges(bool strict) {
 	for(DDModel::graphedge_iter ei = model.edges().begin(); ei!=model.edges().end(); ++ei) {
 		DDModel::Node *t = (*ei)->tail,
@@ -68,7 +63,7 @@ void Config::checkEdges(bool strict) {
 		DDPath *path = DDp(*ei2);
 		DDMultiNode *n1 = DDp((*ei2)->tail),
 			*n2 = DDp((*ei2)->head);
-		if(path->first)
+		if(path && path->first)
 			assert(path->first->tail==n1->bottom()&&path->last->head==n2->top()
 				||path->first->tail==n2->bottom()&&path->last->head==n1->top());
 	}
@@ -130,16 +125,6 @@ void XSolver::checkEdgeConstraints() {
 				throw BadXConstraints();
 			}
 		}
-}
-void Ranker::checkStrongConstraints(DDChangeQueue &changeQ) {
-	for(DynaDAGLayout::graphedge_iter ei = config.current->edges().begin(); ei!=config.current->edges().end(); ++ei) {
-		/*
-		DDCGraph::Edge *strong = DDp(*ei)->strong;
-		// this is not true in flexiranks; call to this function is disabled
-		if(strong)
-			assert(DDNS::NSd(strong).minlen==gd<EdgeGeom>(*ei).minLength);
-		*/
-	}
 }
 /*
 void DynaDAG::checkAll(ddview_t *view) {

@@ -111,21 +111,30 @@ struct IncrCalledBack : IncrCallbacks {
     ~IncrCalledBack() {
 		g_incrCallback = 0;
     }
-    IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
-		StrAttrs::const_iterator ai = attrs.find("type");
-		DString type,engines,superengines=attrs.look("superengines");
-		bool setEngs=false;
-		if(ai!=attrs.end()) 
-			type = ai->second;
-		else {
-			engines = attrs.look("engines");
+    IncrLangEvents *incr_cb_create_handler(Name name,StrAttrs &attrs) {
+		DString type = attrs.look("type"),
+			&engines = attrs["engines"],
+			&superengines=attrs["superengines"];
+		if(!type) {
 			if(!engines) {
 				if(superengines.find("shapegen",0)!=DString::npos)
 					engines = "dynadag";
 				else
 					engines = "shapegen,dynadag";
-				setEngs = true;
 			}
+			DString::size_type ddpos = engines.find("dynadag",0);
+			if(ddpos!=DString::npos) 
+				if(engines.find("nsranker",0)==DString::npos && superengines.find("nsranker",0)==DString::npos)
+					if(superengines) {
+						string s = superengines.c_str(); // ick
+						s += ",nsranker";
+						superengines = s.c_str();
+					}
+					else {
+						string s = engines.c_str();
+						s.insert(ddpos,"nsranker,");
+						engines = s.c_str();
+					}
 			if(engines.find("dynadag",0)!=DString::npos)
 				type = "dynadag";
 			else if(engines.find("fdp",0)!=DString::npos)
@@ -294,6 +303,11 @@ int main(int argc, char *args[]) {
 			g_transform  = &g_dotRatios;
 			g_useDotDefaults = true;
 			break;
+		case 'h':
+		case '?':
+			print_version();
+			print_help();
+			return 0;
 		case 'v':
 			print_version();
 			return 0;
@@ -302,17 +316,17 @@ int main(int argc, char *args[]) {
 				print_version();
 				return 0;
 			}
+			else if(!strcmp(args[i]+2,"help")) {
+				print_version();
+				print_help();
+				return 0;
+			}
 			//else fallthru
 		default:
 			report(r_error,"command not recognized: %s\n",args[i]);
 			print_version();
 			print_help();
 			return 1;
-		case 'h':
-		case '?':
-			print_version();
-			print_help();
-			return 0;
 		}
 	}
 	setvbuf(stdin,0,_IONBF,0);

@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ns_h
+#define ns_h
 
 #include <queue>
 #include <limits.h>
@@ -674,3 +676,5 @@ private:
 };
 } // namespace NS
 } // namespace Dynagraph
+
+#endif // ns_h

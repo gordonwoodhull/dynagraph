@@ -67,6 +67,7 @@ pair<DDPath*,DDModel::Edge*> DynaDAGServer::OpenModelEdge(DDModel::Node *u, DDMo
 		}
 		if(me)
 			gd<DDEdge>(me).path = p;
+
 	}
 	return make_pair(p,me);
 }
@@ -102,7 +103,6 @@ Optimizer *DynaDAGServer::GetOptimizer() {
 // private methods
 void DynaDAGServer::closeLayoutNode(DynaDAGLayout::Node *n) {
 	DDMultiNode *m = DDp(n);
-	ranker.RemoveLayoutNodeConstraints(m);
 	//xsolver.RemoveLayoutNodeConstraints(m);
 	CloseChain(m,true);
 	if(m->node)
@@ -114,7 +114,6 @@ void DynaDAGServer::closeLayoutEdge(DynaDAGLayout::Edge *e) {
 	DDPath *p = DDp(e);
 	report(r_bug,"e %p p %p\n",e,p);
 	assert(p);
-	ranker.RemovePathConstraints(p);
 	if(p->first) {
 		InvalidateMVal(p->first->tail,DOWN);
 		InvalidateMVal(p->last->head,UP);
@@ -127,7 +126,7 @@ void DynaDAGServer::executeDeletions(DDChangeQueue &changeQ,DynaDAGLayout &extra
 	for(DynaDAGLayout::graphedge_iter j = changeQ.delE.edges().begin(); j!=changeQ.delE.edges().end();) {
 		// if part of 2-cycle, enable the other edge
 		if(DynaDAGLayout::Edge *e1 = current_->find_edge((*j)->head,(*j)->tail))
-			if(assign(DDp(e1)->secondOfTwo,false))
+			if(assign(gd<NSRankerEdge>(e1).secondOfTwo,false))
 				extraI.insert(e1);
 		DynaDAGLayout::Edge *e = *j++;
 		closeLayoutEdge(e);
@@ -359,7 +358,7 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 			unclipped.push_back(left-dy);
 			unclipped.push_back(left);
 		}
-		if(DDp(*ei)->secondOfTwo)
+		if(gd<NSRankerEdge>(*ei).secondOfTwo)
 			continue; // handled below
 		if(!changeQ.delE.find(*ei) && DDp(*ei)->unclippedPath.Empty()) {
 			if(gd<GraphGeom>(current_).splineLevel==DG_SPLINELEVEL_VNODE ||
@@ -370,7 +369,7 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 			ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
 	}
 	for(ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei)
-		if(DDp(*ei)->secondOfTwo) {
+		if(gd<NSRankerEdge>(*ei).secondOfTwo) {
 			Line before = gd<EdgeGeom>(*ei).pos;
 			Line &otherSide = gd<EdgeGeom>(current_->find_edge((*ei)->head,(*ei)->tail)).pos;
 			gd<EdgeGeom>(*ei).pos.assign(otherSide.rbegin(),otherSide.rend());
@@ -390,8 +389,8 @@ void DynaDAGServer::cleanUp() { // dd_postprocess
 		if(!n)
 			continue; // deleted
 		//n->coordFixed = true;
-		n->oldTopRank = gd<DDNode>(n->top()).rank;
-		n->oldBottomRank = gd<DDNode>(n->bottom()).rank;
+		gd<NSRankerNode>(*vni).oldTopRank = gd<DDNode>(n->top()).rank;
+		gd<NSRankerNode>(*vni).oldBottomRank = gd<DDNode>(n->bottom()).rank;
 	}
 }
 void DynaDAGServer::dumpModel() {
@@ -424,7 +423,6 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	timer.LoopPoint(r_timing,"preliminary");
 
 	// find ranks for nodes
-	ranker.Rerank(changeQ);
 	timer.LoopPoint(r_timing,"re-rank nodes");
 
 	// figure out subgraph for crossing optimization

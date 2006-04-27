@@ -115,17 +115,10 @@ struct MultiNode : Chain<N,E> {
 	// multi-node: first,last!=0, node==0
 	N *node;
 	DynaDAGLayout::Node *layoutN;
-	NodeConstraints topC,bottomC,xcon;
-	bool hit; // for rank dfs
-	int newTopRank,	// destination rank assignment
-		newBottomRank,
-		oldTopRank,	// previous rank assignment
-		oldBottomRank;
-	bool rankFixed; // whether nailed in Y
+	NodeConstraints xcon;
 	Coord flowSlope; // for flow nodes, the slope at which edges should enter/exit
 	//	coordFixed; // whether a good place in X has been found
-	MultiNode() : node(0),layoutN(0),hit(false),newTopRank(0),newBottomRank(0),
-		oldTopRank(0),oldBottomRank(0),rankFixed(false),flowSlope(0,0) /*,coordFixed(false)*/ {}
+	MultiNode() : node(0),layoutN(0),flowSlope(0,0) /*,coordFixed(false)*/ {}
 	struct node_iter {
 		N *operator *() {
 			switch(state) {
@@ -214,14 +207,9 @@ template<typename N,typename E>
 struct Path : Chain<N,E> {
 	// self or flat: first==last==0; use layoutE to figure out ends
 	DynaDAGLayout::Edge *layoutE;
-	// the second edge of 2-cycle should be ignored, mostly
-	bool secondOfTwo;
 	enum {forward,flat,reversed} direction;
 	Line unclippedPath;
-	// ranking vars
-	DDCGraph::Node *weak;
-	DDCGraph::Edge *strong;
-	Path() : secondOfTwo(false),weak(0),strong(0) {}
+	Path() : layoutE(0),direction(forward) {}
 };
 
 } // namespace Dynagraph

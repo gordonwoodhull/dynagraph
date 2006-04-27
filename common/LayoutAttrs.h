@@ -24,6 +24,9 @@
 #include "Geometry.h"
 #include "genpoly.h"
 
+// wrong
+#include "dynadag/NSRankerAttrs.h"
+
 namespace Dynagraph {
 
 /*
@@ -236,10 +239,10 @@ typedef std::vector<EdgeLabel> EdgeLabels;
 struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels {
 	GraphAttrs(Name name) : Name(name) {}
 };
-struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef {
+struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef, DynaDAG::NSRankerNode {
 	NodeAttrs(Name name) : Name(name) {}
 };
-struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels {
+struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels, DynaDAG::NSRankerEdge {
 	EdgeAttrs(Name name) : Name(name) {}
 };
 

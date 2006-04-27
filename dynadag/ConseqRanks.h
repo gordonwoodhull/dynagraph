@@ -64,12 +64,12 @@ struct ConseqRanks : std::vector<Rank*> {
 		else
 			return *ri;
 	}
-	iterator EnsureRank(index r) {
+	iterator EnsureRank(index r,double sep) {
 		if(r < low || r > high)
 			if(low <= high)
-				extendConfig(std::min(r,low),std::max(r,high));
+				extendConfig(std::min(r,low),std::max(r,high),sep);
 			else // first rank
-				extendConfig(r,r);
+				extendConfig(r,r,sep);
 		return GetIter(r);
 	}
 	index IndexOfIter(iterator ri) {
@@ -115,7 +115,7 @@ struct ConseqRanks : std::vector<Rank*> {
 private:
 	index low,high;
         Rank* &at(int i) { return operator[](i); } // for earlier gccs
-	void extendConfig(int newLow, int newHigh) {
+	void extendConfig(int newLow, int newHigh,double sep) {
 		int osize = high<low ? 0 : high - low + 1,
 			nsize = newHigh - newLow + 1;
 		int where = int(newLow < low ? 0 : size());

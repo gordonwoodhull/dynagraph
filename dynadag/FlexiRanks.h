@@ -22,6 +22,35 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
+struct FlexiRankXlator {
+	typedef int index;
+	bool Above(index a,index b) {
+		return a<b;
+	}
+	bool Below(index a,index b) {
+		return a>b;
+	}
+	index CoordToRank(double y) {
+#ifndef DOWN_GREATER
+		return -ROUND(y/div_);
+#else
+		return ROUND(y/div_);
+#endif
+	}
+	double RankToCoord(index r) {
+#ifndef DOWN_GREATER
+		return -r*div_;
+#else
+		return r*div_;
+#endif
+	}
+	index HeightToDRank(double dy) {
+		return ROUND(dy/div_);	
+	}
+	explicit FlexiRankXlator(double div) : div_(div) {}
+	double div_;
+};
+
 struct CompRank {
 	bool operator()(Rank *r1,Rank *r2) const {
 #ifndef DOWN_GREATER
@@ -32,10 +61,10 @@ struct CompRank {
 	}
 };
 struct FlexiRanks : std::set<Rank*,CompRank> {
-	typedef int index;
-	double div,sep;
-	FlexiRanks(double div,double sep) : div(div),sep(sep) {}
-	FlexiRanks(FlexiRanks &o) {
+	typedef FlexiRankXlator::index index;
+	FlexiRankXlator rankXlate_;
+	FlexiRanks(FlexiRankXlator rankXlate) : rankXlate_(rankXlate) {}
+	FlexiRanks(FlexiRanks &o) : rankXlate_(o.rankXlate_) {
 		*this = o;
 	}
 	~FlexiRanks() {
@@ -54,8 +83,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 		reset();
 		oldRanks = o.oldRanks;
 		newRanks = o.newRanks;
-		div = o.div;
-		sep = o.sep;
+		rankXlate_ = o.rankXlate_;
 		for(iterator ri = o.begin(); ri!=o.end(); ++ri) {
 			Rank *nr = new Rank(**ri);
 			insert(nr);
@@ -64,13 +92,29 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	}
 	Rank *front() { return *begin(); }
 	Rank *back() { return *rbegin(); }
-	index Low() { if(empty()) return 0; else return y2r(front()->yBase); }
-	index High() { if(empty()) return 0; else return y2r(back()->yBase); }
 	bool Above(index a,index b) {
-		return a<b;
+		return rankXlate_.Above(a,b);
 	}
 	bool Below(index a,index b) {
-		return a>b;
+		return rankXlate_.Below(a,b);
+	}
+	index CoordToRank(double y) {
+		return rankXlate_.CoordToRank(y);
+	}
+	double RankToCoord(index r) {
+		return rankXlate_.RankToCoord(r);
+	}
+	index HeightToDRank(double dy) {
+		return rankXlate_.HeightToDRank(dy);
+	}
+	index Low() { 
+		if(empty()) 
+			return 0; 
+		else return rankXlate_.CoordToRank(front()->yBase); 
+	}
+	index High() { 
+		if(empty()) return 0; 
+		else return rankXlate_.CoordToRank(back()->yBase); 
 	}
 	index Up(index r) {
 		if(r==INT_MIN)
@@ -89,8 +133,8 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 		return IndexOfIter(ri);
 	}
 	iterator GetIter(index r) {
-		Rank q(sep);
-		q.yBase = r2y(r);
+		Rank q(8.); // stupid set lookup deserves rewrite
+		q.yBase = rankXlate_.RankToCoord(r);
 		return find(&q);
 	}
 	Rank *GetRank(index r)	{
@@ -100,41 +144,23 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 		else
 			return *ri;
 	}
-	iterator EnsureRank(index r) {
+	iterator EnsureRank(index r,double sep) {
 		assert(r!=INT_MAX && r!=INT_MIN); // off bottom or top
 		iterator ri = GetIter(r);
 		if(ri==end()) {
 			Rank *rank = new Rank(sep);
-			rank->yBase = r2y(r);
+			rank->yBase = rankXlate_.RankToCoord(r);
 			ri = insert(rank).first;
 		}
 		return ri;
 	}
-	index IndexOfIter(iterator ri) {
-		return y2r((*ri)->yBase);
-	}
-	index MapCoordToRank(double y) {
-		return y2r(y);
-	}
-	// Flexi-specific
 	void RemoveRank(iterator ri) {
 		Rank *del = *ri;
 		erase(ri);
 		delete del;
 	}
-	index y2r(double y) {
-#ifndef DOWN_GREATER
-		return -ROUND(y/div);
-#else
-		return ROUND(y/div);
-#endif
-	}
-	double r2y(index r) {
-#ifndef DOWN_GREATER
-		return -r*div;
-#else
-		return r*div;
-#endif
+	index IndexOfIter(iterator ri) {
+		return rankXlate_.CoordToRank((*ri)->yBase);
 	}
 	void Check();
 	typedef std::vector<index> IndexV;
