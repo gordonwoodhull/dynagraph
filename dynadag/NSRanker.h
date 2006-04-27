@@ -195,7 +195,7 @@ template<typename Layout>
 int pathExists(typename Layout::Node *src, typename Layout::Node *dest) {
     std::vector<typename Layout::Node*> hit;
     bool result = dfs<Layout>(src,dest,hit);
-	for(std::vector<typename Layout::Node*>::iterator i=hit.begin(); i!=hit.end(); ++i)
+	for(typename std::vector<typename Layout::Node*>::iterator i=hit.begin(); i!=hit.end(); ++i)
 		gd<NSRankerNode>(*i).hit = false;
 	return result;
 }
