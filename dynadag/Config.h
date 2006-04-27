@@ -87,13 +87,13 @@ private:
 	void insertNewNodes(DDChangeQueue &changeQ);
 	void buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGenerator *xgen,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
 	void routeEdge(DynaDAGLayout::Edge *ve, XGenerator *xgen);
-	void userRouteEdge(DynaDAGLayout::Edge *ve);
-	void autoRouteEdge(DynaDAGLayout::Edge *vi);
+	void userRouteEdge(DDPath *path);
+	void autoRouteEdge(DDPath *path);
 	void adjustChain(DDChain *path,bool tail,Ranks::index dest,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
 	//void adjustTail(DDChain *path, Ranks::index dest);
 	void rerouteChain(DDChain *chain,int tailRank,int headRank,XGenerator *xgen);
 	void autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve);
-	void autoAdjustEdge(DynaDAGLayout::Edge *ve);
+	void autoAdjustEdge(DDPath *path);
 	void insertEdge(DynaDAGLayout::Edge *ve);
 	void unfixOldSingletons(DDChangeQueue &changeQ);
 	void insertNewEdges(DDChangeQueue &changeQ);

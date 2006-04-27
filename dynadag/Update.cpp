@@ -175,23 +175,23 @@ struct userX : autoX {
 			return autoX::xval(y);
 	}
 };
-void Config::userRouteEdge(DynaDAGLayout::Edge *ve) {
+void Config::userRouteEdge(DDPath *path) {
 	DDModel::Node *t, *h;
-	getLayoutEndpoints(ve,&t,&h);
-	userX xgen(gd<DDNode>(t).multi->pos(),gd<DDNode>(h).multi->pos(),gd<EdgeGeom>(ve).pos);
-	buildChain(dynaDAG->OpenModelEdge(0,0,ve).first,t,h,&xgen,0,ve);
+	getLayoutEndpoints(path->layoutE,&t,&h);
+	userX xgen(gd<DDNode>(t).multi->pos(),gd<DDNode>(h).multi->pos(),gd<EdgeGeom>(path->layoutE).pos);
+	buildChain(path,t,h,&xgen,0,path->layoutE);
 }
 
-void Config::autoRouteEdge(DynaDAGLayout::Edge *ve) {
+void Config::autoRouteEdge(DDPath *path) {
 	DDModel::Node *t, *h;
-	if(!getLayoutEndpoints(ve,&t,&h))
-		dynaDAG->CloseChain(DDp(ve),false); // flat
+	if(!getLayoutEndpoints(path->layoutE,&t,&h))
+		dynaDAG->CloseChain(path,false); // flat
 	else {
 		Position tp = gd<DDNode>(t).multi->pos(),
 		  hp = gd<DDNode>(h).multi->pos();
 		assert(tp.valid && hp.valid);
 		autoX xgen(tp,hp);
-		buildChain(dynaDAG->OpenModelEdge(0,0,ve).first,t,h,&xgen,0,ve);
+		buildChain(path,t,h,&xgen,0,path->layoutE);
 	}
 }
 // warning: overindulgent use of member pointers & references ahead...
@@ -311,9 +311,9 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 		adjustChain(chain,true,ntr,vn,ve);
 	}
 }
-void Config::autoAdjustEdge(DynaDAGLayout::Edge *ve) {
+void Config::autoAdjustEdge(DDPath *path) {
 	DDModel::Node *t, *h;
-	getLayoutEndpoints(ve,&t,&h);
+	getLayoutEndpoints(path->layoutE,&t,&h);
 	assert(gd<DDNode>(t).amNodePart()&&gd<DDNode>(h).amNodePart());
 	// not the same as ve->tail,ve->head if reversed
 	DynaDAGLayout::Node *tn = gd<DDNode>(t).multi->layoutN,
@@ -321,8 +321,8 @@ void Config::autoAdjustEdge(DynaDAGLayout::Edge *ve) {
 	int otr = gd<NSRankerNode>(tn).oldBottomRank, ntr = gd<NSRankerNode>(tn).newBottomRank,
 		ohr = gd<NSRankerNode>(hn).oldTopRank, nhr = gd<NSRankerNode>(hn).newTopRank;
 	if(otr >= ohr != ntr >= nhr) // moving into or out of backwardness
-		autoRouteEdge(ve);
-	else autoAdjustChain(DDp(ve),otr,ohr,ntr,nhr,0,ve);
+		autoRouteEdge(path);
+	else autoAdjustChain(path,otr,ohr,ntr,nhr,0,path->layoutE);
 
 	// invalidate edge cost constraints so they get reconnected right.
 	// xconOwner->InvalidatePathConstraints(DDp(ve));
@@ -334,12 +334,13 @@ void unbindEndpoints(DynaDAGLayout::Edge *ve) {
 }
 */
 void Config::insertEdge(DynaDAGLayout::Edge *ve) {
+	DDPath *path = dynaDAG->OpenModelEdge(0,0,ve).first;
 	if(ve->head==ve->tail || gd<NSRankerEdge>(ve).secondOfTwo)
-		dynaDAG->CloseChain(DDp(ve),false); // do not model self-edges
+		dynaDAG->CloseChain(path,false); // do not model self-edges
 	else if(userDefinedMove(ve))
-		userRouteEdge(ve);
+		userRouteEdge(path);
 	else
-		autoRouteEdge(ve);
+		autoRouteEdge(path);
 	findEdgeDirection(ve);
 	/*unbindEndpoints(ve); */ 	/* i don't know if this is good or bad */
 }
@@ -490,9 +491,9 @@ void Config::moveOldEdges(DDChangeQueue &changeQ) {
 			else if(gd<NSRankerEdge>(*ei).secondOfTwo)
 				; // ignore one edge of 2-cycle
 			else if(userDefinedMove(*ei))
-				userRouteEdge(ve);
+				userRouteEdge(DDp(ve));
 			else
-				autoAdjustEdge(ve);
+				autoAdjustEdge(DDp(ve));
 			findEdgeDirection(ve);
 		}
 }
