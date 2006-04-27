@@ -203,7 +203,7 @@ template<typename Layout>
 void NSRanker<Layout>::insertNewEdges(ChangeQueue<Layout> &changeQ) {
 	for(typename Layout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
-		typename Layout *current = changeQ.current;
+		Layout *current = changeQ.current;
 		if(e->head == e->tail)
 			continue;
 		bool weak = false;

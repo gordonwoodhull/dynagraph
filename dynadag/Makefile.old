@@ -9,12 +9,21 @@ INCS =	-I.. -I../.. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = createDynaDAGEngine.o Check.o Config.o ConstraintGraph.o DotlikeOptimizer.o DynaDAG.o \
-    FlexiSpline.o getCrossoptModelNodes.o Measurements.o Medians.o Ranker.o \
+OBJS = createDynaDAGEngine.o Check.o Config.o ConstraintGraph.o \
+    DotlikeOptimizer.o DynaDAG.o \
+    FlexiSpline.o getCrossoptModelNodes.o Measurements.o Medians.o \
     SetYs.o SiftMatrix.o Spline.o Update.o UVCross.o XSolver.o
 
-HFILES = DynaDAG.h Measurements.h Medians.h SiftMatrix.h ns.h nsdat.h \
-	../common/*.h ../pathplot/*.h ../shortspline/*.h
+HFILES = Config.h	ConseqRanks.h		ConstraintGraph.h \
+    Constraints.h	Crossings.h		DotlikeOptimizer.h \
+    DynaDAG.h		DynaDAGChains.h		DynaDAGDefs.h \
+    DynaDAGLayout.h	DynaDAGModel.h		DynaDAGServices.h \
+    FlexiRanks.h	FlexiSpliner.h		Measurements.h \
+    Medians.h		NSRanker.h		NSRankerAttrs.h \
+    Optimizer.h		Rank.h			SiftMatrix.h \
+    Spliner.h		XSolver.h		ns.h \
+    nsdat.h \
+    ../common/*.h ../pathplot/*.h ../shortspline/*.h
 
 libdynadag.a : $(OBJS)
 	$(AR) cr libdynadag.a $(OBJS)
