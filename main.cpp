@@ -213,7 +213,8 @@ void print_help() {
 		"   -s filename input .incr file (incrface dynamic layout)\n"
 		"   -oN filename write stream N to filename\n"
 		"   -oL filename output layout steps to filename{step}.dot\n"
-		"   -raN report on a to stream N\n");
+		"   -raN report on a to stream N\n"
+		"   -x break on any exception\n");
 	for(int i = 0;i<g_nreports;++i)
 		report(r_cmdline,"      %c %s\n",g_reports[i].c,g_reports[i].desc);
 }
@@ -229,6 +230,7 @@ int main(int argc, char *args[]) {
 	enableReport(r_error,stderr);
 	enableReport(r_cmdline,stdout);
 	loops.sep = ',';
+	bool xeptOut = false;
 	char *dotfile = 0;
 	FILE *outfile[10];
 	timer.Start();
@@ -303,6 +305,9 @@ int main(int argc, char *args[]) {
 			g_transform  = &g_dotRatios;
 			g_useDotDefaults = true;
 			break;
+		case 'x':
+			xeptOut = true;
+			break;
 		case 'h':
 		case '?':
 			print_version();
@@ -355,11 +360,15 @@ int main(int argc, char *args[]) {
 		}
 		catch(DGException2 dgx) {
 			fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
+			if(xeptOut)
+				throw;
 			if(dgx.fatal)
 				break;
 		}
 		catch(DGException dgx) {
 			fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype.c_str());
+			if(xeptOut)
+				throw;
 			if(dgx.fatal)
 				break;
 		}
