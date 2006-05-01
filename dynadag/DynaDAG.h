@@ -70,7 +70,7 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 private:
 	void closeLayoutNode(DynaDAGLayout::Node *n);
 	void closeLayoutEdge(DynaDAGLayout::Edge *e);
-	void executeDeletions(DDChangeQueue &changeQ,DynaDAGLayout &extraI);
+	void executeDeletions(DDChangeQueue &changeQ);
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
 	void findChangedNodes(DDChangeQueue &changeQ);

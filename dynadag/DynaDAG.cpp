@@ -122,17 +122,15 @@ void DynaDAGServer::closeLayoutEdge(DynaDAGLayout::Edge *e) {
 	delete p;
 	DDp(e) = 0;
 }
-void DynaDAGServer::executeDeletions(DDChangeQueue &changeQ,DynaDAGLayout &extraI) {
-	for(DynaDAGLayout::graphedge_iter j = changeQ.delE.edges().begin(); j!=changeQ.delE.edges().end();) {
-		// if part of 2-cycle, enable the other edge
-		if(DynaDAGLayout::Edge *e1 = current_->find_edge((*j)->head,(*j)->tail))
-			if(assign(gd<NSRankerEdge>(e1).secondOfTwo,false))
-				extraI.insert(e1);
-		DynaDAGLayout::Edge *e = *j++;
+void DynaDAGServer::executeDeletions(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();) {
+		DynaDAGLayout::Edge *e = *ei++;
 		closeLayoutEdge(e);
 	}
-	for(DynaDAGLayout::node_iter i = changeQ.delN.nodes().begin(); i!=changeQ.delN.nodes().end(); ++i)
-		closeLayoutNode(*i);
+	for(DynaDAGLayout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();) {
+		DynaDAGLayout::Node *n = *ni++;
+		closeLayoutNode(n);
+	}
 }
 // pretty aggressive (not ENOUGH)
 void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE) {
@@ -416,10 +414,8 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	}
 
 	// erase model objects for everything that's getting deleted
-	DynaDAGLayout extraI(whole_);
-	executeDeletions(changeQ,extraI);
+	executeDeletions(changeQ);
 	// add the former secondOfTwos to insE, temporarily
-	changeQ.insE |= extraI;
 	timer.LoopPoint(r_timing,"preliminary");
 
 	// find ranks for nodes
@@ -456,13 +452,6 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 
 	redrawEdges(changeQ,ModifyFlags(changeQ).flags&DG_UPD_EDGESTYLE);
 	timer.LoopPoint(r_timing,"draw splines");
-
-	// restore the edges that were re-inserted because secondOfTwo was reset
-	for(DynaDAGLayout::graphedge_iter ei = extraI.edges().begin(); ei!=extraI.edges().end(); ++ei) {
-		assert(changeQ.insE.erase(*ei));
-		ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-	}
-
 
 	// reset flags
 	cleanUp();

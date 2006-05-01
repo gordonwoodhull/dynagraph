@@ -38,7 +38,7 @@ private:
 	Layout *current_;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
 	void removePathConstraints(typename Layout::Edge *e);
-	void removeOldConstraints(ChangeQueue<Layout> &changeQ);
+	void removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI);
 	void makeStrongConstraint(typename Layout::Edge *e);
 	void makeWeakConstraint(typename Layout::Edge *e);
 	void fixNode(typename Layout::Node *n,bool fix);
@@ -46,7 +46,7 @@ private:
 	void moveOldNodes(ChangeQueue<Layout> &changeQ);
 	void insertNewNodes(ChangeQueue<Layout> &changeQ);
 	void stabilizePositionedNodes(ChangeQueue<Layout> &changeQ);
-	void insertNewEdges(ChangeQueue<Layout> &changeQ);
+	void insertNewEdges(Layout &insE);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
 };
 template<typename Layout>
@@ -74,9 +74,14 @@ void NSRanker<Layout>::removePathConstraints(typename Layout::Edge *e) {
 	gd<EdgeGeom>(e).constraint = false;
 }
 template<typename Layout>
-void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ) {
-	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) 
+void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI) {
+	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) {
 		removePathConstraints(*ei);
+		typename Layout::Edge *e = *ei;
+		if(typename Layout::Edge *e2 = current_->find_edge(e->head,e->tail))
+			if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false)) 
+				extraI.insert(e2);
+	}
 	for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni) 
 		removeLayoutNodeConstraints(*ni);
 }
@@ -211,14 +216,13 @@ int pathExists(typename Layout::Node *src, typename Layout::Node *dest) {
 	return result;
 }
 template<typename Layout>
-void NSRanker<Layout>::insertNewEdges(ChangeQueue<Layout> &changeQ) {
-	for(typename Layout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
+void NSRanker<Layout>::insertNewEdges(Layout &insE) {
+	for(typename Layout::graphedge_iter ei = insE.edges().begin(); ei!=insE.edges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
-		Layout *current = changeQ.current;
 		if(e->head == e->tail)
 			continue;
 		bool weak = false;
-		if(typename Layout::Edge *e1 = current->find_edge(e->head,e->tail)) {
+		if(typename Layout::Edge *e1 = current_->find_edge(e->head,e->tail)) {
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
 			if(gd<NSRankerEdge>(e1).weak || gd<NSRankerEdge>(e1).strong) { // if both get inserted at once, mark the second
@@ -226,7 +230,7 @@ void NSRanker<Layout>::insertNewEdges(ChangeQueue<Layout> &changeQ) {
 				continue;
 			}
 		}
-		else if(pathExists<Layout>(current->find(e->head),current->find(e->tail)))
+		else if(pathExists<Layout>(current_->find(e->head),current_->find(e->tail)))
 			weak = true;
 		if(gd<NSRankerNode>(e->tail).rankFixed || gd<NSRankerNode>(e->head).rankFixed)
 			weak = true;
@@ -234,9 +238,9 @@ void NSRanker<Layout>::insertNewEdges(ChangeQueue<Layout> &changeQ) {
 			makeWeakConstraint(e);
 		else
 			makeStrongConstraint(e);
-		if(changeQ.current->find(e->head)->degree()==1)
+		if(current_->find(e->head)->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->head).topC);
-		if(changeQ.current->find(e->tail)->degree()==1)
+		if(current_->find(e->tail)->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->tail).topC);
 	}
 }
@@ -268,9 +272,13 @@ void NSRanker<Layout>::Process(ChangeQueue<Layout> &changeQ) {
 	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;
 
 	moveOldNodes(changeQ);
-	removeOldConstraints(changeQ);
+	Layout extraI(changeQ.whole);
+	removeOldConstraints(changeQ,extraI);
 	insertNewNodes(changeQ);
-	insertNewEdges(changeQ);
+	insertNewEdges(changeQ.insE);
+	insertNewEdges(extraI);
+	for(Layout::graphedge_iter ei = extraI.edges().begin(); ei!=extraI.edges().end(); ++ei)
+		ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(changeQ);
 	recomputeRanks(changeQ);
 	NextProcess(changeQ);
