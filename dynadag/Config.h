@@ -61,7 +61,6 @@ struct Config {
 	double BottomExtent(DDModel::Node *n);
 	double UVSep(DDModel::Node *left,DDModel::Node *right);
 	double CoordBetween(DDModel::Node *L, DDModel::Node *R);
-	NodePair NodesAround(int r,double x);
 	DDModel::Node *RelNode(DDModel::Node *n, int offset);
 	DDModel::Node *Right(DDModel::Node *n);
 	DDModel::Node *Left(DDModel::Node *n);

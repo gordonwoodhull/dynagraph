@@ -24,13 +24,18 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
-	NSRanker(Layout *whole,Layout *current) 
-		: top_(cg_.create_node()),rankXlate_(gd<GraphGeom>(current).resolution.y) {}
+	NSRanker(Layout *whole,Layout *current) : 
+		top_(cg_.create_node()),
+		rankXlate_(gd<GraphGeom>(current).resolution.y),
+		current_(current)
+	{}
+	~NSRanker();
 	void Process(ChangeQueue<Layout> &changeQ);
 private:
 	ConstraintGraph cg_;
 	ConstraintGraph::Node *top_; // to pull loose nodes upward
 	FlexiRankXlator rankXlate_;
+	Layout *current_;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
 	void removePathConstraints(typename Layout::Edge *e);
 	void removeOldConstraints(ChangeQueue<Layout> &changeQ);
@@ -44,7 +49,13 @@ private:
 	void insertNewEdges(ChangeQueue<Layout> &changeQ);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
 };
-
+template<typename Layout>
+NSRanker<Layout>::~NSRanker() {
+	for(typename Layout::graphedge_iter i = current_->edges().begin();i!=current_->edges().end();++i)
+		removePathConstraints(*i);
+	for(typename Layout::node_iter j = current_->nodes().begin(); j!=current_->nodes().end(); ++j)
+		removeLayoutNodeConstraints(*j);
+}
 template<typename Layout>
 void NSRanker<Layout>::removeLayoutNodeConstraints(typename Layout::Node *n) {
 	cg_.RemoveNodeConstraints(gd<NSRankerNode>(n).topC);

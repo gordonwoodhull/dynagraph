@@ -173,20 +173,17 @@ void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o) {
 	InstallAtOrder(n,r,o,CoordBetween(L,R));
 }
 struct XLess {
-	bool operator()(DDModel::Node *u,double x) {
-		return gd<DDNode>(u).cur.x<x;
+	bool operator()(DDModel::Node *u,DDModel::Node *v) {
+		return gd<DDNode>(u).cur.x < gd<DDNode>(v).cur.x;
 	}
 };
-NodePair Config::NodesAround(int r,double x) {
+void Config::InstallAtPos(DDModel::Node *n, int r, double x) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
-	NodeV::iterator i = lower_bound(rank->order.begin(),rank->order.end(),x,XLess());
+	gd<DDNode>(n).cur.x = x;
+	NodeV::iterator i = lower_bound(rank->order.begin(),rank->order.end(),n,XLess());
 	DDModel::Node *L = i==rank->order.begin()?0:*(i-1),
 		*R = i==rank->order.end()?0:*i;
-	return make_pair(L,R);
-}
-void Config::InstallAtPos(DDModel::Node *n, int r, double x) {
-	NodePair lr = NodesAround(r,x);
-	InstallAtOrder(n,r,lr.second?gd<DDNode>(lr.second).order:lr.first?gd<DDNode>(lr.first).order+1:0,x);
+	InstallAtOrder(n,r,R?gd<DDNode>(R).order:L?gd<DDNode>(L).order+1:0,x);
 }
 void Config::Exchange(DDModel::Node *u, DDModel::Node *v) {
 	DDNode &ddu = gd<DDNode>(u),
@@ -226,11 +223,11 @@ void Config::RemoveNode(DDModel::Node *n) {
 	int pos = gd<DDNode>(n).order;
 	assert(rank->order[pos] == n);
 	NodeV::iterator i = rank->order.begin()+pos;
-	rank->order.erase(i);
 	if(i!=rank->order.end())
 		model.dirty().insert(*i); // re-constrain right node
-	for(;i!=rank->order.end(); ++i)
-		gd<DDNode>(*i).order--;
+	for(NodeV::iterator j=i;j!=rank->order.end(); ++j)
+		gd<DDNode>(*j).order--;
+	rank->order.erase(i);
 	ddn.inConfig = false;
 	ddn.rank = INT_MIN;
     /*

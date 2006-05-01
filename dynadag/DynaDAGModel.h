@@ -115,7 +115,6 @@ inline DDPath *&DDp(DynaDAGLayout::Edge *e) {
 }
 typedef std::vector<DDModel::Node*> NodeV;
 typedef std::vector<DDModel::Edge*> EdgeV;
-typedef std::pair<DDModel::Node *,DDModel::Node *> NodePair;
 typedef std::set<DynaDAGLayout::Node*> NodeSet;
 
 } // namespace Dynagraph
@@ -130,6 +129,16 @@ template<>
 inline Dynagraph::DynaDAG::DDEdge &gd<Dynagraph::DynaDAG::DDEdge,Dynagraph::DynaDAG::DDModel::Edge>(Dynagraph::DynaDAG::DDModel::Edge *e) {
 	return gd2<Dynagraph::DynaDAG::DDEdge,Dynagraph::DynaDAG::DDEdgeT<void,void> >(e);
 }
-
+/*
+// is this necessary?
+template<>
+inline const Dynagraph::DynaDAG::DDNode &gd<const Dynagraph::DynaDAG::DDNode,const Dynagraph::DynaDAG::DDModel::Node>(const Dynagraph::DynaDAG::DDModel::Node *n) {
+	return gd2<const Dynagraph::DynaDAG::DDNode,Dynagraph::DynaDAG::DDNodeT<void,void> >(n);
+}
+template<>
+inline const Dynagraph::DynaDAG::DDEdge &gd<const Dynagraph::DynaDAG::DDEdge,const Dynagraph::DynaDAG::DDModel::Edge>(const Dynagraph::DynaDAG::DDModel::Edge *e) {
+	return gd2<const Dynagraph::DynaDAG::DDEdge,Dynagraph::DynaDAG::DDEdgeT<void,void> >(e);
+}
+*/
 
 #endif // DynaDAGModel_h
