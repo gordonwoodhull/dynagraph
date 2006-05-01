@@ -277,7 +277,7 @@ void NSRanker<Layout>::Process(ChangeQueue<Layout> &changeQ) {
 	insertNewNodes(changeQ);
 	insertNewEdges(changeQ.insE);
 	insertNewEdges(extraI);
-	for(Layout::graphedge_iter ei = extraI.edges().begin(); ei!=extraI.edges().end(); ++ei)
+	for(typename Layout::graphedge_iter ei = extraI.edges().begin(); ei!=extraI.edges().end(); ++ei)
 		ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(changeQ);
 	recomputeRanks(changeQ);
