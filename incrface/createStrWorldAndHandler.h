@@ -40,11 +40,11 @@ struct WorldGuts {
 	WorldGuts(DString superengines, DString engines) : engines_(engines),superengines_(superengines) {}
 	EnginePair<GeneralLayout> operator()(ChangeQueue<GeneralLayout> &Q,DynagraphWorld<GeneralLayout> &world) {
 		typedef WorldInABox<GeneralLayout,Layout,
-			translator_traitses<GeneralLayout,Layout>::in_translator,
-			translator_traitses<GeneralLayout,Layout>::out_translator> Box;
+			typename translator_traitses<GeneralLayout,Layout>::in_translator,
+			typename translator_traitses<GeneralLayout,Layout>::out_translator> Box;
 		Box *box = new Box;
 		box->assignEngine(engines_,world,
-			new translator_traitses<GeneralLayout,Layout>::in_translator(GoingNamedTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
+			new typename translator_traitses<GeneralLayout,Layout>::in_translator(GoingNamedTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
 		EnginePair<GeneralLayout> engine(box,box);
 		engine.Prepend(createEngine<GeneralLayout>(superengines_,&world.whole_,&world.current_));
 		return engine;
