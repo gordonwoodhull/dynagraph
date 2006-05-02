@@ -14,17 +14,17 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef IncrWorld_h
-#define IncrWorld_h
+#ifndef DynagraphWorld_h
+#define DynagraphWorld_h
 
 namespace Dynagraph {
 
 template<typename Graph>
-struct IncrWorld {
+struct DynagraphWorld {
 	Graph whole_,current_;
-	IncrWorld() : current_(&whole_) {}
+	DynagraphWorld() : current_(&whole_) {}
 };
 
 } // namespace Dynagraph
 
-#endif // IncrWorld_h
+#endif // DynagraphWorld_h
