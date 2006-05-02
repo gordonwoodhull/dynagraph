@@ -14,17 +14,16 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef DynagraphWorld_h
-#define DynagraphWorld_h
+#ifndef Interruptable_h
+#define Interruptable_h
 
 namespace Dynagraph {
 
-template<typename Graph>
-struct DynagraphWorld {
-	Graph whole_,current_;
-	DynagraphWorld() : current_(&whole_) {}
+struct Interruptable {
+	bool interrupt;
+	Interruptable() : interrupt(false) {}
 };
 
 } // namespace Dynagraph
 
-#endif // DynagraphWorld_h
+#endif // Interruptable_h

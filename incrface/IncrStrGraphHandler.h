@@ -19,9 +19,13 @@
 #include "common/ChangeProcessor.h"
 #include "common/diff_strgraph.h"
 #include "common/randomName.h"
-#include "IncrWorld.h"
+#include "common/DynagraphWorld.h"
 #include "IncrLangEvents.h"
 #include "IncrViewWatcher.h"
+
+#ifndef STRGRAPHHANDLER_NO_THREADS
+#include "common/DynagraphThread.h"
+#endif
 
 #include <memory>
 
@@ -30,20 +34,41 @@ namespace Dynagraph {
 // NGraph is LGraph containing at least StrAttrs2
 template<typename NGraph> 
 struct IncrStrGraphHandler : IncrLangEvents {
-	std::auto_ptr<IncrWorld<NGraph> > world_;
+	std::auto_ptr<DynagraphWorld<NGraph> > world_;
 	ChangeQueue<NGraph> Q_;
 	IncrViewWatcher<NGraph> *watcher_;
 	ChangeProcessor<NGraph> *next_;
+	DynagraphThread<NGraph> *layoutThread_;
     int locks_;
 
-    IncrStrGraphHandler(IncrWorld<NGraph> *world) : world_(world),Q_(&world_->whole_,&world_->current_),watcher_(0),next_(0),locks_(0) {}
+    IncrStrGraphHandler(DynagraphWorld<NGraph> *world) : world_(world),Q_(&world_->whole_,&world_->current_),watcher_(0),next_(0),layoutThread_(0),locks_(0) {}
 	~IncrStrGraphHandler() {
 		// don't delete watcher because it's probably in engine chain
 		if(next_)
 			delete next_;
 	}
 
-    bool maybe_go();
+	void interrupt_layout() {
+#ifndef STRGRAPHHANDLER_NO_THREADS
+		if(layoutThread_) {
+			layoutThread_->interrupt();
+			delete layoutThread_;
+			layoutThread_ = 0;
+		}
+#endif
+	}
+    bool maybe_go() {
+		if(locks_>0)
+			return false;
+		if(next_) {
+#ifndef STRGRAPHHANDLER_NO_THREADS
+			layoutThread_ = new DynagraphThread<NGraph>(*world_,next_,Q_);
+#else
+			next_->Process(Q_);
+#endif
+		}
+		return true;
+	}
 
 	typename NGraph::Node *fetch_node(DString name,bool create) {
 		typename NGraph::Node *n = world_->whole_.fetch_node(name,create).first;
@@ -85,15 +110,8 @@ struct IncrStrGraphHandler : IncrLangEvents {
 
 // make changes immediately but only Process them when unlocked
 template<typename NGraph>
-bool IncrStrGraphHandler<NGraph>::maybe_go() {
-    if(locks_>0)
-        return false;
-	if(next_)
-		next_->Process(Q_);
-    return true;
-}
-template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
+	interrupt_layout();
     gd<Name>(&world_->whole_) = graph;
     SetAndMark(Q_.ModGraph(),attrs);
     if(watcher_)
@@ -103,25 +121,30 @@ void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttr
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {
+	interrupt_layout();
     if(watcher_)
 		watcher_->IncrClose(Q_);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_mod_graph(const StrAttrs &attrs) {
+	interrupt_layout();
 	SetAndMark(Q_.ModGraph(),attrs);
     maybe_go();
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_lock() {
+	interrupt_layout();
     locks_++;
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_unlock() {
+	interrupt_layout();
     --locks_;
     maybe_go();
 }
 template<typename NGraph>
 DString IncrStrGraphHandler<NGraph>::incr_ev_ins_node(DString name, const StrAttrs &attrs, bool merge) {
+	interrupt_layout();
     if(name.empty())
         name = randomName('n');
     typename NGraph::Node *n = fetch_node(name,true);
@@ -132,6 +155,7 @@ DString IncrStrGraphHandler<NGraph>::incr_ev_ins_node(DString name, const StrAtt
 }
 template<typename NGraph>
 DString IncrStrGraphHandler<NGraph>::incr_ev_ins_edge(DString name, DString tailname, DString headname, const StrAttrs &attrs) {
+	interrupt_layout();
     if(name.empty())
         name = randomName('e');
     typename NGraph::Edge *e = fetch_edge(tailname,headname,name,true);
@@ -142,6 +166,7 @@ DString IncrStrGraphHandler<NGraph>::incr_ev_ins_edge(DString name, DString tail
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_mod_node(DString name,const StrAttrs &attrs) {
+	interrupt_layout();
     typename NGraph::Node *n = fetch_node(name,false);
 	typename ChangeQueue<NGraph>::NodeResult result = Q_.ModNode(n);
 	SetAndMark(result.object,attrs);
@@ -149,6 +174,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_mod_node(DString name,const StrAttrs &
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_mod_edge(DString name,const StrAttrs &attrs) {
+	interrupt_layout();
     typename NGraph::Edge *e = fetch_edge(name);
 	typename ChangeQueue<NGraph>::EdgeResult result = Q_.ModEdge(e);
 	SetAndMark(result.object,attrs);
@@ -156,29 +182,34 @@ void IncrStrGraphHandler<NGraph>::incr_ev_mod_edge(DString name,const StrAttrs &
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_del_node(DString name) {
+	interrupt_layout();
     typename NGraph::Node *n = fetch_node(name,false);
 	Q_.DelNode(n);
     maybe_go();
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_del_edge(DString name) {
+	interrupt_layout();
     typename NGraph::Edge *e = fetch_edge(name);
 	Q_.DelEdge(e);
     maybe_go();
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_req_graph() {
+	interrupt_layout();
 	if(watcher_)
 		watcher_->FulfilGraph(&world_->whole_);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_req_node(DString name) {
+	interrupt_layout();
     typename NGraph::Node *n = fetch_node(name,false);
 	if(watcher_)
 		watcher_->FulfilNode(n);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_req_edge(DString name) {
+	interrupt_layout();
     typename NGraph::Edge *e = fetch_edge(name);
 	if(watcher_)
 		watcher_->FulfilEdge(e);

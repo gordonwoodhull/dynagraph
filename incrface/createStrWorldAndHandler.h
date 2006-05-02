@@ -17,20 +17,31 @@
 #ifndef createStrWorldAndHandler_h
 #define createStrWorldAndHandler_h
 
-#include "incrface/IncrStrGraphHandler.h"
+#include "IncrStrGraphHandler.h"
 #include "common/WorldInABox.h"
+#include "common/NamedToNamedChangeTranslator.h"
 #include "common/LayoutToLayoutTranslator.h"
 #include "common/createEngine.h"
 #include "common/stringizeEngine.h"
 
 namespace Dynagraph {
 
+template<typename OuterLayout,typename InnerLayout>
+struct translator_traitses {
+	typedef NamedToNamedChangeTranslator<OuterLayout,InnerLayout,
+		GoingNamedTransition<OuterLayout,InnerLayout>,LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
+	typedef NamedToNamedChangeTranslator<InnerLayout,OuterLayout,
+		ReturningNamedTransition<InnerLayout,OuterLayout>,LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
+};
+
 template<typename Layout>
 struct WorldGuts {
 	DString engines_,superengines_;
 	WorldGuts(DString superengines, DString engines) : engines_(engines),superengines_(superengines) {}
-	EnginePair<GeneralLayout> operator()(ChangeQueue<GeneralLayout> &Q,IncrWorld<GeneralLayout> &world) {
-		typedef WorldInABox<GeneralLayout,Layout,LayoutToLayoutTranslator<GeneralLayout,Layout>,LayoutToLayoutTranslator<Layout,GeneralLayout> > Box;
+	EnginePair<GeneralLayout> operator()(ChangeQueue<GeneralLayout> &Q,DynagraphWorld<GeneralLayout> &world) {
+		typedef WorldInABox<GeneralLayout,Layout,
+			translator_traitses<GeneralLayout,Layout>::in_translator,
+			translator_traitses<GeneralLayout,Layout>::out_translator> Box;
 		Box *box = new Box;
 		box->assignEngine(engines_,world);
 		EnginePair<GeneralLayout> engine(box,box);
@@ -42,7 +53,7 @@ template<typename Layout>
 struct SimpleGuts {
 	DString engines_;
 	SimpleGuts(DString engines) : engines_(engines) {}
-	EnginePair<Layout> operator()(ChangeQueue<Layout> &Q,IncrWorld<Layout> &world) {
+	EnginePair<Layout> operator()(ChangeQueue<Layout> &Q,DynagraphWorld<Layout> &world) {
 		return createEngine(engines_,&world.whole_,&world.current_);
 	}
 };
@@ -50,7 +61,7 @@ template<typename Layout,typename GutsCreator>
 IncrLangEvents *createStrWorldAndHandler(GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
 									  LinkedChangeProcessor<Layout> *before,LinkedChangeProcessor<Layout> *after,
 									  Transform *transform, bool useDotDefaults) {
-	IncrWorld<Layout> *world = new IncrWorld<Layout>;
+	DynagraphWorld<Layout> *world = new DynagraphWorld<Layout>;
 	IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
 	handler->watcher_ = watcher;
 

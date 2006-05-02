@@ -17,7 +17,7 @@
 #ifndef NamedToNamedChangeTranslator_h
 #define NamedToNamedChangeTranslator_h
 
-#include "ChangeTranslator.h"
+#include "ChangeProcessor.h"
 
 namespace Dynagraph {
 struct NodeDoesntExistInconsistency : DGException2 {
