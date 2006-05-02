@@ -16,7 +16,7 @@ DEFINES = -DHAVE_CONFIG_H
 BASELIBS = -Lcommon -ldynagraph \
        -L$(GRAPHVIZ_LIB) \
        -lagraph -lpathplan -lcdt \
-       -L$(BOOSTLIB) -lboost_thread-1_33_1
+       -L$(BOOST_THREAD_LIB_PATH) -l$(BOOST_THREAD_LIB)
 
 GLIBS = -Lcommon -ldynagraph \
        -L/usr/local/graphviz/lib \
