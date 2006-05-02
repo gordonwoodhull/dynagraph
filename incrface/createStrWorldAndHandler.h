@@ -43,7 +43,8 @@ struct WorldGuts {
 			translator_traitses<GeneralLayout,Layout>::in_translator,
 			translator_traitses<GeneralLayout,Layout>::out_translator> Box;
 		Box *box = new Box;
-		box->assignEngine(engines_,world);
+		box->assignEngine(engines_,world,
+			new translator_traitses<GeneralLayout,Layout>::in_translator(GoingNamedTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
 		EnginePair<GeneralLayout> engine(box,box);
 		engine.Prepend(createEngine<GeneralLayout>(superengines_,&world.whole_,&world.current_));
 		return engine;

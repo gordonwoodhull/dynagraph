@@ -10,11 +10,11 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 	ChangeProcessor<OuterLayout> *topEngine_;
 	OutTranslator *xlateOut_;
 	WorldInABox() : topEngine_(0),xlateOut_(0) {}
-	void assignEngine(DString engines,DynagraphWorld<OuterLayout> &topWorld) {
+	void assignEngine(DString engines,DynagraphWorld<OuterLayout> &topWorld,InTranslator *inTranslator = new InTranslator,OutTranslator *outTranslator = new OutTranslator) {
 		if(innerEngines_.second)
 			innerEngines_.second->next_ = 0;
-		ChangeTranslator<OuterLayout,InnerLayout> *xlateIn = new InTranslator(GoingNamedTransition<OuterLayout,InnerLayout>(&world_.whole_,&world_.current_));
-		xlateOut_ = new OutTranslator;
+		ChangeTranslator<OuterLayout,InnerLayout> *xlateIn = inTranslator;
+		xlateOut_ = outTranslator;
 		innerEngines_ = createEngine(engines,&world_.whole_,&world_.current_);
 		xlateIn->next_ = innerEngines_.first;
 		innerEngines_.second->next_ = xlateOut_;
