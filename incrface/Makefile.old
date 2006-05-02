@@ -15,7 +15,7 @@ OBJS = \
 HFILES = \
 	DinoMachine.h           DinoMachineTranslator.h DinoPatternLook.h       DinoSearchLook.h \
 	IncrLangEvents.h        IncrStrGraphHandler.h   IncrViewWatcher.h \
-	IncrWorld.h             LabelToNameTranslator.h MatchNames.h \
+	LabelToNameTranslator.h MatchNames.h \
 	createStrWorldAndHandler.h \
 	incrcmds.h              incrgram.h		incrout.h               incrparse.h \
 	incrxep.h		two_way_map.h \
