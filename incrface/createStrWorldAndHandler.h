@@ -45,7 +45,7 @@ struct WorldGuts {
 		Box *box = new Box;
 		box->assignEngine(engines_,world,
 			new typename translator_traitses<GeneralLayout,Layout>::in_translator(GoingNamedTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
-		EnginePair<GeneralLayout> engine(box,box);
+		EnginePair<GeneralLayout> engine = box->engines();
 		engine.Prepend(createEngine<GeneralLayout>(superengines_,&world.whole_,&world.current_));
 		return engine;
 	}
@@ -61,13 +61,16 @@ struct SimpleGuts {
 template<typename Layout,typename GutsCreator>
 IncrLangEvents *createStrWorldAndHandler(GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
 									  LinkedChangeProcessor<Layout> *before,LinkedChangeProcessor<Layout> *after,
-									  Transform *transform, bool useDotDefaults) {
+									  DString gname,const StrAttrs &attrs,Transform *transform, bool useDotDefaults) {
 	DynagraphWorld<Layout> *world = new DynagraphWorld<Layout>;
 	IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
 	handler->watcher_ = watcher;
 
+    gd<Name>(&world->whole_) = gname;
+    SetAndMark(handler->Q_.ModGraph(),attrs);
+
 	// apply first graph attributes before creating engine (not pretty)
-	StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults).ModifyGraph(&world->whole_,&world->whole_);
+	StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults).ModifyGraph(handler->Q_.ModGraph(),&world->whole_);
 
 	EnginePair<Layout> eng0 = gutsFun(handler->Q_,*world);
 	EnginePair<Layout> engine = stringizeEngine(eng0,transform,useDotDefaults);

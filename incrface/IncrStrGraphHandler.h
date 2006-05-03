@@ -119,12 +119,9 @@ struct IncrStrGraphHandler : IncrLangEvents {
 // make changes immediately but only Process them when unlocked
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
-    gd<Name>(&world_->whole_) = graph;
-    SetAndMark(Q_.ModGraph(),attrs);
     if(watcher_)
 		watcher_->IncrOpen(Q_);
 	Q_.Execute(true);
-	maybe_go();
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {

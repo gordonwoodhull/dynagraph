@@ -102,7 +102,7 @@ struct NamedToNamedChangeTranslator : ChangeTranslator<Graph1,Graph2> {
 			actions_.DeleteNode(*ni,n);
 		}
 		transition_.EndLastQ(Q1);
-		NextProcess(Q2);
+		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
 	}
 };
 

@@ -1,4 +1,4 @@
-open graph V
+open graph V [intermediate=true]
 insert node V n
 insert node V m
 insert node V A [label="",flow=1,shape=none,width=0,height=0]

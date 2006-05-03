@@ -16,14 +16,16 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 		ChangeTranslator<OuterLayout,InnerLayout> *xlateIn = inTranslator;
 		xlateOut_ = outTranslator;
 		innerEngines_ = createEngine(engines,&world_.whole_,&world_.current_);
-		xlateIn->next_ = innerEngines_.first;
+		static_cast<LinkedChangeProcessor<InnerLayout>*>(xlateIn)->next_ = innerEngines_.first;
 		innerEngines_.second->next_ = xlateOut_;
 		topEngine_ = xlateIn;
+	}
+	EnginePair<OuterLayout> engines() {
+		return EnginePair<OuterLayout>(this,xlateOut_);
 	}
 	void Process(ChangeQueue<OuterLayout> &Q) {
 		xlateOut_->transition_.nextQ_ = &Q;
 		topEngine_->Process(Q);
-		NextProcess(Q);
 	}
 };
 

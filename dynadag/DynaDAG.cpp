@@ -376,6 +376,13 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 				ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
 		}
 }
+void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
+	findChangedNodes(changeQ);
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
+		sketchEdge(DDp(*ei));
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
+		sketchEdge(DDp(*ei));
+}
 void DynaDAGServer::cleanUp() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDNode &ddn = gd<DDNode>(*ni);
@@ -431,9 +438,24 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	loops.Field(r_dynadag,"model nodes",model.nodes().size());
 	timer.LoopPoint(r_timing,"update model graph");
 
+	if(gd<GraphGeom>(current_).reportIntermediate) {
+		generateIntermediateLayout(changeQ);
+		NextProcess(changeQ);
+	}
+
+	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
+		cleanUp();
+		return;
+	}
+
 	// crossing optimization
 	optimizer->Reorder(*current_,*current_);//crossN,crossE);
 	timer.LoopPoint(r_timing,"crossing optimization");
+
+	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
+		cleanUp();
+		return;
+	}
 
 	// find X coords
 	xsolver.Place(changeQ);
@@ -449,6 +471,11 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	findChangedNodes(changeQ);
 	
 	findFlowSlopes(changeQ);
+
+	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
+		cleanUp();
+		return;
+	}
 
 	redrawEdges(changeQ,ModifyFlags(changeQ).flags&DG_UPD_EDGESTYLE);
 	timer.LoopPoint(r_timing,"draw splines");
@@ -475,7 +502,17 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 		loops.Field(r_readability,"average edge x-length",avg.x);
 		loops.Field(r_readability,"average edge y-length",avg.y);
 	}
-	NextProcess(changeQ);
+	if(gd<GraphGeom>(current_).reportIntermediate) {
+		// don't re-report inserts and deletes that intermediate layout already reported
+		DDChangeQueue lessQ(changeQ.whole,changeQ.current);
+		lessQ.modN = changeQ.modN;
+		lessQ.modN |= changeQ.insN;
+		lessQ.modE = changeQ.modE;
+		lessQ.modE |= changeQ.insE;
+		NextProcess(lessQ);
+	}
+	else
+		NextProcess(changeQ);
 }
 
 } // namespace DynaDAG

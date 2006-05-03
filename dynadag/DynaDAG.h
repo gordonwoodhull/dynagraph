@@ -79,6 +79,7 @@ private:
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
 	void redrawEdges(DDChangeQueue &changeQ,bool force);
+	void generateIntermediateLayout(DDChangeQueue &changeQ);
 	void cleanUp();
 	void dumpModel();
 };

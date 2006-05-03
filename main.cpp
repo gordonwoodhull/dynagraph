@@ -46,6 +46,14 @@ char *g_outdot=0;
 int g_count=1;
 
 struct CouldntOpen {};
+
+#ifndef DYNAGRAPH_NO_THEADS
+boost::mutex g_outputMutex;
+#define LOCK_OUTPUT() boost::mutex::scoped_lock lock(g_outputMutex)
+#else
+#define LOCK_OUTPUT()
+#endif
+
 template<typename Layout>
 void doOutdot(Layout *l) {
 	if(g_outdot) {
@@ -65,6 +73,7 @@ template<typename Graph>
 struct TextChangeOutput : LinkedChangeProcessor<Graph> {
 	// ChangeProcessor
 	void Process(ChangeQueue<Graph> &Q) {
+		LOCK_OUTPUT();
 		emitChanges(cout,Q,gd<Name>(Q.whole).c_str());
 		Q.Execute(true);
 		ModifyFlags(Q) = 0;
@@ -75,33 +84,38 @@ template<typename Graph>
 struct TextWatcherOutput : IncrViewWatcher<Graph> {
 	// IncrViewWatcher
 	void IncrOpen(ChangeQueue<Graph> &Q) {
+		LOCK_OUTPUT();
 		cout << "open graph " << gd<Name>(Q.whole) << " " << gd<StrAttrs>(Q.whole) << endl;
 		igd<StrAttrChanges>(Q.ModGraph()).clear();
 	}
 	void IncrClose(ChangeQueue<Graph> &Q) {
+		LOCK_OUTPUT();
 		cout << "close graph " << gd<Name>(Q.whole) << endl;
 	}
 	void FulfilGraph(Graph *g) {
+		LOCK_OUTPUT();
 		cout << "fulfil graph " << gd<Name>(g) << endl;
 		emitGraph(cout,g);
 	}
 	void FulfilNode(typename Graph::Node *n) {
+		LOCK_OUTPUT();
 		cout << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << endl;
 	}
 	void FulfilEdge(typename Graph::Edge *e) {
+		LOCK_OUTPUT();
 		cout << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << endl;
 	}
 };
 template<typename Layout>
-IncrLangEvents *createHandlers(DString name,DString superengines,DString engines) {
-	if(superengines) 
-		return createStrWorldAndHandler<GeneralLayout>(WorldGuts<Layout>(superengines,engines),
+IncrLangEvents *createHandlers(DString gname,const StrAttrs &attrs) {
+	if(attrs.look("superengines")) 
+		return createStrWorldAndHandler<GeneralLayout>(WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
 			new TextWatcherOutput<GeneralLayout>,0,new TextChangeOutput<GeneralLayout>,
-			g_transform,g_useDotDefaults);
+			gname,attrs,g_transform,g_useDotDefaults);
 	else 
-		return createStrWorldAndHandler<Layout>(SimpleGuts<Layout>(engines),
+		return createStrWorldAndHandler<Layout>(SimpleGuts<Layout>(attrs.look("engines")),
 			new TextWatcherOutput<Layout>,0,new TextChangeOutput<Layout>,
-			g_transform,g_useDotDefaults);
+			gname,attrs,g_transform,g_useDotDefaults);
 }
 
 struct IncrCalledBack : IncrCallbacks {
@@ -144,9 +158,9 @@ struct IncrCalledBack : IncrCallbacks {
 		}
 		IncrLangEvents *ret;
 		if(type=="dynadag") 
-			ret = createHandlers<DynaDAGLayout>(name,superengines,engines);
+			ret = createHandlers<DynaDAGLayout>(name,attrs);
 		else if(type=="fdp")
-			ret = createHandlers<FDPLayout>(name,superengines,engines);
+			ret = createHandlers<FDPLayout>(name,attrs);
     	return ret;
 	}
     void incr_cb_destroy_handler(IncrLangEvents *h) {

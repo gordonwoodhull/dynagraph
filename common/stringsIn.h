@@ -35,7 +35,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs);
 template<typename Layout>
 Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	using std::istringstream;
-	StrAttrs allChanges;
+	StrAttrs allChanges = attrs;
 	if(clearOld)
 		clearRemoved(gd<StrAttrs>(l),attrs,allChanges);
     StrAttrs &att = gd<StrAttrs>(l);

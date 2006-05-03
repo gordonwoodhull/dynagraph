@@ -1,4 +1,4 @@
-open graph V
+open graph V [intermediate=true]
 insert node V a
 insert node V b
 insert node V c

@@ -34,24 +34,21 @@ struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 	LinkedChangeProcessor<Graph> *next_;
 	LinkedChangeProcessor(LinkedChangeProcessor<Graph> *next=0) : next_(next) {}
 	virtual ~LinkedChangeProcessor() {
-		delete next_;
+		if(next_)
+			delete next_;
 	}
 	void NextProcess(ChangeQueue<Graph> &Q) {
 		if(next_)
 			next_->Process(Q);
 	}
 };
+// a ChangeTranslator is the end of one chain of processors and the beginning of another
 template<typename Graph1,typename Graph2>
-struct ChangeTranslator : LinkedChangeProcessor<Graph1> {
-	// intentional override of field because LinkedChangeProcessor one must stay null (this is end of that chain)
-	ChangeProcessor<Graph2> *next_;
-	ChangeTranslator(ChangeProcessor<Graph2> *next=0,ChangeQueue<Graph2> *nextQ=0) : next_(next) {}
-	virtual ~ChangeTranslator() {
-		delete next_;
-	}
-	void NextProcess(ChangeQueue<Graph2> &Q) {
-		if(next_)
-			next_->Process(Q);
+struct ChangeTranslator : LinkedChangeProcessor<Graph1>, LinkedChangeProcessor<Graph2> {
+	// LinkedChangeProcessor<Graph1>::next_ must be null
+	// LinkedChangeProcessor<Graph2>::Process is an error
+	void Process(ChangeQueue<Graph2>&) {
+		assert(false);
 	}
 };
 
