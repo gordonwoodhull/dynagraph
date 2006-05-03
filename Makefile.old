@@ -15,8 +15,9 @@ DEFINES = -DHAVE_CONFIG_H
 
 BASELIBS = -Lcommon -ldynagraph \
        -L$(GRAPHVIZ_LIB) \
-       -lagraph -lpathplan -lcdt \
-       -L$(BOOST_THREAD_LIB_PATH) -l$(BOOST_THREAD_LIB)
+       -lagraph -lpathplan -lcdt
+
+THREADLIBS = -L$(BOOST_THREAD_LIB_PATH) -l$(BOOST_THREAD_LIB) $(OTHER_THREAD_LIBS)
 
 GLIBS = -Lcommon -ldynagraph \
        -L/usr/local/graphviz/lib \
@@ -34,12 +35,12 @@ OBJS = instantiateEngines.o
 MANS = 
 
 dynagraph : main.o $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
-	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(OTHERLIBS) $(BASELIBS) -o dynagraph
+	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph
 
 main.o: common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
 
 gengraph : gengraph.o libdynagraph.a
-	$(CPPSLD) $(LDFLAGS) gengraph.o $(GLIBS) -o gengraph
+	$(CPPSLD) $(LDFLAGS) gengraph.o $(GLIBS) $(THREADLIBS) -o gengraph
 
 graphsearch/graphsearch :
 	(cd graphsearch; make)
