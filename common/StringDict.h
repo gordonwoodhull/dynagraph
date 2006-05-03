@@ -21,6 +21,9 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#ifndef DYNAGRAPH_NO_THREADS
+#include <boost/thread/mutex.hpp>
+#endif
 
 // adaptation of agraph's refstr
 
@@ -41,6 +44,7 @@ struct StringDict {
 	const char *enter(const char *val);
 	void release(const char *val);
 	void ref(const char *val); // MUST have come from here!
+	static StringDict &GlobalStringDict();
 private:
 #ifndef STRINGDICT_USE_STL
 	Dict_t *dict;
@@ -48,10 +52,10 @@ private:
 	typedef std::map<std::string,int> mapstrs;
 	mapstrs *strs;
 #endif // STRINGDICT_USE_STL
+#ifndef DYNAGRAPH_NO_THREADS
+	boost::mutex mutex_;
+#endif
 };
-
-// in StringDict.cpp, or define your own if DSTRING_USE_STL
-extern StringDict g_stringDict;
 
 struct DString { // imitation of std::string
 private:
@@ -64,18 +68,18 @@ public:
 	static const size_type npos;
 
 	DString() : val(0) {}
-	DString(const char *v) : val(g_stringDict.enter(v)) {}
+	DString(const char *v) : val(StringDict::GlobalStringDict().enter(v)) {}
 	DString(const DString &ds) : val(ds.val) {
-		g_stringDict.ref(val);
+		StringDict::GlobalStringDict().ref(val);
 	}
-	DString(const std::string &s) : val(g_stringDict.enter(s.c_str())) {}
+	DString(const std::string &s) : val(StringDict::GlobalStringDict().enter(s.c_str())) {}
 	~DString() {
-		g_stringDict.release(val);
+		StringDict::GlobalStringDict().release(val);
 	}
 	DString &operator =(const DString &ds) {
 		const char *old = val; // do ref first for unlikely s = s
-		g_stringDict.ref(val = ds.val);
-		g_stringDict.release(old);
+		StringDict::GlobalStringDict().ref(val = ds.val);
+		StringDict::GlobalStringDict().release(old);
 		return *this;
 	}
     operator std::string() const {

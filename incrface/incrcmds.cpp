@@ -54,6 +54,11 @@ extern void incr_set_allow_reopen(DString name,bool whether) {
         throw IncrSetHandlerFirst();
     gd<DinoMachNode>(n).allowOneReopen = whether;
 }
+void incr_shutdown() {
+	// wait for all layout threads to terminate
+	for(DinoMachine::node_iter ni = g_dinoMachine.nodes().begin(); ni!=g_dinoMachine.nodes().end(); ++ni)
+		gd<DinoMachNode>(*ni).handler->incr_interrupt_ev();
+}
 void incr_open_graph(const char *graph) {
     DinoMachine::Node *n = g_dinoMachine.fetch_node(graph,true).first;
 	DinoMachNode &dmn = gd<DinoMachNode>(n);
@@ -65,6 +70,8 @@ void incr_open_graph(const char *graph) {
     IncrLangEvents *h = dmn.handler;
     if(!h)
         h = g_incrCallback->incr_cb_create_handler(graph,g_currAttrs);
+	else
+		h->incr_interrupt_ev();
     if(!h)
         return;
 	//try 
@@ -88,6 +95,7 @@ void incr_close_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_close_graph();
     g_dinoMachine.erase(g_dinoMachine.ndict[graph]); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
 }
@@ -96,6 +104,7 @@ void incr_mod_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_mod_graph(g_currAttrs);
 }
 
@@ -103,6 +112,7 @@ void incr_lock(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_lock();
 }
 
@@ -110,6 +120,7 @@ void incr_unlock(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_unlock();
 }
 
@@ -117,6 +128,7 @@ void incr_segue(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     //bufferGraphStream fix(incr_yyin);
     //assert(!feof(fix.fin));
     StrGraph *sg = readStrGraph(incr_yyin);
@@ -135,6 +147,7 @@ void incr_ins_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_ins_node(id,g_currAttrs,true);
 }
 
@@ -142,6 +155,7 @@ void incr_ins_edge(const char *graph,const char *id, const char *tail, const cha
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_ins_edge(id,tail,head,g_currAttrs);
 }
 
@@ -149,6 +163,7 @@ void incr_mod_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_mod_node(id,g_currAttrs);
 }
 
@@ -156,6 +171,7 @@ void incr_mod_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_mod_edge(id,g_currAttrs);
 }
 
@@ -163,6 +179,7 @@ void incr_del_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_del_node(id);
 }
 
@@ -170,35 +187,51 @@ void incr_del_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_del_edge(id);
 }
 void incr_req_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_req_graph();
 }
 void incr_req_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_req_node(id);
 }
 void incr_req_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
 		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     h->incr_ev_req_edge(id);
 }
 void incr_ful_graph(const char *graph) {
+    IncrLangEvents *h = incr_get_handler(graph);
+    if(!h)
+		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     StrGraph *sg = readStrGraph(incr_yyin);
     g_incrCallback->incr_cb_fulfil_graph(graph,sg);
     delete sg;
 }
 void incr_ful_node(const char *graph,const char *id) {
+    IncrLangEvents *h = incr_get_handler(graph);
+    if(!h)
+		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     g_incrCallback->incr_cb_fulfil_node(graph,id,g_currAttrs);
 }
 void incr_ful_edge(const char *graph,const char *id) {
+    IncrLangEvents *h = incr_get_handler(graph);
+    if(!h)
+		throw IncrGraphNotOpen(graph);
+	h->incr_interrupt_ev();
     g_incrCallback->incr_cb_fulfil_edge(graph,id,g_currAttrs);
 }
 void incr_message(const char *msg) {

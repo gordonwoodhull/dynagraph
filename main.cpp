@@ -373,6 +373,7 @@ int main(int argc, char *args[]) {
 				break;
 		}
 	}
+	incr_shutdown();
 	fprintf(stdout,"message \"dynagraph closing\"\n");
 	return 0;
 }

@@ -70,6 +70,8 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).ticks;
 		}
+		else if(name=="intermediate") 
+			gd<GraphGeom>(l).reportIntermediate = value=="true";
 		SetAndMark(l,ai->first,value);
 	}
 	return 0;

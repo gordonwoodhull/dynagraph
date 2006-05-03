@@ -35,8 +35,13 @@ struct NodeConstraints {
 		*stab; // for stability constraints
 	NodeConstraints() : n(0),stab(0) {}
 	~NodeConstraints() {
-		assert(!n);
-		assert(!stab);
+		assert(empty());
+	}
+	void clear() {
+		n = stab = 0;
+	}
+	bool empty() {
+		return !n && !stab;
 	}
 };
 

@@ -24,8 +24,18 @@
 
 namespace Dynagraph {
 
-StringDict g_stringDict;
+StringDict &StringDict::GlobalStringDict() {
+	static StringDict s_dict;
+	return s_dict;
+}
 const DString::size_type DString::npos = DString::size_type(-1);
+
+#ifndef DYNAGRAPH_NO_THREADS
+#define LOCK_DICT() boost::mutex::scoped_lock lock(mutex_)
+#else
+#define LOCK_DICT()
+#endif
+
 
 #ifndef STRINGDICT_USE_STL
 typedef struct refstr_t {
@@ -46,25 +56,13 @@ static Dtdisc_t Refstrdisc = {
 	((Dtevent_f)0)
 };
 
-#ifdef DEBUG
-static int refstrprint(refstr_t* r)
-{
-	fprintf(stderr,"%s\n",r->s); return 0;
-}
-
-agrefstrdump(void)
-{
-	dtwalk(dict,refstrprint);
-}
-#endif
-
 void StringDict::init() {
+	LOCK_DICT();
 	if(!dict)
 		dict = dtopen(&Refstrdisc,Dttree);
 }
 const char *StringDict::enter(const char* s) {
-	if(!dict)
-		init();
+	LOCK_DICT();
 	refstr_t		*key,*r;
 
 	if (s == NULL) return s;
@@ -84,6 +82,7 @@ const char *StringDict::enter(const char* s) {
 
 
 void StringDict::release(const char* s) {
+	LOCK_DICT();
 	refstr_t *r;
 	if(!s)
 		return;
@@ -110,6 +109,7 @@ void StringDict::release(const char* s) {
 	else throw DictStringLost(s);
 }
 void StringDict::ref(const char *s) {
+	LOCK_DICT();
 	if(!s)
 		return;
 	refstr_t *key = (refstr_t*)(s - offsetof(refstr_t,s[0]));
@@ -130,18 +130,19 @@ int ds2int(const DString &s) {
 
 #else // STRINGDICT_USE_STL
 void StringDict::init() { 
+	LOCK_DICT();
 	strs = new mapstrs; 
 }
 const char *StringDict::enter(const char *val) {
+	LOCK_DICT();
 	if(!val)
 		return 0;
-	if(!strs)
-		init();
 	mapstrs::iterator mi = strs->insert(mapstrs::value_type(val,0)).first;
 	mi->second++;
 	return mi->first.c_str();
 }
 void StringDict::release(const char *val) {
+	LOCK_DICT();
 	if(!val)
 		return;
 	mapstrs::iterator mi = strs->find(val);
@@ -152,6 +153,7 @@ void StringDict::release(const char *val) {
 		strs->erase(mi);
 }
 void StringDict::ref(const char *val) {
+	LOCK_DICT();
 	if(!val)
 		return;
 	mapstrs::iterator mi = strs->find(val);
