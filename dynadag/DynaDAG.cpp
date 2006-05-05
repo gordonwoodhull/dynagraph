@@ -408,6 +408,12 @@ void DynaDAGServer::dumpModel() {
 		report(r_modelDump,"\t\"%p\"->\"%p\" [label=\"%p\\n%p\"];\n",(*ei)->tail,(*ei)->head,*ei,gd<DDEdge>(*ei).path);
 	report(r_modelDump,"}\n");
 }
+void figureIntermediateQueue(DDChangeQueue &changeQ,DDChangeQueue &imedQ) {
+	imedQ.modN = changeQ.modN;
+	imedQ.modN |= changeQ.insN;
+	imedQ.modE = changeQ.modE;
+	imedQ.modE |= changeQ.insE;
+}
 void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	loops.Field(r_dynadag,"nodes inserted - input",changeQ.insN.nodes().size());
 	loops.Field(r_dynadag,"edges inserted - input",changeQ.insE.edges().size());
@@ -415,6 +421,11 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	loops.Field(r_dynadag,"edges modified - input",changeQ.modE.edges().size());
 	loops.Field(r_dynadag,"nodes deleted - input",changeQ.delN.nodes().size());
 	loops.Field(r_dynadag,"edges deleted - input",changeQ.delE.nodes().size());
+	
+	// were there things to wrap up from last layout?
+	changeQ |= oldChanges;
+	oldChanges.Execute(false);
+
 	if(changeQ.Empty()) {
 		NextProcess(changeQ);
 		return;
@@ -445,6 +456,7 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 
 	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
 		cleanUp();
+		figureIntermediateQueue(changeQ,oldChanges);
 		return;
 	}
 
@@ -454,6 +466,7 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 
 	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
 		cleanUp();
+		figureIntermediateQueue(changeQ,oldChanges);
 		return;
 	}
 
@@ -474,6 +487,7 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 
 	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
 		cleanUp();
+		figureIntermediateQueue(changeQ,oldChanges);
 		return;
 	}
 
@@ -504,12 +518,9 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	}
 	if(gd<GraphGeom>(current_).reportIntermediate) {
 		// don't re-report inserts and deletes that intermediate layout already reported
-		DDChangeQueue lessQ(changeQ.whole,changeQ.current);
-		lessQ.modN = changeQ.modN;
-		lessQ.modN |= changeQ.insN;
-		lessQ.modE = changeQ.modE;
-		lessQ.modE |= changeQ.insE;
-		NextProcess(lessQ);
+		DDChangeQueue imedQ(changeQ.whole,changeQ.current);
+		figureIntermediateQueue(changeQ,imedQ);
+		NextProcess(imedQ);
 	}
 	else
 		NextProcess(changeQ);

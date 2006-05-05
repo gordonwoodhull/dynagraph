@@ -75,7 +75,7 @@ struct ChangeQueue {
 	// copy
 	ChangeQueue &operator=(const ChangeQueue &Q);
 	// accumulate
-	ChangeQueue &operator+=(const ChangeQueue &Q);
+	ChangeQueue &operator|=(const ChangeQueue &Q);
 
 	// Exceptions
 	struct InsertInserted : DGException {
@@ -304,7 +304,7 @@ ChangeQueue<Graph> &ChangeQueue<Graph>::operator=(const ChangeQueue<Graph> &Q) {
 	return *this;
 }
 template<typename Graph>
-ChangeQueue<Graph> &ChangeQueue<Graph>::operator+=(const ChangeQueue<Graph> &Q) {
+ChangeQueue<Graph> &ChangeQueue<Graph>::operator|=(const ChangeQueue<Graph> &Q) {
 	assert(whole==Q.whole);
 	typename Graph::node_iter ni;
 	typename Graph::graphedge_iter ei;
@@ -313,9 +313,9 @@ ChangeQueue<Graph> &ChangeQueue<Graph>::operator+=(const ChangeQueue<Graph> &Q) 
 	for(ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
 		InsEdge(*ei);
 	for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni) 
-		ModNode(*ni)->idat = (*ni)->idat;
+		ModNode(*ni).object->idat = (*ni)->idat;
 	for(ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
-		ModEdge(*ei)->idat = (*ei)->idat;
+		ModEdge(*ei).object->idat = (*ei)->idat;
 	for(ni = Q.delN.nodes().begin(); ni!=Q.delN.nodes().end(); ++ni)
 		DelNode(*ni);
 	for(ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)

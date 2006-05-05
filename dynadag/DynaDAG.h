@@ -49,6 +49,7 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 	Optimizer *optimizer;
 	XSolver xsolver;
 	FlexiSpliner spliner;
+	DDChangeQueue oldChanges; // if interrupted
 
 	DynaDAGServer(DynaDAGLayout *whole,DynaDAGLayout *current) :
 		whole_(whole),current_(current),
@@ -56,7 +57,8 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 		config(this,model,whole,current,&xsolver),
 		optimizer(new DotlikeOptimizer(config)),
 		xsolver(config,gd<GraphGeom>(current).resolution.x),
-		spliner(config) {}
+		spliner(config),
+		oldChanges(whole,current) {}
 	~DynaDAGServer();
 	// ChangeProcessor
 	void Process(DDChangeQueue &changeQ);

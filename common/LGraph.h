@@ -433,7 +433,7 @@ public:
 		graphedge_iter() : g(0) {}
 	private:
 		friend struct LGraph<ADTPolicy,GraphDatum,NodeDatum,EdgeDatum,GraphIDat,NodeIDat,EdgeIDat>;
-		graphedge_iter(LGraph *g) : g(g) {
+		graphedge_iter(const LGraph *g) : g(g) {
 			if(g) {
 				if((ni = g->nodes().begin())==g->nodes().end())
 					this->g = 0;
@@ -455,9 +455,9 @@ public:
 		}
 		typename node_order::iterator ni;
 		typename outedge_order::iterator ei;
-		LGraph *g;
+		const LGraph *g;
 	};
-	pseudo_seq<graphedge_iter> edges() {
+	pseudo_seq<graphedge_iter> edges() const {
 		return pseudo_seq<graphedge_iter>(graphedge_iter(this),graphedge_iter(0));
 	}
 	// methods available only on main graphs
