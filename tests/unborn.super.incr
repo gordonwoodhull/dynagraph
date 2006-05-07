@@ -1,4 +1,4 @@
-open graph V [superengines=shapegen,intermediate=true]
+open graph V [superengines=shapegen]
 lock graph V
 insert node V n
 insert node V m
