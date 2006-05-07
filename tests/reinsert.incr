@@ -1,4 +1,4 @@
-open graph V [intermediate=true]
+open graph V []
 lock graph V
 insert node V n
 delete node V n

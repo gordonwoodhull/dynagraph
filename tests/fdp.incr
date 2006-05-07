@@ -1,1 +1,1 @@
-open graph V [engines="shapegen,fdp,voronoi,visspline",intermediate=true]
+open graph V [engines="shapegen,fdp,voronoi,visspline"]
