@@ -294,6 +294,7 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 }
 void DynaDAGServer::sketchEdge(DDPath *path) {
 	// draw an edge just based on vnodes
+	path->unclippedPath.clear();
 	EdgeGeom &eg = gd<EdgeGeom>(path->layoutE);
 	path->unclippedPath.degree = 1;
 	DynaDAGLayout::Node *head = path->layoutE->head,
@@ -326,6 +327,24 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 		gd<NodeGeom>(head).pos,clipLast?&gd<NodeGeom>(head).region:0);
 	if(reversed)
 		reverse(eg.pos.begin(),eg.pos.end());
+}
+void DynaDAGServer::straightEdge(DDPath *path) {
+	DynaDAGLayout::Edge *e = path->layoutE;
+	EdgeGeom &eg = gd<EdgeGeom>(e);
+	Line &uncl = path->unclippedPath;
+	uncl.clear();
+	const NodeGeom &tg = gd<NodeGeom>(e->tail),
+		&hg = gd<NodeGeom>(e->head);
+	uncl.degree = 3;
+	const Coord &tp = tg.pos,
+		&hp = hg.pos;
+	uncl.push_back(tp);
+	uncl.push_back((2.*tp+hp)/3.);
+	uncl.push_back((tp+2.*hp)/3.);
+	uncl.push_back(hp);
+	eg.pos.ClipEndpoints(uncl,tg.pos,eg.tailClipped?&tg.region:0,
+		hg.pos,eg.headClipped?&hg.region:0);
+	uncl.clear(); // this is not a valid drawing!
 }
 void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(current_);
@@ -379,9 +398,9 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	findChangedNodes(changeQ);
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
-		sketchEdge(DDp(*ei));
+		straightEdge(DDp(*ei));
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		sketchEdge(DDp(*ei));
+		straightEdge(DDp(*ei));
 }
 void DynaDAGServer::cleanUp() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {

@@ -335,13 +335,13 @@ void unbindEndpoints(DynaDAGLayout::Edge *ve) {
 */
 void Config::insertEdge(DynaDAGLayout::Edge *ve) {
 	DDPath *path = dynaDAG->OpenModelEdge(0,0,ve).first;
+	findEdgeDirection(ve);
 	if(ve->head==ve->tail || gd<NSRankerEdge>(ve).secondOfTwo)
 		dynaDAG->CloseChain(path,false); // do not model self-edges
 	else if(userDefinedMove(ve))
 		userRouteEdge(path);
 	else
 		autoRouteEdge(path);
-	findEdgeDirection(ve);
 	/*unbindEndpoints(ve); */ 	/* i don't know if this is good or bad */
 }
 void Config::unfixOldSingletons(DDChangeQueue &changeQ) {
@@ -486,6 +486,7 @@ void Config::moveOldEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { 
 			DynaDAGLayout::Edge *ve = whole->find(*ei);
+			findEdgeDirection(ve);
 			if((*ei)->head==(*ei)->tail)
 				; // ignore self-edges
 			else if(gd<NSRankerEdge>(*ei).secondOfTwo)
@@ -494,7 +495,6 @@ void Config::moveOldEdges(DDChangeQueue &changeQ) {
 				userRouteEdge(DDp(ve));
 			else
 				autoAdjustEdge(DDp(ve));
-			findEdgeDirection(ve);
 		}
 }
 void Config::splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, DynaDAGLayout::Edge *ve) {

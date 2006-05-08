@@ -39,19 +39,19 @@ struct Coord {
 	bool operator !=(const Coord &c) const {
 		return !(*this==c);
 	}
-	Coord operator +(const Coord &c) const {
+	const Coord operator +(const Coord &c) const {
 		return Coord(x+c.x,y+c.y);
 	}
-	Coord operator -(const Coord &c) const {
+	const Coord operator -(const Coord &c) const {
 		return Coord(x-c.x,y-c.y);
 	}
-	Coord operator -() const {
+	const Coord operator -() const {
 		return Coord(-x,-y);
 	}
-	Coord operator *(double a) const {
+	const Coord operator *(double a) const {
 		return Coord(a*x,a*y);
 	}
-	Coord operator /(double a) const {
+	const Coord operator /(double a) const {
 		return Coord(x/a,y/a);
 	}
 	Coord &operator +=(const Coord &c) {
@@ -67,7 +67,7 @@ struct Coord {
 		return *this = *this/a;
 	}
 	// multiply each field
-	Coord operator *(Coord a) const {
+	const Coord operator *(Coord a) const {
 		return Coord(x*a.x,y*a.y);
 	}
 	// dot product
@@ -91,6 +91,9 @@ struct Coord {
 		return Coord(fabs(x),fabs(y));
 	}
 };
+inline const Coord operator *(double a,const Coord &c) {
+	return c*a;
+}
 inline double dSquared(Coord a,Coord b) {
 	Coord c = a-b;
 	return c%c;

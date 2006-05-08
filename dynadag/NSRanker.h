@@ -225,7 +225,8 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 		if(typename Layout::Edge *e1 = current_->find_edge(e->head,e->tail)) {
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
-			if(gd<NSRankerEdge>(e1).weak || gd<NSRankerEdge>(e1).strong) { // if both get inserted at once, mark the second
+			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
+			if(gd<NSRankerEdge>(e1).weak || gd<NSRankerEdge>(e1).strong) {
 				gd<NSRankerEdge>(e).secondOfTwo = true;
 				continue;
 			}
