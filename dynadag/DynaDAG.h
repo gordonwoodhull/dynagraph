@@ -80,7 +80,9 @@ private:
 	void findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
-	void straightEdge(DDPath *path); 
+	void drawStraightEdge(DDPath *path); 
+	void drawSelfEdge(DynaDAGLayout::Edge *e); 
+	void drawEdgeSimply(DDPath *path); 
 	void findDirtyEdges(DDChangeQueue &changeQ,bool force);
 	void redrawEdges(DDChangeQueue &changeQ);
 	void generateIntermediateLayout(DDChangeQueue &changeQ);
