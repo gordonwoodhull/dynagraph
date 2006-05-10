@@ -50,9 +50,7 @@ struct IncrStrGraphHandler : IncrLangEvents {
 #ifdef STRHANDLER_DO_THREADS
 		layoutThread_(0),
 #endif
-		locks_(0) {
-		assert(false);
-	}
+		locks_(0) {}
 	~IncrStrGraphHandler() {
 		// don't delete watcher because it's probably in engine chain
 		if(next_)
