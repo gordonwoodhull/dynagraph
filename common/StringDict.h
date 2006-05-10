@@ -21,7 +21,9 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+
 #ifndef DYNAGRAPH_NO_THREADS
+#define STRINGDICT_USE_MUTEX
 #include <boost/thread/mutex.hpp>
 #endif
 
@@ -52,7 +54,7 @@ private:
 	typedef std::map<std::string,int> mapstrs;
 	mapstrs *strs;
 #endif // STRINGDICT_USE_STL
-#ifndef DYNAGRAPH_NO_THREADS
+#ifdef STRINGDICT_USE_MUTEX
 	boost::mutex mutex_;
 #endif
 };

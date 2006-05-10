@@ -30,7 +30,7 @@ StringDict &StringDict::GlobalStringDict() {
 }
 const DString::size_type DString::npos = DString::size_type(-1);
 
-#ifndef DYNAGRAPH_NO_THREADS
+#ifdef STRINGDICT_USE_MUTEX
 #define LOCK_DICT() boost::mutex::scoped_lock lock(mutex_)
 #else
 #define LOCK_DICT()

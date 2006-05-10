@@ -47,7 +47,11 @@ int g_count=1;
 
 struct CouldntOpen {};
 
-#ifndef DYNAGRAPH_NO_THEADS
+#ifndef DYNAGRAPH_NO_THREADS
+#define TEXT_OUTPUT_MUTEX
+#endif
+
+#ifdef TEXT_OUTPUT_MUTEX
 boost::mutex g_outputMutex;
 #define LOCK_OUTPUT() boost::mutex::scoped_lock lock(g_outputMutex)
 #else

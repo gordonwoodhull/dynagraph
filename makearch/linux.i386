@@ -9,7 +9,7 @@ X11LIB=/usr/X11R6/lib
 X11INC=/usr/X11/include
 BOOST_THREAD_LIB_PATH=/usr/local/bin/boost/libs/thread/build/libboost_thread.a/gcc/release/threading-multi/
 BOOST_THREAD_LIB=boost_thread-gcc-mt-1_33_1
-OTHER_THREAD_LIBS=-lpthread
+OTHER_THREAD_LIBS=-pthread
 
 CC=gcc
 CPP=g++

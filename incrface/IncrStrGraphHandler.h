@@ -24,12 +24,13 @@
 #include "IncrViewWatcher.h"
 
 #ifndef DYNAGRAPH_NO_THREADS
+#define STRHANDLER_DO_THREADS
+#endif
+#ifdef STRHANDLER_DO_THREADS
 #include "common/DynagraphThread.h"
 #endif
 
 #include <memory>
-
-//#define DYNAGRAPH_NO_THREADS
 
 namespace Dynagraph {
 
@@ -40,16 +41,18 @@ struct IncrStrGraphHandler : IncrLangEvents {
 	ChangeQueue<NGraph> Q_;
 	IncrViewWatcher<NGraph> *watcher_;
 	ChangeProcessor<NGraph> *next_;
-#ifndef DYNAGRAPH_NO_THREADS
+#ifdef STRHANDLER_DO_THREADS
 	DynagraphThread<NGraph> *layoutThread_;
 #endif
     int locks_;
 
     IncrStrGraphHandler(DynagraphWorld<NGraph> *world) : world_(world),Q_(&world_->whole_,&world_->current_),watcher_(0),next_(0),
-#ifndef DYNAGRAPH_NO_THREADS
+#ifdef STRHANDLER_DO_THREADS
 		layoutThread_(0),
 #endif
-		locks_(0) {}
+		locks_(0) {
+		assert(false);
+	}
 	~IncrStrGraphHandler() {
 		// don't delete watcher because it's probably in engine chain
 		if(next_)
@@ -57,7 +60,7 @@ struct IncrStrGraphHandler : IncrLangEvents {
 	}
 
 	void incr_interrupt_ev() {
-#ifndef DYNAGRAPH_NO_THREADS
+#ifdef STRHANDLER_DO_THREADS
 		if(layoutThread_) {
 			layoutThread_->interrupt();
 			delete layoutThread_;
@@ -69,7 +72,7 @@ struct IncrStrGraphHandler : IncrLangEvents {
 		if(locks_>0)
 			return false;
 		if(next_) {
-#ifndef DYNAGRAPH_NO_THREADS
+#ifdef STRHANDLER_DO_THREADS
 			layoutThread_ = new DynagraphThread<NGraph>(*world_,next_,Q_);
 #else
 			next_->Process(Q_);
