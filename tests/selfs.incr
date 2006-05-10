@@ -1,0 +1,6 @@
+open graph V []
+insert node V a
+insert node V b
+insert edge V e a b
+insert edge V self1 a a
+insert edge V self2 b b
