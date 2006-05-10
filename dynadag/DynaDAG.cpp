@@ -242,18 +242,8 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 		avgOut /= nOuts;
 	mn->flowSlope = (avgIn+avgOut)/2*gd<NodeGeom>(mn->layoutN).flow;
 }
-void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
-	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei) {
-		findFlowSlope(DDp((*ei)->tail));
-		findFlowSlope(DDp((*ei)->head));
-	}
-	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei) {
-		findFlowSlope(DDp((*ei)->tail));
-		findFlowSlope(DDp((*ei)->head));
-	}
-}
 bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
-	if(path->unclippedPath.Empty()) // new edge
+	if(path->unclippedPath.Empty()) // unclippedPath is the internal marker
 		return true;
 	DynaDAGLayout::Node *tailMod = changeQ.modN.find(path->layoutE->tail),
 		*headMod = changeQ.modN.find(path->layoutE->head);
@@ -294,7 +284,7 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 }
 void DynaDAGServer::sketchEdge(DDPath *path) {
 	// draw an edge just based on vnodes
-	path->unclippedPath.clear();
+	path->unclippedPath.Clear();
 	EdgeGeom &eg = gd<EdgeGeom>(path->layoutE);
 	path->unclippedPath.degree = 1;
 	DynaDAGLayout::Node *head = path->layoutE->head,
@@ -332,7 +322,7 @@ void DynaDAGServer::straightEdge(DDPath *path) {
 	DynaDAGLayout::Edge *e = path->layoutE;
 	EdgeGeom &eg = gd<EdgeGeom>(e);
 	Line &uncl = path->unclippedPath;
-	uncl.clear();
+	uncl.Clear();
 	const NodeGeom &tg = gd<NodeGeom>(e->tail),
 		&hg = gd<NodeGeom>(e->head);
 	uncl.degree = 3;
@@ -344,48 +334,63 @@ void DynaDAGServer::straightEdge(DDPath *path) {
 	uncl.push_back(hp);
 	eg.pos.ClipEndpoints(uncl,tg.pos,eg.tailClipped?&tg.region:0,
 		hg.pos,eg.headClipped?&hg.region:0);
-	uncl.clear(); // this is not a valid drawing!
+	uncl.Clear(); // this is not a valid drawing!
 }
-void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
-	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(current_);
+void DynaDAGServer::findDirtyEdges(DDChangeQueue &changeQ,bool force) {
 	DynaDAGLayout::graphedge_iter ei;
 	for(ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) {
+		assert(!changeQ.delE.find(*ei));
 		Line before = gd<EdgeGeom>(*ei).pos;
-		if(force || !changeQ.delE.find(*ei) && (gd<EdgeGeom>(*ei).pos.Empty() || edgeNeedsRedraw(DDp(*ei),changeQ))) {
+		if(force || gd<EdgeGeom>(*ei).pos.Empty() || edgeNeedsRedraw(DDp(*ei),changeQ))
 			DDp(*ei)->unclippedPath.Clear();
+	}
+}
+void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) 
+		if(DDp(*ei)->unclippedPath.Empty())	{
+			findFlowSlope(DDp((*ei)->tail));
+			findFlowSlope(DDp((*ei)->head));
 		}
-		if((*ei)->tail==(*ei)->head) { // self-edge
-			Line &unclipped = DDp(*ei)->unclippedPath;
-			Coord sep = gd<GraphGeom>(whole_).separation;
-			unclipped.degree = 3;
-			DDModel::Node *tl = DDp((*ei)->tail)->bottom();
-			Coord tailpt = gd<EdgeGeom>(*ei).tailPort.pos + gd<DDNode>(tl).multi->pos();
-			Coord right = Coord(tailpt.x+config.RightExtent(tl),tailpt.y),
-				left = right - Coord(1.5*sep.x,0.0);
-#ifndef DOWN_GREATER
-			Coord dy(0.0,-sep.y/2.0);
-#else
-			Coord dy(0.0,sep.y/2.0);
-#endif
-			unclipped.push_back(left);
-			unclipped.push_back(left+dy);
-			unclipped.push_back(right+dy);
-			unclipped.push_back(right);
-			unclipped.push_back(right-dy);
-			unclipped.push_back(left-dy);
-			unclipped.push_back(left);
-		}
+}
+void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ) {
+	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(current_);
+	for(DynaDAGLayout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) {
+		Line before = gd<EdgeGeom>(*ei).pos;
 		if(gd<NSRankerEdge>(*ei).secondOfTwo)
 			continue; // handled below
-		if(!changeQ.delE.find(*ei) && DDp(*ei)->unclippedPath.Empty()) {
-			if(gd<GraphGeom>(current_).splineLevel==DG_SPLINELEVEL_VNODE ||
+		assert(!changeQ.delE.find(*ei));
+		if(DDp(*ei)->unclippedPath.Empty()) {
+			if((*ei)->tail==(*ei)->head) { // self-edge
+				Line &unclipped = DDp(*ei)->unclippedPath;
+				unclipped.Clear();
+				Coord sep = gd<GraphGeom>(whole_).separation;
+				unclipped.degree = 3;
+				DDModel::Node *tl = DDp((*ei)->tail)->bottom();
+				Coord tailpt = gd<EdgeGeom>(*ei).tailPort.pos + gd<DDNode>(tl).multi->pos();
+				Coord right = Coord(tailpt.x+config.RightExtent(tl),tailpt.y),
+					left = right - Coord(1.5*sep.x,0.0);
+#ifndef DOWN_GREATER
+				Coord dy(0.0,-sep.y/2.0);
+#else
+				Coord dy(0.0,sep.y/2.0);
+#endif
+				unclipped.push_back(left);
+				unclipped.push_back(left+dy);
+				unclipped.push_back(right+dy);
+				unclipped.push_back(right);
+				unclipped.push_back(right-dy);
+				unclipped.push_back(left-dy);
+				unclipped.push_back(left);
+			}
+			else if(gd<GraphGeom>(current_).splineLevel==DG_SPLINELEVEL_VNODE ||
 					!spliner.MakeEdgeSpline(DDp(*ei),gd<GraphGeom>(current_).splineLevel /*,obav */ ))
 				sketchEdge(DDp(*ei));
+
+			if(before!=gd<EdgeGeom>(*ei).pos)
+				ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
 		}
-		if(before!=gd<EdgeGeom>(*ei).pos)
-			ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
 	}
-	for(ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei)
+	for(DynaDAGLayout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei)
 		if(gd<NSRankerEdge>(*ei).secondOfTwo) {
 			Line before = gd<EdgeGeom>(*ei).pos;
 			Line &otherSide = gd<EdgeGeom>(current_->find_edge((*ei)->head,(*ei)->tail)).pos;
@@ -496,21 +501,22 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	config.SetYs();
 	timer.LoopPoint(r_timing,"optimize x coordinates");
 
-	// calculate bounding rectangle
-	updateBounds(changeQ);
-
-	// find node & edge moves
-	findChangedNodes(changeQ);
-	
-	findFlowSlopes(changeQ);
-
 	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
 		cleanUp();
 		figureIntermediateQueue(changeQ,oldChanges);
 		return;
 	}
 
-	redrawEdges(changeQ,ModifyFlags(changeQ).flags&DG_UPD_EDGESTYLE);
+	// calculate bounding rectangle
+	updateBounds(changeQ);
+
+	// find node & edge moves
+	findChangedNodes(changeQ);
+
+	findDirtyEdges(changeQ,ModifyFlags(changeQ).flags&DG_UPD_EDGESTYLE);
+	findFlowSlopes(changeQ);
+	redrawEdges(changeQ);
+
 	timer.LoopPoint(r_timing,"draw splines");
 
 	// reset flags

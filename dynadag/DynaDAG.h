@@ -81,7 +81,8 @@ private:
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
 	void straightEdge(DDPath *path); 
-	void redrawEdges(DDChangeQueue &changeQ,bool force);
+	void findDirtyEdges(DDChangeQueue &changeQ,bool force);
+	void redrawEdges(DDChangeQueue &changeQ);
 	void generateIntermediateLayout(DDChangeQueue &changeQ);
 	void cleanUp();
 	void dumpModel();
