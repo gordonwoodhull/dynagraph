@@ -17,46 +17,21 @@
 #ifndef NSRankerAttrs_h
 #define NSRankerAttrs_h
 
-#include "Constraints.h"
-
 namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerNode {
-	NodeConstraints topC,bottomC;
-	bool hit; // for rank dfs
 	int newTopRank,	// destination rank assignment
 		newBottomRank,
 		oldTopRank,	// previous rank assignment
 		oldBottomRank;
-	bool rankFixed; // whether nailed in Y
-
-	NSRankerNode() : hit(false),newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0),rankFixed(false) {}
-	// do not copy constraints or hit-flag
-	NSRankerNode(const NSRankerNode &other) :
-		hit(false),
-		newTopRank(other.newTopRank),newBottomRank(other.newBottomRank),oldTopRank(other.oldTopRank),oldBottomRank(other.oldBottomRank),
-		rankFixed(other.rankFixed) {}
-	NSRankerNode &operator=(NSRankerNode &other) {
-		hit = false;
-		newTopRank = other.newTopRank;
-		newBottomRank = other.newBottomRank;
-		oldTopRank = other.oldTopRank;
-		oldBottomRank = other.oldBottomRank;
-		rankFixed = other.rankFixed;
-		return *this;
-	}
+	NSRankerNode() : newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0) {}
 };
-
 struct NSRankerEdge {
-	DDCGraph::Node *weak;
-	DDCGraph::Edge *strong;
 	// the second edge of 2-cycle should be ignored, mostly
 	bool secondOfTwo;
-	
-	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false) {}
+	NSRankerEdge() : secondOfTwo(false) {}
 };
-
 
 } // namespace DynaDAG
 } // namespace Dynagraph

@@ -29,9 +29,9 @@ namespace Dynagraph {
 template<typename OuterLayout,typename InnerLayout>
 struct translator_traitses {
 	typedef NamedToNamedChangeTranslator<OuterLayout,InnerLayout,
-		GoingNamedTransition<OuterLayout,InnerLayout>,LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
+		GoingQueueTransition<OuterLayout,InnerLayout>,LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
 	typedef NamedToNamedChangeTranslator<InnerLayout,OuterLayout,
-		ReturningNamedTransition<InnerLayout,OuterLayout>,LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
+		ReturningQueueTransition<InnerLayout,OuterLayout>,LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
 };
 
 template<typename Layout>
@@ -44,7 +44,7 @@ struct WorldGuts {
 			typename translator_traitses<GeneralLayout,Layout>::out_translator> Box;
 		Box *box = new Box;
 		box->assignEngine(engines_,world,
-			new typename translator_traitses<GeneralLayout,Layout>::in_translator(GoingNamedTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
+			new typename translator_traitses<GeneralLayout,Layout>::in_translator(GoingQueueTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
 		EnginePair<GeneralLayout> engine = box->engines();
 		engine.Prepend(createEngine<GeneralLayout>(superengines_,&world.whole_,&world.current_));
 		return engine;

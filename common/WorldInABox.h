@@ -24,7 +24,7 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 		return EnginePair<OuterLayout>(this,xlateOut_);
 	}
 	void Process(ChangeQueue<OuterLayout> &Q) {
-		xlateOut_->transition_.nextQ_ = &Q;
+		xlateOut_->transition_.AssignNext(&Q);
 		topEngine_->Process(Q);
 	}
 };

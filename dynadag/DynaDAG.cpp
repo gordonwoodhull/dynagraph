@@ -217,14 +217,14 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 	int nIns=0,nOuts=0;
 	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
 		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).reversed)
+		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).backward)
 			++nIns, avgIn += vec;
 		else
 			++nOuts, avgOut -= vec;
 	}
 	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
 		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).reversed)
+		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).backward)
 			++nOuts, avgOut += vec;
 		else
 			++nIns, avgIn -= vec;
