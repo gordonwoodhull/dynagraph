@@ -14,17 +14,17 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef DynagraphWorld_h
-#define DynagraphWorld_h
+#ifndef ChangingGraph_h
+#define ChangingGraph_h
 
 namespace Dynagraph {
 
 template<typename Graph>
-struct DynagraphWorld {
+struct ChangingGraph {
 	Graph whole_,current_;
-	DynagraphWorld() : current_(&whole_) {}
+	ChangingGraph() : current_(&whole_) {}
 };
 
 } // namespace Dynagraph
 
-#endif // DynagraphWorld_h
+#endif // ChangingGraph_h
