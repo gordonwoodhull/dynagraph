@@ -40,12 +40,15 @@ struct NSRankerModelNode {
 };
 struct NSRankerModelEdge {
 	int weight,backweight;
+	double length,backlength;
 	DDCGraph::Node *weak;
 	DDCGraph::Edge *strong;
-	NSRankerModelEdge() : weight(1),backweight(1),weak(0),strong(0) {}
+	NSRankerModelEdge() : weight(1),backweight(1),length(0.),backlength(.0),weak(0),strong(0) {}
 };
 struct NSRankerModelGraph {
 	ConstraintGraph cg;
+	ConstraintGraph::Node *top_; // to pull loose nodes upward
+	NSRankerModelGraph() : top_(cg_.create_node()) {}
 };
 
 struct NSRankerModelNodeData : Name,NSRankerModelNode {};

@@ -22,11 +22,13 @@
 namespace Dynagraph {
 
 // a ChangeProcessor client should send changes on without expecting any response
-// the server is allowed to change the Q and is expected to eventually realize the changes 
+// the server is allowed to change the Q and is expected to eventually realize the changes
 template<typename Graph>
 struct ChangeProcessor {
+    ChangingGraph<Graph> * const world_;
 	typedef Graph GraphType;
-	virtual void Process(ChangeQueue<Graph> &Q) = 0; 
+	ChangeProcessor(Graph *world) : world_(world) {}
+	virtual void Process(ChangeQueue<Graph> &Q) = 0;
 	virtual ~ChangeProcessor() {}
 };
 template<typename Graph>

@@ -5,12 +5,12 @@ namespace Dynagraph {
 
 template<typename OuterLayout,typename InnerLayout,typename InTranslator,typename OutTranslator>
 struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
-	DynagraphWorld<InnerLayout> world_;
+	ChangingGraph<InnerLayout> world_;
 	EnginePair<InnerLayout> innerEngines_;
 	ChangeProcessor<OuterLayout> *topEngine_;
 	OutTranslator *xlateOut_;
 	WorldInABox() : topEngine_(0),xlateOut_(0) {}
-	void assignEngine(DString engines,DynagraphWorld<OuterLayout> &topWorld,InTranslator *inTranslator = new InTranslator,OutTranslator *outTranslator = new OutTranslator) {
+	void assignEngine(DString engines,ChangingGraph<OuterLayout> &topWorld,InTranslator *inTranslator = new InTranslator,OutTranslator *outTranslator = new OutTranslator) {
 		if(innerEngines_.second)
 			innerEngines_.second->next_ = 0;
 		ChangeTranslator<OuterLayout,InnerLayout> *xlateIn = inTranslator;

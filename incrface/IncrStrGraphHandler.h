@@ -19,7 +19,7 @@
 #include "common/ChangeProcessor.h"
 #include "common/diff_strgraph.h"
 #include "common/randomName.h"
-#include "common/DynagraphWorld.h"
+#include "common/ChangingGraph.h"
 #include "IncrLangEvents.h"
 #include "IncrViewWatcher.h"
 
@@ -35,9 +35,9 @@
 namespace Dynagraph {
 
 // NGraph is LGraph containing at least StrAttrs2
-template<typename NGraph> 
+template<typename NGraph>
 struct IncrStrGraphHandler : IncrLangEvents {
-	std::auto_ptr<DynagraphWorld<NGraph> > world_;
+	std::auto_ptr<ChangingGraph<NGraph> > world_;
 	ChangeQueue<NGraph> Q_;
 	IncrViewWatcher<NGraph> *watcher_;
 	ChangeProcessor<NGraph> *next_;
@@ -46,7 +46,7 @@ struct IncrStrGraphHandler : IncrLangEvents {
 #endif
     int locks_;
 
-    IncrStrGraphHandler(DynagraphWorld<NGraph> *world) : world_(world),Q_(&world_->whole_,&world_->current_),watcher_(0),next_(0),
+    IncrStrGraphHandler(ChangingGraph<NGraph> *world) : world_(world),Q_(&world_->whole_,&world_->current_),watcher_(0),next_(0),
 #ifdef STRHANDLER_DO_THREADS
 		layoutThread_(0),
 #endif

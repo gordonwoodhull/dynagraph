@@ -22,7 +22,8 @@ namespace Dynagraph {
 template<typename Graph>
 struct ChangingGraph {
 	Graph whole_,current_;
-	ChangingGraph() : current_(&whole_) {}
+	ChangeQueue<Graph> Q_;
+	ChangingGraph() : current_(&whole_),Q_(&whole_,&current_) {}
 };
 
 } // namespace Dynagraph

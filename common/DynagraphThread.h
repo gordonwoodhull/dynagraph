@@ -24,12 +24,12 @@ namespace Dynagraph {
 
 template<typename Graph>
 struct DynagraphThread {
-	DynagraphWorld<Graph> &world_;
+	ChangingGraph<Graph> &world_;
 	ChangeProcessor<Graph> *engine_;
 	ChangeQueue<Graph> &Q_;
 	boost::thread *thread_;
-	
-	DynagraphThread(DynagraphWorld<Graph> &world,ChangeProcessor<Graph> *engine,ChangeQueue<Graph> &Q) : 
+
+	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine,ChangeQueue<Graph> &Q) :
 	  world_(world),engine_(engine),Q_(Q) {
 		thread_ = new boost::thread(boost::bind(&DynagraphThread::go,this));
 	}

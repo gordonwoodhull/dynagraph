@@ -24,16 +24,13 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
-	NSRanker(Layout *whole,Layout *current) : 
-		top_(cg_.create_node()),
+	NSRanker(Layout *whole,Layout *current) :
 		rankXlate_(gd<GraphGeom>(current).resolution.y),
 		current_(current)
 	{}
 	~NSRanker();
 	void Process(ChangeQueue<Layout> &changeQ);
 private:
-	ConstraintGraph cg_;
-	ConstraintGraph::Node *top_; // to pull loose nodes upward
 	FlexiRankXlator rankXlate_;
 	Layout *current_;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
@@ -64,76 +61,6 @@ NSRanker<Layout>::~NSRanker() {
 }
 
 
-
-// to LayoutToNSRankerModelTranslator
-
-template<typename Layout>
-void NSRanker<Layout>::removeLayoutNodeConstraints(typename Layout::Node *n) {
-	cg_.RemoveNodeConstraints(gd<NSRankerNode>(n).topC);
-	cg_.RemoveNodeConstraints(gd<NSRankerNode>(n).bottomC);
-}
-template<typename Layout>
-void NSRanker<Layout>::removePathConstraints(typename Layout::Edge *e) {
-	if(gd<NSRankerEdge>(e).weak) {
-		cg_.erase_node(gd<NSRankerEdge>(e).weak);
-		gd<NSRankerEdge>(e).weak = 0;
-	}
-	if(gd<NSRankerEdge>(e).strong) {
-		cg_.erase_edge(gd<NSRankerEdge>(e).strong);
-		gd<NSRankerEdge>(e).strong = 0;
-	}
-	gd<EdgeGeom>(e).constraint = false;
-}
-template<typename Layout>
-void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI) {
-	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) {
-		removePathConstraints(*ei);
-
-		// insert these in Q2 (which doesn't return) and mod them in Q1
-		typename Layout::Edge *e = *ei;
-		if(typename Layout::Edge *e2 = current_->find_edge(e->head,e->tail))
-			if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false)) 
-				extraI.insert(e2);
-	}
-	for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni) 
-		removeLayoutNodeConstraints(*ni);
-}
-
-
-
-
-// to NSRankerModelToConstraintTranslator
-
-template<typename Layout>
-void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
-	assert(!gd<NSRankerEdge>(e).strong);
-	gd<EdgeGeom>(e).constraint = true;
-
-	DDCGraph::Node *tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC),
-		*hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
-
-	DDCGraph::Edge *constr = cg_.create_edge(tvar,hvar).first;
-	gd<NSRankerEdge>(e).strong = constr;
-	DDNS::NSE &nse = DDNS::NSd(constr);
-	double length = std::max(0.,gd<EdgeGeom>(e).minLength);
-	nse.minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
-	nse.weight = EDGELENGTH_WEIGHT;
-}
-template<typename Layout>
-void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
-	assert(!gd<NSRankerEdge>(e).weak);
-	gd<EdgeGeom>(e).constraint = false;
-
-	DDCGraph::Node *tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC),
-		*hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
-	gd<NSRankerEdge>(e).weak = cg_.create_node();
-	gd<ConstraintType>(gd<NSRankerEdge>(e).weak).why = ConstraintType::rankWeak;
-	NSEdgePair ep(gd<NSRankerEdge>(e).weak,tvar,hvar);
-	DDNS::NSd(ep.e[0]).minlen = 0;
-	DDNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
-	double length = std::max(0.,gd<EdgeGeom>(e).minLength);
-	DDNS::NSd(ep.e[1]).minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
-}
 // change edge strengths around a node
 template<typename Layout>
 void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
@@ -150,16 +77,6 @@ void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
 	}
 	gd<NSRankerNode>(n).rankFixed = fix;
 }
-template<typename Layout>
-void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
-	DDCGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
-		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
-	DDCGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
-	 // one-node chains cause trouble; make sure there's one edge
-	DDNS::NSd(heightC).minlen = std::max(1,rankXlate_.HeightToDRank(ROUND(gd<NodeGeom>(n).region.boundary.Height())));
-	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
-}
-
 
 
 
@@ -189,19 +106,6 @@ void NSRanker<Layout>::moveOldNodes(ChangeQueue<Layout> &changeQ) {
 
 // to NSRankerModelToConstraintTranslator
 
-template<typename Layout>
-void NSRanker<Layout>::insertNewNodes(ChangeQueue<Layout> &changeQ) {
-	for(typename Layout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni) {
-        typename Layout::Node *n = *ni;
-
-		// pull loose nodes upward
-		ConstraintGraph::Edge *pull = cg_.create_edge(top_,cg_.GetVar(gd<NSRankerNode>(n).topC)).first;
-		DDNS::NSd(pull).minlen = 0;
-		DDNS::NSd(pull).weight = UPWARD_TENDENCY;
-
-		doNodeHeight(n);
-	}
-}
 
 
 // (may need to figure this out in LayoutToNSRankerModel and set a stabilize attr)

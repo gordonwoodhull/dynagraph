@@ -22,33 +22,32 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
+template<typename Layout>
 struct FlexiRankXlator {
 	typedef int index;
-	bool Above(index a,index b) {
+	bool Above(Layout *l,index a,index b) {
 		return a<b;
 	}
-	bool Below(index a,index b) {
+	bool Below(Layout *l,index a,index b) {
 		return a>b;
 	}
-	index CoordToRank(double y) {
+	index CoordToRank(Layout *l,double y) {
 #ifndef DOWN_GREATER
-		return -ROUND(y/div_);
+		return -ROUND(y/gd<GraphGeom>(l).resolution.y);
 #else
-		return ROUND(y/div_);
+		return ROUND(y/gd<GraphGeom>(l).resolution.y);
 #endif
 	}
-	double RankToCoord(index r) {
+	double RankToCoord(Layout *l,index r) {
 #ifndef DOWN_GREATER
-		return -r*div_;
+		return -r*gd<GraphGeom>(l).resolution.y;
 #else
-		return r*div_;
+		return r*gd<GraphGeom>(l).resolution.y;
 #endif
 	}
-	index HeightToDRank(double dy) {
-		return ROUND(dy/div_);	
+	index HeightToDRank(Layout *l,double dy) {
+		return ROUND(dy/gd<GraphGeom>(l).resolution.y);
 	}
-	explicit FlexiRankXlator(double div) : div_(div) {}
-	double div_;
 };
 
 struct CompRank {
@@ -107,14 +106,14 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	index HeightToDRank(double dy) {
 		return rankXlate_.HeightToDRank(dy);
 	}
-	index Low() { 
-		if(empty()) 
-			return 0; 
-		else return rankXlate_.CoordToRank(front()->yBase); 
+	index Low() {
+		if(empty())
+			return 0;
+		else return rankXlate_.CoordToRank(front()->yBase);
 	}
-	index High() { 
-		if(empty()) return 0; 
-		else return rankXlate_.CoordToRank(back()->yBase); 
+	index High() {
+		if(empty()) return 0;
+		else return rankXlate_.CoordToRank(back()->yBase);
 	}
 	index Up(index r) {
 		if(r==INT_MIN)

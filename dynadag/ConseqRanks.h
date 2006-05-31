@@ -22,6 +22,34 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
+template<typename Layout>
+struct ConseqRankXlator {
+	typedef int index;
+	bool Above(Layout *l,index a,index b) {
+		return a<b;
+	}
+	bool Below(Layout *l,index a,index b) {
+		return a>b;
+	}
+	index CoordToRank(Layout *l,double y) {
+#ifndef DOWN_GREATER
+		return -ROUND(y/gd<GraphGeom>(l).resolution.y);
+#else
+		return ROUND(y/gd<GraphGeom>(l).resolution.y);
+#endif
+	}
+	double RankToCoord(Layout *l,index r) {
+#ifndef DOWN_GREATER
+		return -r*gd<GraphGeom>(l).resolution.y;
+#else
+		return r*gd<GraphGeom>(l).resolution.y;
+#endif
+	}
+	index HeightToDRank(Layout *l,double dy) {
+		return ROUND(dy/gd<GraphGeom>(l).resolution.y);
+	}
+};
+
 struct ConseqRanks : std::vector<Rank*> {
 	typedef int index;
 	double sep;
@@ -114,7 +142,7 @@ struct ConseqRanks : std::vector<Rank*> {
 	void Check();
 private:
 	index low,high;
-        Rank* &at(int i) { return operator[](i); } // for earlier gccs
+    Rank* &at(int i) { return operator[](i); } // for earlier gccs
 	void extendConfig(int newLow, int newHigh,double sep) {
 		int osize = high<low ? 0 : high - low + 1,
 			nsize = newHigh - newLow + 1;
