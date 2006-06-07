@@ -29,9 +29,9 @@ namespace Dynagraph {
 template<typename OuterLayout,typename InnerLayout>
 struct translator_traitses {
 	typedef NamedToNamedChangeTranslator<OuterLayout,InnerLayout,
-		GoingQueueTransition<OuterLayout,InnerLayout>,LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
+		GoingQueueTransition<OuterLayout>,LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
 	typedef NamedToNamedChangeTranslator<InnerLayout,OuterLayout,
-		ReturningQueueTransition<InnerLayout,OuterLayout>,LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
+		ReturningQueueTransition<InnerLayout>,LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
 };
 
 template<typename Layout>
@@ -59,7 +59,7 @@ struct SimpleGuts {
 	}
 };
 template<typename Layout,typename GutsCreator>
-IncrLangEvents *createStrWorldAndHandler(GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
+IncrLangEvents *createStringHandlers(GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
 									  LinkedChangeProcessor<Layout> *before,LinkedChangeProcessor<Layout> *after,
 									  DString gname,const StrAttrs &attrs,Transform *transform, bool useDotDefaults) {
 	ChangingGraph<Layout> *chraph = new ChangingGraph<Layout>;
