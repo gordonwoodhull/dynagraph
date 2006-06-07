@@ -25,13 +25,13 @@ namespace Dynagraph {
 
 template<typename Graph>
 struct EngineCreator {
-	typedef LinkedChangeProcessor<Graph>* (*create_fn)(Graph *cli,Graph *curr);
+	typedef LinkedChangeProcessor<Graph>* (*create_fn)(ChangingGraph<Graph> *world);
 };
 template<typename Engine>
 struct EngineCreatorInstance {
 	typedef typename Engine::GraphType Graph;
-	static LinkedChangeProcessor<Graph>* create(Graph *whole,Graph *current) {
-		return new Engine(whole,current);
+	static LinkedChangeProcessor<Graph>* create(ChangingGraph<Graph> *world) {
+		return new Engine(world);
 	}
 };
 

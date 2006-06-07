@@ -28,30 +28,29 @@ struct ChangeProcessor {
     ChangingGraph<Graph> * const world_;
 	typedef Graph GraphType;
 	ChangeProcessor(Graph *world) : world_(world) {}
-	virtual void Process(ChangeQueue<Graph> &Q) = 0;
+	virtual void Process() = 0;
 	virtual ~ChangeProcessor() {}
 };
 template<typename Graph>
 struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 	LinkedChangeProcessor<Graph> *next_;
-	LinkedChangeProcessor(LinkedChangeProcessor<Graph> *next=0) : next_(next) {}
+	LinkedChangeProcessor(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0)
+		: ChangeProcessor(world),next_(next) {}
 	virtual ~LinkedChangeProcessor() {
 		if(next_)
 			delete next_;
 	}
-	void NextProcess(ChangeQueue<Graph> &Q) {
+	void Process() {
 		if(next_)
-			next_->Process(Q);
+			next_->Process();
 	}
 };
 // a ChangeTranslator is the end of one chain of processors and the beginning of another
 template<typename Graph1,typename Graph2>
 struct ChangeTranslator : LinkedChangeProcessor<Graph1>, LinkedChangeProcessor<Graph2> {
+	ChangeTranslator(ChangingGraph<Graph1> *world1,ChangeGraph<Graph2> *world2)
+		: LinkedChangeProcessor<Graph1>(world1),LinkedChangeProcessor<Graph2>(world2) {}
 	// LinkedChangeProcessor<Graph1>::next_ must be null
-	// LinkedChangeProcessor<Graph2>::Process is an error
-	void Process(ChangeQueue<Graph2>&) {
-		assert(false);
-	}
 };
 
 template<typename Graph>
