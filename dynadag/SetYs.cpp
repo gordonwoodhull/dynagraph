@@ -21,7 +21,7 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 void Config::resetRankBox(Rank *rank) {
-	Ranks::index r = ranking.CoordToRank(rank->yBase);
+	Ranks::index r = Ranks::Xlator::CoordToRank(whole,rank->yBase);
 	Ranks::iterator i = ranking.GetIter(r);
 	rank->deltaAbove = 0;
 	if(i!=ranking.begin())

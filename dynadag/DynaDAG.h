@@ -43,7 +43,6 @@ namespace DynaDAG {
 void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out);
 
 struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
-	DynaDAGLayout *whole_,*current_;
 	DDModel model; // whole graph + virtual nodes & edges for tall nodes & edge chains
 	Config config;	// indexes layout nodes by rank and order
 	Optimizer *optimizer;
@@ -51,17 +50,17 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 	FlexiSpliner spliner;
 	DDChangeQueue oldChanges; // if interrupted
 
-	DynaDAGServer(DynaDAGLayout *whole,DynaDAGLayout *current) :
-		whole_(whole),current_(current),
+	DynaDAGServer(ChangingGraph<DynaDAGLayout> *world) 
+		: LinkedChangeProcessor<DynaDAGLayout>(world),
 		model(),
-		config(this,model,whole,current,&xsolver),
+		config(this,model,&world->whole_,&world->current_,&xsolver),
 		optimizer(new DotlikeOptimizer(config)),
-		xsolver(config,gd<GraphGeom>(current).resolution.x),
+		xsolver(config,gd<GraphGeom>(&world->current_).resolution.x),
 		spliner(config),
-		oldChanges(whole,current) {}
+		oldChanges(&world->whole_,&world->current_) {}
 	~DynaDAGServer();
 	// ChangeProcessor
-	void Process(DDChangeQueue &changeQ);
+	void Process();
 	// DynaDAGServices
 	std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN);
 	void CloseModelNode(DDModel::Node *n);

@@ -18,6 +18,7 @@
 #define ChangeProcessor_h
 
 #include "Modify.h"
+#include "ChangingGraph.h"
 
 namespace Dynagraph {
 
@@ -27,7 +28,7 @@ template<typename Graph>
 struct ChangeProcessor {
     ChangingGraph<Graph> * const world_;
 	typedef Graph GraphType;
-	ChangeProcessor(Graph *world) : world_(world) {}
+	ChangeProcessor(ChangingGraph<Graph> *world) : world_(world) {}
 	virtual void Process() = 0;
 	virtual ~ChangeProcessor() {}
 };
@@ -35,12 +36,12 @@ template<typename Graph>
 struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 	LinkedChangeProcessor<Graph> *next_;
 	LinkedChangeProcessor(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0)
-		: ChangeProcessor(world),next_(next) {}
+		: ChangeProcessor<Graph>(world),next_(next) {}
 	virtual ~LinkedChangeProcessor() {
 		if(next_)
 			delete next_;
 	}
-	void Process() {
+	void NextProcess() {
 		if(next_)
 			next_->Process();
 	}
@@ -48,7 +49,7 @@ struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 // a ChangeTranslator is the end of one chain of processors and the beginning of another
 template<typename Graph1,typename Graph2>
 struct ChangeTranslator : LinkedChangeProcessor<Graph1>, LinkedChangeProcessor<Graph2> {
-	ChangeTranslator(ChangingGraph<Graph1> *world1,ChangeGraph<Graph2> *world2)
+	ChangeTranslator(ChangingGraph<Graph1> *world1,ChangingGraph<Graph2> *world2)
 		: LinkedChangeProcessor<Graph1>(world1),LinkedChangeProcessor<Graph2>(world2) {}
 	// LinkedChangeProcessor<Graph1>::next_ must be null
 };
@@ -83,10 +84,11 @@ struct EnginePair : std::pair<LinkedChangeProcessor<Graph>*,LinkedChangeProcesso
 // this must be done only once, that's why individual layout servers can't be responsible.
 template<typename Graph>
 struct UpdateCurrentProcessor : LinkedChangeProcessor<Graph> {
-	UpdateCurrentProcessor(Graph*,Graph*) {}
-	void Process(ChangeQueue<Graph> &Q) {
-		Q.UpdateCurrent();
-		NextProcess(Q);
+	UpdateCurrentProcessor(ChangingGraph<Graph> *world) 
+		: LinkedChangeProcessor<Graph>(world) {}
+	void Process() {
+		this->world_->Q_.UpdateCurrent();
+		NextProcess();
 	}
 };
 

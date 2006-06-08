@@ -30,7 +30,7 @@ void FlexiRanks::Check() {
 	(next=ri)++;
 	while(next!=end()) {
 		index a = IndexOfIter(ri), b = IndexOfIter(next);
-		assert(Above(a,b));
+		assert(Xlator::Above(layout_,a,b));
 		ri = next++;
 	}
 }
@@ -45,7 +45,7 @@ void Config::checkEdges(bool strict) {
 		if(strict) // all edges span one rank
 			assert(ranking.Down(tr)==hr);
 		else
-			assert(ranking.Above(tr,hr));
+			assert(Ranks::Xlator::Above(whole,tr,hr));
 	}
 	// nodes in paths belong to one path only
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {

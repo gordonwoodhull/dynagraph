@@ -24,23 +24,23 @@ bool g_useDotDefaults = false;
 
 template<typename Layout>
 struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
-	void Process(ChangeQueue<Layout> &Q) {
+	void Process() {
 		// often this method will need to map Layout nodes & edges to application objects
 		// sorry, there is no better way than to use a map<>
-		for(Layout::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
+		for(Layout::node_iter ni = this->world_->Q_.insN.nodes().begin(); ni!=this->world_->Q_.insN.nodes().end(); ++ni)
 			cout << "node " << gd<Name>(*ni) << " inserted at " << gd<NodeGeom>(*ni).pos << endl;
-		for(Layout::graphedge_iter ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
+		for(Layout::graphedge_iter ei = this->world_->Q_.insE.edges().begin(); ei!=this->world_->Q_.insE.edges().end(); ++ei)
 			cout << "edge " << gd<Name>(*ei) << " inserted at " << gd<EdgeGeom>(*ei).pos << endl;
-		for(Layout::node_iter ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
+		for(Layout::node_iter ni = this->world_->Q_.modN.nodes().begin(); ni!=this->world_->Q_.modN.nodes().end(); ++ni)
 			cout << "node " << gd<Name>(*ni) << " moved to " << gd<NodeGeom>(*ni).pos << endl;
-		for(Layout::graphedge_iter ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
+		for(Layout::graphedge_iter ei = this->world_->Q_.modE.edges().begin(); ei!=this->world_->Q_.modE.edges().end(); ++ei)
 			cout << "edge " << gd<Name>(*ei) << " moved to " << gd<EdgeGeom>(*ei).pos << endl;
-		for(Layout::node_iter ni = Q.delN.nodes().begin(); ni!=Q.delN.nodes().end(); ++ni)
+		for(Layout::node_iter ni = this->world_->Q_.delN.nodes().begin(); ni!=this->world_->Q_.delN.nodes().end(); ++ni)
 			cout << "node " << gd<Name>(*ni) << " deleted" << endl;
-		for(Layout::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
+		for(Layout::graphedge_iter ei = this->world_->Q_.delE.edges().begin(); ei!=this->world_->Q_.delE.edges().end(); ++ei)
 			cout << "edge " << gd<Name>(*ei) << " deleted" << endl;
 		// Being at the end of the processing chain, this must clear the queue
-		Q.Execute(true);
+		this->world_->Q_.Execute(true);
 	}
 	// IncrViewWatcher callbacks, not used in this example
 	void IncrOpen(ChangeQueue<Graph> &Q) {}

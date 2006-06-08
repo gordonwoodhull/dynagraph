@@ -43,7 +43,7 @@ struct Config {
 	Config(DynaDAGServices *dynaDAG,DDModel &model,
 	       DynaDAGLayout *whole,DynaDAGLayout *current,
 	       XConstraintOwner *xconOwner) :
-	  ranking(FlexiRankXlator(gd<GraphGeom>(whole).resolution.y)),
+	  ranking(whole),
 	  prevLow(INT_MAX),
 	  model(model),
 	  whole(whole),

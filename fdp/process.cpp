@@ -24,11 +24,11 @@ namespace Dynagraph {
 namespace FDP {
 
 Position FDPServer::findMedianSize() {
-	int N = current_->nodes().size(),i=0;
+	int N = this->world_->current_.nodes().size(),i=0;
 	if(N==0)
 		return Position();
 	vector<double> Xs(N),Ys(N);
-	for(FDPLayout::node_iter ni = current_->nodes().begin(); ni!=current_->nodes().end(); ++ni,++i)
+	for(FDPLayout::node_iter ni = this->world_->current_.nodes().begin(); ni!=this->world_->current_.nodes().end(); ++ni,++i)
 		if(gd<NodeGeom>(*ni).region.boundary.valid)
 			Xs[i] = gd<NodeGeom>(*ni).region.boundary.Width(),
 			Ys[i] = gd<NodeGeom>(*ni).region.boundary.Height();
@@ -58,7 +58,7 @@ void FDPServer::setParams(Coord avgsize) {
 void FDPServer::createModelNode(FDPLayout::Node *n) {
 	if(modelP(n))
 		throw Inconsistency();
-	n = whole_->find(n);
+	n = this->world_->whole_.find(n);
 	FDPModel::Node *fn = model.create_node();
 	gd<FDPNode>(fn).layoutN = n;
 	modelP(n) = fn;
@@ -66,7 +66,7 @@ void FDPServer::createModelNode(FDPLayout::Node *n) {
 void FDPServer::createModelEdge(FDPLayout::Edge *e) {
 	if(modelP(e))
 		throw Inconsistency();
-	e = whole_->find(e);
+	e = this->world_->whole_.find(e);
 	FDPModel::Node *ft = modelP(e->tail),
 		*fh = modelP(e->head);
 	if(!ft || !fh)
@@ -99,7 +99,8 @@ inline void readPos(FDPLayout::Node *n) {
 	fdpn.pos[0] = pos.x;
 	fdpn.pos[1] = pos.y;
 }
-void FDPServer::Process(ChangeQueue<FDPLayout> &Q) {
+void FDPServer::Process() {
+	ChangeQueue<FDPLayout> &Q = this->world_->Q_;
 	// this is not incremental, really: just respond to events, run,
 	// and then say "everything changed"!
 	FDPLayout::node_iter ni;
@@ -128,17 +129,17 @@ void FDPServer::Process(ChangeQueue<FDPLayout> &Q) {
 	//splineEdges();
 
 	// anything that's not ins or del is modified
-	for(ni = current_->nodes().begin(); ni!=current_->nodes().end(); ++ni) {
+	for(ni = this->world_->current_.nodes().begin(); ni!=this->world_->current_.nodes().end(); ++ni) {
 		FDPModel::Node *fn = modelP(*ni);
 		gd<NodeGeom>(*ni).pos = Coord(gd<FDPNode>(fn).pos[0],gd<FDPNode>(fn).pos[1]);
 		ModifyNode(Q,*ni,DG_UPD_MOVE);
 	}
 	/*
 	this algorithm doesn't deal with edges
-	for(ei = Q.current_->edges().begin(); ei!=Q.current_->edges().end(); ++ei)
+	for(ei = Q.this->world_->current_.edges().begin(); ei!=Q.this->world_->current_.edges().end(); ++ei)
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	*/
-	NextProcess(Q);
+	NextProcess();
 }
 
 } // namespace FDP

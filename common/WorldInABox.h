@@ -5,17 +5,20 @@ namespace Dynagraph {
 
 template<typename OuterLayout,typename InnerLayout,typename InTranslator,typename OutTranslator>
 struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
-	ChangingGraph<InnerLayout> world_;
+	ChangingGraph<InnerLayout> inWorld_;
 	EnginePair<InnerLayout> innerEngines_;
 	ChangeProcessor<OuterLayout> *topEngine_;
 	OutTranslator *xlateOut_;
-	WorldInABox() : topEngine_(0),xlateOut_(0) {}
-	void assignEngine(DString engines,ChangingGraph<OuterLayout> &topWorld,InTranslator *inTranslator = new InTranslator,OutTranslator *outTranslator = new OutTranslator) {
+	WorldInABox(ChangingGraph<OuterLayout> *world) 
+		: LinkedChangeProcessor<OuterLayout>(world),topEngine_(0),xlateOut_(0) {}
+	void assignEngine(DString engines) {
+		InTranslator *inTranslator = new InTranslator(this->world_,&inWorld_);
+		OutTranslator *outTranslator = new OutTranslator(&inWorld_,this->world_);
 		if(innerEngines_.second)
 			innerEngines_.second->next_ = 0;
 		ChangeTranslator<OuterLayout,InnerLayout> *xlateIn = inTranslator;
 		xlateOut_ = outTranslator;
-		innerEngines_ = createEngine(engines,&world_.whole_,&world_.current_);
+		innerEngines_ = createEngine(engines,&inWorld_);
 		static_cast<LinkedChangeProcessor<InnerLayout>*>(xlateIn)->next_ = innerEngines_.first;
 		innerEngines_.second->next_ = xlateOut_;
 		topEngine_ = xlateIn;
@@ -23,9 +26,8 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 	EnginePair<OuterLayout> engines() {
 		return EnginePair<OuterLayout>(this,xlateOut_);
 	}
-	void Process(ChangeQueue<OuterLayout> &Q) {
-		xlateOut_->transition_.AssignNext(&Q);
-		topEngine_->Process(Q);
+	void Process() {
+		topEngine_->Process();
 	}
 };
 

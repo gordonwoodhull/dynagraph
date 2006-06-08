@@ -24,9 +24,9 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 DynaDAGServer::~DynaDAGServer() {
-	for(DynaDAGLayout::graphedge_iter i = current_->edges().begin();i!=current_->edges().end();++i)
+	for(DynaDAGLayout::graphedge_iter i = world_->current_.edges().begin();i!=world_->current_.edges().end();++i)
 		closeLayoutEdge(*i);
-	for(DynaDAGLayout::node_iter j(current_->nodes().begin()); j!=current_->nodes().end(); ++j)
+	for(DynaDAGLayout::node_iter j(world_->current_.nodes().begin()); j!=world_->current_.nodes().end(); ++j)
 		closeLayoutNode(*j);
 	assert(model.empty());
 }
@@ -35,7 +35,7 @@ pair<DDMultiNode*,DDModel::Node*> DynaDAGServer::OpenModelNode(DynaDAGLayout::No
 	DDMultiNode *m = 0;
 	DDModel::Node *mn = model.create_node();
 	if(layoutN) { // part of multinode: attach multi to model & view nodes
-		assert(layoutN->g==whole_); // don't store the wrong subnode
+		assert(layoutN->g==&world_->whole_); // don't store the wrong subnode
 		m = DDp(layoutN); // see if view node's already been modeled
 		if(!m) {
 			(m = new DDMultiNode)->layoutN = layoutN;
@@ -59,7 +59,7 @@ pair<DDPath*,DDModel::Edge*> DynaDAGServer::OpenModelEdge(DDModel::Node *u, DDMo
 	if(u&&v)
 		me = model.create_edge(u,v).first;
 	if(layoutE) { // part of path: attach path to model & view edges
-		assert(layoutE->g==whole_); // don't store the wrong subedge
+		assert(layoutE->g==&world_->whole_); // don't store the wrong subedge
 		p = DDp(layoutE); // see if view edge's already been modeled
 		if(!p) {
 			(p = new DDPath)->layoutE = layoutE;
@@ -151,7 +151,7 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 		for(DynaDAGLayout::nodeedge_iter ei = (*ni)->alledges().begin(); ei!=(*ni)->alledges().end(); ++ei)
 			outE.insert(*ei);
 	if(reportEnabled(r_dynadag)) {
-		loops.Field(r_dynadag,"number of layout nodes",current_->nodes().size());
+		loops.Field(r_dynadag,"number of layout nodes",world_->current_.nodes().size());
 		loops.Field(r_dynadag,"layout nodes for crossopt",outN.nodes().size());
 		loops.Field(r_dynadag,"layout edges for crossopt",outE.edges().size());
 	}
@@ -179,8 +179,8 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
     bb.r = grb;
     bb.b = config.ranking.back()->yBelow(0);
   }
-  if(gd<GraphGeom>(current_).bounds != bb) {
-    gd<GraphGeom>(current_).bounds = bb;
+  if(gd<GraphGeom>(&world_->current_).bounds != bb) {
+    gd<GraphGeom>(&world_->current_).bounds = bb;
     ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
   }
 }
@@ -188,7 +188,7 @@ void DynaDAGServer::findChangedNodes(DDChangeQueue &changeQ) {
 	// calculate how much nodes moved
 	Coord moved(0,0);
 	int nmoves=0;
-	for(DynaDAGLayout::node_iter ni = current_->nodes().begin(); ni!=current_->nodes().end(); ++ni) {
+	for(DynaDAGLayout::node_iter ni = world_->current_.nodes().begin(); ni!=world_->current_.nodes().end(); ++ni) {
 		if(!changeQ.delN.find(*ni)) {
 			Position pos = DDp(*ni)->pos();
 			assert(pos.valid);
@@ -253,7 +253,7 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 		return true;
 	if(!path->first) // flat or self edge
 		return false;
-	double sep = gd<GraphGeom>(whole_).separation.x;
+	double sep = gd<GraphGeom>(&world_->whole_).separation.x;
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
 		DDModel::Node *n = *ni;
 		if(!gd<DDNode>(n).actualXValid)
@@ -372,7 +372,7 @@ void DynaDAGServer::drawEdgeSimply(DDPath *path) {
 }
 void DynaDAGServer::findDirtyEdges(DDChangeQueue &changeQ,bool force) {
 	DynaDAGLayout::graphedge_iter ei;
-	for(ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) {
+	for(ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei) {
 		assert(!changeQ.delE.find(*ei));
 		Line before = gd<EdgeGeom>(*ei).pos;
 		if(force || gd<EdgeGeom>(*ei).pos.Empty() || edgeNeedsRedraw(DDp(*ei),changeQ))
@@ -380,15 +380,15 @@ void DynaDAGServer::findDirtyEdges(DDChangeQueue &changeQ,bool force) {
 	}
 }
 void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
-	for(DynaDAGLayout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) 
+	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei) 
 		if(DDp(*ei)->unclippedPath.Empty())	{
 			findFlowSlope(DDp((*ei)->tail));
 			findFlowSlope(DDp((*ei)->head));
 		}
 }
 void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ) {
-	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(current_);
-	for(DynaDAGLayout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) {
+	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(&world_->current_);
+	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei) {
 		DynaDAGLayout::Edge *e = *ei;
 		Line before = gd<EdgeGeom>(e).pos;
 		if(gd<NSRankerEdge>(e).secondOfTwo)
@@ -397,18 +397,18 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ) {
 		if(DDp(e)->unclippedPath.Empty()) {
 			if(e->tail==e->head)  // self-edge
 				drawSelfEdge(e);
-			else if(gd<GraphGeom>(current_).splineLevel==DG_SPLINELEVEL_VNODE ||
-					!spliner.MakeEdgeSpline(DDp(e),gd<GraphGeom>(current_).splineLevel /*,obav */ ))
+			else if(gd<GraphGeom>(&world_->current_).splineLevel==DG_SPLINELEVEL_VNODE ||
+					!spliner.MakeEdgeSpline(DDp(e),gd<GraphGeom>(&world_->current_).splineLevel /*,obav */ ))
 				sketchEdge(DDp(e));
 
 			if(before!=gd<EdgeGeom>(e).pos)
 				ModifyEdge(changeQ,e,DG_UPD_MOVE);
 		}
 	}
-	for(DynaDAGLayout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei)
+	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei)
 		if(gd<NSRankerEdge>(*ei).secondOfTwo) {
 			Line before = gd<EdgeGeom>(*ei).pos;
-			Line &otherSide = gd<EdgeGeom>(current_->find_edge((*ei)->head,(*ei)->tail)).pos;
+			Line &otherSide = gd<EdgeGeom>(world_->current_.find_edge((*ei)->head,(*ei)->tail)).pos;
 			gd<EdgeGeom>(*ei).pos.assign(otherSide.rbegin(),otherSide.rend());
 			gd<EdgeGeom>(*ei).pos.degree = otherSide.degree;
 			if(before!=gd<EdgeGeom>(*ei).pos)
@@ -428,7 +428,7 @@ void DynaDAGServer::cleanUp() { // dd_postprocess
 		ddn.prev = ddn.cur;
 		// ddn.orderFixed = true;
 	}
-	for(DynaDAGLayout::node_iter vni = current_->nodes().begin(); vni!=current_->nodes().end(); ++vni) {
+	for(DynaDAGLayout::node_iter vni = world_->current_.nodes().begin(); vni!=world_->current_.nodes().end(); ++vni) {
 		DDMultiNode *n = DDp(*vni);
 		if(!n)
 			continue; // deleted
@@ -453,25 +453,26 @@ void figureIntermediateQueue(DDChangeQueue &changeQ,DDChangeQueue &imedQ) {
 	imedQ.modE = changeQ.modE;
 	imedQ.modE |= changeQ.insE;
 }
-void DynaDAGServer::Process(DDChangeQueue &changeQ) {
-	loops.Field(r_dynadag,"nodes inserted - input",changeQ.insN.nodes().size());
-	loops.Field(r_dynadag,"edges inserted - input",changeQ.insE.edges().size());
-	loops.Field(r_dynadag,"nodes modified - input",changeQ.modN.nodes().size());
-	loops.Field(r_dynadag,"edges modified - input",changeQ.modE.edges().size());
-	loops.Field(r_dynadag,"nodes deleted - input",changeQ.delN.nodes().size());
-	loops.Field(r_dynadag,"edges deleted - input",changeQ.delE.nodes().size());
+void DynaDAGServer::Process() {
+	ChangeQueue<DynaDAGLayout> &Q = this->world_->Q_;
+	loops.Field(r_dynadag,"nodes inserted - input",Q.insN.nodes().size());
+	loops.Field(r_dynadag,"edges inserted - input",Q.insE.edges().size());
+	loops.Field(r_dynadag,"nodes modified - input",Q.modN.nodes().size());
+	loops.Field(r_dynadag,"edges modified - input",Q.modE.edges().size());
+	loops.Field(r_dynadag,"nodes deleted - input",Q.delN.nodes().size());
+	loops.Field(r_dynadag,"edges deleted - input",Q.delE.nodes().size());
 	
 	// were there things to wrap up from last layout?
-	changeQ |= oldChanges;
+	Q |= oldChanges;
 	oldChanges.Execute(false);
 
-	if(changeQ.Empty()) {
-		NextProcess(changeQ);
+	if(Q.Empty()) {
+		NextProcess();
 		return;
 	}
 
 	// erase model objects for everything that's getting deleted
-	executeDeletions(changeQ);
+	executeDeletions(Q);
 	// add the former secondOfTwos to insE, temporarily
 	timer.LoopPoint(r_timing,"preliminary");
 
@@ -479,58 +480,62 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 	timer.LoopPoint(r_timing,"re-rank nodes");
 
 	// figure out subgraph for crossing optimization
-	DynaDAGLayout crossN(current_),crossE(current_);
-	//findOrdererSubgraph(changeQ,crossN,crossE);
+	DynaDAGLayout crossN(&world_->current_),crossE(&world_->current_);
+	//findOrdererSubgraph(Q,crossN,crossE);
 	//optimizer = optChooser.choose(crossN.nodes().size()); // should prob. be no. of nodes in corresponding model subgraph
 
 	// synch model graph with changes
-	config.Update(changeQ);
+	config.Update(Q);
 	loops.Field(r_dynadag,"model nodes",model.nodes().size());
 	timer.LoopPoint(r_timing,"update model graph");
 
-	if(gd<GraphGeom>(current_).reportIntermediate) {
-		generateIntermediateLayout(changeQ);
-		NextProcess(changeQ);
+	if(gd<GraphGeom>(&world_->current_).reportIntermediate) {
+		generateIntermediateLayout(Q);
+		figureIntermediateQueue(Q,oldChanges);
+		NextProcess();
+		// Next (last) will probably clear Q but that's not so!
+		// but don't re-report inserts and deletes that intermediate layout already reported
+		Q |= oldChanges;
 	}
 
-	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
+	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		cleanUp();
-		figureIntermediateQueue(changeQ,oldChanges);
+		figureIntermediateQueue(Q,oldChanges);
 		return;
 	}
 
 	// crossing optimization
-	optimizer->Reorder(*current_,*current_);//crossN,crossE);
+	optimizer->Reorder(world_->current_,world_->current_);//crossN,crossE);
 	timer.LoopPoint(r_timing,"crossing optimization");
 
-	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
+	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		cleanUp();
-		figureIntermediateQueue(changeQ,oldChanges);
+		figureIntermediateQueue(Q,oldChanges);
 		return;
 	}
 
 	// find X coords
-	xsolver.Place(changeQ);
+	xsolver.Place(Q);
 
 	// (with ConseqRanks, find rank Ys from node heights.)  find node Y coords from rank Ys.
 	config.SetYs();
 	timer.LoopPoint(r_timing,"optimize x coordinates");
 
-	if(gd<Interruptable>(current_).interrupt && gd<GraphGeom>(current_).reportIntermediate) {
+	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		cleanUp();
-		figureIntermediateQueue(changeQ,oldChanges);
+		figureIntermediateQueue(Q,oldChanges);
 		return;
 	}
 
 	// calculate bounding rectangle
-	updateBounds(changeQ);
+	updateBounds(Q);
 
 	// find node & edge moves
-	findChangedNodes(changeQ);
+	findChangedNodes(Q);
 
-	findDirtyEdges(changeQ,ModifyFlags(changeQ).flags&DG_UPD_EDGESTYLE);
-	findFlowSlopes(changeQ);
-	redrawEdges(changeQ);
+	findDirtyEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
+	findFlowSlopes(Q);
+	redrawEdges(Q);
 
 	timer.LoopPoint(r_timing,"draw splines");
 
@@ -539,12 +544,12 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 
 	dumpModel();
 
-	loops.Field(r_dynadag,"nodes inserted - output",changeQ.insN.nodes().size());
-	loops.Field(r_dynadag,"edges inserted - output",changeQ.insE.edges().size());
-	loops.Field(r_dynadag,"nodes modified - output",changeQ.modN.nodes().size());
-	loops.Field(r_dynadag,"edges modified - output",changeQ.modE.edges().size());
-	loops.Field(r_dynadag,"nodes deleted - output",changeQ.delN.nodes().size());
-	loops.Field(r_dynadag,"edges deleted - output",changeQ.delE.nodes().size());
+	loops.Field(r_dynadag,"nodes inserted - output",Q.insN.nodes().size());
+	loops.Field(r_dynadag,"edges inserted - output",Q.insE.edges().size());
+	loops.Field(r_dynadag,"nodes modified - output",Q.modN.nodes().size());
+	loops.Field(r_dynadag,"edges modified - output",Q.modE.edges().size());
+	loops.Field(r_dynadag,"nodes deleted - output",Q.delN.nodes().size());
+	loops.Field(r_dynadag,"edges deleted - output",Q.delE.nodes().size());
 	if(reportEnabled(r_readability)) {
 		Crossings cc = calculateCrossings(config);
 		loops.Field(r_readability,"edge-edge crossings",cc.edgeEdgeCross);
@@ -556,14 +561,7 @@ void DynaDAGServer::Process(DDChangeQueue &changeQ) {
 		loops.Field(r_readability,"average edge x-length",avg.x);
 		loops.Field(r_readability,"average edge y-length",avg.y);
 	}
-	if(gd<GraphGeom>(current_).reportIntermediate) {
-		// don't re-report inserts and deletes that intermediate layout already reported
-		DDChangeQueue imedQ(changeQ.whole,changeQ.current);
-		figureIntermediateQueue(changeQ,imedQ);
-		NextProcess(imedQ);
-	}
-	else
-		NextProcess(changeQ);
+	NextProcess();
 }
 
 } // namespace DynaDAG

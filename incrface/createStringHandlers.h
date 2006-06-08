@@ -42,11 +42,10 @@ struct WorldGuts {
 		typedef WorldInABox<GeneralLayout,Layout,
 			typename translator_traitses<GeneralLayout,Layout>::in_translator,
 			typename translator_traitses<GeneralLayout,Layout>::out_translator> Box;
-		Box *box = new Box;
-		box->assignEngine(engines_,chraph,
-			new typename translator_traitses<GeneralLayout,Layout>::in_translator(GoingQueueTransition<GeneralLayout,Layout>(&box->world_.whole_,&box->world_.current_)));
+		Box *box = new Box(&chraph);
+		box->assignEngine(engines_);
 		EnginePair<GeneralLayout> engine = box->engines();
-		engine.Prepend(createEngine<GeneralLayout>(superengines_,&chraph.whole_,&chraph.current_));
+		engine.Prepend(createEngine<GeneralLayout>(superengines_,&chraph));
 		return engine;
 	}
 };
@@ -55,7 +54,7 @@ struct SimpleGuts {
 	DString engines_;
 	SimpleGuts(DString engines) : engines_(engines) {}
 	EnginePair<Layout> operator()(ChangeQueue<Layout> &Q,ChangingGraph<Layout> &chraph) {
-		return createEngine(engines_,&chraph.whole_,&chraph.current_);
+		return createEngine(engines_,&chraph);
 	}
 };
 template<typename Layout,typename GutsCreator>

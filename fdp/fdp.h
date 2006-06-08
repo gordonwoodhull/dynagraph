@@ -35,7 +35,6 @@ struct StillHasEdges : DGException {
 };
 
 struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
-	FDPLayout *whole_,*current_;
 	int numIters;
 	bool useComp,
 		useGrid;
@@ -50,8 +49,8 @@ struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
 		Rfact2, // Phase 2 RepFactor
 		Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node
 
-	FDPServer(FDPLayout *whole, FDPLayout *current) :
-		whole_(whole),current_(current),
+	FDPServer(ChangingGraph<FDPLayout> *world) 
+		: LinkedChangeProcessor<FDPLayout>(world),
 		numIters(40),
 		useComp(false),
 		useGrid(true),
@@ -66,7 +65,7 @@ struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
 		Radius2(0.0) {}
 	~FDPServer() {}
 	// ChangeProcessor
-	void Process(ChangeQueue<FDPLayout> &changeQ);
+	void Process();
 	// Grid::Visitor
 	int VisitCell(Cell *cell,Grid *grid);
 private:

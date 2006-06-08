@@ -24,18 +24,16 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
-	NSRanker(Layout *whole,Layout *current) : 
-		top_(cg_.create_node()),
-		rankXlate_(gd<GraphGeom>(current).resolution.y),
-		current_(current)
+	NSRanker(ChangingGraph<Layout> *world) : 
+		LinkedChangeProcessor<Layout>(world),
+		top_(cg_.create_node())
 	{}
 	~NSRanker();
-	void Process(ChangeQueue<Layout> &changeQ);
+	void Process();
 private:
 	ConstraintGraph cg_;
 	ConstraintGraph::Node *top_; // to pull loose nodes upward
-	FlexiRankXlator rankXlate_;
-	Layout *current_;
+	typedef FlexiRankXlator<Layout> RankXlator;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
 	void removePathConstraints(typename Layout::Edge *e);
 	void removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI);
@@ -51,9 +49,9 @@ private:
 };
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
-	for(typename Layout::graphedge_iter i = current_->edges().begin();i!=current_->edges().end();++i)
+	for(typename Layout::graphedge_iter i = this->world_->current_.edges().begin();i!=this->world_->current_.edges().end();++i)
 		removePathConstraints(*i);
-	for(typename Layout::node_iter j = current_->nodes().begin(); j!=current_->nodes().end(); ++j)
+	for(typename Layout::node_iter j = this->world_->current_.nodes().begin(); j!=this->world_->current_.nodes().end(); ++j)
 		removeLayoutNodeConstraints(*j);
 }
 template<typename Layout>
@@ -78,7 +76,7 @@ void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout 
 	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) {
 		removePathConstraints(*ei);
 		typename Layout::Edge *e = *ei;
-		if(typename Layout::Edge *e2 = current_->find_edge(e->head,e->tail))
+		if(typename Layout::Edge *e2 = this->world_->current_.find_edge(e->head,e->tail))
 			if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false)) 
 				extraI.insert(e2);
 	}
@@ -97,7 +95,7 @@ void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
 	gd<NSRankerEdge>(e).strong = constr;
 	DDNS::NSE &nse = DDNS::NSd(constr);
 	double length = std::max(0.,gd<EdgeGeom>(e).minLength);
-	nse.minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
+	nse.minlen = RankXlator::HeightToDRank(&this->world_->whole_,length*gd<GraphGeom>(e->g).separation.y);
 	nse.weight = EDGELENGTH_WEIGHT;
 }
 template<typename Layout>
@@ -113,7 +111,7 @@ void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
 	DDNS::NSd(ep.e[0]).minlen = 0;
 	DDNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
 	double length = std::max(0.,gd<EdgeGeom>(e).minLength);
-	DDNS::NSd(ep.e[1]).minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
+	DDNS::NSd(ep.e[1]).minlen = RankXlator::HeightToDRank(&this->world_->whole_,length*gd<GraphGeom>(e->g).separation.y);
 }
 // change edge strengths around a node
 template<typename Layout>
@@ -137,7 +135,7 @@ void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
 		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
 	DDCGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
 	 // one-node chains cause trouble; make sure there's one edge
-	DDNS::NSd(heightC).minlen = std::max(1,rankXlate_.HeightToDRank(ROUND(gd<NodeGeom>(n).region.boundary.Height())));
+	DDNS::NSd(heightC).minlen = std::max(1,RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height())));
 	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
 template<typename Layout>
@@ -181,7 +179,7 @@ void NSRanker<Layout>::stabilizePositionedNodes(ChangeQueue<Layout> &changeQ) {
 		if(!changeQ.delN.find(n)) {
 			// stabilize at starting position if any
 			if(gd<NodeGeom>(n).pos.valid) {
-				int topRank = rankXlate_.CoordToRank(gd<NodeGeom>(n).BoundingBox().t);
+				int topRank = RankXlator::CoordToRank(changeQ.whole,gd<NodeGeom>(n).BoundingBox().t);
 				cg_.Stabilize(gd<NSRankerNode>(n).topC,topRank,STABILITY_FACTOR_Y);
 			}
 			else
@@ -222,7 +220,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 		if(e->head == e->tail)
 			continue;
 		bool weak = false;
-		if(typename Layout::Edge *e1 = current_->find_edge(e->head,e->tail)) {
+		if(typename Layout::Edge *e1 = this->world_->current_.find_edge(e->head,e->tail)) {
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
 			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
@@ -231,7 +229,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 				continue;
 			}
 		}
-		else if(pathExists<Layout>(current_->find(e->head),current_->find(e->tail)))
+		else if(pathExists<Layout>(this->world_->current_.find(e->head),this->world_->current_.find(e->tail)))
 			weak = true;
 		if(gd<NSRankerNode>(e->tail).rankFixed || gd<NSRankerNode>(e->head).rankFixed)
 			weak = true;
@@ -239,9 +237,9 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 			makeWeakConstraint(e);
 		else
 			makeStrongConstraint(e);
-		if(current_->find(e->head)->degree()==1)
+		if(this->world_->current_.find(e->head)->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->head).topC);
-		if(current_->find(e->tail)->degree()==1)
+		if(this->world_->current_.find(e->tail)->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->tail).topC);
 	}
 }
@@ -255,7 +253,7 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 			continue;
 		int newTopRank = DDNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
 			newBottomRank = DDNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
-		assert(!rankXlate_.Below(newTopRank,newBottomRank));
+		assert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
 		if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 			gd<NSRankerNode>(n).newTopRank = newTopRank;
 			gd<NSRankerNode>(n).newBottomRank = newBottomRank;
@@ -267,22 +265,23 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
-void NSRanker<Layout>::Process(ChangeQueue<Layout> &changeQ) {
+void NSRanker<Layout>::Process() {
+	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
 	ConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
 	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;
 
-	moveOldNodes(changeQ);
-	Layout extraI(changeQ.whole);
-	removeOldConstraints(changeQ,extraI);
-	insertNewNodes(changeQ);
-	insertNewEdges(changeQ.insE);
+	moveOldNodes(Q);
+	Layout extraI(Q.whole);
+	removeOldConstraints(Q,extraI);
+	insertNewNodes(Q);
+	insertNewEdges(Q.insE);
 	insertNewEdges(extraI);
 	for(typename Layout::graphedge_iter ei = extraI.edges().begin(); ei!=extraI.edges().end(); ++ei)
-		ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-	stabilizePositionedNodes(changeQ);
-	recomputeRanks(changeQ);
-	NextProcess(changeQ);
+		ModifyEdge(Q,*ei,DG_UPD_MOVE);
+	stabilizePositionedNodes(Q);
+	recomputeRanks(Q);
+	NextProcess();
 }
 
 } // namespace DynaDAG

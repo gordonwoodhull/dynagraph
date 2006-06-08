@@ -26,18 +26,17 @@ template<typename Graph>
 struct DynagraphThread {
 	ChangingGraph<Graph> &world_;
 	ChangeProcessor<Graph> *engine_;
-	ChangeQueue<Graph> &Q_;
 	boost::thread *thread_;
 
-	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine,ChangeQueue<Graph> &Q) :
-	  world_(world),engine_(engine),Q_(Q) {
+	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine) :
+	  world_(world),engine_(engine) {
 		thread_ = new boost::thread(boost::bind(&DynagraphThread::go,this));
 	}
 	~DynagraphThread() {
 		delete thread_;
 	}
 	void go() {
-		engine_->Process(Q_);
+		engine_->Process();
 	}
 	void interrupt() {
 		assert(boost::thread()!=*thread_);

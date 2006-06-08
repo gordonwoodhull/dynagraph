@@ -23,8 +23,10 @@ namespace Dynagraph {
 template<typename Graph,typename ChangeActions>
 struct InternalTranslator : LinkedChangeProcessor<Graph> {
 	ChangeActions actions_;
-	InternalTranslator(const ChangeActions &action) : actions_(action) {}
-	virtual void Process(ChangeQueue<Graph> &Q) {
+	InternalTranslator(ChangingGraph<Graph> *world,const ChangeActions &action) 
+		: LinkedChangeProcessor<Graph>(world),actions_(action) {}
+	virtual void Process() {
+		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.ModifyGraph(Q.ModGraph());
 		for(typename Graph::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
 			actions_.InsertNode(*ni);
@@ -38,14 +40,16 @@ struct InternalTranslator : LinkedChangeProcessor<Graph> {
 			actions_.DeleteNode(*ni);
 		for(typename Graph::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			actions_.DeleteEdge(*ei);
-		NextProcess(Q);
+		NextProcess();
 	}
 };
 template<typename Graph,typename ChangeActions>
 struct InternalTranslator2 : LinkedChangeProcessor<Graph> {
 	ChangeActions actions_;
-	InternalTranslator2(const ChangeActions &action) : actions_(action) {}
-	virtual void Process(ChangeQueue<Graph> &Q) {
+	InternalTranslator2(ChangingGraph<Graph> *world,const ChangeActions &action) 
+		: LinkedChangeProcessor<Graph>(world),actions_(action) {}
+	virtual void Process() {
+		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.ModifyGraph(Q.ModGraph(),Q.ModGraph());
 		for(typename Graph::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
 			actions_.InsertNode(*ni,*ni);
@@ -59,7 +63,7 @@ struct InternalTranslator2 : LinkedChangeProcessor<Graph> {
 			actions_.DeleteNode(*ni,*ni);
 		for(typename Graph::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			actions_.DeleteEdge(*ei,*ei);
-		NextProcess(Q);
+		NextProcess();
 	}
 };
 

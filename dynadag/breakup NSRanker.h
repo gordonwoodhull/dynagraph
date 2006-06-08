@@ -24,12 +24,13 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
-	NSRanker(Layout *whole,Layout *current) :
-		rankXlate_(gd<GraphGeom>(current).resolution.y),
-		current_(current)
+	NSRanker(ChangingGraph<Graph> *world) 
+		: LinkedChangeProcessor<Graph>(world),
+		rankXlate_(gd<GraphGeom>(world->current).resolution.y),
+		current_(world->current)
 	{}
 	~NSRanker();
-	void Process(ChangeQueue<Layout> &changeQ);
+	void Process();
 private:
 	FlexiRankXlator rankXlate_;
 	Layout *current_;
@@ -217,22 +218,23 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
-void NSRanker<Layout>::Process(ChangeQueue<Layout> &changeQ) {
+void NSRanker<Layout>::Process() {
+	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
 	ConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
 	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;
 
-	moveOldNodes(changeQ);
-	Layout extraI(changeQ.whole);
-	removeOldConstraints(changeQ,extraI);
-	insertNewNodes(changeQ);
-	insertNewEdges(changeQ.insE);
+	moveOldNodes(Q);
+	Layout extraI(Q.whole);
+	removeOldConstraints(Q,extraI);
+	insertNewNodes(Q);
+	insertNewEdges(Q.insE);
 	insertNewEdges(extraI);
 	for(typename Layout::graphedge_iter ei = extraI.edges().begin(); ei!=extraI.edges().end(); ++ei)
-		ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-	stabilizePositionedNodes(changeQ);
-	recomputeRanks(changeQ);
-	NextProcess(changeQ);
+		ModifyEdge(Q,*ei,DG_UPD_MOVE);
+	stabilizePositionedNodes(Q);
+	recomputeRanks(Q);
+	NextProcess(Q);
 }
 
 } // namespace DynaDAG

@@ -21,8 +21,8 @@ namespace Dynagraph {
 
 template<typename Layout>
 struct LabelPlacer : LinkedChangeProcessor<Layout> {
-	LabelPlacer(Layout*,Layout*) {}
-	void Process(ChangeQueue<Layout> &Q);
+	LabelPlacer(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
+	void Process();
 };
 template<typename Layout>
 void placeLabels(typename Layout::Edge *e) {
@@ -131,7 +131,8 @@ void placeLabels(typename Layout::Node *n) {
 }
 
 template<typename Layout>
-void LabelPlacer<Layout>::Process(ChangeQueue<Layout> &Q) {
+void LabelPlacer<Layout>::Process() {
+	ChangeQueue<Layout> &Q = this->world_->Q_;
 	typename Layout::graphedge_iter ei = Q.insE.edges().begin();
 	for(; ei!=Q.insE.edges().end(); ++ei)
 		placeLabels<Layout>(*ei);
@@ -144,7 +145,7 @@ void LabelPlacer<Layout>::Process(ChangeQueue<Layout> &Q) {
 	for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
 		if(igd<Update>(*ni).flags&(DG_UPD_MOVE|DG_UPD_LABEL|DG_UPD_REGION|DG_UPD_POLYDEF|DG_UPD_DRAWN))
 			placeLabels<Layout>(*ni);
-	NextProcess(Q);
+	NextProcess();
 }
 
 } // namespace Dynagraph

@@ -25,27 +25,27 @@ namespace DynaDAG {
 template<typename Layout>
 struct FlexiRankXlator {
 	typedef int index;
-	bool Above(Layout *l,index a,index b) {
+	static bool Above(Layout *l,index a,index b) {
 		return a<b;
 	}
-	bool Below(Layout *l,index a,index b) {
+	static bool Below(Layout *l,index a,index b) {
 		return a>b;
 	}
-	index CoordToRank(Layout *l,double y) {
+	static index CoordToRank(Layout *l,double y) {
 #ifndef DOWN_GREATER
 		return -ROUND(y/gd<GraphGeom>(l).resolution.y);
 #else
 		return ROUND(y/gd<GraphGeom>(l).resolution.y);
 #endif
 	}
-	double RankToCoord(Layout *l,index r) {
+	static double RankToCoord(Layout *l,index r) {
 #ifndef DOWN_GREATER
 		return -r*gd<GraphGeom>(l).resolution.y;
 #else
 		return r*gd<GraphGeom>(l).resolution.y;
 #endif
 	}
-	index HeightToDRank(Layout *l,double dy) {
+	static index HeightToDRank(Layout *l,double dy) {
 		return ROUND(dy/gd<GraphGeom>(l).resolution.y);
 	}
 };
@@ -60,10 +60,14 @@ struct CompRank {
 	}
 };
 struct FlexiRanks : std::set<Rank*,CompRank> {
-	typedef FlexiRankXlator::index index;
-	FlexiRankXlator rankXlate_;
-	FlexiRanks(FlexiRankXlator rankXlate) : rankXlate_(rankXlate) {}
-	FlexiRanks(FlexiRanks &o) : rankXlate_(o.rankXlate_) {
+	typedef FlexiRankXlator<DynaDAGLayout> Xlator;
+	typedef Xlator::index index;
+	typedef std::vector<index> IndexV;
+	IndexV newRanks,oldRanks;
+	DynaDAGLayout *layout_;
+
+	FlexiRanks(DynaDAGLayout *layout) : layout_(layout) {}
+	FlexiRanks(FlexiRanks &o) {
 		*this = o;
 	}
 	~FlexiRanks() {
@@ -80,9 +84,9 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	}
 	FlexiRanks &operator =(FlexiRanks &o) {
 		reset();
+		layout_ = o.layout_;
 		oldRanks = o.oldRanks;
 		newRanks = o.newRanks;
-		rankXlate_ = o.rankXlate_;
 		for(iterator ri = o.begin(); ri!=o.end(); ++ri) {
 			Rank *nr = new Rank(**ri);
 			insert(nr);
@@ -91,29 +95,14 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	}
 	Rank *front() { return *begin(); }
 	Rank *back() { return *rbegin(); }
-	bool Above(index a,index b) {
-		return rankXlate_.Above(a,b);
-	}
-	bool Below(index a,index b) {
-		return rankXlate_.Below(a,b);
-	}
-	index CoordToRank(double y) {
-		return rankXlate_.CoordToRank(y);
-	}
-	double RankToCoord(index r) {
-		return rankXlate_.RankToCoord(r);
-	}
-	index HeightToDRank(double dy) {
-		return rankXlate_.HeightToDRank(dy);
-	}
 	index Low() {
 		if(empty())
 			return 0;
-		else return rankXlate_.CoordToRank(front()->yBase);
+		else return Xlator::CoordToRank(layout_,front()->yBase);
 	}
 	index High() {
 		if(empty()) return 0;
-		else return rankXlate_.CoordToRank(back()->yBase);
+		else return Xlator::CoordToRank(layout_,back()->yBase);
 	}
 	index Up(index r) {
 		if(r==INT_MIN)
@@ -133,7 +122,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 	}
 	iterator GetIter(index r) {
 		Rank q(8.); // stupid set lookup deserves rewrite
-		q.yBase = rankXlate_.RankToCoord(r);
+		q.yBase = Xlator::RankToCoord(layout_,r);
 		return find(&q);
 	}
 	Rank *GetRank(index r)	{
@@ -148,7 +137,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 		iterator ri = GetIter(r);
 		if(ri==end()) {
 			Rank *rank = new Rank(sep);
-			rank->yBase = rankXlate_.RankToCoord(r);
+			rank->yBase = Xlator::RankToCoord(layout_,r);
 			ri = insert(rank).first;
 		}
 		return ri;
@@ -159,11 +148,9 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 		delete del;
 	}
 	index IndexOfIter(iterator ri) {
-		return rankXlate_.CoordToRank((*ri)->yBase);
+		return Xlator::CoordToRank(layout_,(*ri)->yBase);
 	}
 	void Check();
-	typedef std::vector<index> IndexV;
-	IndexV newRanks,oldRanks;
 };
 
 } // namespace DynaDAG

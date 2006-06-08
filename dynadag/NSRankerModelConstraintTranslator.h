@@ -25,19 +25,20 @@ namespace DynaDAG {
 // but the return is handled exclusively by NSRankerModelToLayoutTranslator
 
 struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,ConstraintGraph> {
-	GoingQueueTransition<NSRankerModel,ConstraintGraph> transition_;
+	typedef GoingQueueTransition<NSRankerModel,ConstraintGraph> Transition;
 	NSRankerModelToConstraintTranslator(ConstraintGraph *whole,ConstraintGraph *current)
 		: transition_(whole,current) {}
-	void Process(ChangeQueue<NSRankerModel> &Q) {
-		ChangeQueue<ConstraintGraph> &Q2 = transition_.NextQ();
+	void Process() {
+		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
+		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
             removePathConstraints(*ei);
 
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
 
-		transition_.EndLastQ(Q);
-		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
+		Transition::EndLastQ(Q1);
+		LinkedChangeProcessor<Graph2>::NextProcess();
 	}
     void removeLayoutNodeConstraints(NSRankerModel::Node *n) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(n->g);
@@ -113,10 +114,11 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 
 // currently this is just to keep the processor chain alive
 struct ConstraintToNSRankerModelTranslator : ChangeTranslator<ConstraintGraph,NSRankerModel> {
-	ReturningQueueTransition<ConstraintGraph,NSRankerModel> transition_;
-	void Process(ChangeQueue<ConstraintGraph> &Q) {
-		ChangeQueue<NSRankerModel> &Q2 = transition_.NextQ();
-		transition_.EndLastQ(Q); // (but it's empty)
+	typedef ReturningQueueTransition<ConstraintGraph,NSRankerModel> Transition;
+	void Process() {
+		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
+		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
+		Transition::EndLastQ(Q1);
 		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
 	}
 

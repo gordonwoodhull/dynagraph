@@ -134,7 +134,7 @@ void Config::buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGen
 		hr = gd<DDNode>(h).rank;
 	if(tr==hr)
 		return;
-	assert(ranking.Above(tr,hr));
+	assert(Ranks::Xlator::Above(whole,tr,hr));
 	Ranks::iterator ti = ranking.GetIter(tr),
 		hi = ranking.GetIter(hr),
 		ri = ti;
@@ -218,9 +218,9 @@ void Config::adjustChain(DDChain *chain, bool tail,Ranks::index dest,DynaDAGLayo
 		beginEdge = endEdge = 0;
 	else
 		endEdge = 0;
-	bool (Ranks::*Pred)(Ranks::index,Ranks::index) = tail?&Ranks::Below:&Ranks::Above;
-	if((ranking.*Pred)(start,dest)) // stretch
-		while((ranking.*Pred)((ranking.*Out)(gd<DDNode>(v).rank),dest)) {
+	bool (*Pred)(DynaDAGLayout*,Ranks::index,Ranks::index) = tail?&Ranks::Xlator::Below:&Ranks::Xlator::Above;
+	if((*Pred)(whole,start,dest)) // stretch
+		while((*Pred)(whole,(ranking.*Out)(gd<DDNode>(v).rank),dest)) {
 			DDModel::Node *nv = dynaDAG->OpenModelNode(vn).second;
 			if(vn) // multinodes have single X
 				InstallAtPos(nv,(ranking.*Out)(gd<DDNode>(v).rank),gd<DDNode>(v).cur.x);
@@ -234,7 +234,7 @@ void Config::adjustChain(DDChain *chain, bool tail,Ranks::index dest,DynaDAGLayo
 			v = nv;
 		}
 	else // shrink
-		while((ranking.*Pred)(dest,(ranking.*Out)(gd<DDNode>(v).rank))) {
+		while((*Pred)(whole,dest,(ranking.*Out)(gd<DDNode>(v).rank))) {
 			DDModel::Node *nv = tail?
 				(*v->outs().begin())->head:
 				(*v->ins().begin())->tail;
@@ -278,7 +278,7 @@ void Config::rerouteChain(DDChain *chain,int tailRank,int headRank,XGenerator *x
 	int r = tailRank;
 	for(DDPath::node_iter ni = chain->nBegin(); ni!=chain->nEnd(); ++ni, r = ranking.Down(r)) {
 		RemoveNode(*ni);
-		if(ranking.Below(r,headRank))
+		if(Ranks::Xlator::Below(whole,r,headRank))
 			gd<DDNode>(*ni).rank = r; // don't install if it's not getting used (might be off bottom of config even)
 		else
 			InstallAtPos(*ni,r,xgen->xval(ranking.GetRank(r)->yBase));
@@ -295,7 +295,7 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 	if(nhr == ntr)
 		dynaDAG->CloseChain(chain,false);	/* flat edge / single node */
 	else {
-		if(!(ranking.Above(otr,nhr)&&ranking.Above(ntr,ohr))
+		if(!(Ranks::Xlator::Above(whole,otr,nhr)&&Ranks::Xlator::Above(whole,ntr,ohr))
 			|| ve && gd<EdgeGeom>(ve).pos.Empty()) {
 			if(vn) {
 				constX cx(gd<NodeGeom>(vn).pos.x);
@@ -376,13 +376,13 @@ void Config::insertNewEdges(DDChangeQueue &changeQ) {
 
 void Config::percolate(DDModel::Node *n,DDModel::Node *ref,Ranks::index destrank) {
 	Ranks::index r = gd<DDNode>(ref).rank;
-	bool down = ranking.Above(r,destrank);
+	bool down = Ranks::Xlator::Above(whole,r,destrank);
 	double x = gd<DDNode>(ref).cur.x;
 	if(down)
-		for(r = ranking.Down(r); !ranking.Below(r,destrank); r = ranking.Down(r))
+		for(r = ranking.Down(r); !Ranks::Xlator::Below(whole,r,destrank); r = ranking.Down(r))
 			x = placeAndReopt(n,r,x);
 	else
-		for(r = ranking.Up(r); !ranking.Above(r,destrank); r = ranking.Up(r))
+		for(r = ranking.Up(r); !Ranks::Xlator::Above(whole,r,destrank); r = ranking.Up(r))
 			x = placeAndReopt(n,r,x);
 }
 double Config::placeAndReopt(DDModel::Node *n, Ranks::index r, double x) {
@@ -501,7 +501,7 @@ void Config::splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, 
 	Ranks::index newR = ranking.Down(gd<DDNode>(e->tail).rank);
 	if(newR==gd<DDNode>(e->head).rank)
 		return; // already there
-	assert(ranking.Above(newR,gd<DDNode>(e->head).rank));
+	assert(Ranks::Xlator::Above(whole,newR,gd<DDNode>(e->head).rank));
 	report(r_ranks,"%s %p: chain split at %d->%d:\n",vn?"multinode":"path",chain,
 		gd<DDNode>(e->tail).rank,gd<DDNode>(e->head).rank);
 	DDModel::Node *v = dynaDAG->OpenModelNode(vn).second;
@@ -569,7 +569,7 @@ void Config::updateRanks(DDChangeQueue &changeQ) {
 			++ni;
 			++oi;
 		}
-		while(ranking.Above(*ni,*oi)) { // additions
+		while(Ranks::Xlator::Above(whole,*ni,*oi)) { // additions
 			report(r_ranks,"adding %d\n",*ni);
 			Ranks::iterator ri = ranking.EnsureRank(*ni,gd<GraphGeom>(changeQ.current).separation.y);
 			if(ri!=ranking.begin()) {
@@ -587,7 +587,7 @@ void Config::updateRanks(DDChangeQueue &changeQ) {
 			}
 			++ni;
 		}
-		while(ranking.Above(*oi,*ni)) { // deletions
+		while(Ranks::Xlator::Above(whole,*oi,*ni)) { // deletions
 			report(r_ranks,"removing %d\n",*oi);
 			Ranks::iterator ri = ranking.GetIter(*oi);
 			assert(ri!=ranking.end());

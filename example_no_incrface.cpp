@@ -42,7 +42,7 @@ void main() {
 	queue.InsNode(m);
 
 	cout << "step 1" << endl;
-	server->Process(queue);
+	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;
@@ -51,7 +51,7 @@ void main() {
 	queue.InsEdge(e);
 
 	cout << "step 2" << endl;
-	server->Process(queue);
+	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;
@@ -60,7 +60,7 @@ void main() {
 	ModifyNode(queue,n,DG_UPD_MOVE);
 
 	cout << "step 3" << endl;
-	server->Process(queue);
+	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;
@@ -68,7 +68,7 @@ void main() {
 	queue.DelNode(n);
 
 	cout << "step 4" << endl;
-	server->Process(queue);
+	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;

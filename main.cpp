@@ -30,7 +30,7 @@
 #include "fdp/FDPLayout.h"
 #include "common/GeneralLayout.h"
 
-#include "incrface/createStrWorldAndHandler.h"
+#include "incrface/createStringHandlers.h"
 
 #include "dynagraph.version.h"
 
@@ -75,13 +75,14 @@ void doOutdot(Layout *l) {
 
 template<typename Graph>
 struct TextChangeOutput : LinkedChangeProcessor<Graph> {
+	TextChangeOutput(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
 	// ChangeProcessor
-	void Process(ChangeQueue<Graph> &Q) {
+	void Process() {
 		LOCK_OUTPUT();
-		emitChanges(cout,Q,gd<Name>(Q.whole).c_str());
-		Q.Execute(true);
-		ModifyFlags(Q) = 0;
-		doOutdot(Q.current);
+		emitChanges(cout,this->world_->Q_,gd<Name>(&this->world_->whole_).c_str());
+		this->world_->Q_.Execute(true);
+		ModifyFlags(this->world_->Q_) = 0;
+		doOutdot(&this->world_->current_);
 	}
 };
 template<typename Graph>
@@ -112,14 +113,18 @@ struct TextWatcherOutput : IncrViewWatcher<Graph> {
 };
 template<typename Layout>
 IncrLangEvents *createHandlers(DString gname,const StrAttrs &attrs) {
-	if(attrs.look("superengines")) 
-		return createStrWorldAndHandler<GeneralLayout>(WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
-			new TextWatcherOutput<GeneralLayout>,0,new TextChangeOutput<GeneralLayout>,
+	if(attrs.look("superengines")) {
+		ChangingGraph<GeneralLayout> *world = new ChangingGraph<GeneralLayout>;
+		return createStringHandlers<GeneralLayout>(WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
+			new TextWatcherOutput<GeneralLayout>,0,new TextChangeOutput<GeneralLayout>(world),
 			gname,attrs,g_transform,g_useDotDefaults);
-	else 
-		return createStrWorldAndHandler<Layout>(SimpleGuts<Layout>(attrs.look("engines")),
-			new TextWatcherOutput<Layout>,0,new TextChangeOutput<Layout>,
+	}
+	else {
+		ChangingGraph<Layout> *world = new ChangingGraph<Layout>;
+		return createStringHandlers<Layout>(SimpleGuts<Layout>(attrs.look("engines")),
+			new TextWatcherOutput<Layout>,0,new TextChangeOutput<Layout>(world),
 			gname,attrs,g_transform,g_useDotDefaults);
+	}
 }
 
 struct IncrCalledBack : IncrCallbacks {

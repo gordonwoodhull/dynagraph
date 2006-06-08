@@ -26,9 +26,10 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct LayoutToNSRankerModelTranslator : ChangeTranslator<Layout,NSRankerModel> {
-	GoingQueueTransition<Layout,NSRankerModel> transition_;
-	void Process(ChangeQueue<Layout> &Q) {
-		ChangeQueue<NSRankerModel> &Q2 = transition_.NextQ();
+	typedef GoingQueueTransition<Layout,NSRankerModel> Transition;
+	void Process() {
+		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
+		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
 
 		// insert these in Q2 (which doesn't return) and mod them in Q1
         for(typename Layout::graphedge_iter ei = source_->Q.delE.edges().begin(); ei!=source_->Q.delE.edges().end();++ei)
@@ -39,17 +40,18 @@ struct LayoutToNSRankerModelTranslator : ChangeTranslator<Layout,NSRankerModel> 
         for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
 
-		transition_.EndLastQ(Q);
-		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
+		Transition::EndLastQ(Q1);
+		LinkedChangeProcessor<Graph2>::NextProcess();
 	}
 };
 template<typename Layout>
 struct NSRankerModelToLayoutTranslator : ChangeTranslator<NSRankerModel,Layout> {
-	ReturningQueueTransition<NSRankerModel,Layout> transition_;
+	typedef ReturningQueueTransition<NSRankerModel,Layout> Transition;
 	FlexiRankXlator rankXlate_;
 	NSRankerModelToLayoutTranslator(FlexiRankXlator rankXlate) : rankXlate_(rankXlate) {}
 	void Process(ChangeQueue<NSRankerModel> &Q) {
-		ChangeQueue<Layout> &Q2 = transition_.NextQ();
+		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
+		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
 
 		// Since NS is not yet incremental, Q is blank.
 		// Just read whole graph and find changes.
@@ -72,8 +74,8 @@ struct NSRankerModelToLayoutTranslator : ChangeTranslator<NSRankerModel,Layout> 
 					ModifyEdge(Q2,*ei,DG_UPD_MOVE);
 			}
 		}
-		transition_.EndLastQ(Q);
-		LinkedChangeProcessor<Layout>::NextProcess(Q2);
+		Transition::EndLastQ(Q1);
+		LinkedChangeProcessor<Layout>::NextProcess();
 	}
 };
 

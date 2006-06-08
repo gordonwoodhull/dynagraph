@@ -28,8 +28,8 @@ EnginePair<Layout> stringizeEngine(EnginePair<Layout> engines,Transform *transfo
 	EnginePair<Layout> ret;
 	typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
 	typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
-	StringsInEngine *xlateIn = new StringsInEngine(StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults));
-	StringsOutEngine *xlateOut = new StringsOutEngine(transform);
+	StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults));
+	StringsOutEngine *xlateOut = new StringsOutEngine(engines.first->world_,transform);
 	xlateIn->next_ = engines.first;
 	engines.second->next_ = xlateOut;
 	return EnginePair<Layout>(xlateIn,xlateOut);

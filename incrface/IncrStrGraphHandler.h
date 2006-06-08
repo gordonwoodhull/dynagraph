@@ -71,9 +71,9 @@ struct IncrStrGraphHandler : IncrLangEvents {
 			return false;
 		if(next_) {
 #ifdef STRHANDLER_DO_THREADS
-			layoutThread_ = new DynagraphThread<NGraph>(*world_,next_,Q_);
+			layoutThread_ = new DynagraphThread<NGraph>(*world_,next_);
 #else
-			next_->Process(Q_);
+			next_->Process();
 #endif
 		}
 		return true;

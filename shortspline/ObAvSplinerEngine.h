@@ -26,18 +26,19 @@ namespace Dynagraph {
 
 template<typename Layout>
 struct ObAvSplinerEngine : LinkedChangeProcessor<Layout> {
-	Layout *current_;
-	ObAvSplinerEngine(Layout *whole,Layout *current) : current_(current) {}
+	ObAvSplinerEngine(ChangingGraph<Layout> *world) 
+		: LinkedChangeProcessor<Layout>(world) {}
 	// ChangeProcessor
-	void Process(ChangeQueue<Layout> &changeQ) {
-		if(CalculateBounds(changeQ.current))
-			ModifyFlags(changeQ) |= Update(DG_UPD_BOUNDS);
-		double		SEP = gd<GraphGeom>(changeQ.current).separation.Len();
+	void Process() {
+		ChangeQueue<Layout> &Q = this->world_->Q_;
+		if(CalculateBounds(Q.current))
+			ModifyFlags(Q) |= Update(DG_UPD_BOUNDS);
+		double		SEP = gd<GraphGeom>(Q.current).separation.Len();
 
-		ObstacleAvoiderSpliner<Layout> obav(current_);
+		ObstacleAvoiderSpliner<Layout> obav(&this->world_->current_);
 
 		/* route edges  */
-		for(typename Layout::graphedge_iter ei = current_->edges().begin(); ei!=current_->edges().end(); ++ei) {
+		for(typename Layout::graphedge_iter ei = this->world_->current_.edges().begin(); ei!=this->world_->current_.edges().end(); ++ei) {
 			typename Layout::Edge *e = *ei;
 			NodeGeom &tg = gd<NodeGeom>(e->tail),
 				&hg = gd<NodeGeom>(e->head);
@@ -64,9 +65,9 @@ struct ObAvSplinerEngine : LinkedChangeProcessor<Layout> {
 			}
 			gd<EdgeGeom>(e).pos.ClipEndpoints(unclipped,tg.pos,eg.tailClipped?&tg.region:0,
 				hg.pos,eg.headClipped?&hg.region:0);
-			ModifyEdge(changeQ,e,DG_UPD_MOVE);
+			ModifyEdge(Q,e,DG_UPD_MOVE);
 		}
-		NextProcess(changeQ);
+		NextProcess();
 	}
 
 };
