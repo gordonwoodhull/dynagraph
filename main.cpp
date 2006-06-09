@@ -44,6 +44,7 @@ Transform *g_transform;
 bool g_useDotDefaults;
 char *g_outdot=0;
 int g_count=1;
+StrAttrs g_defaultGraphAttrs;
 
 struct CouldntOpen {};
 
@@ -113,17 +114,18 @@ struct TextWatcherOutput : IncrViewWatcher<Graph> {
 };
 template<typename Layout>
 IncrLangEvents *createHandlers(DString gname,const StrAttrs &attrs) {
-	if(attrs.look("superengines")) {
+	StrAttrs defaultedAttrs = g_defaultGraphAttrs+attrs;
+	if(defaultedAttrs.look("superengines")) {
 		ChangingGraph<GeneralLayout> *world = new ChangingGraph<GeneralLayout>;
-		return createStringHandlers<GeneralLayout>(WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
+		return createStringHandlers<GeneralLayout>(world,WorldGuts<Layout>(defaultedAttrs.look("superengines"),defaultedAttrs.look("engines")),
 			new TextWatcherOutput<GeneralLayout>,0,new TextChangeOutput<GeneralLayout>(world),
-			gname,attrs,g_transform,g_useDotDefaults);
+			gname,defaultedAttrs,g_transform,g_useDotDefaults);
 	}
 	else {
 		ChangingGraph<Layout> *world = new ChangingGraph<Layout>;
-		return createStringHandlers<Layout>(SimpleGuts<Layout>(attrs.look("engines")),
+		return createStringHandlers<Layout>(world,SimpleGuts<Layout>(defaultedAttrs.look("engines")),
 			new TextWatcherOutput<Layout>,0,new TextChangeOutput<Layout>(world),
-			gname,attrs,g_transform,g_useDotDefaults);
+			gname,defaultedAttrs,g_transform,g_useDotDefaults);
 	}
 }
 
@@ -237,6 +239,7 @@ void print_help() {
 		"   -oN filename write stream N to filename\n"
 		"   -oL filename output layout steps to filename{step}.dot\n"
 		"   -raN report on a to stream N\n"
+		"	-a attr=value set default graph attribute\n"
 		"   -x break on any exception\n");
 	for(int i = 0;i<g_nreports;++i)
 		report(r_cmdline,"      %c %s\n",g_reports[i].c,g_reports[i].desc);
@@ -247,8 +250,12 @@ void print_report_syntax() {
 		"   -oN filename, N is [0-9], a file # specified in -r\n"
 		"   -oL filename output layouts to filename1.dot,filename2.dot,...\n");
 }
-
-
+void print_attribute_syntax() {
+	report(r_error,
+		"-a: specify default graph attribute\n"
+		"   -a attr=value\n"
+		"   effectively attr=value is prepended onto every 'open graph' attribute list\n");
+}
 int main(int argc, char *args[]) {
 	enableReport(r_error,stderr);
 	enableReport(r_cmdline,stdout);
@@ -327,6 +334,23 @@ int main(int argc, char *args[]) {
 		case 'd': // dot-compatible coords
 			g_transform  = &g_dotRatios;
 			g_useDotDefaults = true;
+			break;
+		case 'a': // set default attribute
+			if(i==argc-1 || args[i][2]) {
+				print_attribute_syntax();
+				return 1;
+			}
+			else {
+				char *eq = strchr(args[++i],'=');
+				DString attr,value;
+				if(eq) {
+					attr.assign(args[i],eq-args[i]);
+					value.assign(eq+1);
+				}
+				else
+					attr.assign(args[i]);
+				g_defaultGraphAttrs[attr] = value;
+			}
 			break;
 		case 'x':
 			xeptOut = true;

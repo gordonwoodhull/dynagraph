@@ -17,43 +17,52 @@
 #ifndef NSRankerAttrs_h
 #define NSRankerAttrs_h
 
-#define NSRANKER_IS_A_BIG_BLOB
-#ifdef NSRANKER_IS_A_BIG_BLOB
 #include "Constraints.h"
-#endif
 
 namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerNode {
+	NodeConstraints topC,bottomC;
+	bool hit; // for rank dfs
 	int newTopRank,	// destination rank assignment
 		newBottomRank,
 		oldTopRank,	// previous rank assignment
 		oldBottomRank;
-#ifdef NSRANKER_IS_A_BIG_BLOB
-	NodeConstraints topC,bottomC;
-	bool hit, // for rank dfs
-		rankFixed; // whether nailed in Y
-#endif
-	NSRankerNode() : newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0) 
-#ifdef NSRANKER_IS_A_BIG_BLOB
-		,hit(false),rankFixed(false)
-#endif
-	{}
+	bool rankFixed; // whether nailed in Y
+
+	NSRankerNode() : hit(false),newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0),rankFixed(false) {}
+	// do not copy constraints or hit-flag
+	NSRankerNode(const NSRankerNode &other) :
+		hit(false),
+		newTopRank(other.newTopRank),newBottomRank(other.newBottomRank),oldTopRank(other.oldTopRank),oldBottomRank(other.oldBottomRank),
+		rankFixed(other.rankFixed) {}
+	NSRankerNode &operator=(NSRankerNode &other) {
+		hit = false;
+		newTopRank = other.newTopRank;
+		newBottomRank = other.newBottomRank;
+		oldTopRank = other.oldTopRank;
+		oldBottomRank = other.oldBottomRank;
+		rankFixed = other.rankFixed;
+		return *this;
+	}
 };
+
 struct NSRankerEdge {
-	// the second edge of 2-cycle should be ignored, mostly
-	bool secondOfTwo;
-#ifdef NSRANKER_IS_A_BIG_BLOB
 	DDCGraph::Node *weak;
 	DDCGraph::Edge *strong;
-#endif
-	NSRankerEdge() : secondOfTwo(false)
-#ifdef NSRANKER_IS_A_BIG_BLOB
-		,weak(0),strong(0)
-#endif
-	{}
+	// the second edge of 2-cycle should be ignored, mostly
+	bool secondOfTwo;
+	
+	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false) {}
+	// do not copy constraints
+	NSRankerEdge(const NSRankerEdge &other) : secondOfTwo(other.secondOfTwo),weak(0),strong(0) {}
+	NSRankerEdge &operator=(NSRankerEdge &other) {
+		secondOfTwo = other.secondOfTwo;
+		return *this;
+	}
 };
+
 
 } // namespace DynaDAG
 } // namespace Dynagraph

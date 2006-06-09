@@ -160,20 +160,12 @@ public:
 		ret.assign(begin()+pos,len);
 		return ret;
 	}
-	DString &assign(const char *v,size_type len) {
+	DString &assign(const char *v,size_type len=npos) {
 	  if(!v) {
 	    return *this = 0;
 	  }
 		if(len>=strlen(v))
 			return *this = v;
-		// this does not work because if v is a DString, this changes the dictionary entry itself.
-		/*
-		char *sneaky = const_cast<char*>(v),
-			c = sneaky[len];
-		sneaky[len] = 0;
-		*this = sneaky;
-		sneaky[len] = c;
-		*/
 		char *copy = new char[len+1];
 		strncpy(copy,v,len);
 		copy[len] = 0;

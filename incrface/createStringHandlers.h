@@ -38,7 +38,7 @@ template<typename Layout>
 struct WorldGuts {
 	DString engines_,superengines_;
 	WorldGuts(DString superengines, DString engines) : engines_(engines),superengines_(superengines) {}
-	EnginePair<GeneralLayout> operator()(ChangeQueue<GeneralLayout> &Q,ChangingGraph<GeneralLayout> &chraph) {
+	EnginePair<GeneralLayout> operator()(ChangingGraph<GeneralLayout> &chraph) {
 		typedef WorldInABox<GeneralLayout,Layout,
 			typename translator_traitses<GeneralLayout,Layout>::in_translator,
 			typename translator_traitses<GeneralLayout,Layout>::out_translator> Box;
@@ -53,25 +53,24 @@ template<typename Layout>
 struct SimpleGuts {
 	DString engines_;
 	SimpleGuts(DString engines) : engines_(engines) {}
-	EnginePair<Layout> operator()(ChangeQueue<Layout> &Q,ChangingGraph<Layout> &chraph) {
+	EnginePair<Layout> operator()(ChangingGraph<Layout> &chraph) {
 		return createEngine(engines_,&chraph);
 	}
 };
 template<typename Layout,typename GutsCreator>
-IncrLangEvents *createStringHandlers(GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
+IncrLangEvents *createStringHandlers(ChangingGraph<Layout> *chraph,GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
 									  LinkedChangeProcessor<Layout> *before,LinkedChangeProcessor<Layout> *after,
 									  DString gname,const StrAttrs &attrs,Transform *transform, bool useDotDefaults) {
-	ChangingGraph<Layout> *chraph = new ChangingGraph<Layout>;
 	IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(chraph);
 	handler->watcher_ = watcher;
 
     gd<Name>(&chraph->whole_) = gname;
-    SetAndMark(handler->Q_.ModGraph(),attrs);
+    SetAndMark(chraph->Q_.ModGraph(),attrs);
 
 	// apply first graph attributes before creating engine (not pretty)
-	StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults).ModifyGraph(handler->Q_.ModGraph(),&chraph->whole_);
+	StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults).ModifyGraph(chraph->Q_.ModGraph(),&chraph->whole_);
 
-	EnginePair<Layout> eng0 = gutsFun(handler->Q_,*chraph);
+	EnginePair<Layout> eng0 = gutsFun(*chraph);
 	EnginePair<Layout> engine = stringizeEngine(eng0,transform,useDotDefaults);
 	if(before)
 		engine.Prepend(before);

@@ -25,7 +25,7 @@ template<typename Layout>
 struct FCRData {
 	Layout changeN,changeE; // subgraph union of ins,mod,del
 	ChangingGraph<Layout> *world;
-	FCRData(ChangingGraph<Layout> *world) : changeN(world->whole_),changeE(world->whole_),world(world) {}
+	FCRData(ChangingGraph<Layout> *world) : changeN(&world->whole_),changeE(&world->whole_),world(world) {}
 };
 template<typename Layout>
 struct FCRBefore : LinkedChangeProcessor<Layout> {

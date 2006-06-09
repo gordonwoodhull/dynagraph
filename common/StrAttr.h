@@ -45,6 +45,9 @@ struct StrAttrs : std::map<DString,DString> {
 			(*this)[i->first] = i->second;
 		return *this;
 	}
+	const StrAttrs operator +(const StrAttrs &attrs) const {
+		return StrAttrs(*this) += attrs;
+	}
 };
 inline void emitAttrs(std::ostream &os,const StrAttrs &attrs,const DString &id = DString()) {
 	bool comma=false;
