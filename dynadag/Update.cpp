@@ -26,9 +26,9 @@ namespace DynaDAG {
 
 void Config::makeRankList(DDChangeQueue &changeQ) {
 	Ranks::IndexV &newRanks = ranking.newRanks;
-	// the ranks consist of tops of nodes, bottoms of nodes, 
-	// and places where phantom nodes for S-shaped back-edges, 
-	// fanning order, and parallel/2-cycle edges go
+	// the ranks consist of tops and bottoms of nodes, 
+	// and Ys where phantom nodes for 
+	// fanning order and parallel/2-cycle edges go
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
 			newRanks.push_back(gd<NSRankerNode>(*ni).newTopRank);
