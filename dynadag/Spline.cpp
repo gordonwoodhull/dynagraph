@@ -70,13 +70,12 @@ static DDModel::Node *boundingNode(Config &config,DDModel::Node *inp, LeftRight 
 
 double findBound(Config &config,const Bounds &bb,DDModel::Node *u, LeftRight side) {
 	assert(bb.valid);
-	double sep = gd<GraphGeom>(config.whole).separation.x/2.0;
 	double ret;
 	if(DDModel::Node *w = boundingNode(config,u,side)) {
 		if(side==LEFT)
-			ret = gd<DDNode>(w).cur.x + config.RightExtent(w) + sep;
+			ret = gd<DDNode>(w).cur.x + config.RightExtent(w) + config.RightExtent(w);
 		else
-			ret = gd<DDNode>(w).cur.x - config.LeftExtent(w) - sep;
+			ret = gd<DDNode>(w).cur.x - config.LeftExtent(w) - config.LeftExtent(w);
 	}
 	else
 		ret = side==RIGHT?bb.r:bb.l;

@@ -68,10 +68,22 @@ double Config::BottomExtent(DDModel::Node *n) {
 		return -getRegion(n).boundary.b;
 	return EPSILON;
 }
+double Config::LeftSep(DDModel::Node *n) {
+	if(!n)
+		return .0;
+	return gd<GraphGeom>(whole).separation.x/2.0;
+}
+double Config::RightSep(DDModel::Node *n) {
+	if(!n)
+		return .0;
+	return gd<GraphGeom>(whole).separation.x/2.0;
+}
 double Config::UVSep(DDModel::Node *left,DDModel::Node *right) {
-	double s0 = RightExtent(left),
-		s1 = LeftExtent(right);
-	return s0+s1 + gd<GraphGeom>(whole).separation.x;
+	double lext = RightExtent(left),
+		lsep = RightSep(left),
+		rext = LeftExtent(right),
+		rsep = LeftSep(right);
+	return lext + lsep + rsep + rext;
 }
 double Config::CoordBetween(DDModel::Node *L, DDModel::Node *R) {
 	double x;

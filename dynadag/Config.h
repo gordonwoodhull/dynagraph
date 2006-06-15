@@ -59,6 +59,8 @@ struct Config {
 	double RightExtent(DDModel::Node *n);
 	double TopExtent(DDModel::Node *n);
 	double BottomExtent(DDModel::Node *n);
+	double LeftSep(DDModel::Node *n);
+	double RightSep(DDModel::Node *n);
 	double UVSep(DDModel::Node *left,DDModel::Node *right);
 	double CoordBetween(DDModel::Node *L, DDModel::Node *R);
 	DDModel::Node *RelNode(DDModel::Node *n, int offset);

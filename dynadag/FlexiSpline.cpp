@@ -77,7 +77,7 @@ void RouteBounds::poly(Line &out) {
 			out.push_back(*pri);
 }
 double RouteBounds::side(DDModel::Node *n,int s) {
-	return gd<DDNode>(n).cur.x + s*(((s==LEFT)?config.LeftExtent(n):config.RightExtent(n)) + gd<GraphGeom>(config.whole).separation.x/2.0);
+	return gd<DDNode>(n).cur.x + s*((s==LEFT)?(config.LeftExtent(n)+config.LeftSep(n)):(config.RightExtent(n)+config.RightSep(n)));
 }
 bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 	const int dist=2;

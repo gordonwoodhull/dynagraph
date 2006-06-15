@@ -253,7 +253,6 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 		return true;
 	if(!path->first) // flat or self edge
 		return false;
-	double sep = gd<GraphGeom>(&world_->whole_).separation.x;
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
 		DDModel::Node *n = *ni;
 		if(!gd<DDNode>(n).actualXValid)
@@ -261,21 +260,21 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 		double x = gd<DDNode>(n).actualX;
 		if(DDModel::Node *left = config.Left(n)) {
 			if(gd<DDNode>(left).amEdgePart()) {
-				if(gd<DDNode>(left).actualXValid && gd<DDNode>(left).actualX + sep > x)
+				if(gd<DDNode>(left).actualXValid && gd<DDNode>(left).actualX + config.RightExtent(left) + config.RightSep(left) > x)
 					return true;
 			}
 			else {
-				if(gd<DDNode>(left).cur.x + config.RightExtent(left) + sep > x)
+				if(gd<DDNode>(left).cur.x + config.RightExtent(left) + config.RightExtent(left) + config.RightSep(left) > x)
 					return true;
 			}
 		}
 		if(DDModel::Node *right = config.Right(n)) {
 			if(gd<DDNode>(right).amEdgePart()) {
-				if(gd<DDNode>(right).actualXValid && gd<DDNode>(right).actualX - sep < x)
+				if(gd<DDNode>(right).actualXValid && gd<DDNode>(right).actualX - config.LeftExtent(right) - config.LeftSep(right) < x)
 					return true;
 			}
 			else {
-				if(gd<DDNode>(right).cur.x - config.LeftExtent(right) - sep < x)
+				if(gd<DDNode>(right).cur.x - config.LeftExtent(right) - config.LeftSep(right) < x)
 					return true;
 			}
 		}
