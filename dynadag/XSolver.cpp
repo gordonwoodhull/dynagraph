@@ -59,7 +59,7 @@ void XSolver::DeleteLRConstraint(DDModel::Node *u,DDModel::Node *v) {
 // internals
 void XSolver::fixSeparation(DDModel::Node *mn) {
 	DDModel::Node *left, *right;	/* mn's left and right neighbors */
-	double left_width, right_width,
+	double lnei_ext, rnei_ext,
 		sep = gd<GraphGeom>(config.whole).separation.x,
 		left_ext = config.LeftExtent(mn),
 		right_ext = config.RightExtent(mn);
@@ -68,15 +68,15 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 
 	if((left = config.Left(mn))) {
 		left_var = cg.GetVar(gd<DDNode>(left).getXcon());
-		left_width = config.RightExtent(left);
+		lnei_ext = config.RightExtent(left);
 	}
 	else {
 		left_var = cg.anchor;
-		left_width = -DDNS::NSd(left_var).rank;
+		lnei_ext = -DDNS::NSd(left_var).rank;
 	}
 
 	DDCGraph::Edge *ce = cg.create_edge(left_var,var).first;
-	int scaled_len = ROUND(xScale * (sep + left_width + left_ext));
+	int scaled_len = ROUND(xScale * (sep + lnei_ext + left_ext));
 	DDNS::NSd(ce).minlen = scaled_len;
 	DDNS::NSd(ce).weight = COMPACTION_STRENGTH;
 	/*
@@ -86,9 +86,9 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 
 	if((right = config.Right(mn))) {
 		right_var = cg.GetVar(gd<DDNode>(right).getXcon());
-		right_width = config.LeftExtent(right);
+		rnei_ext = config.LeftExtent(right);
 		ce = cg.create_edge(var,right_var).first;
-		scaled_len = ROUND(xScale * (sep + right_width + right_ext));
+		scaled_len = ROUND(xScale * (sep + rnei_ext + right_ext));
 		DDNS::NSd(ce).minlen = scaled_len;
 		DDNS::NSd(ce).weight = COMPACTION_STRENGTH;
 		/*
