@@ -81,8 +81,6 @@ struct TextChangeOutput : LinkedChangeProcessor<Graph> {
 	void Process() {
 		LOCK_OUTPUT();
 		emitChanges(cout,this->world_->Q_,gd<Name>(&this->world_->whole_).c_str());
-		this->world_->Q_.Execute(true);
-		ModifyFlags(this->world_->Q_) = 0;
 		doOutdot(&this->world_->current_);
 	}
 };
@@ -114,18 +112,17 @@ struct TextWatcherOutput : IncrViewWatcher<Graph> {
 };
 template<typename Layout>
 IncrLangEvents *createHandlers(DString gname,const StrAttrs &attrs) {
-	StrAttrs defaultedAttrs = g_defaultGraphAttrs+attrs;
-	if(defaultedAttrs.look("superengines")) {
+	if(attrs.look("superengines")) {
 		ChangingGraph<GeneralLayout> *world = new ChangingGraph<GeneralLayout>;
-		return createStringHandlers<GeneralLayout>(world,WorldGuts<Layout>(defaultedAttrs.look("superengines"),defaultedAttrs.look("engines")),
+		return createStringHandlers<GeneralLayout>(world,WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
 			new TextWatcherOutput<GeneralLayout>,0,new TextChangeOutput<GeneralLayout>(world),
-			gname,defaultedAttrs,g_transform,g_useDotDefaults);
+			gname,attrs,g_transform,g_useDotDefaults);
 	}
 	else {
 		ChangingGraph<Layout> *world = new ChangingGraph<Layout>;
-		return createStringHandlers<Layout>(world,SimpleGuts<Layout>(defaultedAttrs.look("engines")),
+		return createStringHandlers<Layout>(world,SimpleGuts<Layout>(attrs.look("engines")),
 			new TextWatcherOutput<Layout>,0,new TextChangeOutput<Layout>(world),
-			gname,defaultedAttrs,g_transform,g_useDotDefaults);
+			gname,attrs,g_transform,g_useDotDefaults);
 	}
 }
 
@@ -137,6 +134,7 @@ struct IncrCalledBack : IncrCallbacks {
 		g_incrCallback = 0;
     }
     IncrLangEvents *incr_cb_create_handler(Name name,StrAttrs &attrs) {
+		attrs = g_defaultGraphAttrs+attrs;
 		DString type = attrs.look("type"),
 			&engines = attrs["engines"],
 			&superengines=attrs["superengines"];

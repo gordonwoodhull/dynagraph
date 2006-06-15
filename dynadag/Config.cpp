@@ -68,31 +68,6 @@ double Config::BottomExtent(DDModel::Node *n) {
 		return -getRegion(n).boundary.b;
 	return EPSILON;
 }
-/*
-Coord Config::NodeSize(DDModel::Node *n) {
-	Coord ret;
-	if(!n)
-		ret.x = ret.y = 0.0;
-	else if(gd<DDNode>(n).amEdgePart()) {
-		ret.x = gd<GraphGeom>(whole).separation.x; // separation is good enough
-		ret.y = EPSILON;
-	}
-	else {
-		DynaDAGLayout::Node *vn = gd<DDNode>(n).multi->layoutN;
-		Region *region = gd<NodeGeom>(vn).region;
-		ret.x = ret.y = 0;
-		if(region) {
-			ret.x = region.boundary.Width();
-			ret.y = region.boundary.Height();
-		}
-		if(ret.x<=0)
-			ret.x = EPSILON;
-		if(ret.y<=0)
-			ret.y = EPSILON;
-	}
-	return ret;
-}
-*/
 double Config::UVSep(DDModel::Node *left,DDModel::Node *right) {
 	double s0 = RightExtent(left),
 		s1 = LeftExtent(right);

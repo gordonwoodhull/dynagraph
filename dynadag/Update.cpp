@@ -291,10 +291,10 @@ void Config::rerouteChain(DDChain *chain,int tailRank,int headRank,XGenerator *x
  * The rationale is that the tail moves downward toward the head.
  */
 void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve) {
-	assert(chain->first);
 	if(nhr == ntr)
 		dynaDAG->CloseChain(chain,false);	/* flat edge / single node */
 	else {
+		assert(chain->first);
 		if(!(Ranks::Xlator::Above(whole,otr,nhr)&&Ranks::Xlator::Above(whole,ntr,ohr))
 			|| ve && gd<EdgeGeom>(ve).pos.Empty()) {
 			if(vn) {

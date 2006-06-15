@@ -71,7 +71,7 @@ install: dynagraph gengraph
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dynagraph $(BINDIR)
 
-test: dynagraph
+test: 
 	(cd tests; make run)
 
 distclean clean:

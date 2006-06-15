@@ -32,7 +32,6 @@ struct ReturningQueueTransition {
 		return false;
 	}
 	static void EndLastQ(ChangeQueue<Graph1> &Q) {
-		Q.Execute(true);
 	}
 };
 

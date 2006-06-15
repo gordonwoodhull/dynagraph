@@ -48,7 +48,6 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 	Optimizer *optimizer;
 	XSolver xsolver;
 	FlexiSpliner spliner;
-	DDChangeQueue oldChanges; // if interrupted
 
 	DynaDAGServer(ChangingGraph<DynaDAGLayout> *world) 
 		: LinkedChangeProcessor<DynaDAGLayout>(world),
@@ -56,8 +55,8 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 		config(this,model,&world->whole_,&world->current_,&xsolver),
 		optimizer(new DotlikeOptimizer(config)),
 		xsolver(config,gd<GraphGeom>(&world->current_).resolution.x),
-		spliner(config),
-		oldChanges(&world->whole_,&world->current_) {}
+		spliner(config)
+	{}
 	~DynaDAGServer();
 	// ChangeProcessor
 	void Process();
@@ -85,7 +84,7 @@ private:
 	void findDirtyEdges(DDChangeQueue &changeQ,bool force);
 	void redrawEdges(DDChangeQueue &changeQ);
 	void generateIntermediateLayout(DDChangeQueue &changeQ);
-	void cleanUp();
+	void rememberOld();
 	void dumpModel();
 };
 

@@ -422,7 +422,7 @@ void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		drawEdgeSimply(DDp(*ei));
 }
-void DynaDAGServer::cleanUp() { // dd_postprocess
+void DynaDAGServer::rememberOld() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDNode &ddn = gd<DDNode>(*ni);
 		ddn.prev = ddn.cur;
@@ -447,11 +447,14 @@ void DynaDAGServer::dumpModel() {
 		report(r_modelDump,"\t\"%p\"->\"%p\" [label=\"%p\\n%p\"];\n",(*ei)->tail,(*ei)->head,*ei,gd<DDEdge>(*ei).path);
 	report(r_modelDump,"}\n");
 }
-void figureIntermediateQueue(DDChangeQueue &changeQ,DDChangeQueue &imedQ) {
-	imedQ.modN = changeQ.modN;
-	imedQ.modN |= changeQ.insN;
-	imedQ.modE = changeQ.modE;
-	imedQ.modE |= changeQ.insE;
+void InsDelArePasse(DDChangeQueue &Q) {
+	Q.ExecuteDeletions();
+	for(DynaDAGLayout::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
+		ModifyNode(Q,*ni,DG_UPD_MOVE);
+	for(DynaDAGLayout::graphedge_iter ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
+		ModifyEdge(Q,*ei,DG_UPD_MOVE);
+	Q.insN.clear();
+	Q.insE.clear();
 }
 void DynaDAGServer::Process() {
 	ChangeQueue<DynaDAGLayout> &Q = this->world_->Q_;
@@ -462,10 +465,6 @@ void DynaDAGServer::Process() {
 	loops.Field(r_dynadag,"nodes deleted - input",Q.delN.nodes().size());
 	loops.Field(r_dynadag,"edges deleted - input",Q.delE.nodes().size());
 	
-	// were there things to wrap up from last layout?
-	Q |= oldChanges;
-	oldChanges.Execute(false);
-
 	if(Q.Empty()) {
 		NextProcess();
 		return;
@@ -491,16 +490,14 @@ void DynaDAGServer::Process() {
 
 	if(gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		generateIntermediateLayout(Q);
-		figureIntermediateQueue(Q,oldChanges);
 		NextProcess();
-		// Next (last) will probably clear Q but that's not so!
-		// but don't re-report inserts and deletes that intermediate layout already reported
-		Q |= oldChanges;
+		// client has heard about inserts so they're now mods, 
+		// and deletes can be blown away (should someone Higher do this?)
+		InsDelArePasse(Q);
 	}
 
 	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
-		cleanUp();
-		figureIntermediateQueue(Q,oldChanges);
+		rememberOld();
 		return;
 	}
 
@@ -509,8 +506,7 @@ void DynaDAGServer::Process() {
 	timer.LoopPoint(r_timing,"crossing optimization");
 
 	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
-		cleanUp();
-		figureIntermediateQueue(Q,oldChanges);
+		rememberOld();
 		return;
 	}
 
@@ -522,8 +518,7 @@ void DynaDAGServer::Process() {
 	timer.LoopPoint(r_timing,"optimize x coordinates");
 
 	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
-		cleanUp();
-		figureIntermediateQueue(Q,oldChanges);
+		rememberOld();
 		return;
 	}
 
@@ -540,7 +535,7 @@ void DynaDAGServer::Process() {
 	timer.LoopPoint(r_timing,"draw splines");
 
 	// reset flags
-	cleanUp();
+	rememberOld();
 
 	dumpModel();
 
@@ -562,6 +557,9 @@ void DynaDAGServer::Process() {
 		loops.Field(r_readability,"average edge y-length",avg.y);
 	}
 	NextProcess();
+	// we are good with all changes now
+	Q.ExecuteDeletions();
+	Q.Clear();
 }
 
 } // namespace DynaDAG

@@ -6,28 +6,30 @@ namespace Dynagraph {
 template<typename OuterLayout,typename InnerLayout,typename InTranslator,typename OutTranslator>
 struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 	ChangingGraph<InnerLayout> inWorld_;
-	EnginePair<InnerLayout> innerEngines_;
-	ChangeProcessor<OuterLayout> *topEngine_;
-	OutTranslator *xlateOut_;
+	LinkedChangeProcessor<OuterLayout> *inXlator_,*outXlator_;
 	WorldInABox(ChangingGraph<OuterLayout> *world) 
-		: LinkedChangeProcessor<OuterLayout>(world),topEngine_(0),xlateOut_(0) {}
+		: LinkedChangeProcessor<OuterLayout>(world),inXlator_(0),outXlator_(0) {}
 	void assignEngine(DString engines) {
 		InTranslator *inTranslator = new InTranslator(this->world_,&inWorld_);
 		OutTranslator *outTranslator = new OutTranslator(&inWorld_,this->world_);
-		if(innerEngines_.second)
-			innerEngines_.second->next_ = 0;
-		ChangeTranslator<OuterLayout,InnerLayout> *xlateIn = inTranslator;
-		xlateOut_ = outTranslator;
-		innerEngines_ = createEngine(engines,&inWorld_);
-		static_cast<LinkedChangeProcessor<InnerLayout>*>(xlateIn)->next_ = innerEngines_.first;
-		innerEngines_.second->next_ = xlateOut_;
-		topEngine_ = xlateIn;
+		EnginePair<InnerLayout> innerEngines = createEngine(engines,&inWorld_);
+		static_cast<LinkedChangeProcessor<InnerLayout>*>(inTranslator)->next_ = innerEngines.first;
+		innerEngines.second->next_ = outTranslator;
+		inXlator_ = inTranslator;
+		outXlator_ = outTranslator;
 	}
 	EnginePair<OuterLayout> engines() {
-		return EnginePair<OuterLayout>(this,xlateOut_);
+		return EnginePair<OuterLayout>(this,outXlator_);
 	}
 	void Process() {
-		topEngine_->Process();
+		inXlator_->Process();
+		// there is no particular reason WiaB should be responsible for
+		// clearing the queue but neither does it make sense to 
+		// create an "Okay Engine" when we don't *really* understand changes yet
+		// in effect this assumes that what "really matters" is in the inner world
+		// which is true at the moment
+		world_->Q_.ExecuteDeletions();
+		world_->Q_.Clear();
 	}
 };
 

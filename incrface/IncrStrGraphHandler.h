@@ -122,7 +122,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttr
 	// here we leap and then clear Q ourself
     if(watcher_)
 		watcher_->IncrOpen(world_->Q_);
-	world_->Q_.Execute(true); 
+	world_->Q_.Clear();
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {

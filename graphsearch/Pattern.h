@@ -95,7 +95,7 @@ struct FollowedPath {
 // hash_* didn't make the standard!!! aieeee!!
 
 #if defined(_MSC_VER) && _MSC_VER>=1300
-// vc++.net stl uses one traits class rather than separate hash and eq
+// vc++.net stl hash_set uses one policy class rather than separate hash and eq
 using GSearch::FollowedPath;
 struct hash_fp {
 	static const size_t bucket_size = 4,
