@@ -172,93 +172,121 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	assert(path->unclippedPath.Empty());
 
 	DynaDAGLayout::Edge *e = path->layoutE;
-	DDModel::Node *tl,*hd;
-	if(path->direction==DDPath::flat) {
-		tl = DDp(e->tail)->bottom();
-		hd = DDp(e->head)->top();
-	}
-	else {
-		tl = path->first->tail;
-		hd = path->last->head;
-	}
 	EdgeGeom &eg = gd<EdgeGeom>(e);
-	Coord tailpt = (path->direction==DDPath::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos(),
-		headpt = (path->direction==DDPath::reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
-
-	Line &unclipped = path->unclippedPath;
-	Line region;
-	assert(e->tail!=e->head); // DynaDAGServer should draw self-edges
-	if(path->direction==DDPath::flat) { // flat edge
-		/*
-		// disabled because of header dependencies (needs more work)
-		DDModel::Node *left = tl,
-			*right = hd;
-		if(gd<DDNode>(left).order>gd<DDNode>(right).order)
-			swap(left,right);
-		obav.FindSpline(tailpt,headpt,unclipped);
-		*/
-
-		// hope that no nodes are in the way (calculating path to avoid 'em will be difficult)
-		unclipped.degree = 1;
-		unclipped.push_back(tailpt);
-		unclipped.push_back(headpt);
-	}
-	else { // normal edge
-		assert(path->first); // no flat or self edges!
-		RouteBounds rb(config,gd<GraphGeom>(e->g).bounds);
-		//rb.term(path->first,tailpt,true);
-		for(DDMultiNode::edge_iter ei0 = gd<DDNode>(tl).multi->eBegin(); ei0!=gd<DDNode>(tl).multi->eEnd(); ++ei0)
-			rb.path(*ei0);
-		for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
-			rb.path(*ei);
-		for(DDMultiNode::edge_iter ei2 = gd<DDNode>(hd).multi->eBegin(); ei2!=gd<DDNode>(hd).multi->eEnd(); ++ei2)
-			rb.path(*ei2);
-		//rb.term(path->last,headpt,false);
-		rb.poly(region);
-	}
-	if(!region.empty()) {
-		switch(level) {
-		case DG_SPLINELEVEL_BOUNDS:
-			eg.pos = region;
-			return true;
-		case DG_SPLINELEVEL_SHORTEST:
-		case DG_SPLINELEVEL_SPLINE: {
-			try {
-				Line polylineRoute;
-				PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
-				if(level==DG_SPLINELEVEL_SPLINE) {
-					PathPlot::SegmentV barriers;
-					PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
-
-					//cout << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
-					Segment endSlopes(DDp(e->tail)->flowSlope,DDp(e->head)->flowSlope);
-					if(path->direction==DDPath::reversed) {
-						Coord t = endSlopes.b;
-						endSlopes.b = -endSlopes.a;
-						endSlopes.a = -t;
-					}
-					if(gd<EdgeGeom>(e).backward) {
-						endSlopes.a = -endSlopes.a;
-						endSlopes.b = -endSlopes.b;
-					}
-					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
-				}
-				else
-					unclipped = polylineRoute;
-			}
-			catch(...) {
-				//return false;
-			}
-			for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
-				double y = gd<DDNode>(*ni).cur.y,
-					x = checkPos(unclipped.YIntersection(y)).x;
-				gd<DDNode>(*ni).actualX = x;
-				gd<DDNode>(*ni).actualXValid = true;
-			}
-			break;
+	if(path->suppression!=DDPath::suppressed) {
+		DDModel::Node *tl,*hd;
+		if(path->direction==DDPath::flat) {
+			tl = DDp(e->tail)->bottom();
+			hd = DDp(e->head)->top();
 		}
-		default:
-			assert(0);
+		else {
+			tl = path->first->tail;
+			hd = path->last->head;
+		}
+		Coord tailpt,
+			headpt;
+		if(path->suppression==DDPath::tailSuppressed) {
+			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
+				if(!config.IsSuppressed(*ei)) {
+					tailpt = gd<DDNode>((*ei)->tail).cur;
+					break;
+				}
+			assert(ei!=path->eEnd());
+		}
+		else
+			tailpt = (path->direction==DDPath::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
+		if(path->suppression==DDPath::headSuppressed) {
+			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
+				if(config.IsSuppressed(*ei)) {
+					headpt = gd<DDNode>((*ei)->tail).cur;
+					break;
+				}
+			assert(ei!=path->eEnd());
+		}
+		else
+			headpt = (path->direction==DDPath::reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
+		Line &unclipped = path->unclippedPath;
+		Line region;
+		assert(e->tail!=e->head); // DynaDAGServer should draw self-edges
+		if(path->direction==DDPath::flat) { // flat edge
+			/*
+			// disabled because of header dependencies (needs more work)
+			DDModel::Node *left = tl,
+				*right = hd;
+			if(gd<DDNode>(left).order>gd<DDNode>(right).order)
+				swap(left,right);
+			obav.FindSpline(tailpt,headpt,unclipped);
+			*/
+
+			// hope that no nodes are in the way (calculating path to avoid 'em will be difficult)
+			unclipped.degree = 1;
+			unclipped.push_back(tailpt);
+			unclipped.push_back(headpt);
+		}
+		else { // normal edge
+			assert(path->first); // no flat or self edges!
+			RouteBounds rb(config,gd<GraphGeom>(e->g).bounds);
+			//if(!config.IsSuppressed(tl))
+				for(DDMultiNode::edge_iter ei0 = gd<DDNode>(tl).multi->eBegin(); ei0!=gd<DDNode>(tl).multi->eEnd(); ++ei0)
+					rb.path(*ei0);
+			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
+				//if(!config.IsSuppressed(*ei))
+					rb.path(*ei);
+			//if(!config.IsSuppressed(hd))
+				for(DDMultiNode::edge_iter ei2 = gd<DDNode>(hd).multi->eBegin(); ei2!=gd<DDNode>(hd).multi->eEnd(); ++ei2)
+					rb.path(*ei2);
+			rb.poly(region);
+		}
+		if(!region.empty()) {
+			switch(level) {
+			case DG_SPLINELEVEL_BOUNDS:
+				eg.pos = region;
+				return true;
+			case DG_SPLINELEVEL_SHORTEST:
+			case DG_SPLINELEVEL_SPLINE: {
+				try {
+					Line polylineRoute;
+					PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
+					if(level==DG_SPLINELEVEL_SPLINE) {
+						PathPlot::SegmentV barriers;
+						PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
+
+						//cout << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
+						Segment endSlopes(
+							path->suppression==DDPath::tailSuppressed ? (tailpt - gd<NodeGeom>(e->tail).pos) : DDp(e->tail)->flowSlope,
+							path->suppression==DDPath::headSuppressed ? (gd<NodeGeom>(e->head).pos - headpt) : DDp(e->head)->flowSlope
+						);
+						if(path->direction==DDPath::reversed) {
+							Coord t = endSlopes.b;
+							endSlopes.b = -endSlopes.a;
+							endSlopes.a = -t;
+						}
+						if(gd<EdgeGeom>(e).backward) {
+							endSlopes.a = -endSlopes.a;
+							endSlopes.b = -endSlopes.b;
+						}
+						check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
+					}
+					else
+						unclipped = polylineRoute;
+				}
+				catch(...) {
+					//return false;
+				}
+				for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
+					if(config.IsSuppressed(*ni)) 
+						gd<DDNode>(*ni).actualXValid = false;
+					else {
+						double y = gd<DDNode>(*ni).cur.y,
+							x = checkPos(unclipped.YIntersection(y)).x;
+						gd<DDNode>(*ni).actualX = x;
+						gd<DDNode>(*ni).actualXValid = true;
+					}
+				break;
+			}
+			default:
+				assert(0);
+			}
 		}
 	}
 	NodeGeom &tg = gd<NodeGeom>(e->tail),

@@ -207,9 +207,11 @@ template<typename N,typename E>
 struct Path : Chain<N,E> {
 	// self or flat: first==last==0; use layoutE to figure out ends
 	DynaDAGLayout::Edge *layoutE;
-	enum {forward,flat,reversed} direction;
+	enum Direction {forward,flat,reversed} direction;
+	enum Suppression {unsuppressed,tailSuppressed,headSuppressed,suppressed} suppression;
+	int suppressRank;
 	Line unclippedPath;
-	Path() : layoutE(0),direction(forward) {}
+	Path() : layoutE(0),direction(forward),suppression(unsuppressed),suppressRank(-17) {}
 };
 
 } // namespace Dynagraph

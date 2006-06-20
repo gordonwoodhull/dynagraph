@@ -471,14 +471,10 @@ void DynaDAGServer::Process() {
 
 	// erase model objects for everything that's getting deleted
 	executeDeletions(Q);
-	// add the former secondOfTwos to insE, temporarily
 	timer.LoopPoint(r_timing,"preliminary");
 
-	// find ranks for nodes
-	timer.LoopPoint(r_timing,"re-rank nodes");
-
 	// figure out subgraph for crossing optimization
-	DynaDAGLayout crossN(&world_->current_),crossE(&world_->current_);
+	//DynaDAGLayout crossN(&world_->current_),crossE(&world_->current_);
 	//findOrdererSubgraph(Q,crossN,crossE);
 	//optimizer = optChooser.choose(crossN.nodes().size()); // should prob. be no. of nodes in corresponding model subgraph
 

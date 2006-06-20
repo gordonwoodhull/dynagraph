@@ -153,7 +153,8 @@ struct NodeGeom {
 	Region region;
 	NailType nail;
 	double flow;
-	NodeGeom() : nail(DG_NONAIL),flow(0.0) {}
+	bool suppressed;
+	NodeGeom() : nail(DG_NONAIL),flow(0.0),suppressed(false) {}
 	Bounds BoundingBox() {
 		if(!pos.valid)
 			return Bounds();

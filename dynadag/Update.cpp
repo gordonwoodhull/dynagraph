@@ -24,16 +24,72 @@ namespace DynaDAG {
 
 // once a translation of dag/order.c
 
+void findEdgeDirection(DynaDAGLayout::Edge *e) {
+	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
+		hdr = gd<NSRankerNode>(e->head).newTopRank;
+	if(tlr==hdr)
+		DDp(e)->direction = DDPath::flat;
+	else if(tlr>hdr) {
+		tlr = gd<NSRankerNode>(e->head).newBottomRank;
+		hdr = gd<NSRankerNode>(e->tail).newTopRank;
+		if(tlr>hdr)
+			DDp(e)->direction = DDPath::flat;
+		else
+			DDp(e)->direction = DDPath::reversed;
+	}
+	else
+		DDp(e)->direction = DDPath::forward;
+}
+bool findEdgeSuppression(DynaDAGLayout::Edge *e,int thirrank) {
+	DDPath *path = DDp(e);
+	DynaDAGLayout::Node *t = e->tail, *h = e->head;
+	DDPath::Suppression suppression;
+	int suppressRank(-17);
+	if(gd<NodeGeom>(t).suppressed)
+		if(gd<NodeGeom>(h).suppressed)
+			suppression = DDPath::suppressed;
+		else {
+			suppression = DDPath::tailSuppressed;
+			suppressRank = path->direction==DDPath::reversed
+				? gd<NSRankerNode>(h).newBottomRank+thirrank
+				: gd<NSRankerNode>(h).newTopRank-thirrank;
+		}
+	else if(gd<NodeGeom>(h).suppressed) {
+		suppression = DDPath::headSuppressed;
+		suppressRank = path->direction==DDPath::reversed
+			? gd<NSRankerNode>(t).newTopRank-thirrank
+			: gd<NSRankerNode>(t).newBottomRank+thirrank;
+	}
+	else suppression = DDPath::unsuppressed;
+	bool ret = assign(path->suppression,suppression);
+	if(path->suppression==DDPath::headSuppressed || path->suppression==DDPath::tailSuppressed)
+		ret |= assign(path->suppressRank,suppressRank);
+	return ret;
+}
 void Config::makeRankList(DDChangeQueue &changeQ) {
 	Ranks::IndexV &newRanks = ranking.newRanks;
 	// the ranks consist of tops and bottoms of nodes, 
-	// and Ys where phantom nodes for 
+	// and Ys where phantom nodes for stubs,
 	// fanning order and parallel/2-cycle edges go
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
 			newRanks.push_back(gd<NSRankerNode>(*ni).newTopRank);
 			newRanks.push_back(gd<NSRankerNode>(*ni).newBottomRank);
 		}
+	// really a bunch of mini-engines should be running here modifying a ranks list
+	// and doing other stuff (suppression doesn't belong in makeRankList!!!)
+	int thirrank = Ranks::Xlator::HeightToDRank(whole,gd<GraphGeom>(whole).separation.y/3.);
+	for(DynaDAGLayout::graphedge_iter ei = whole->edges().begin(); ei!=whole->edges().end(); ++ei) {
+		dynaDAG->OpenModelEdge(0,0,*ei);
+		DDPath *path = DDp(*ei);
+		findEdgeDirection(*ei);
+		if(findEdgeSuppression(*ei,thirrank)) {
+			path->unclippedPath.Clear();
+			ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
+		}
+		if(path->suppression==DDPath::tailSuppressed || path->suppression==DDPath::headSuppressed)
+			newRanks.push_back(path->suppressRank);
+	}
 	sort(newRanks.begin(),newRanks.end());
 	Ranks::IndexV::iterator uniquend = unique(newRanks.begin(),newRanks.end());
 	newRanks.resize(uniquend-newRanks.begin());
@@ -194,7 +250,6 @@ void Config::autoRouteEdge(DDPath *path) {
 		buildChain(path,t,h,&xgen,0,path->layoutE);
 	}
 }
-// warning: overindulgent use of member pointers & references ahead...
 void Config::adjustChain(DDChain *chain, bool tail,Ranks::index dest,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve) {
 	DDModel::Node *endpoint,*v;
 	if(tail) {
@@ -258,22 +313,6 @@ void Config::adjustChain(DDChain *chain, bool tail,Ranks::index dest,DynaDAGLayo
 	if(!beginEdge)
 		beginEdge = endEdge;
 }
-void findEdgeDirection(DynaDAGLayout::Edge *e) {
-	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
-		hdr = gd<NSRankerNode>(e->head).newTopRank;
-	if(tlr==hdr)
-		DDp(e)->direction = DDPath::flat;
-	else if(tlr>hdr) {
-		tlr = gd<NSRankerNode>(e->head).newBottomRank;
-		hdr = gd<NSRankerNode>(e->tail).newTopRank;
-		if(tlr>hdr)
-			DDp(e)->direction = DDPath::flat;
-		else
-			DDp(e)->direction = DDPath::reversed;
-	}
-	else
-		DDp(e)->direction = DDPath::forward;
-}
 void Config::rerouteChain(DDChain *chain,int tailRank,int headRank,XGenerator *xgen) {
 	int r = tailRank;
 	for(DDPath::node_iter ni = chain->nBegin(); ni!=chain->nEnd(); ++ni, r = ranking.Down(r)) {
@@ -335,7 +374,6 @@ void unbindEndpoints(DynaDAGLayout::Edge *ve) {
 */
 void Config::insertEdge(DynaDAGLayout::Edge *ve) {
 	DDPath *path = dynaDAG->OpenModelEdge(0,0,ve).first;
-	findEdgeDirection(ve);
 	if(ve->head==ve->tail || gd<NSRankerEdge>(ve).secondOfTwo)
 		dynaDAG->CloseChain(path,false); // do not model self-edges
 	else if(userDefinedMove(ve))
@@ -486,7 +524,6 @@ void Config::moveOldEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { 
 			DynaDAGLayout::Edge *ve = whole->find(*ei);
-			findEdgeDirection(ve);
 			if((*ei)->head==(*ei)->tail)
 				; // ignore self-edges
 			else if(gd<NSRankerEdge>(*ei).secondOfTwo)

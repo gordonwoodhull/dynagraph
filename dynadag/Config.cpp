@@ -28,8 +28,30 @@ Region &getRegion(DDModel::Node *n) {
 	DynaDAGLayout::Node *vn = gd<DDNode>(n).multi->layoutN;
 	return gd<NodeGeom>(vn).region;
 }
+bool Config::IsSuppressed(DDModel::Node *n) {
+	if(gd<DDNode>(n).amNodePart())
+		return gd<NodeGeom>(gd<DDNode>(n).multi->layoutN).suppressed;
+	else {
+		DDPath *path = gd<DDEdge>(*n->outs().begin()).path;
+		switch(path->suppression) {
+		case DDPath::suppressed:
+			return true;
+		case DDPath::tailSuppressed:
+		case DDPath::headSuppressed:
+			return gd<DDNode>(n).rank!=path->suppressRank // the suppressRank is itself never suppressed!
+				&& path->suppression==DDPath::headSuppressed
+					^ path->direction==DDPath::reversed
+					^ gd<DDNode>(n).rank<path->suppressRank;
+		default:
+			return false;
+		}
+	}
+}
+bool Config::IsSuppressed(DDModel::Edge *e) {
+	return IsSuppressed(e->tail) || IsSuppressed(e->head);
+}
 double Config::LeftExtent(DDModel::Node *n) {
-	if(!n)
+	if(!n || IsSuppressed(n))
 		return 0.0;
 	if(gd<DDNode>(n).amEdgePart())
 		return gd<GraphGeom>(whole).separation.x/2.0;
@@ -38,7 +60,7 @@ double Config::LeftExtent(DDModel::Node *n) {
 	return EPSILON;
 }
 double Config::RightExtent(DDModel::Node *n) {
-	if(!n)
+	if(!n || IsSuppressed(n))
 		return 0.0;
 	if(gd<DDNode>(n).amEdgePart())
 		return gd<GraphGeom>(whole).separation.x/2.0;
@@ -51,7 +73,7 @@ double Config::RightExtent(DDModel::Node *n) {
 	return max(r,EPSILON);
 }
 double Config::TopExtent(DDModel::Node *n) {
-	if(!n)
+	if(!n || IsSuppressed(n))
 		return 0.0;
 	if(gd<DDNode>(n).amEdgePart())
 		return EPSILON;
@@ -60,7 +82,7 @@ double Config::TopExtent(DDModel::Node *n) {
 	return EPSILON;
 }
 double Config::BottomExtent(DDModel::Node *n) {
-	if(!n)
+	if(!n || IsSuppressed(n))
 		return 0.0;
 	if(gd<DDNode>(n).amEdgePart())
 		return EPSILON;
@@ -69,20 +91,20 @@ double Config::BottomExtent(DDModel::Node *n) {
 	return EPSILON;
 }
 double Config::LeftSep(DDModel::Node *n) {
-	if(!n)
+	if(!n || IsSuppressed(n))
 		return .0;
 	return gd<GraphGeom>(whole).separation.x/2.0;
 }
 double Config::RightSep(DDModel::Node *n) {
-	if(!n)
+	if(!n || IsSuppressed(n))
 		return .0;
 	return gd<GraphGeom>(whole).separation.x/2.0;
 }
 double Config::UVSep(DDModel::Node *left,DDModel::Node *right) {
 	double lext = RightExtent(left),
 		lsep = RightSep(left),
-		rext = LeftExtent(right),
-		rsep = LeftSep(right);
+		rsep = LeftSep(right),
+		rext = LeftExtent(right);
 	return lext + lsep + rsep + rext;
 }
 double Config::CoordBetween(DDModel::Node *L, DDModel::Node *R) {

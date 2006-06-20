@@ -55,6 +55,8 @@ struct Config {
 	void Update(DDChangeQueue &changeQ);
 	void SetYs();
 	// services
+	bool IsSuppressed(DDModel::Node *n);
+	bool IsSuppressed(DDModel::Edge *e);
 	double LeftExtent(DDModel::Node *n);
 	double RightExtent(DDModel::Node *n);
 	double TopExtent(DDModel::Node *n);
