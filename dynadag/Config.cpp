@@ -137,7 +137,7 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	DDModel::Node *right = rank->order.size()?rank->order.back():0;
 	double x = right?gd<DDNode>(right).cur.x + UVSep(right,n):0.0;
-	assert(!right||x>gd<DDNode>(right).cur.x);
+	assert(!right||x>=gd<DDNode>(right).cur.x);
 	rank->order.push_back(n);
 	DDNode &ddn = gd<DDNode>(n);
 	ddn.rank = r;
