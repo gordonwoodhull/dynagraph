@@ -47,7 +47,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
             value = ai->second;
 		if(name=="resolution") {
 			if(value.empty())
-                value = useDotDefaults?"1,5":"0.1,0.1";
+                value = useDotDefaults?"1,1":"0.1,0.1";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).resolution;
 
@@ -57,6 +57,10 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
                 value = useDotDefaults?"24,24":"0.5,0.5";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).separation;
+		}
+		else if(name=="edgeseparation") {
+			istringstream s(value);
+			s >> gd<GraphGeom>(l).edgeSeparation;
 		}
 		else if(name=="defaultsize") {
 			if(value.empty())

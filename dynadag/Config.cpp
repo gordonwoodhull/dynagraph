@@ -54,7 +54,7 @@ double Config::LeftExtent(DDModel::Node *n) {
 	if(!n || IsSuppressed(n))
 		return 0.0;
 	if(gd<DDNode>(n).amEdgePart())
-		return gd<GraphGeom>(whole).separation.x/2.0;
+		return 0.;
 	if(getRegion(n).boundary.valid)
 		return -getRegion(n).boundary.l;
 	return EPSILON;
@@ -63,7 +63,7 @@ double Config::RightExtent(DDModel::Node *n) {
 	if(!n || IsSuppressed(n))
 		return 0.0;
 	if(gd<DDNode>(n).amEdgePart())
-		return gd<GraphGeom>(whole).separation.x/2.0;
+		return 0.;
 	double r = 0.0;
 	if(getRegion(n).boundary.valid)
 		r = getRegion(n).boundary.r;
@@ -93,12 +93,20 @@ double Config::BottomExtent(DDModel::Node *n) {
 double Config::LeftSep(DDModel::Node *n) {
 	if(!n || IsSuppressed(n))
 		return .0;
-	return gd<GraphGeom>(whole).separation.x/2.0;
+	if(gd<DDNode>(n).amEdgePart())
+		return gd<GraphGeom>(whole).edgeSeparation>=0.
+			? gd<GraphGeom>(whole).edgeSeparation
+			: gd<GraphGeom>(whole).separation.x/4.0;
+	else return gd<GraphGeom>(whole).separation.x/2.0;
 }
 double Config::RightSep(DDModel::Node *n) {
 	if(!n || IsSuppressed(n))
 		return .0;
-	return gd<GraphGeom>(whole).separation.x/2.0;
+	if(gd<DDNode>(n).amEdgePart())
+		return gd<GraphGeom>(whole).edgeSeparation>=0.
+			? gd<GraphGeom>(whole).edgeSeparation
+			: gd<GraphGeom>(whole).separation.x/4.0;
+	else return gd<GraphGeom>(whole).separation.x/2.0;
 }
 double Config::UVSep(DDModel::Node *left,DDModel::Node *right) {
 	double lext = RightExtent(left),
@@ -148,12 +156,6 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 	ddn.cur.y = rank->yBase; // estimate
 	model.dirty().insert(n);
 }
-#ifdef X_STRICTLY_INCREASING
-// allow nodes of multinode to co-locate temporarily
-inline bool sameNode(DDModel::Node *n1,DDModel::Node *n2) {
-	return gd<DDNode>(n1).amNodePart() && gd<DDNode>(n1).multi==gd<DDNode>(n2).multi;
-}
-#endif
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	assert(o<=rank->order.size() && o>=0);

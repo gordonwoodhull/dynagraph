@@ -45,6 +45,7 @@ bool g_useDotDefaults;
 char *g_outdot=0;
 int g_count=1;
 StrAttrs g_defaultGraphAttrs;
+bool g_xeptOut=false;
 
 struct CouldntOpen {};
 
@@ -258,7 +259,6 @@ int main(int argc, char *args[]) {
 	enableReport(r_error,stderr);
 	enableReport(r_cmdline,stdout);
 	loops.sep = ',';
-	bool xeptOut = false;
 	char *dotfile = 0;
 	FILE *outfile[10];
 	timer.Start();
@@ -351,7 +351,7 @@ int main(int argc, char *args[]) {
 			}
 			break;
 		case 'x':
-			xeptOut = true;
+			g_xeptOut = true;
 			break;
 		case 'h':
 		case '?':
@@ -404,15 +404,15 @@ int main(int argc, char *args[]) {
 			break; // end of stream
 		}
 		catch(DGException2 dgx) {
-			fprintf(stdout,"message \"%s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
-			if(xeptOut)
+			fprintf(stdout,"message \"(exception) %s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
+			if(g_xeptOut)
 				throw;
 			if(dgx.fatal)
 				break;
 		}
 		catch(DGException dgx) {
-			fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype.c_str());
-			if(xeptOut)
+			fprintf(stdout,"message \"(exception) %s\"\n",dgx.exceptype.c_str());
+			if(g_xeptOut)
 				throw;
 			if(dgx.fatal)
 				break;

@@ -107,10 +107,11 @@ struct GraphGeom {
 		resolution, // smallest units in each dimension (e.g. 1,1 for integer)
 		separation, // DynaDAG: x: space between nodes and edges; y: multiplier for edge minLength
 		defaultSize; // node size to use if neither width nor height specified
+	double edgeSeparation;
 	float ticks; // time limit, in seconds, 0 - no limit (NYI)
 	bool reportIntermediate; // report intermediate (crude) layouts
 	GraphGeom() : splineLevel(DG_SPLINELEVEL_SPLINE),labelGap(0,0),resolution(0.1,0.1),
-		separation(0.5,0.5),defaultSize(1.5,1),ticks(0),reportIntermediate(false) {}
+		separation(0.5,0.5),defaultSize(1.5,1),edgeSeparation(-1.),ticks(0),reportIntermediate(false) {}
 };
 struct StaticLabel {
 	Rect bounds;

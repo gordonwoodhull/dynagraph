@@ -20,6 +20,8 @@
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 
+extern bool g_xeptOut;
+
 namespace Dynagraph {
 
 template<typename Graph>
@@ -27,16 +29,38 @@ struct DynagraphThread {
 	ChangingGraph<Graph> &world_;
 	ChangeProcessor<Graph> *engine_;
 	boost::thread *thread_;
+	//DGException2 xep_;
+	//bool xepted_;
 
 	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine) :
-	  world_(world),engine_(engine) {
+	  world_(world),engine_(engine) /*,xep_("","",false),xepted_(false)*/ {
 		thread_ = new boost::thread(boost::bind(&DynagraphThread::go,this));
 	}
 	~DynagraphThread() {
 		delete thread_;
 	}
 	void go() {
-		engine_->Process();
+		try {
+			engine_->Process();
+		}
+		catch(DGException2 dgx) {
+			fprintf(stdout,"message \"(exception) %s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
+			if(g_xeptOut)
+				throw;
+			if(dgx.fatal)
+				exit(23);
+		}
+		catch(DGException dgx) {
+			fprintf(stdout,"message \"(exception) %s\"\n",dgx.exceptype.c_str());
+			if(g_xeptOut)
+				throw;
+			if(dgx.fatal)
+				exit(23);
+		}
+		catch(...) {
+			fprintf(stdout,"message \"(exception) unknown exception\"");
+			exit(23);
+		}
 	}
 	void interrupt() {
 		assert(boost::thread()!=*thread_);

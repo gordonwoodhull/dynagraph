@@ -72,12 +72,11 @@ void Config::checkX() {
 	for(Ranks::iterator ri = ranking.begin(); ri!=ranking.end(); ++ri) {
 		Rank *r = *ri;
 		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
-			if(ni!=r->order.begin())
-#ifdef X_STRICTLY_INCREASING
-				assert(gd<DDNode>(*ni).cur.x>gd<DDNode>(*(ni-1)).cur.x);
-#else
-				assert(gd<DDNode>(*ni).cur.x>=gd<DDNode>(*(ni-1)).cur.x);
-#endif
+			if(ni!=r->order.begin()) {
+				double cx = gd<DDNode>(*ni).cur.x,
+					px = gd<DDNode>(*(ni-1)).cur.x;
+				assert(cx>=px);
+			}
 	}
 }
 void XSolver::checkLRConstraints() {

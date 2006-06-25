@@ -226,13 +226,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		else { // normal edge
 			assert(path->first); // no flat or self edges!
 			RouteBounds rb(config,gd<GraphGeom>(e->g).bounds);
-			//if(!config.IsSuppressed(tl))
+			if(!config.IsSuppressed(tl))
 				for(DDMultiNode::edge_iter ei0 = gd<DDNode>(tl).multi->eBegin(); ei0!=gd<DDNode>(tl).multi->eEnd(); ++ei0)
 					rb.path(*ei0);
 			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
-				//if(!config.IsSuppressed(*ei))
+				if(!config.IsSuppressed(*ei))
 					rb.path(*ei);
-			//if(!config.IsSuppressed(hd))
+			if(!config.IsSuppressed(hd))
 				for(DDMultiNode::edge_iter ei2 = gd<DDNode>(hd).multi->eBegin(); ei2!=gd<DDNode>(hd).multi->eEnd(); ++ei2)
 					rb.path(*ei2);
 			rb.poly(region);
