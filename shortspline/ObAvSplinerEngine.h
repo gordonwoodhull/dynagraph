@@ -67,7 +67,7 @@ struct ObAvSplinerEngine : LinkedChangeProcessor<Layout> {
 				hg.pos,eg.headClipped?&hg.region:0);
 			ModifyEdge(Q,e,DG_UPD_MOVE);
 		}
-		NextProcess();
+		this->NextProcess();
 	}
 
 };

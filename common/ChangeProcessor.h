@@ -88,7 +88,7 @@ struct UpdateCurrentProcessor : LinkedChangeProcessor<Graph> {
 		: LinkedChangeProcessor<Graph>(world) {}
 	void Process() {
 		this->world_->Q_.UpdateCurrent();
-		NextProcess();
+		this->NextProcess();
 	}
 };
 

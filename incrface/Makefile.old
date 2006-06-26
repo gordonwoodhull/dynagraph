@@ -16,7 +16,7 @@ HFILES = \
 	DinoMachine.h           DinoMachineTranslator.h DinoPatternLook.h       DinoSearchLook.h \
 	IncrLangEvents.h        IncrStrGraphHandler.h   IncrViewWatcher.h \
 	LabelToNameTranslator.h MatchNames.h \
-	createStrWorldAndHandler.h \
+	createStringHandlers.h \
 	incrcmds.h              incrgram.h		incrout.h               incrparse.h \
 	incrxep.h		two_way_map.h \
 	../common/*.h		../fdp/*.h		../dynadag/*.h 		../voronoi/*.h \

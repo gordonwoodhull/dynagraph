@@ -47,15 +47,16 @@ inline bool assign(T &a,const T &b) {
 // than things based on abort()
 // assert compiles out in release builds, whereas check doesn't
 struct Assertion : DGException {
-	char *file;
+	const char *expr,*file;
 	int line;
-	Assertion(char *file,int line) : DGException("assertion failure",true),file(file),line(line) {}
+	Assertion(const char *expr,const char *file,int line) 
+		: DGException("assertion failure",true),expr(expr),file(file),line(line) {}
 };
 #undef assert
 #undef check
 #ifndef NDEBUG
-inline void assert(bool val) { if(!(val)) throw Assertion(__FILE__,__LINE__); }
-inline void check(bool val) { if(!(val)) throw Assertion(__FILE__,__LINE__); }
+#define assert(expr) do { if(!(expr)) throw Assertion(#expr,__FILE__,__LINE__); } while(0)
+#define check(expr) do { if(!(expr)) throw Assertion(#expr,__FILE__,__LINE__); } while(0)
 #else
 #define assert(X)
 #define check(X) (X)

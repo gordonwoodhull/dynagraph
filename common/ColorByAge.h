@@ -51,7 +51,7 @@ void ColorByAge<Layout>::Process() {
         rotateColor(colors,*ni);
     for(typename Layout::graphedge_iter ei = this->world_->current_.edges().begin(); ei!=this->world_->current_.edges().end(); ++ei)
         rotateColor(colors,*ei);
-	NextProcess();
+	this->NextProcess();
 }
 
 } // namespace Dynagraph

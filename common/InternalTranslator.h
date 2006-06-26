@@ -40,7 +40,7 @@ struct InternalTranslator : LinkedChangeProcessor<Graph> {
 			actions_.DeleteNode(*ni);
 		for(typename Graph::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			actions_.DeleteEdge(*ei);
-		NextProcess();
+		this->NextProcess();
 	}
 };
 template<typename Graph,typename ChangeActions>
@@ -63,7 +63,7 @@ struct InternalTranslator2 : LinkedChangeProcessor<Graph> {
 			actions_.DeleteNode(*ni,*ni);
 		for(typename Graph::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			actions_.DeleteEdge(*ei,*ei);
-		NextProcess();
+		this->NextProcess();
 	}
 };
 

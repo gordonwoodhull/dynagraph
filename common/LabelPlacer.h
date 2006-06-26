@@ -145,7 +145,7 @@ void LabelPlacer<Layout>::Process() {
 	for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
 		if(igd<Update>(*ni).flags&(DG_UPD_MOVE|DG_UPD_LABEL|DG_UPD_REGION|DG_UPD_POLYDEF|DG_UPD_DRAWN))
 			placeLabels<Layout>(*ni);
-	NextProcess();
+	this->NextProcess();
 }
 
 } // namespace Dynagraph

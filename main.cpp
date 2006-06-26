@@ -403,6 +403,13 @@ int main(int argc, char *args[]) {
 			incr_yyparse(); 
 			break; // end of stream
 		}
+		catch(Assertion sert) {
+			fprintf(stdout,"message \"(exception) Assertion: %s; %s, %d\"\n",sert.expr,sert.file,sert.line);
+			if(g_xeptOut)
+				throw;
+			if(sert.fatal)
+				exit(23);
+		}
 		catch(DGException2 dgx) {
 			fprintf(stdout,"message \"(exception) %s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
 			if(g_xeptOut)

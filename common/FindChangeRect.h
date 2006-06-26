@@ -35,7 +35,7 @@ struct FCRBefore : LinkedChangeProcessor<Layout> {
 		ChangeQueue<Layout> &Q = this->world_->Q_;
 		data->changeN = Q.insN|Q.modN|Q.delN;
 		data->changeE = Q.insE|Q.modE|Q.delE;
-		NextProcess();
+		this->NextProcess();
 	}
 };
 template<typename Layout>
@@ -53,7 +53,7 @@ struct FCRAfter : LinkedChangeProcessor<Layout> {
 			changerect |= gd<EdgeGeom>(*ei).pos.BoundingBox();
 		if(assign(gd<GraphGeom>(this->world_->Q_.ModGraph()).changerect,changerect))
 			ModifyFlags(this->world_->Q_) |= DG_UPD_CHANGERECT;
-		NextProcess();
+		this->NextProcess();
 	}
 };
 

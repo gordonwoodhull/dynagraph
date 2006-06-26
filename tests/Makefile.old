@@ -3,7 +3,7 @@
 DYNAGRAPH=../dynagraph
 INCRS=*.incr
 
-always : 
+run: *.incr
 
 *.incr: always
 	$(DYNAGRAPH) < $@ > $*.incrout
@@ -11,8 +11,7 @@ always :
 	$(DYNAGRAPH) -a intermediate=true < $@ > $*.imed.incrout
 	$(DYNAGRAPH) -a superengines=shapegen -a intermediate=true < $@ > $*.super.imed.incrout
 
-
-run: *.incr
+always : 
 
 clean:
 	rm -f *.incrout

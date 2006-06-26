@@ -186,7 +186,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		Coord tailpt,
 			headpt;
 		if(path->suppression==DDPath::tailSuppressed) {
-			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
+			DDPath::edge_iter ei;
+			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(!config.IsSuppressed(*ei)) {
 					tailpt = gd<DDNode>((*ei)->tail).cur;
 					break;
@@ -196,7 +197,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		else
 			tailpt = (path->direction==DDPath::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
 		if(path->suppression==DDPath::headSuppressed) {
-			for(DDPath::edge_iter ei = path->eBegin(); ei!=path->eEnd(); ++ei)
+			DDPath::edge_iter ei;
+			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(config.IsSuppressed(*ei)) {
 					headpt = gd<DDNode>((*ei)->tail).cur;
 					break;

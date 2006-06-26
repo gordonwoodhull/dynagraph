@@ -28,8 +28,8 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 		// create an "Okay Engine" when we don't *really* understand changes yet
 		// in effect this assumes that what "really matters" is in the inner world
 		// which is true at the moment
-		world_->Q_.ExecuteDeletions();
-		world_->Q_.Clear();
+		this->world_->Q_.ExecuteDeletions();
+		this->world_->Q_.Clear();
 	}
 };
 
