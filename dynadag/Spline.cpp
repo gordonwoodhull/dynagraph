@@ -349,10 +349,11 @@ void Spliner::adjustPath(DDPath *path) {
 
 bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
 	assert(path->unclippedPath.Empty());
+	DynaDAGLayout::Edge *e = path->layoutE;
 
-	bool reversed = path->direction==DDPath::reversed;
+	bool reversed = gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed;
 	DDModel::Node *tl,*hd;
-	if(path->direction==DDPath::flat) {
+	if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat) {
 		tl = DDp(path->layoutE->tail)->bottom();
 		hd = DDp(path->layoutE->head)->top();
 	}
@@ -391,7 +392,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	else {
 		Line region;
 		bool adjustVNodes = false;
-		if(path->direction==DDPath::flat)
+		if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat)
 			flatEdgeRegion(tl,hd,tailpt,headpt,region);
 		else {
 			forwardEdgeRegion(tl,hd,path,tailpt,headpt,region);

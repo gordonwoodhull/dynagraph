@@ -223,7 +223,7 @@ struct EdgeGeom {
 		toTop; // default both true: measure from bottom of tail to top of head
 	bool constraint, // whether this edge affects ranking; set false by DynaDAG if last in cycle or if a node is nailed
 		manualRoute, // try to use the line specified in pos
-		backward; // draw as if points from head to tail
+		backward; // do rank constaints backward
 	EdgeGeom() : tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),tailClipped(true),
 		headClipped(true),minLength(1.0),fromBottom(true),toTop(true),constraint(true),
 		manualRoute(false),backward(false) {}

@@ -28,17 +28,17 @@ void findEdgeDirection(DynaDAGLayout::Edge *e) {
 	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
 		hdr = gd<NSRankerNode>(e->head).newTopRank;
 	if(tlr==hdr)
-		DDp(e)->direction = DDPath::flat;
+		gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
 	else if(tlr>hdr) {
 		tlr = gd<NSRankerNode>(e->head).newBottomRank;
 		hdr = gd<NSRankerNode>(e->tail).newTopRank;
 		if(tlr>hdr)
-			DDp(e)->direction = DDPath::flat;
+			gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
 		else
-			DDp(e)->direction = DDPath::reversed;
+			gd<NSRankerEdge>(e).direction = NSRankerEdge::reversed;
 	}
 	else
-		DDp(e)->direction = DDPath::forward;
+		gd<NSRankerEdge>(e).direction = NSRankerEdge::forward;
 }
 bool findEdgeSuppression(DynaDAGLayout::Edge *e,int thirrank) {
 	DDPath *path = DDp(e);
@@ -50,13 +50,13 @@ bool findEdgeSuppression(DynaDAGLayout::Edge *e,int thirrank) {
 			suppression = DDPath::suppressed;
 		else {
 			suppression = DDPath::tailSuppressed;
-			suppressRank = path->direction==DDPath::reversed
+			suppressRank = gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed
 				? gd<NSRankerNode>(h).newBottomRank+thirrank
 				: gd<NSRankerNode>(h).newTopRank-thirrank;
 		}
 	else if(gd<NodeGeom>(h).suppressed) {
 		suppression = DDPath::headSuppressed;
-		suppressRank = path->direction==DDPath::reversed
+		suppressRank = gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed
 			? gd<NSRankerNode>(t).newTopRank-thirrank
 			: gd<NSRankerNode>(t).newBottomRank+thirrank;
 	}

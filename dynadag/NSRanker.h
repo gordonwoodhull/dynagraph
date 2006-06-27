@@ -88,8 +88,15 @@ void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
 	assert(!gd<NSRankerEdge>(e).strong);
 	gd<EdgeGeom>(e).constraint = true;
 
-	DDCGraph::Node *tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC),
-		*hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	DDCGraph::Node *tvar,*hvar;
+	if(gd<EdgeGeom>(e).backward) {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->head).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->tail).topC);
+	}
+	else {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	}
 
 	DDCGraph::Edge *constr = cg_.create_edge(tvar,hvar).first;
 	gd<NSRankerEdge>(e).strong = constr;
@@ -103,8 +110,15 @@ void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
 	assert(!gd<NSRankerEdge>(e).weak);
 	gd<EdgeGeom>(e).constraint = false;
 
-	DDCGraph::Node *tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC),
-		*hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	DDCGraph::Node *tvar,*hvar;
+	if(gd<EdgeGeom>(e).backward) {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->head).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->tail).topC);
+	}
+	else {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	}
 	gd<NSRankerEdge>(e).weak = cg_.create_node();
 	gd<ConstraintType>(gd<NSRankerEdge>(e).weak).why = ConstraintType::rankWeak;
 	NSEdgePair ep(gd<NSRankerEdge>(e).weak,tvar,hvar);
@@ -189,28 +203,36 @@ void NSRanker<Layout>::stabilizePositionedNodes(ChangeQueue<Layout> &changeQ) {
 }
 /* is there a path from head(e) to tail(e)? next two fns. */
 template<typename Layout>
-int dfs(typename Layout::Node *src, typename Layout::Node *dest, std::vector<typename Layout::Node*> &hit) {
+int dfs(typename Layout::Node *src, typename Layout::Node *dest) {
     if(src == dest) {
 		return true;
 	}
     if(gd<NSRankerNode>(src).hit)
 		return false;
 	gd<NSRankerNode>(src).hit = true;
-	hit.push_back(src);
     for(typename Layout::outedge_iter ei = src->outs().begin(); ei!=src->outs().end(); ++ei) {
+		if(gd<EdgeGeom>(*ei).backward)
+			continue;
 		if(!gd<NSRankerEdge>(*ei).strong)
 			continue;
-        if(dfs<Layout>((*ei)->head,dest,hit))
+        if(dfs<Layout>((*ei)->head,dest))
+			return true;
+    }
+    for(typename Layout::inedge_iter ei = src->ins().begin(); ei!=src->ins().end(); ++ei) {
+		if(!gd<EdgeGeom>(*ei).backward)
+			continue;
+		if(!gd<NSRankerEdge>(*ei).strong)
+			continue;
+        if(dfs<Layout>((*ei)->tail,dest))
 			return true;
     }
     return false;
 }
 template<typename Layout>
 int pathExists(typename Layout::Node *src, typename Layout::Node *dest) {
-    std::vector<typename Layout::Node*> hit;
-    bool result = dfs<Layout>(src,dest,hit);
-	for(typename std::vector<typename Layout::Node*>::iterator i=hit.begin(); i!=hit.end(); ++i)
-		gd<NSRankerNode>(*i).hit = false;
+	for(typename Layout::node_iter ni = src->g->nodes().begin(); ni!=src->g->nodes().end(); ++ni)
+		gd<NSRankerNode>(*ni).hit = false;
+    bool result = dfs<Layout>(src,dest);
 	return result;
 }
 template<typename Layout>

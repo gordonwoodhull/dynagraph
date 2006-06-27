@@ -53,8 +53,9 @@ struct NSRankerEdge {
 	DDCGraph::Edge *strong;
 	// the second edge of 2-cycle should be ignored, mostly
 	bool secondOfTwo;
+	enum Direction {forward,flat,reversed} direction;
 	
-	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false) {}
+	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false),direction(forward) {}
 	// do not copy constraints
 	NSRankerEdge(const NSRankerEdge &other) : weak(0),strong(0),
 		secondOfTwo(other.secondOfTwo) {}

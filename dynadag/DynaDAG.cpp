@@ -217,24 +217,24 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 	int nIns=0,nOuts=0;
 	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
 		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).backward)
+		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
 			++nIns, avgIn += vec;
 		else
 			++nOuts, avgOut -= vec;
 	}
 	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
 		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if((gd<DDEdge>(*ei).path->direction==DDPath::forward) ^ gd<EdgeGeom>(gd<DDEdge>(*ei).path->layoutE).backward)
+		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
 			++nOuts, avgOut += vec;
 		else
 			++nIns, avgIn -= vec;
 	}
 	// special case flat edges (they don't have model edges)
 	for(DynaDAGLayout::inedge_iter ei = mn->layoutN->ins().begin(); ei!=mn->layoutN->ins().end(); ++ei)
-		if(DDp(*ei)->direction==DDPath::flat)
+		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
 			++nIns, avgIn += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
 	for(DynaDAGLayout::outedge_iter ei = mn->layoutN->outs().begin(); ei!=mn->layoutN->outs().end(); ++ei)
-		if(DDp(*ei)->direction==DDPath::flat)
+		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
 			++nOuts, avgOut += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
 	if(nIns)
 		avgIn /= nIns;
@@ -291,7 +291,7 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 	assert(head!=tail); // self-edges handled in redrawEdges
 	// if a backedge (head is lower rank than tail), path->first->tail is head
 	// so we have to clip accordingly and then reverse the result (for arrowheads etc.)
-	bool reversed = path->direction==DDPath::reversed; //gd<DDNode>(DDp(head)->top()).rank<gd<DDNode>(DDp(tail)->bottom()).rank;
+	bool reversed = gd<NSRankerEdge>(path->layoutE).direction==NSRankerEdge::reversed; //gd<DDNode>(DDp(head)->top()).rank<gd<DDNode>(DDp(tail)->bottom()).rank;
 	if(reversed)
 		swap(head,tail);
 	if(!path->first) {
