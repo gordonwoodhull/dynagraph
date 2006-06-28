@@ -34,13 +34,18 @@ struct EdgeTyping {
 		return layout->fetch_edge(name);
 	}
 };
+inline Name partName(Name base,char prefix,int i) {
+	char partname[40];
+	sprintf(partname,"%s_%cpart%d",base.c_str(),prefix,i);
+	return partname;
+}
 template<typename Layout,typename Typing>
 struct SplicePartsIterator {
 	Layout *layout_;
 	Name base_;
 	char prefix_;
 	int i_;
-	SplicePartsIterator(Layout *layout,Name base,char prefix) : layout_(layout),base_(base),prefix_(prefix),i_(1) {}
+	SplicePartsIterator(Layout *layout,Name base,char prefix,int i=1) : layout_(layout),base_(base),prefix_(prefix),i_(i) {}
 	SplicePartsIterator(SplicePartsIterator &it) : layout_(it.layout_),base_(it.base_),prefix_(it.prefix_),i_(it.i_) {}
 	SplicePartsIterator &operator =(SplicePartsIterator &it) {
 		layout_ = it.layout_;
@@ -52,9 +57,8 @@ struct SplicePartsIterator {
 	typename Typing::ElemType operator *() const {
 		if(!layout_)
 			return 0;
-		char partname[40];
-		sprintf(partname,"%s_%cpart%d",base_.c_str(),prefix_,i_);
-		return Typing::Get(layout_,partname);
+		return Typing::Get(layout_,partName(base_,prefix_,i_));
+);
 	}
 	SplicePartsIterator &operator ++() {
 		++i_;
@@ -68,12 +72,12 @@ struct SplicePartsIterator {
 };
 template<typename Layout>
 struct SpliceNodePartsIterator : SplicePartsIterator<Layout,NodeTyping<Layout> > {
-	SpliceNodePartsIterator(Layout *layout,Name base,char prefix) : SplicePartsIterator<Layout,NodeTyping<Layout> >(layout,base,prefix) {}
+	SpliceNodePartsIterator(Layout *layout,Name base,char prefix,int i=1) : SplicePartsIterator<Layout,NodeTyping<Layout> >(layout,base,prefix,i) {}
 	SpliceNodePartsIterator(SpliceNodePartsIterator &it) : SplicePartsIterator(it) {}
 };
 template<typename Layout>
 struct SpliceEdgePartsIterator : SplicePartsIterator<Layout,EdgeTyping<Layout> > {
-	SpliceEdgePartsIterator(Layout *layout,Name base,char prefix) : SplicePartsIterator<Layout,EdgeTyping<Layout> >(layout,base,prefix) {}
+	SpliceEdgePartsIterator(Layout *layout,Name base,char prefix,int i=1) : SplicePartsIterator<Layout,EdgeTyping<Layout> >(layout,base,prefix,i) {}
 	SpliceEdgePartsIterator(SpliceEdgePartsIterator &it) : SplicePartsIterator(it) {}
 };
 

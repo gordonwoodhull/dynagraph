@@ -157,7 +157,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 			ng.flow = atof(ai->second.c_str());
 		else if(ai->first=="suppressed") {
 			if(assign(ng.suppressed,ai->second=="true"))
-				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE;
+				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE|DG_UPD_SUPPRESSION;
 		}
 		else if(ai->first.compare(0,9,"labelsize")==0) {
 			int i=ds2int(ai->first.substr(9));
