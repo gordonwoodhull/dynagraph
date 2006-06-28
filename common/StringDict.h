@@ -22,6 +22,11 @@
 #include <algorithm>
 #include <iostream>
 
+#ifndef DYNAGRAPH_NO_THREADS
+#define STRINGDICT_USE_MUTEX
+#include <boost/thread/mutex.hpp>
+#endif
+
 // adaptation of agraph's refstr
 
 // I'm sure there's a more modern way to do this....
@@ -41,6 +46,7 @@ struct StringDict {
 	const char *enter(const char *val);
 	void release(const char *val);
 	void ref(const char *val); // MUST have come from here!
+	static StringDict &GlobalStringDict();
 private:
 #ifndef STRINGDICT_USE_STL
 	Dict_t *dict;
@@ -48,10 +54,10 @@ private:
 	typedef std::map<std::string,int> mapstrs;
 	mapstrs *strs;
 #endif // STRINGDICT_USE_STL
+#ifdef STRINGDICT_USE_MUTEX
+	boost::mutex mutex_;
+#endif
 };
-
-// in StringDict.cpp, or define your own if DSTRING_USE_STL
-extern StringDict g_stringDict;
 
 struct DString { // imitation of std::string
 private:
@@ -64,18 +70,18 @@ public:
 	static const size_type npos;
 
 	DString() : val(0) {}
-	DString(const char *v) : val(g_stringDict.enter(v)) {}
+	DString(const char *v) : val(StringDict::GlobalStringDict().enter(v)) {}
 	DString(const DString &ds) : val(ds.val) {
-		g_stringDict.ref(val);
+		StringDict::GlobalStringDict().ref(val);
 	}
-	DString(const std::string &s) : val(g_stringDict.enter(s.c_str())) {}
+	DString(const std::string &s) : val(StringDict::GlobalStringDict().enter(s.c_str())) {}
 	~DString() {
-		g_stringDict.release(val);
+		StringDict::GlobalStringDict().release(val);
 	}
 	DString &operator =(const DString &ds) {
 		const char *old = val; // do ref first for unlikely s = s
-		g_stringDict.ref(val = ds.val);
-		g_stringDict.release(old);
+		StringDict::GlobalStringDict().ref(val = ds.val);
+		StringDict::GlobalStringDict().release(old);
 		return *this;
 	}
     operator std::string() const {
@@ -154,20 +160,12 @@ public:
 		ret.assign(begin()+pos,len);
 		return ret;
 	}
-	DString &assign(const char *v,size_type len) {
+	DString &assign(const char *v,size_type len=npos) {
 	  if(!v) {
 	    return *this = 0;
 	  }
 		if(len>=strlen(v))
 			return *this = v;
-		// this does not work because if v is a DString, this changes the dictionary entry itself.
-		/*
-		char *sneaky = const_cast<char*>(v),
-			c = sneaky[len];
-		sneaky[len] = 0;
-		*this = sneaky;
-		sneaky[len] = c;
-		*/
 		char *copy = new char[len+1];
 		strncpy(copy,v,len);
 		copy[len] = 0;

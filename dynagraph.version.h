@@ -1,7 +1,7 @@
 #define Dg_MAJOR 1
 #define Dg_MINOR 1
-#define Dg_MINIC 0
-#define Dg_MNEST 6
+#define Dg_MINIC 2
+#define Dg_MNEST 2
 
 #define Dg_STRINGIZE0(x) #x
 #define Dg_STRINGIZE(x) Dg_STRINGIZE0(x)

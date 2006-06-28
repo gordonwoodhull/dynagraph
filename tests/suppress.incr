@@ -1,0 +1,17 @@
+open graph V []
+insert node V a
+insert node V b
+insert node V c
+insert node V d
+insert node V e
+insert node V f
+insert node V g
+insert edge V z a b
+insert edge V y a c
+insert edge V x a d
+insert edge V w e a
+insert edge V v f a
+insert edge V u g a
+
+modify node V a [suppressed=true]
+modify node V a [suppressed=false]

@@ -1,33 +1,35 @@
 #ifndef WorldInABox_h
 #define WorldInABox_h
 
-#include "common/NamedToNamedChangeTranslator.h"
-
 namespace Dynagraph {
 
-template<typename Layout1,typename Layout2,typename InTranslator,typename OutTranslator>
-struct WorldInABox : LinkedChangeProcessor<Layout1> {
-	typedef NamedToNamedChangeTranslator<Layout1,Layout2,GoingNamedTransition<Layout1,Layout2>,InTranslator> XlateIn;
-	typedef NamedToNamedChangeTranslator<Layout2,Layout1,ReturningNamedTransition<Layout2,Layout1>,OutTranslator> XlateOut;
-	IncrWorld<Layout2> world_;
-	EnginePair<Layout2> innerEngines_;
-	ChangeProcessor<Layout1> *topEngine_;
-	XlateOut *xlateOut_;
-	WorldInABox() : topEngine_(0),xlateOut_(0) {}
-	void assignEngine(DString engines,IncrWorld<Layout1> &topWorld) {
-		if(innerEngines_.second)
-			innerEngines_.second->next_ = 0;
-		XlateIn *xlateIn = new XlateIn(GoingNamedTransition<Layout1,Layout2>(&world_.whole_,&world_.current_));
-		xlateOut_ = new XlateOut;
-		innerEngines_ = createEngine(engines,&world_.whole_,&world_.current_);
-		xlateIn->next_ = innerEngines_.first;
-		innerEngines_.second->next_ = xlateOut_;
-		topEngine_ = xlateIn;
+template<typename OuterLayout,typename InnerLayout,typename InTranslator,typename OutTranslator>
+struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
+	ChangingGraph<InnerLayout> inWorld_;
+	LinkedChangeProcessor<OuterLayout> *inXlator_,*outXlator_;
+	WorldInABox(ChangingGraph<OuterLayout> *world) 
+		: LinkedChangeProcessor<OuterLayout>(world),inXlator_(0),outXlator_(0) {}
+	void assignEngine(DString engines) {
+		InTranslator *inTranslator = new InTranslator(this->world_,&inWorld_);
+		OutTranslator *outTranslator = new OutTranslator(&inWorld_,this->world_);
+		EnginePair<InnerLayout> innerEngines = createEngine(engines,&inWorld_);
+		static_cast<LinkedChangeProcessor<InnerLayout>*>(inTranslator)->next_ = innerEngines.first;
+		innerEngines.second->next_ = outTranslator;
+		inXlator_ = inTranslator;
+		outXlator_ = outTranslator;
 	}
-	void Process(ChangeQueue<Layout1> &Q) {
-		xlateOut_->transition_.nextQ_ = &Q;
-		topEngine_->Process(Q);
-		NextProcess(Q);
+	EnginePair<OuterLayout> engines() {
+		return EnginePair<OuterLayout>(this,outXlator_);
+	}
+	void Process() {
+		inXlator_->Process();
+		// there is no particular reason WiaB should be responsible for
+		// clearing the queue but neither does it make sense to 
+		// create an "Okay Engine" when we don't *really* understand changes yet
+		// in effect this assumes that what "really matters" is in the inner world
+		// which is true at the moment
+		this->world_->Q_.ExecuteDeletions();
+		this->world_->Q_.Clear();
 	}
 };
 

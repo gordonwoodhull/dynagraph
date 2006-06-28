@@ -23,6 +23,10 @@
 #include "traversal.h"
 #include "Geometry.h"
 #include "genpoly.h"
+#include "Interruptable.h"
+
+// wrong
+#include "dynadag/NSRankerAttrs.h"
 
 namespace Dynagraph {
 
@@ -103,9 +107,11 @@ struct GraphGeom {
 		resolution, // smallest units in each dimension (e.g. 1,1 for integer)
 		separation, // DynaDAG: x: space between nodes and edges; y: multiplier for edge minLength
 		defaultSize; // node size to use if neither width nor height specified
+	double edgeSeparation;
 	float ticks; // time limit, in seconds, 0 - no limit (NYI)
+	bool reportIntermediate; // report intermediate (crude) layouts
 	GraphGeom() : splineLevel(DG_SPLINELEVEL_SPLINE),labelGap(0,0),resolution(0.1,0.1),
-		separation(0.5,0.5),defaultSize(1.5,1),ticks(0) {}
+		separation(0.5,0.5),defaultSize(1.5,1),edgeSeparation(-1.),ticks(0),reportIntermediate(false) {}
 };
 struct StaticLabel {
 	Rect bounds;
@@ -148,7 +154,8 @@ struct NodeGeom {
 	Region region;
 	NailType nail;
 	double flow;
-	NodeGeom() : nail(DG_NONAIL),flow(0.0) {}
+	bool suppressed;
+	NodeGeom() : nail(DG_NONAIL),flow(0.0),suppressed(false) {}
 	Bounds BoundingBox() {
 		if(!pos.valid)
 			return Bounds();
@@ -215,10 +222,11 @@ struct EdgeGeom {
 	bool fromBottom, // how to measure length
 		toTop; // default both true: measure from bottom of tail to top of head
 	bool constraint, // whether this edge affects ranking; set false by DynaDAG if last in cycle or if a node is nailed
-		manualRoute; // try to use the line specified in pos
+		manualRoute, // try to use the line specified in pos
+		backward; // draw as if points from head to tail
 	EdgeGeom() : tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),tailClipped(true),
 		headClipped(true),minLength(1.0),fromBottom(true),toTop(true),constraint(true),
-		manualRoute(false) {}
+		manualRoute(false),backward(false) {}
 };
 struct EdgeLabel {
 	// input
@@ -232,13 +240,13 @@ struct EdgeLabel {
 typedef std::vector<EdgeLabel> EdgeLabels;
 
 // These are the basic layout description attributes
-struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels {
+struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptable {
 	GraphAttrs(Name name) : Name(name) {}
 };
-struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef {
+struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef, DynaDAG::NSRankerNode {
 	NodeAttrs(Name name) : Name(name) {}
 };
-struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels {
+struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels, DynaDAG::NSRankerEdge {
 	EdgeAttrs(Name name) : Name(name) {}
 };
 

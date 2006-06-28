@@ -52,12 +52,12 @@ void VoronoiServer::chkBoundBox() {
   * For each node in the graph, create a Info data structure
   */
 void VoronoiServer::makeInfo() {
-	int N = current_->nodes().size();
+	int N = this->world_->current_.nodes().size();
     infos.nodes.resize(N);
 
-	FDPLayout::node_iter ni = current_->nodes().begin();
+	FDPLayout::node_iter ni = this->world_->current_.nodes().begin();
     vector<Info>::iterator ii = infos.nodes.begin();
-    for(; ni!=current_->nodes().end(); ++ni,++ii) {
+    for(; ni!=this->world_->current_.nodes().end(); ++ni,++ii) {
 		FDPLayout::Node *n = *ni;
 
         ii->site.coord = gd<NodeGeom>(n).pos;
@@ -82,7 +82,7 @@ struct scomp {
   * Fill array of pointer to sites and sort the sites using scomp
   */
 void VoronoiServer::sortSites(vector<Site*> &sort) {
-	int nsites = current_->nodes().size();
+	int nsites = this->world_->current_.nodes().size();
     vector<Site*>::iterator sp;
     vector<Info>::iterator ip;
 
@@ -103,14 +103,14 @@ void VoronoiServer::geomUpdate (vector<Site*> &sort) {
 
     /* compute ranges */
 	hedges.range = Rect(sort[0]->coord);
-    for(size_t i = 1; i < current_->nodes().size(); i++)
+    for(size_t i = 1; i < this->world_->current_.nodes().size(); i++)
 		hedges.range |= sort[i]->coord;
 }
 int VoronoiServer::countOverlap(int iter) {
     int          count = 0;
     int          i;
 
-	int nsites = current_->nodes().size();
+	int nsites = this->world_->current_.nodes().size();
     for (i = 0; i < nsites; ++i)
 		infos.nodes[i].overlaps = false;
 
@@ -401,7 +401,8 @@ normalize(graph_t *g)
 	}
 }
 */
-void VoronoiServer::Process(ChangeQueue<FDPLayout> &Q) {
+void VoronoiServer::Process() {
+	ChangeQueue<FDP::FDPLayout> &Q = this->world_->Q_;
     makeInfo();
 
       /* establish and verify bounding box */
@@ -412,7 +413,7 @@ void VoronoiServer::Process(ChangeQueue<FDPLayout> &Q) {
 #ifdef VORLINES
 	Q.GraphUpdateFlags() |= DG_UPD_LINES;
 #endif
-	NextProcess(Q);
+	NextProcess();
 }
 
 } // namespace Voronoi

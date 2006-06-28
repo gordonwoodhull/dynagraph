@@ -39,7 +39,7 @@ pair<int,Coord> calculateTotalEdgeLength(Config &config) {
 		++count;
 		for(DDPath::edge_iter mei = DDp(*ei)->eBegin(); mei!=DDp(*ei)->eEnd(); ++mei) {
 			DDModel::Edge *e = *mei;
-			Coord d2 = DDd(e->tail).cur-DDd(e->head).cur;
+			Coord d2 = gd<DDNode>(e->tail).cur-gd<DDNode>(e->head).cur;
 			d += d2.Abs();
 		}
 	}

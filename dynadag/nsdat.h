@@ -14,6 +14,9 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef nsdat_h
+#define nsdat_h
+
 namespace Dynagraph {
 namespace NS {
 
@@ -71,3 +74,5 @@ struct NSData {
 
 } // namespace NS
 } // namespace Dynagraph
+
+#endif // nsdat_h

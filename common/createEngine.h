@@ -25,13 +25,13 @@ namespace Dynagraph {
 
 template<typename Graph>
 struct EngineCreator {
-	typedef LinkedChangeProcessor<Graph>* (*create_fn)(Graph *cli,Graph *curr);
+	typedef LinkedChangeProcessor<Graph>* (*create_fn)(ChangingGraph<Graph> *world);
 };
 template<typename Engine>
 struct EngineCreatorInstance {
 	typedef typename Engine::GraphType Graph;
-	static LinkedChangeProcessor<Graph>* create(Graph *whole,Graph *current) {
-		return new Engine(whole,current);
+	static LinkedChangeProcessor<Graph>* create(ChangingGraph<Graph> *world) {
+		return new Engine(world);
 	}
 };
 
@@ -53,16 +53,16 @@ void add_engine_creator(DString name) {
 }
 
 template<typename Graph>
-EnginePair<Graph> createEngine(DString engines,Graph *whole,Graph *current) {
+EnginePair<Graph> createEngine(DString engines,ChangingGraph<Graph> *world) {
 	if(engines.empty())
 		throw DGException("engine(s) were not specified on call to createLayoutEngine");
 
-	FCRData<Graph> *fcrdata = new FCRData<Graph>(whole);
+	FCRData<Graph> *fcrdata = new FCRData<Graph>(world);
     FCRBefore<Graph> *fcrbefore = new FCRBefore<Graph>(fcrdata);
     FCRAfter<Graph> *fcrafter = new FCRAfter<Graph>(fcrdata);
 	LinkedChangeProcessor<Graph> *first,*now,*last;
 	first = last = fcrbefore;
-	last->next_ = now = new UpdateCurrentProcessor<Graph>(whole,current);
+	last->next_ = now = new UpdateCurrentProcessor<Graph>(world);
 	last = now;
     std::vector<DString> engs;
     breakList(engines,engs);
@@ -77,7 +77,7 @@ EnginePair<Graph> createEngine(DString engines,Graph *whole,Graph *current) {
 			delete first;
 			throw DGException2("engine name not known or not appropriate for graph type",*ei);
 		}
-		last->next_ = now = crea(whole,current);
+		last->next_ = now = crea(world);
 		last = now;
 	}
 	last->next_ = now = fcrafter;

@@ -19,7 +19,7 @@ OBJS = \
 
 HFILES = \
 	AttrValues.h		BoostLGraph.h			CalculateBounds.h \
-	ChangeProcessor.h	ChangeQueue.h			ChangeTranslator.h \
+	ChangeProcessor.h	ChangeQueue.h \
 	ColorByAge.h		Colors.h			FindChangeRect.h \
 	GeomUtil.h		Geometry.h			InternalTranslator.h \
 	LGraph-cdt.h		LGraph.h			LabelPlacer.h \

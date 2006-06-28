@@ -25,12 +25,12 @@ Crossings uvcross(DDModel::Node *v, DDModel::Node *w, bool use_in, bool use_out)
 	if(use_in)
 		for(DDModel::inedge_iter ei = w->ins().begin(); ei!=w->ins().end(); ++ei)
 			for(DDModel::inedge_iter ej = v->ins().begin(); ej!=v->ins().end(); ++ej)
-				if(DDd((*ej)->tail).order > DDd((*ei)->tail).order)
+				if(gd<DDNode>((*ej)->tail).order > gd<DDNode>((*ei)->tail).order)
 					ret.add(*ei,*ej);
 	if (use_out)
 		for(DDModel::outedge_iter ei = w->outs().begin(); ei!=w->outs().end(); ++ei)
 			for(DDModel::outedge_iter ej = v->outs().begin(); ej!=v->outs().end(); ++ej)
-				if(DDd((*ej)->head).order > DDd((*ei)->head).order)
+				if(gd<DDNode>((*ej)->head).order > gd<DDNode>((*ei)->head).order)
 					ret.add(*ei,*ej);
 	return ret;
 }

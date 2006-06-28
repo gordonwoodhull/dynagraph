@@ -81,12 +81,12 @@ void SiftMatrix::colPaste(unsigned rank,unsigned dst,const vector<CrossCount> &s
 }
 // v is going to switch sides with x
 void SiftMatrix::updateOuts(DDModel::Node *v,DDModel::Node *x) {
-	bool toLeft = DDd(x).order<DDd(v).order;
+	bool toLeft = gd<DDNode>(x).order<gd<DDNode>(v).order;
 	for(DDModel::outedge_iter uxi = x->outs().begin(); uxi!=x->outs().end(); ++uxi) {
 		DDModel::Node *ux = (*uxi)->other(x);
 		for(DDModel::outedge_iter uvi = v->outs().begin(); uvi!=v->outs().end(); ++uvi) {
 			DDModel::Node *uv = (*uvi)->other(v);
-			if(DDd(ux).order==DDd(uv).order)
+			if(gd<DDNode>(ux).order==gd<DDNode>(uv).order)
 				continue;
 			Crossings c(*uxi,*uvi);
 			unsigned cost = weigh(c);
@@ -103,12 +103,12 @@ void SiftMatrix::updateOuts(DDModel::Node *v,DDModel::Node *x) {
 	}
 }
 void SiftMatrix::updateIns(DDModel::Node *v,DDModel::Node *x) {
-	bool toLeft = DDd(x).order<DDd(v).order;
+	bool toLeft = gd<DDNode>(x).order<gd<DDNode>(v).order;
 	for(DDModel::inedge_iter uxi = x->ins().begin(); uxi!=x->ins().end(); ++uxi) {
 		DDModel::Node *ux = (*uxi)->other(x);
 		for(DDModel::inedge_iter uvi = v->ins().begin(); uvi!=v->ins().end(); ++uvi) {
 			DDModel::Node *uv = (*uvi)->other(v);
-			if(DDd(ux).order==DDd(uv).order)
+			if(gd<DDNode>(ux).order==gd<DDNode>(uv).order)
 				continue;
 			unsigned cost = weigh(Crossings(*uxi,*uvi));
 			assert(cost>=0);
@@ -129,12 +129,12 @@ void SiftMatrix::update(DDModel::Node *v,DDModel::Node *x) {
 }
 // node v will be moved before node w
 void SiftMatrix::move(DDModel::Node *v, DDModel::Node *w) {
-	int r = DDd(v).rank;
-	assert(!w||r==DDd(w).rank);
+	int r = gd<DDNode>(v).rank;
+	assert(!w||r==gd<DDNode>(w).rank);
 	Rank *rank = config.ranking.GetRank(r);
 	unsigned size = rank->order.size(),
-		vo = DDd(v).order,
-		wo = w?DDd(w).order:size,
+		vo = gd<DDNode>(v).order,
+		wo = w?gd<DDNode>(w).order:size,
 		dest = wo>vo?wo-1:wo;
 	// rearrange rows + columns
 	// 1. save row + column v

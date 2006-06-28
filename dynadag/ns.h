@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef ns_h
+#define ns_h
 
 #include <queue>
 #include <limits.h>
@@ -33,11 +35,12 @@ const int SearchSize = 20;
 // minimal NS algorithm
 // typedef NS<NSGraph,AccessNoAttr<NSGraph> > NSAlg;
 
-// attribute access is templated so your NS graph can have a different string
-// attribute system, or none.
 typedef NSData<void*,void*> vNSD;
 typedef NSNode<void*,void*> vNSN;
 typedef NSEdge<void*,void*> vNSE;
+
+// attribute access is templated so your NS graph can have a different string
+// attribute system, or none.
 template<typename G>
 struct AccessStrAttr {
 	void scan(typename G::Node *n) {
@@ -674,3 +677,5 @@ private:
 };
 } // namespace NS
 } // namespace Dynagraph
+
+#endif // ns_h

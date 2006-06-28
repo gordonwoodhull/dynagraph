@@ -66,8 +66,8 @@ struct ChangeQueue {
 	// called by server to update current subgraph based on current changes
 	void UpdateCurrent();
 
-	// called by client after server processing; clear subgraphs and maybe do deletions
-	void Execute(bool doDelete);
+	void ExecuteDeletions();
+	void Clear();
 
 	bool Empty() { return insN.empty()&&modN.empty()&&delN.empty()&&
 		insE.empty()&&modE.empty()&&delE.empty()&&unbornN.empty()&&unbornE.empty(); }
@@ -258,37 +258,40 @@ void ChangeQueue<Graph>::UpdateCurrent() {
 			throw ModifyUninserted(true);
 }
 template<typename Graph>
-void ChangeQueue<Graph>::Execute(bool doDelete) {
+void ChangeQueue<Graph>::ExecuteDeletions() {
+	for(typename Graph::graphedge_iter j = delE.edges().begin(); j!=delE.edges().end();) {
+		typename Graph::Edge *e = *j++;
+		check(whole->erase_edge(e));
+	}
+    delE.clear(); // (clear nodes)
+	for(typename Graph::node_iter i = delN.nodes().begin(); i!=delN.nodes().end();) {
+		typename Graph::Node *n = *i++;
+		check(whole->erase_node(n));
+	}
+	for(typename Graph::graphedge_iter j = unbornE.edges().begin(); j!=unbornE.edges().end();) {
+		typename Graph::Edge *e = *j++;
+		check(whole->erase_edge(e));
+	}
+    unbornE.clear(); // (clear nodes)
+	for(typename Graph::node_iter i = unbornN.nodes().begin(); i!=unbornN.nodes().end();) {
+		typename Graph::Node *n = *i++;
+		check(whole->erase_node(n));
+	}
+	assert(delE.empty());
+	assert(delN.empty());
+	assert(unbornE.empty());
+	assert(unbornN.empty());
+}
+template<typename Graph>
+void ChangeQueue<Graph>::Clear() {
 	insN.clear();
 	insE.clear();
 	modN.clear();
 	modE.clear();
-	if(doDelete) {
-		for(typename Graph::graphedge_iter j = delE.edges().begin(); j!=delE.edges().end();) {
-			typename Graph::Edge *e = *j++;
-			check(whole->erase_edge(e));
-		}
-        delE.clear(); // (clear nodes)
-		for(typename Graph::node_iter i = delN.nodes().begin(); i!=delN.nodes().end();) {
-			typename Graph::Node *n = *i++;
-			check(whole->erase_node(n));
-		}
-		for(typename Graph::graphedge_iter j = unbornE.edges().begin(); j!=unbornE.edges().end();) {
-			typename Graph::Edge *e = *j++;
-			check(whole->erase_edge(e));
-		}
-        unbornE.clear(); // (clear nodes)
-		for(typename Graph::node_iter i = unbornN.nodes().begin(); i!=unbornN.nodes().end();) {
-			typename Graph::Node *n = *i++;
-			check(whole->erase_node(n));
-		}
-	}
-	else {
-		delE.clear();
-		delN.clear();
-		unbornE.clear();
-		unbornN.clear();
-	}
+	delE.clear();
+	delN.clear();
+	unbornE.clear();
+	unbornN.clear();
     assert(Empty());
 }
 template<typename Graph>
@@ -313,9 +316,9 @@ ChangeQueue<Graph> &ChangeQueue<Graph>::operator+=(const ChangeQueue<Graph> &Q) 
 	for(ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
 		InsEdge(*ei);
 	for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni) 
-		ModNode(*ni)->idat = (*ni)->idat;
+		ModNode(*ni).object->idat = (*ni)->idat;
 	for(ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
-		ModEdge(*ei)->idat = (*ei)->idat;
+		ModEdge(*ei).object->idat = (*ei)->idat;
 	for(ni = Q.delN.nodes().begin(); ni!=Q.delN.nodes().end(); ++ni)
 		DelNode(*ni);
 	for(ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)

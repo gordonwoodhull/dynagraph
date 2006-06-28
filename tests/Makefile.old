@@ -1,5 +1,17 @@
-run:
-	./runtests
+.SUFFIXES  : .incr .incrout
+
+DYNAGRAPH=../dynagraph
+INCRS=*.incr
+
+run: *.incr
+
+*.incr: always
+	$(DYNAGRAPH) < $@ > $*.incrout
+	$(DYNAGRAPH) -a superengines=shapegen < $@ > $*.super.incrout
+	$(DYNAGRAPH) -a intermediate=true < $@ > $*.imed.incrout
+	$(DYNAGRAPH) -a superengines=shapegen -a intermediate=true < $@ > $*.super.imed.incrout
+
+always : 
 
 clean:
-	rm -f *.out
+	rm -f *.incrout

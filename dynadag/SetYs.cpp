@@ -21,8 +21,7 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 void Config::resetRankBox(Rank *rank) {
-#ifdef FLEXIRANKS
-	Ranks::index r = ranking.y2r(rank->yBase);
+	Ranks::index r = Ranks::Xlator::CoordToRank(whole,rank->yBase);
 	Ranks::iterator i = ranking.GetIter(r);
 	rank->deltaAbove = 0;
 	if(i!=ranking.begin())
@@ -37,60 +36,9 @@ void Config::resetRankBox(Rank *rank) {
 		rank->deltaBelow = rank->deltaAbove;
 	rank->spaceBelow = 0;
 	//rank->deltaBelow -= rank->spaceBelow = rank->deltaBelow/10.0;
-#else
-	double maxTop = gd<GraphGeom>(config.whole).separation.y / 20.0,
-		maxBottom = gd<GraphGeom>(whole).separation.y / 20.0;
-	for(NodeV::iterator ni = rank->order.begin(); ni!=rank->order.end(); ++ni) {
-		if(DDd(*ni).amEdgePart())
-			continue;
-		double nt = TopExtent(*ni);
-		if(maxTop < nt)
-			maxTop = nt;
-		double nb = BottomExtent(*ni);
-		if(maxBottom > nb)
-			maxBottom = nb;
-	}
-
-	rank->deltaAbove = maxTop;
-	rank->deltaBelow = maxBottom;
-	rank->spaceBelow = gd<GraphGeom>(whole).separation.y;
-#endif
 }
 
 void Config::resetBaselines() {
-#ifndef FLEXIRANKS
-	if(ranking.empty())
-		return;
-	if(prevLow == INT_MAX)
-		prevLow = ranking.Low();
-	Rank *base = ranking.GetRank(prevLow);
-	Ranks::iterator start = ranking.GetIter(prevLow);
-
-	/* work upward from prevLow rank */
-	Rank *prev = base;
-	// (Note reverse_iterator::operator* returns *(fwdIt-1))
-	for(Ranks::reverse_iterator rri(start); rri!=ranking.rend(); ++rri) {
-		Rank *rank = *rri;
-#ifndef DOWN_GREATER
-		rank->yBase = prev->yAbove(1.0) + rank->deltaBelow;
-#else
-		rank->yBase = prev->yAbove(1.0) - rank->deltaBelow;
-#endif
-		prev = rank;
-	}
-
-	prev = base;
-	for(Ranks::iterator ri = start+1; ri!=ranking.end(); ++ri) {
-		Rank *rank = *ri;
-#ifndef DOWN_GREATER
-		rank->yBase = prev->yBelow(1.0) - rank->deltaAbove;
-#else
-		rank->yBase = prev->yBelow(1.0) + rank->deltaAbove;
-#endif
-		prev = rank;
-	}
-	prevLow = ranking.Low();
-#endif
 }
 
 void Config::SetYs() {
@@ -102,7 +50,7 @@ void Config::SetYs() {
 
 	for(ri = ranking.begin(); ri!=ranking.end(); ++ri)
 		for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni) {
-			DDNode &ddn = DDd(*ni);
+			DDNode &ddn = gd<DDNode>(*ni);
 			double newY = (*ri)->yBase;
 			ddn.cur.y = newY;
 		}

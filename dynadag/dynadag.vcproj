@@ -237,9 +237,6 @@
 				RelativePath="Medians.cpp">
 			</File>
 			<File
-				RelativePath="Ranker.cpp">
-			</File>
-			<File
 				RelativePath="SetYs.cpp">
 			</File>
 			<File
@@ -262,10 +259,46 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\Config.h">
+			</File>
+			<File
+				RelativePath=".\ConseqRanks.h">
+			</File>
+			<File
+				RelativePath=".\ConstraintGraph.h">
+			</File>
+			<File
+				RelativePath=".\Constraints.h">
+			</File>
+			<File
+				RelativePath=".\Crossings.h">
+			</File>
+			<File
+				RelativePath=".\DotlikeOptimizer.h">
+			</File>
+			<File
 				RelativePath=".\DynaDAG.h">
 			</File>
 			<File
+				RelativePath=".\DynaDAGChains.h">
+			</File>
+			<File
+				RelativePath=".\DynaDAGDefs.h">
+			</File>
+			<File
 				RelativePath=".\DynaDAGLayout.h">
+			</File>
+			<File
+				RelativePath=".\DynaDAGModel.h">
+			</File>
+			<File
+				RelativePath=".\DynaDAGServices.h">
+			</File>
+			<File
+				RelativePath=".\FlexiRanks.h">
+			</File>
+			<File
+				RelativePath=".\FlexiSpliner.h">
 			</File>
 			<File
 				RelativePath=".\Measurements.h">
@@ -280,7 +313,25 @@
 				RelativePath=".\nsdat.h">
 			</File>
 			<File
+				RelativePath=".\NSRanker.h">
+			</File>
+			<File
+				RelativePath=".\Optimizer.h">
+			</File>
+			<File
+				RelativePath=".\Rank.h">
+			</File>
+			<File
+				RelativePath=".\Ranker.h">
+			</File>
+			<File
 				RelativePath=".\SiftMatrix.h">
+			</File>
+			<File
+				RelativePath=".\Spliner.h">
+			</File>
+			<File
+				RelativePath=".\XSolver.h">
 			</File>
 		</Filter>
 	</Files>

@@ -22,6 +22,7 @@ namespace Dynagraph {
 struct IncrLangEvents {
 	virtual ~IncrLangEvents() {}
 	virtual DString dinotype() = 0; // returns "layout" "abstract" etc so xlators etc can downcast
+	virtual void incr_interrupt_ev() = 0;
 	virtual void incr_ev_open_graph(DString graph,const StrAttrs &attrs) = 0;
 	virtual void incr_ev_close_graph() = 0;
 	virtual void incr_ev_mod_graph(const StrAttrs &attrs) = 0;
@@ -40,7 +41,7 @@ struct IncrLangEvents {
 };
 struct IncrCallbacks {
 	virtual ~IncrCallbacks() {}
-	virtual IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) = 0;
+	virtual IncrLangEvents *incr_cb_create_handler(Name name,StrAttrs &attrs) = 0; // (may modify attrs)
 	virtual void incr_cb_destroy_handler(IncrLangEvents *hand) = 0;
 	virtual void incr_cb_fulfil_graph(DString name,StrGraph *sg) = 0;
 	virtual void incr_cb_fulfil_node(DString graphname,DString nodename,const StrAttrs &attrs) = 0;
@@ -53,6 +54,7 @@ extern void incr_set_handler(DString name,IncrLangEvents *handler);
 extern IncrLangEvents *incr_get_handler(DString name);
 struct IncrSetHandlerFirst : DGException { IncrSetHandlerFirst() : DGException("set handler before calling incr_set_allow_reopen()",true) {} };
 extern void incr_set_allow_reopen(DString name,bool whether);
+extern void incr_shutdown();
 
 } // namespace Dynagraph
 

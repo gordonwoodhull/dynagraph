@@ -14,7 +14,14 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-// (namespace Dynagraph::DynaDAG, included within DynaDAG.h mmmf)
+#ifndef SiftMatrix_h
+#define SiftMatrix_h
+
+#include "Config.h"
+#include "Crossings.h"
+
+namespace Dynagraph {
+namespace DynaDAG {
 
 struct SiftMatrix {
 	bool m_light;
@@ -24,8 +31,8 @@ struct SiftMatrix {
 		return m_light?crosslight(cc):crossweight(cc);
 	}
 	std::pair<unsigned,unsigned> &crossings(DDModel::Node *u,DDModel::Node *v) {
-		assert(DDd(u).rank==DDd(v).rank);
-		return data[DDd(u).rank][DDd(u).order][DDd(v).order];
+		assert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
+		return data[gd<DDNode>(u).rank][gd<DDNode>(u).order][gd<DDNode>(v).order];
 	}
 	unsigned getCrossings(DDModel::Node *u, DDModel::Node *v,bool outs) {
 		std::pair<unsigned,unsigned> &p = crossings(u,v);
@@ -84,3 +91,8 @@ private:
 	void rowPaste(unsigned rank,unsigned dst,const std::vector<CrossCount> &src);
 	void colPaste(unsigned rank,unsigned dst,const std::vector<CrossCount> &src);
 };
+
+} // namespace DynaDAG
+} // namespace Dynagraph
+
+#endif // SiftMatrix_h

@@ -27,6 +27,7 @@
 #include "traversal.h"
 #include <map>
 #include "parsestr.h"
+#include "Interruptable.h"
 
 namespace Dynagraph {
 
@@ -43,6 +44,9 @@ struct StrAttrs : std::map<DString,DString> {
 		for(StrAttrs::const_iterator i = attrs.begin(); i!=attrs.end(); ++i)
 			(*this)[i->first] = i->second;
 		return *this;
+	}
+	const StrAttrs operator +(const StrAttrs &attrs) const {
+		return StrAttrs(*this) += attrs;
 	}
 };
 inline void emitAttrs(std::ostream &os,const StrAttrs &attrs,const DString &id = DString()) {
@@ -270,8 +274,9 @@ protected:
 	}
 };
 
-typedef NamedGraph<ADTisCDT,NamedAttrs,NamedAttrs,NamedAttrs> StrGraph;
-typedef NamedGraph<ADTisCDT,NamedAttrs,NamedAttrs,NamedAttrs,StrAttrChanges,StrAttrChanges,StrAttrChanges> StrChGraph;
+struct InterruptableStrs : NamedAttrs,Interruptable {};
+typedef NamedGraph<ADTisCDT,InterruptableStrs,NamedAttrs,NamedAttrs> StrGraph;
+typedef NamedGraph<ADTisCDT,InterruptableStrs,NamedAttrs,NamedAttrs,StrAttrChanges,StrAttrChanges,StrAttrChanges> StrChGraph;
 
 } // namespace Dynagraph
 

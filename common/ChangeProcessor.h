@@ -18,41 +18,40 @@
 #define ChangeProcessor_h
 
 #include "Modify.h"
+#include "ChangingGraph.h"
 
 namespace Dynagraph {
 
 // a ChangeProcessor client should send changes on without expecting any response
-// the server is allowed to change the Q and is expected to eventually realize the changes 
+// the server is allowed to change the Q and is expected to eventually realize the changes
 template<typename Graph>
 struct ChangeProcessor {
+    ChangingGraph<Graph> * const world_;
 	typedef Graph GraphType;
-	virtual void Process(ChangeQueue<Graph> &Q) = 0; 
+	ChangeProcessor(ChangingGraph<Graph> *world) : world_(world) {}
+	virtual void Process() = 0;
 	virtual ~ChangeProcessor() {}
 };
 template<typename Graph>
 struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 	LinkedChangeProcessor<Graph> *next_;
-	LinkedChangeProcessor(LinkedChangeProcessor<Graph> *next=0) : next_(next) {}
+	LinkedChangeProcessor(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0)
+		: ChangeProcessor<Graph>(world),next_(next) {}
 	virtual ~LinkedChangeProcessor() {
-		delete next_;
-	}
-	void NextProcess(ChangeQueue<Graph> &Q) {
 		if(next_)
-			next_->Process(Q);
+			delete next_;
+	}
+	void NextProcess() {
+		if(next_)
+			next_->Process();
 	}
 };
+// a ChangeTranslator is the end of one chain of processors and the beginning of another
 template<typename Graph1,typename Graph2>
-struct ChangeTranslator : LinkedChangeProcessor<Graph1> {
-	// intentional override of field because LinkedChangeProcessor one must stay null (this is end of that chain)
-	ChangeProcessor<Graph2> *next_;
-	ChangeTranslator(ChangeProcessor<Graph2> *next=0,ChangeQueue<Graph2> *nextQ=0) : next_(next) {}
-	virtual ~ChangeTranslator() {
-		delete next_;
-	}
-	void NextProcess(ChangeQueue<Graph2> &Q) {
-		if(next_)
-			next_->Process(Q);
-	}
+struct ChangeTranslator : LinkedChangeProcessor<Graph1>, LinkedChangeProcessor<Graph2> {
+	ChangeTranslator(ChangingGraph<Graph1> *world1,ChangingGraph<Graph2> *world2)
+		: LinkedChangeProcessor<Graph1>(world1),LinkedChangeProcessor<Graph2>(world2) {}
+	// LinkedChangeProcessor<Graph1>::next_ must be null
 };
 
 template<typename Graph>
@@ -85,10 +84,11 @@ struct EnginePair : std::pair<LinkedChangeProcessor<Graph>*,LinkedChangeProcesso
 // this must be done only once, that's why individual layout servers can't be responsible.
 template<typename Graph>
 struct UpdateCurrentProcessor : LinkedChangeProcessor<Graph> {
-	UpdateCurrentProcessor(Graph*,Graph*) {}
-	void Process(ChangeQueue<Graph> &Q) {
-		Q.UpdateCurrent();
-		NextProcess(Q);
+	UpdateCurrentProcessor(ChangingGraph<Graph> *world) 
+		: LinkedChangeProcessor<Graph>(world) {}
+	void Process() {
+		this->world_->Q_.UpdateCurrent();
+		this->NextProcess();
 	}
 };
 

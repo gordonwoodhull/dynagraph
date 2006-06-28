@@ -1,0 +1,16 @@
+open graph V []
+insert node V m
+insert node V n
+insert node V o
+insert edge V e m n
+insert edge V f n o
+insert edge V g o m
+insert node V p [label="",flow=1,shape=none,width=0,height=0]
+insert edge V h p n
+insert edge V i o p
+insert node V q [label="",flow=1,shape=none,width=0,height=0]
+insert edge V j q n [minlen=0]
+insert edge V k o q
+insert node V r
+insert edge V l o r
+insert edge V d p r

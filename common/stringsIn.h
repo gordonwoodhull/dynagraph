@@ -35,7 +35,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs);
 template<typename Layout>
 Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	using std::istringstream;
-	StrAttrs allChanges;
+	StrAttrs allChanges = attrs;
 	if(clearOld)
 		clearRemoved(gd<StrAttrs>(l),attrs,allChanges);
     StrAttrs &att = gd<StrAttrs>(l);
@@ -47,7 +47,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
             value = ai->second;
 		if(name=="resolution") {
 			if(value.empty())
-                value = useDotDefaults?"1,5":"0.1,0.1";
+                value = useDotDefaults?"1,1":"0.1,0.1";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).resolution;
 
@@ -57,6 +57,10 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
                 value = useDotDefaults?"24,24":"0.5,0.5";
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).separation;
+		}
+		else if(name=="edgeseparation") {
+			istringstream s(value);
+			s >> gd<GraphGeom>(l).edgeSeparation;
 		}
 		else if(name=="defaultsize") {
 			if(value.empty())
@@ -70,6 +74,8 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).ticks;
 		}
+		else if(name=="intermediate") 
+			gd<GraphGeom>(l).reportIntermediate = value=="true";
 		SetAndMark(l,ai->first,value);
 	}
 	return 0;
@@ -149,6 +155,10 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 		}
 		else if(ai->first=="flow")
 			ng.flow = atof(ai->second.c_str());
+		else if(ai->first=="suppressed") {
+			if(assign(ng.suppressed,ai->second=="true"))
+				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE;
+		}
 		else if(ai->first.compare(0,9,"labelsize")==0) {
 			int i=ds2int(ai->first.substr(9));
 			if(i>=0) {
@@ -269,6 +279,8 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 			else
 				skip = true;
 		}
+		else if(ai->first=="backward") 
+			eg.backward = ai->second=="true";
 		if(!skip)
 			SetAndMark(e,ai->first,ai->second);
 	}

@@ -14,17 +14,32 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef IncrWorld_h
-#define IncrWorld_h
+#ifndef Rank_h
+#define Rank_h
 
 namespace Dynagraph {
+namespace DynaDAG {
 
-template<typename Graph>
-struct IncrWorld {
-	Graph whole_,current_;
-	IncrWorld() : current_(&whole_) {}
+struct Rank {
+	NodeV order;
+	double yBase,	/* absolute */
+		deltaAbove, deltaBelow, spaceBelow;
+	Rank(double sep) : yBase(-17),deltaAbove(sep/20),
+	  deltaBelow(sep/20), spaceBelow(sep) {}
+	Rank(Rank &o) : order(o.order),yBase(o.yBase),
+	  deltaAbove(o.deltaAbove),deltaBelow(o.deltaBelow) {}
+	double yBelow(double fract) {
+		return yBase;
+	}
+	double yAbove(double fract) {
+		return yBase + 2*deltaAbove;
+	}
+	double Height() {
+		return deltaAbove+deltaBelow+spaceBelow;
+	}
 };
 
+} // namespace DynaDAG
 } // namespace Dynagraph
 
-#endif // IncrWorld_h
+#endif // Rank_h

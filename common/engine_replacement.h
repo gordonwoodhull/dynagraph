@@ -25,7 +25,7 @@ inline void pre_engine_replacement(ChangeProcessor *oldEngine,ChangeQueue &Q,Lay
 	// erase old layout
 	ChangeQueue delQ(Q.whole,Q.current);
 	delQ.delN = delQ.delE = *Q.current;
-	oldEngine->Process(delQ);
+	oldEngine->Process();
 	assert(Q.current->empty());
     // feed the current graph into insertion queues & remove dead links to old engine
     for(Layout::node_iter ni = oldCurrent.nodes().begin(); ni!=oldCurrent.nodes().end(); ++ni) {

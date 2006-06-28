@@ -17,25 +17,35 @@
 #ifndef createStrWorldAndHandler_h
 #define createStrWorldAndHandler_h
 
-#include "incrface/IncrStrGraphHandler.h"
+#include "IncrStrGraphHandler.h"
 #include "common/WorldInABox.h"
+#include "common/NamedToNamedChangeTranslator.h"
 #include "common/LayoutToLayoutTranslator.h"
 #include "common/createEngine.h"
 #include "common/stringizeEngine.h"
 
 namespace Dynagraph {
 
+template<typename OuterLayout,typename InnerLayout>
+struct translator_traitses {
+	typedef NamedToNamedChangeTranslator<OuterLayout,InnerLayout,
+		GoingQueueTransition<OuterLayout>,LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
+	typedef NamedToNamedChangeTranslator<InnerLayout,OuterLayout,
+		ReturningQueueTransition<InnerLayout>,LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
+};
+
 template<typename Layout>
 struct WorldGuts {
 	DString engines_,superengines_;
 	WorldGuts(DString superengines, DString engines) : engines_(engines),superengines_(superengines) {}
-	EnginePair<GeneralLayout> operator()(ChangeQueue<GeneralLayout> &Q,IncrWorld<GeneralLayout> &world) {
-		SetAndMark(Q.ModGraph(),"engines",engines_);
-		typedef WorldInABox<GeneralLayout,Layout,LayoutToLayoutTranslator<GeneralLayout,Layout>,LayoutToLayoutTranslator<Layout,GeneralLayout> > Box;
-		Box *box = new Box;
-		box->assignEngine(engines_,world);
-		EnginePair<GeneralLayout> engine(box,box);
-		engine.Prepend(createEngine<GeneralLayout>(superengines_,&world.whole_,&world.current_));
+	EnginePair<GeneralLayout> operator()(ChangingGraph<GeneralLayout> &chraph) {
+		typedef WorldInABox<GeneralLayout,Layout,
+			typename translator_traitses<GeneralLayout,Layout>::in_translator,
+			typename translator_traitses<GeneralLayout,Layout>::out_translator> Box;
+		Box *box = new Box(&chraph);
+		box->assignEngine(engines_);
+		EnginePair<GeneralLayout> engine = box->engines();
+		engine.Prepend(createEngine<GeneralLayout>(superengines_,&chraph));
 		return engine;
 	}
 };
@@ -43,23 +53,24 @@ template<typename Layout>
 struct SimpleGuts {
 	DString engines_;
 	SimpleGuts(DString engines) : engines_(engines) {}
-	EnginePair<Layout> operator()(ChangeQueue<Layout> &Q,IncrWorld<Layout> &world) {
-		SetAndMark(Q.ModGraph(),"engines",engines_);
-		return createEngine(engines_,&world.whole_,&world.current_);
+	EnginePair<Layout> operator()(ChangingGraph<Layout> &chraph) {
+		return createEngine(engines_,&chraph);
 	}
 };
 template<typename Layout,typename GutsCreator>
-IncrLangEvents *createStrWorldAndHandler(GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
+IncrLangEvents *createStringHandlers(ChangingGraph<Layout> *chraph,GutsCreator gutsFun,IncrViewWatcher<Layout> *watcher,
 									  LinkedChangeProcessor<Layout> *before,LinkedChangeProcessor<Layout> *after,
-									  Transform *transform, bool useDotDefaults) {
-	IncrWorld<Layout> *world = new IncrWorld<Layout>;
-	IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
+									  DString gname,const StrAttrs &attrs,Transform *transform, bool useDotDefaults) {
+	IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(chraph);
 	handler->watcher_ = watcher;
 
-	// apply first graph attributes before creating engine (not pretty)
-	StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults).ModifyGraph(&world->whole_,&world->whole_);
+    gd<Name>(&chraph->whole_) = gname;
+    SetAndMark(chraph->Q_.ModGraph(),attrs);
 
-	EnginePair<Layout> eng0 = gutsFun(handler->Q_,*world);
+	// apply first graph attributes before creating engine (not pretty)
+	StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults).ModifyGraph(chraph->Q_.ModGraph(),&chraph->whole_);
+
+	EnginePair<Layout> eng0 = gutsFun(*chraph);
 	EnginePair<Layout> engine = stringizeEngine(eng0,transform,useDotDefaults);
 	if(before)
 		engine.Prepend(before);
