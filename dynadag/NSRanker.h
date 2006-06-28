@@ -46,6 +46,7 @@ private:
 	void stabilizePositionedNodes(ChangeQueue<Layout> &changeQ);
 	void insertNewEdges(Layout &insE);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
+	void findEdgeDirections();
 };
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
@@ -286,7 +287,8 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 		}
 	}
 }
-inline void findEdgeDirection(DynaDAGLayout::Edge *e) {
+template<typename Layout>
+inline void findEdgeDirection(typename Layout::Edge *e) {
 	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
 		hdr = gd<NSRankerNode>(e->head).newTopRank;
 	if(tlr==hdr)
@@ -302,8 +304,9 @@ inline void findEdgeDirection(DynaDAGLayout::Edge *e) {
 	else
 		gd<NSRankerEdge>(e).direction = NSRankerEdge::forward;
 }
+template<typename Layout>
 void NSRanker<Layout>::findEdgeDirections() {
-	for_each(this->world_.edges().begin(),this->world_.edges().end(),findEdgeDirection);
+	std::for_each(this->world_->current_.edges().begin(),this->world_->current_.edges().end(),findEdgeDirection<Layout>);
 }
 template<typename Layout>
 void NSRanker<Layout>::Process() {

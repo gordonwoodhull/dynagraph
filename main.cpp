@@ -147,7 +147,7 @@ struct IncrCalledBack : IncrCallbacks {
 					engines = "shapegen,dynadag";
 			}
 			DString::size_type ddpos = engines.find("dynadag",0);
-			if(ddpos!=DString::npos) 
+			if(ddpos!=DString::npos) {
 				if(engines.find("nsranker",0)==DString::npos && superengines.find("nsranker",0)==DString::npos)
 					if(superengines) {
 						string s = superengines.c_str(); // ick
@@ -159,6 +159,18 @@ struct IncrCalledBack : IncrCallbacks {
 						s.insert(ddpos,"nsranker,");
 						engines = s.c_str();
 					}
+				// BLEEEEE3EEEEEEEEEEE-AAAAAAARRRRRRGFGGGGGYGYGYYYYHHHHHHHHH   IIII HATE DEADLINES1!!!!!!!!1
+				if(engines.find("clearextraranks",0)==DString::npos) {
+					string s = engines.c_str();
+					s.insert(engines.find("dynadag",0),"clearextraranks,");
+					engines = s.c_str();
+				}
+				if(engines.find("edgesuppressor",0)==DString::npos) {
+					string s = engines.c_str();
+					s.insert(engines.find("dynadag",0),"edgesuppressor,");
+					engines = s.c_str();
+				}
+			}		
 			if(engines.find("dynadag",0)!=DString::npos)
 				type = "dynadag";
 			else if(engines.find("fdp",0)!=DString::npos)

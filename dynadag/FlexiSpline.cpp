@@ -173,7 +173,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 
 	DynaDAGLayout::Edge *e = path->layoutE;
 	EdgeGeom &eg = gd<EdgeGeom>(e);
-	if(path->suppression!=DDPath::suppressed) {
+	if(gd<Suppression>(e).suppression!=Suppression::suppressed) {
 		DDModel::Node *tl,*hd;
 		if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat) {
 			tl = DDp(e->tail)->bottom();
@@ -185,7 +185,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 		Coord tailpt,
 			headpt;
-		if(path->suppression==DDPath::tailSuppressed) {
+		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed) {
 			DDPath::edge_iter ei;
 			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(!config.IsSuppressed(*ei)) {
@@ -196,7 +196,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 		else
 			tailpt = (gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
-		if(path->suppression==DDPath::headSuppressed) {
+		if(gd<Suppression>(e).suppression==Suppression::headSuppressed) {
 			DDPath::edge_iter ei;
 			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(config.IsSuppressed(*ei)) {
@@ -255,8 +255,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 
 						//cout << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
 						Segment endSlopes(
-							path->suppression==DDPath::tailSuppressed ? (tailpt - gd<NodeGeom>(e->tail).pos) : DDp(e->tail)->flowSlope,
-							path->suppression==DDPath::headSuppressed ? (gd<NodeGeom>(e->head).pos - headpt) : DDp(e->head)->flowSlope
+							gd<Suppression>(e).suppression==Suppression::tailSuppressed ? (tailpt - gd<NodeGeom>(e->tail).pos) : DDp(e->tail)->flowSlope,
+							gd<Suppression>(e).suppression==Suppression::headSuppressed ? (gd<NodeGeom>(e->head).pos - headpt) : DDp(e->head)->flowSlope
 						);
 						if(gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
 							Coord t = endSlopes.b;

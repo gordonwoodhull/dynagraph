@@ -58,9 +58,10 @@ struct NSRankerEdge {
 	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false),direction(forward) {}
 	// do not copy constraints
 	NSRankerEdge(const NSRankerEdge &other) : weak(0),strong(0),
-		secondOfTwo(other.secondOfTwo) {}
+		secondOfTwo(other.secondOfTwo),direction(other.direction) {}
 	NSRankerEdge &operator=(NSRankerEdge &other) {
 		secondOfTwo = other.secondOfTwo;
+		direction = other.direction;
 		return *this;
 	}
 };

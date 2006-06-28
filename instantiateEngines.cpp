@@ -8,6 +8,8 @@
 #include "dynadag/DynaDAGLayout.h"
 #include "dynadag/DynaDAG.h"
 #include "dynadag/NSRanker.h"
+#include "dynadag/ClearExtraRanksEngine.h"
+#include "dynadag/EdgeSuppressor.h"
 
 #include "voronoi/voronoi.h"
 #include "fdp/fdp.h"
@@ -23,6 +25,8 @@ AddEngine<GeneralLayout, ColorByAge<GeneralLayout> > GLColors("colorbyage");
 using DynaDAG::DynaDAGLayout;
 AddEngine<DynaDAGLayout,DynaDAG::DynaDAGServer> DDEngine("dynadag");
 AddEngine<DynaDAGLayout,DynaDAG::NSRanker<DynaDAGLayout> > DDRanker("nsranker");
+AddEngine<DynaDAGLayout,DynaDAG::ClearExtraRanksEngine<DynaDAGLayout> > DDClearExtraRanks("clearextraranks"); // bah
+AddEngine<DynaDAGLayout,DynaDAG::EdgeSuppressor<DynaDAGLayout> > DDSuppressor("edgesuppressor"); // humbug
 AddEngine<DynaDAGLayout,LabelPlacer<DynaDAGLayout> > DDLabels("labels");
 AddEngine<DynaDAGLayout,ShapeGenerator<DynaDAGLayout> > DDShapes("shapegen");
 

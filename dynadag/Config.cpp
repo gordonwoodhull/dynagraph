@@ -32,16 +32,16 @@ bool Config::IsSuppressed(DDModel::Node *n) {
 	if(gd<DDNode>(n).amNodePart())
 		return gd<NodeGeom>(gd<DDNode>(n).multi->layoutN).suppressed;
 	else {
-		DDPath *path = gd<DDEdge>(*n->outs().begin()).path;
-		switch(path->suppression) {
-		case DDPath::suppressed:
+		DynaDAGLayout::Edge *e = gd<DDEdge>(*n->outs().begin()).path->layoutE;
+		switch(gd<Suppression>(e).suppression) {
+		case Suppression::suppressed:
 			return true;
-		case DDPath::tailSuppressed:
-		case DDPath::headSuppressed:
-			return gd<DDNode>(n).rank!=path->suppressRank // the suppressRank is itself never suppressed!
-				&& (path->suppression==DDPath::headSuppressed)
-					^ (gd<NSRankerEdge>(path->layoutE).direction==NSRankerEdge::reversed)
-					^ (gd<DDNode>(n).rank<path->suppressRank);
+		case Suppression::tailSuppressed:
+		case Suppression::headSuppressed:
+			return gd<DDNode>(n).rank!=gd<Suppression>(e).suppressRank // the suppressRank is itself never suppressed!
+				&& (gd<Suppression>(e).suppression==Suppression::headSuppressed)
+					^ (gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed)
+					^ (gd<DDNode>(n).rank<gd<Suppression>(e).suppressRank);
 		default:
 			return false;
 		}

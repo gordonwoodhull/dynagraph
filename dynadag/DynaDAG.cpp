@@ -253,6 +253,9 @@ bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 		return true;
 	if(!path->first) // flat or self edge
 		return false;
+	if(DynaDAGLayout::Edge *eMod = changeQ.modE.find(path->layoutE))
+		if(igd<Update>(eMod).flags & DG_UPD_SUPPRESSION)
+			return true;
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) {
 		DDModel::Node *n = *ni;
 		if(!gd<DDNode>(n).actualXValid)

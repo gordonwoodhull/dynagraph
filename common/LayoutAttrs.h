@@ -28,6 +28,7 @@
 // wrong
 #include "dynadag/NSRankerAttrs.h"
 #include "dynadag/ExtraRanks.h"
+#include "dynadag/EdgeSuppressionAttrs.h"
 
 namespace Dynagraph {
 
@@ -53,7 +54,8 @@ typedef enum {
 	DG_UPD_SEPARATION = 1<<14, // GraphGeom::
 	DG_UPD_DRAWN = 1<<15, // nodes,graphs,edges: the Drawn lines have changed
 	DG_UPD_POLYDEF = 1<<16, // anything in node's PolyDef
-	DG_UPD_CHANGERECT = 1<<17 // GraphGeom::changerect
+	DG_UPD_CHANGERECT = 1<<17, // GraphGeom::changerect
+	DG_UPD_SUPPRESSION = 1<<18 // (wrong?) DynaDAG::Suppression
 } UpdateFlags;
 struct Update { // subgraph-specific datum
 	unsigned flags;
@@ -241,13 +243,13 @@ struct EdgeLabel {
 typedef std::vector<EdgeLabel> EdgeLabels;
 
 // These are the basic layout description attributes
-struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptible,ExtraRanks {
+struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptible,DynaDAG::ExtraRanks {
 	GraphAttrs(Name name) : Name(name) {}
 };
 struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef, DynaDAG::NSRankerNode {
 	NodeAttrs(Name name) : Name(name) {}
 };
-struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels, DynaDAG::NSRankerEdge {
+struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels, DynaDAG::NSRankerEdge,DynaDAG::Suppression {
 	EdgeAttrs(Name name) : Name(name) {}
 };
 

@@ -26,16 +26,13 @@ namespace DynaDAG {
 
 void Config::makeRankList(DDChangeQueue &changeQ) {
 	Ranks::IndexV &newRanks = ranking.newRanks;
-	// the ranks consist of tops and bottoms of nodes, 
-	// and Ys where phantom nodes for stubs,
-	// fanning order and parallel/2-cycle edges go
+	newRanks.clear();
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
 			newRanks.push_back(gd<NSRankerNode>(*ni).newTopRank);
 			newRanks.push_back(gd<NSRankerNode>(*ni).newBottomRank);
 		}
-
-		
+	newRanks.insert(newRanks.end(),gd<ExtraRanks>(changeQ.whole).extraRanks.begin(),gd<ExtraRanks>(changeQ.whole).extraRanks.end());
 	sort(newRanks.begin(),newRanks.end());
 	Ranks::IndexV::iterator uniquend = unique(newRanks.begin(),newRanks.end());
 	newRanks.resize(uniquend-newRanks.begin());
