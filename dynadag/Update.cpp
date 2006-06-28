@@ -24,48 +24,6 @@ namespace DynaDAG {
 
 // once a translation of dag/order.c
 
-void findEdgeDirection(DynaDAGLayout::Edge *e) {
-	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
-		hdr = gd<NSRankerNode>(e->head).newTopRank;
-	if(tlr==hdr)
-		gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
-	else if(tlr>hdr) {
-		tlr = gd<NSRankerNode>(e->head).newBottomRank;
-		hdr = gd<NSRankerNode>(e->tail).newTopRank;
-		if(tlr>hdr)
-			gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
-		else
-			gd<NSRankerEdge>(e).direction = NSRankerEdge::reversed;
-	}
-	else
-		gd<NSRankerEdge>(e).direction = NSRankerEdge::forward;
-}
-bool findEdgeSuppression(DynaDAGLayout::Edge *e,int thirrank) {
-	DDPath *path = DDp(e);
-	DynaDAGLayout::Node *t = e->tail, *h = e->head;
-	DDPath::Suppression suppression;
-	int suppressRank(-17);
-	if(gd<NodeGeom>(t).suppressed)
-		if(gd<NodeGeom>(h).suppressed)
-			suppression = DDPath::suppressed;
-		else {
-			suppression = DDPath::tailSuppressed;
-			suppressRank = gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed
-				? gd<NSRankerNode>(h).newBottomRank+thirrank
-				: gd<NSRankerNode>(h).newTopRank-thirrank;
-		}
-	else if(gd<NodeGeom>(h).suppressed) {
-		suppression = DDPath::headSuppressed;
-		suppressRank = gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed
-			? gd<NSRankerNode>(t).newTopRank-thirrank
-			: gd<NSRankerNode>(t).newBottomRank+thirrank;
-	}
-	else suppression = DDPath::unsuppressed;
-	bool ret = assign(path->suppression,suppression);
-	if(path->suppression==DDPath::headSuppressed || path->suppression==DDPath::tailSuppressed)
-		ret |= assign(path->suppressRank,suppressRank);
-	return ret;
-}
 void Config::makeRankList(DDChangeQueue &changeQ) {
 	Ranks::IndexV &newRanks = ranking.newRanks;
 	// the ranks consist of tops and bottoms of nodes, 
@@ -76,20 +34,8 @@ void Config::makeRankList(DDChangeQueue &changeQ) {
 			newRanks.push_back(gd<NSRankerNode>(*ni).newTopRank);
 			newRanks.push_back(gd<NSRankerNode>(*ni).newBottomRank);
 		}
-	// really a bunch of mini-engines should be running here modifying a ranks list
-	// and doing other stuff (suppression doesn't belong in makeRankList!!!)
-	int thirrank = Ranks::Xlator::HeightToDRank(whole,gd<GraphGeom>(whole).separation.y/3.);
-	for(DynaDAGLayout::graphedge_iter ei = whole->edges().begin(); ei!=whole->edges().end(); ++ei) {
-		dynaDAG->OpenModelEdge(0,0,*ei);
-		DDPath *path = DDp(*ei);
-		findEdgeDirection(*ei);
-		if(findEdgeSuppression(*ei,thirrank)) {
-			path->unclippedPath.Clear();
-			ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-		}
-		if(path->suppression==DDPath::tailSuppressed || path->suppression==DDPath::headSuppressed)
-			newRanks.push_back(path->suppressRank);
-	}
+
+		
 	sort(newRanks.begin(),newRanks.end());
 	Ranks::IndexV::iterator uniquend = unique(newRanks.begin(),newRanks.end());
 	newRanks.resize(uniquend-newRanks.begin());

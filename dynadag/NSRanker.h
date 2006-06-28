@@ -286,6 +286,25 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 		}
 	}
 }
+inline void findEdgeDirection(DynaDAGLayout::Edge *e) {
+	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
+		hdr = gd<NSRankerNode>(e->head).newTopRank;
+	if(tlr==hdr)
+		gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
+	else if(tlr>hdr) {
+		tlr = gd<NSRankerNode>(e->head).newBottomRank;
+		hdr = gd<NSRankerNode>(e->tail).newTopRank;
+		if(tlr>hdr)
+			gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
+		else
+			gd<NSRankerEdge>(e).direction = NSRankerEdge::reversed;
+	}
+	else
+		gd<NSRankerEdge>(e).direction = NSRankerEdge::forward;
+}
+void NSRanker<Layout>::findEdgeDirections() {
+	for_each(this->world_.edges().begin(),this->world_.edges().end(),findEdgeDirection);
+}
 template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
@@ -303,6 +322,7 @@ void NSRanker<Layout>::Process() {
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(Q);
 	recomputeRanks(Q);
+	findEdgeDirections();
 	this->NextProcess();
 }
 

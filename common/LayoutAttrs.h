@@ -27,6 +27,7 @@
 
 // wrong
 #include "dynadag/NSRankerAttrs.h"
+#include "dynadag/ExtraRanks.h"
 
 namespace Dynagraph {
 
@@ -240,7 +241,7 @@ struct EdgeLabel {
 typedef std::vector<EdgeLabel> EdgeLabels;
 
 // These are the basic layout description attributes
-struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptable {
+struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptable,ExtraRanks {
 	GraphAttrs(Name name) : Name(name) {}
 };
 struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef, DynaDAG::NSRankerNode {
