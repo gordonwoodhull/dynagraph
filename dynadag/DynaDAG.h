@@ -74,7 +74,7 @@ private:
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
 	void findChangedNodes(DDChangeQueue &changeQ);
-	void findFlowSlope(DDMultiNode *mn);
+	//void findFlowSlope(DynaDAGLayout::Node *n);
 	void findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug

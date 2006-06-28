@@ -31,6 +31,7 @@
 #include "common/GeneralLayout.h"
 
 #include "incrface/createStringHandlers.h"
+#include "dynadag/DynaDAGTranslatorTraits.h"
 
 #include "dynagraph.version.h"
 

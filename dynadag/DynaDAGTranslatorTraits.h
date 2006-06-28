@@ -14,26 +14,20 @@
 **********************************************************/
 
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#ifndef DynaDAGTranslatorTraits_h
+#define DynaDAGTranslatorTraits_h
+
+#include "EdgeSplicer.h"
 
 namespace Dynagraph {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-	static void EndLastQ(ChangeQueue<Graph1> &Q) {} // whattux???
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
-	}
-	static void EndLastQ(ChangeQueue<Graph1> &Q) {}
+template<>
+struct translator_traitses<GeneralLayout,DynaDAG::DynaDAGLayout> {
+	typedef NamedToNamedChangeTranslator<GeneralLayout,DynaDAG::DynaDAGLayout,
+		GoingQueueTransition<GeneralLayout>,LayoutToLayoutTranslator<GeneralLayout,DynaDAG::DynaDAGLayout> > in_translator;
+	typedef DynaDAG::EdgeSplicer<DynaDAG::DynaDAGLayout,GeneralLayout> out_translator;
 };
 
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif // DynaDAGTranslatorTraits_h

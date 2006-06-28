@@ -48,8 +48,6 @@ struct NamedToNamedChangeTranslator : ChangeTranslator<Graph1,Graph2> {
 		}
 		for(typename Graph1::node_iter ni = Q1.modN.nodes().begin(); ni!=Q1.modN.nodes().end(); ++ni) {
 			std::pair<typename Graph2::Node *,bool> nb2 = Q2.whole->fetch_node(gd<Name>(*ni),false);
-			if(nb2.second)
-				throw NodeDoesntExistInconsistency(gd<Name>(*ni));
 			typename Graph2::Node *n = Q2.ModNode(nb2.first).object;
 			actions_.ModifyNode(*ni,n);
 		}

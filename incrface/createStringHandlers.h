@@ -14,8 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef createStrWorldAndHandler_h
-#define createStrWorldAndHandler_h
+#ifndef createStringHandlers_h
+#define createStringHandlers_h
 
 #include "IncrStrGraphHandler.h"
 #include "common/WorldInABox.h"
@@ -81,4 +81,4 @@ IncrLangEvents *createStringHandlers(ChangingGraph<Layout> *chraph,GutsCreator g
 }
 
 } // namespace Dynagraph
-#endif // createStrWorldAndHandler_h
+#endif // createStringHandlers_h

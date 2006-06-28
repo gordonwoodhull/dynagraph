@@ -14,8 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef StringLayoutTranslation_h
-#define StringLayoutTranslation_h
+#ifndef LayoutToLayoutTranslator_h
+#define LayoutToLayoutTranslator_h
 
 namespace Dynagraph {
 
@@ -45,4 +45,4 @@ struct LayoutToLayoutTranslator {
 
 } // namespace Dynagraph
 
-#endif // StringLayoutTranslation_h
+#endif // LayoutToLayoutTranslator_h

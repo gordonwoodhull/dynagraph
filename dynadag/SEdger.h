@@ -14,26 +14,24 @@
 **********************************************************/
 
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#ifndef SEdger_h
+#define SEdger_h
+
+#include "common/LayoutToLayoutTranslator.h"
 
 namespace Dynagraph {
+namespace DynaDAG {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
+template<typename Layout1,typename Layout2>
+struct SEdger : ChangeTranslator<Layout1,Layout2> {
+	LayoutToLayoutTranslator<Layout1,Layout2> actions_;
+	SEdger(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2) 
+		: ChangeTranslator<Layout1,Layout2>(world1,world2) {}
+	void Process() {
 	}
-	static void EndLastQ(ChangeQueue<Graph1> &Q) {} // whattux???
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
-	}
-	static void EndLastQ(ChangeQueue<Graph1> &Q) {}
 };
 
+} // namespace DynaDAG
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif // SEdger_h

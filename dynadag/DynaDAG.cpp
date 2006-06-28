@@ -208,40 +208,6 @@ void DynaDAGServer::findChangedNodes(DDChangeQueue &changeQ) {
 	loops.Field(r_stability,"node x movement",moved.x);
 	loops.Field(r_stability,"node y movement",moved.y);
 }
-void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
-	if(!gd<NodeGeom>(mn->layoutN).flow) {
-		mn->flowSlope = Coord(0,0);
-		return;
-	}
-	Coord avgIn(0,0),avgOut(0,0);
-	int nIns=0,nOuts=0;
-	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
-		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
-			++nIns, avgIn += vec;
-		else
-			++nOuts, avgOut -= vec;
-	}
-	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
-		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
-			++nOuts, avgOut += vec;
-		else
-			++nIns, avgIn -= vec;
-	}
-	// special case flat edges (they don't have model edges)
-	for(DynaDAGLayout::inedge_iter ei = mn->layoutN->ins().begin(); ei!=mn->layoutN->ins().end(); ++ei)
-		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
-			++nIns, avgIn += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
-	for(DynaDAGLayout::outedge_iter ei = mn->layoutN->outs().begin(); ei!=mn->layoutN->outs().end(); ++ei)
-		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
-			++nOuts, avgOut += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
-	if(nIns)
-		avgIn /= nIns;
-	if(nOuts)
-		avgOut /= nOuts;
-	mn->flowSlope = (avgIn+avgOut)/2*gd<NodeGeom>(mn->layoutN).flow;
-}
 bool DynaDAGServer::edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ) {
 	if(path->unclippedPath.Empty()) // unclippedPath is the internal marker
 		return true;
@@ -381,12 +347,49 @@ void DynaDAGServer::findDirtyEdges(DDChangeQueue &changeQ,bool force) {
 			DDp(*ei)->unclippedPath.Clear();
 	}
 }
+void clearAllEdges(DynaDAGLayout::Node *n) {
+	for(DynaDAGLayout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei)
+		DDp(*ei)->unclippedPath.Clear();
+}
+void findFlowSlope(DynaDAGLayout::Node *n) {
+	DDMultiNode *mn = DDp(n);
+	if(!gd<NodeGeom>(n).flow) {
+		if(assign(mn->flowSlope,Coord(0,0)))
+			clearAllEdges(n);
+		return;
+	}
+	Coord avgIn(0,0),avgOut(0,0);
+	int nIns=0,nOuts=0;
+	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
+		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
+		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
+			++nIns, avgIn += vec;
+		else
+			++nOuts, avgOut -= vec;
+	}
+	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
+		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
+		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
+			++nOuts, avgOut += vec;
+		else
+			++nIns, avgIn -= vec;
+	}
+	// special case flat edges (they don't have model edges)
+	for(DynaDAGLayout::inedge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei)
+		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
+			++nIns, avgIn += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
+	for(DynaDAGLayout::outedge_iter ei = n->outs().begin(); ei!=n->outs().end(); ++ei)
+		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
+			++nOuts, avgOut += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
+	if(nIns)
+		avgIn /= nIns;
+	if(nOuts)
+		avgOut /= nOuts;
+	if(assign(mn->flowSlope,(avgIn+avgOut)/2*gd<NodeGeom>(n).flow))
+		clearAllEdges(n);
+}
 void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
-	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei) 
-		if(DDp(*ei)->unclippedPath.Empty())	{
-			findFlowSlope(DDp((*ei)->tail));
-			findFlowSlope(DDp((*ei)->head));
-		}
+	for_each(world_->current_.nodes().begin(),world_->current_.nodes().end(),findFlowSlope);
 }
 void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ) {
 	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(&world_->current_);
