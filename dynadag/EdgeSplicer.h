@@ -18,6 +18,7 @@
 #define EdgeSplicer_h
 
 #include "common/LayoutToLayoutTranslator.h"
+#include "SpliceParts.h"
 
 namespace Dynagraph {
 namespace DynaDAG {
@@ -38,7 +39,7 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 
 		// any node or edge that matches by name, we just copy layout
 		for(typename Layout1::node_iter ni = Q1.insN.nodes().begin(); ni!=Q1.insN.nodes().end(); ++ni)
-			if(typename Layout2::Node *n2 = Q2.whole->fetch_node(gd<Name>(*ni),false).first) {
+			if(typename Layout2::Node *n2 = Q2.whole->fetch_node(gd<Name>(*ni))) {
 				typename Layout2::Node *n2i = Q2.InsNode(n2,false).object;
 				actions_.InsertNode(*ni,n2i);
 			}
@@ -48,7 +49,7 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 				actions_.InsertEdge(*ei,e2i);
 			}
 		for(typename Layout1::node_iter ni = Q1.modN.nodes().begin(); ni!=Q1.modN.nodes().end(); ++ni)
-			if(typename Layout2::Node *n2 = Q2.whole->fetch_node(gd<Name>(*ni),false).first) {
+			if(typename Layout2::Node *n2 = Q2.whole->fetch_node(gd<Name>(*ni))) {
 				typename Layout2::Node *n2m = Q2.ModNode(n2).object;
 				actions_.ModifyNode(*ni,n2m);
 			}
@@ -63,7 +64,7 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 				actions_.DeleteEdge(*ei,e2d);
 			}
 		for(typename Layout1::node_iter ni = Q1.delN.nodes().begin(); ni!=Q1.delN.nodes().end(); ++ni)
-			if(typename Layout2::Node *n2 = Q2.whole->fetch_node(gd<Name>(*ni),false).first) {
+			if(typename Layout2::Node *n2 = Q2.whole->fetch_node(gd<Name>(*ni))) {
 				typename Layout2::Node *n2d = Q2.DelNode(n2,false).object;
 				actions_.DeleteNode(*ni,n2d);
 			}
@@ -72,65 +73,45 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 		// generate names of the parts that would be used
 		// and look those up in the source to see if they've changed
 		// if anything has changed, redraw that edge
-		for(typename Layout2::graphedge_iter ei = Q2.current->edges().begin(); ei!=Q2.current->edges().end(); ++ei) {
+		for(typename Layout2::graphedge_iter ei2 = Q2.current->edges().begin(); ei2!=Q2.current->edges().end(); ++ei2) {
 			bool redraw = false;
-			Name ename = gd<Name>(*ei);
-			int i=0;
-			while(1) { // edge parts
-				++i;
-				char partname[40];
-				sprintf(partname,"%s_epart%d",ename.c_str(),i);
-				if(typename Layout1::Edge *e = Q1.whole->fetch_edge(partname)) {
-					if(Q1.insE.find(e) || Q1.modE.find(e) || Q1.delE.find(e)) {
+			Name ename = gd<Name>(*ei2);
+			typename Layout1::Edge *e;
+			for(SpliceEdgePartsIterator<Layout1> ei1(Q1.whole,ename,'e'); e=*ei1;++ei1)
+				if(Q1.insE.find(e) || Q1.modE.find(e) || Q1.delE.find(e)) {
+					redraw = true;
+					break;
+				}
+			if(!redraw) {
+				typename Layout1::Node *n;
+				for(SpliceNodePartsIterator<Layout1> ni1(Q1.whole,ename,'e');n = *ni1;++ni1)
+					if(Q1.insN.find(n) || Q1.modN.find(n) || Q1.delN.find(n)) {
 						redraw = true;
 						break;
 					}
-				}
-				else break;
-			}
-			if(!redraw) {
-				i=0;
-				while(1) { // node parts
-					++i;
-					char partname[40];
-					sprintf(partname,"%s_epart%d",ename.c_str(),i);
-					if(typename Layout1::Node *n = Q1.whole->fetch_node(partname,false).first) {
-						if(Q1.insN.find(n) || Q1.modN.find(n) || Q1.delN.find(n)) {
-							redraw = true;
-							break;
-						}
-					}
-					else break;
-				}
 			}
 			if(redraw) {
-				redrawCompoundEdge(*ei);
-				ModifyEdge(Q2,*ei,DG_UPD_MOVE);
+				redrawCompoundEdge(*ei2);
+				ModifyEdge(Q2,*ei2,DG_UPD_MOVE);
 			}
 		}
 		LinkedChangeProcessor<Layout2>::NextProcess();
 	}
 	void redrawCompoundEdge(typename Layout2::Edge *e) {
 		Name ename = gd<Name>(e);
-		EdgeGeom &eg = gd<EdgeGeom>(e);
-		eg.pos.Clear();
-		eg.pos.degree = 3;
-		int i=0;
-		while(1) { // edge parts
-			++i;
-			char partname[40];
-			sprintf(partname,"%s_epart%d",ename.c_str(),i);
-			if(typename Layout1::Edge *e1 = LinkedChangeProcessor<Layout1>::world_->whole_.fetch_edge(partname)) {
-				EdgeGeom &eg1 = gd<EdgeGeom>(e1);
-				Line::iterator begin = eg1.pos.begin();
-				if(eg.pos.size()) {
-					if(eg.pos.back()!=*begin)
-						throw EdgeSplicerEndsDontMatch();
-					++begin;
-				}
-				eg.pos.insert(eg.pos.end(),begin,eg1.pos.end());
+		EdgeGeom &eg2 = gd<EdgeGeom>(e);
+		eg2.pos.Clear();
+		eg2.pos.degree = 3;
+		typename Layout1::Edge *e1;
+		for(SpliceEdgePartsIterator<Layout1> ei1(&LinkedChangeProcessor<Layout1>::world_->whole_,ename,'e');e1 = *ei1;++ei1) {
+			EdgeGeom &eg1 = gd<EdgeGeom>(e1);
+			Line::iterator begin = eg1.pos.begin();
+			if(eg2.pos.size()) {
+				if(eg2.pos.back()!=*begin)
+					throw EdgeSplicerEndsDontMatch();
+				++begin;
 			}
-			else break;
+			eg2.pos.insert(eg2.pos.end(),begin,eg1.pos.end());
 		}
 	}
 };

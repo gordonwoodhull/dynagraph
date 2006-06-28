@@ -189,6 +189,9 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 			return make_pair((Node*)0,false);
 		return make_pair(create_node(name),true);
 	}
+	Node *fetch_node(DString name) {
+		return fetch_node(name,false).first;
+	}
 	std::pair<Edge *,bool> fetch_edge(DString tail, DString head, DString name,bool create) {
 		if(Edge *e = edict[name]) {
 			if(gd<Name>(e->tail)!=tail || gd<Name>(e->head)!=head)
