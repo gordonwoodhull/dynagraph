@@ -14,16 +14,16 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef Interruptable_h
-#define Interruptable_h
+#ifndef Interruptible_h
+#define Interruptible_h
 
 namespace Dynagraph {
 
-struct Interruptable {
+struct Interruptible {
 	bool interrupt;
-	Interruptable() : interrupt(false) {}
+	Interruptible() : interrupt(false) {}
 };
 
 } // namespace Dynagraph
 
-#endif // Interruptable_h
+#endif // Interruptible_h

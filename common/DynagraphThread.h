@@ -71,9 +71,9 @@ struct DynagraphThread {
 	}
 	void interrupt() {
 		assert(boost::thread()!=*thread_);
-		gd<Interruptable>(&world_.whole_).interrupt = true;
+		gd<Interruptible>(&world_.whole_).interrupt = true;
 		thread_->join();
-		gd<Interruptable>(&world_.whole_).interrupt = false;
+		gd<Interruptible>(&world_.whole_).interrupt = false;
 	}
 };
 

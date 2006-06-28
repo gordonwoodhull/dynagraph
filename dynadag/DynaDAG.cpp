@@ -491,7 +491,7 @@ void DynaDAGServer::Process() {
 		InsDelArePasse(Q);
 	}
 
-	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
+	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		rememberOld();
 		return;
 	}
@@ -500,7 +500,7 @@ void DynaDAGServer::Process() {
 	optimizer->Reorder(world_->current_,world_->current_);//crossN,crossE);
 	timer.LoopPoint(r_timing,"crossing optimization");
 
-	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
+	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		rememberOld();
 		return;
 	}
@@ -512,7 +512,7 @@ void DynaDAGServer::Process() {
 	config.SetYs();
 	timer.LoopPoint(r_timing,"optimize x coordinates");
 
-	if(gd<Interruptable>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
+	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		rememberOld();
 		return;
 	}

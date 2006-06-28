@@ -27,7 +27,7 @@
 #include "traversal.h"
 #include <map>
 #include "parsestr.h"
-#include "Interruptable.h"
+#include "Interruptible.h"
 
 namespace Dynagraph {
 
@@ -274,9 +274,9 @@ protected:
 	}
 };
 
-struct InterruptableStrs : NamedAttrs,Interruptable {};
-typedef NamedGraph<ADTisCDT,InterruptableStrs,NamedAttrs,NamedAttrs> StrGraph;
-typedef NamedGraph<ADTisCDT,InterruptableStrs,NamedAttrs,NamedAttrs,StrAttrChanges,StrAttrChanges,StrAttrChanges> StrChGraph;
+struct InterruptibleStrs : NamedAttrs,Interruptible {};
+typedef NamedGraph<ADTisCDT,InterruptibleStrs,NamedAttrs,NamedAttrs> StrGraph;
+typedef NamedGraph<ADTisCDT,InterruptibleStrs,NamedAttrs,NamedAttrs,StrAttrChanges,StrAttrChanges,StrAttrChanges> StrChGraph;
 
 } // namespace Dynagraph
 

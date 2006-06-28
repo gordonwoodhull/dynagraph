@@ -23,7 +23,7 @@
 #include "traversal.h"
 #include "Geometry.h"
 #include "genpoly.h"
-#include "Interruptable.h"
+#include "Interruptible.h"
 
 // wrong
 #include "dynadag/NSRankerAttrs.h"
@@ -241,7 +241,7 @@ struct EdgeLabel {
 typedef std::vector<EdgeLabel> EdgeLabels;
 
 // These are the basic layout description attributes
-struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptable,ExtraRanks {
+struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptible,ExtraRanks {
 	GraphAttrs(Name name) : Name(name) {}
 };
 struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef, DynaDAG::NSRankerNode {
