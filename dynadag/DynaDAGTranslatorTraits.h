@@ -17,14 +17,14 @@
 #ifndef DynaDAGTranslatorTraits_h
 #define DynaDAGTranslatorTraits_h
 
+#include "SEdger.h"
 #include "EdgeSplicer.h"
 
 namespace Dynagraph {
 
 template<>
 struct translator_traitses<GeneralLayout,DynaDAG::DynaDAGLayout> {
-	typedef NamedToNamedChangeTranslator<GeneralLayout,DynaDAG::DynaDAGLayout,
-		GoingQueueTransition<GeneralLayout>,LayoutToLayoutTranslator<GeneralLayout,DynaDAG::DynaDAGLayout> > in_translator;
+	typedef DynaDAG::SEdger<GeneralLayout,DynaDAG::DynaDAGLayout> in_translator;
 	typedef DynaDAG::EdgeSplicer<DynaDAG::DynaDAGLayout,GeneralLayout> out_translator;
 };
 

@@ -111,8 +111,6 @@ void remove_2cycles(StrGraph &g) {
 void output_result(const char *view,StrGraph &start,Session &s) {
 	StrGraph &finish = result(s);
 	remove_2cycles(finish);
-	start.oopsRefreshDictionary(); // ecch.
-	finish.oopsRefreshDictionary();
 	emitReact r;
 	r.view = view;
 	cout << "lock graph " << mquote(view) << endl;

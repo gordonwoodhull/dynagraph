@@ -66,7 +66,7 @@ struct IncrCalledBack : IncrCallbacks {
         g_incrCallback = this;
     }
     IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
-        DinoMachine::Node *dn = g_dinoMachine.ndict[name];
+        DinoMachine::Node *dn = g_dinoMachine.lookNode(name);
 #ifdef CREATE_YOURSELF
 		// must be created before opened
 		// "open graph" with a new name is an error

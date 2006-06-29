@@ -43,7 +43,6 @@ struct LabelToNameTranslator : DinoInternalChanges {
 	void GraphChanged() {
         if(m_chain)
             m_chain->GraphChanged();
-        m_dest->oopsRefreshDictionary();
 		// finding changes is easier than e.g. in diff_strgraph
 		// because everything must have a name and must be entered in the map
 		// so we compare the *map* to the changed graph to see what to change on the other side
@@ -93,7 +92,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
 			if(s.empty()) { // added node
                 DString newname;
                 StrAttrs attrs;
-				if(m_dest->ndict[label]) {
+				if(m_dest->lookNode(label)) {
                     attrs["label"] = label;
                     newname = randomName('n');
 				}
@@ -114,7 +113,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
 				assert(s.size()==1);
                 DString bname = s.begin()->name;
                 if(bname!=label)
-                    if(!m_dest->ndict[label]) {
+                    if(!m_dest->lookNode(label)) {
                         assert(dme.headmap()[NEID(false,label)].size()==0);
                         assert(dme.headmap()[NEID(false,bname)].size()==1);
                         m_dest->rename(m_dest->ndict[bname],label);
@@ -141,7 +140,7 @@ struct LabelToNameTranslator : DinoInternalChanges {
 			if(s.empty()) { // added edge
                 DString newname;
                 StrAttrs attrs;
-                if(m_dest->edict[label]) {
+                if(m_dest->lookEdge(label)) {
                     newname = randomName('e');
                     attrs["label"] = label;
                 }
@@ -162,10 +161,10 @@ struct LabelToNameTranslator : DinoInternalChanges {
 				assert(s.size()==1);
                 DString bname = s.begin()->name;
                 if(bname!=label)
-                    if(!m_dest->edict[label]) {
+                    if(!m_dest->lookEdge(label)) {
                         assert(dme.headmap()[NEID(true,label)].size()==0);
                         assert(dme.headmap()[NEID(true,bname)].size()==1);
-                        m_dest->rename(m_dest->edict[bname],label);
+                        m_dest->rename(m_dest->lookEdge(bname),label);
                         assert(dme.headmap()[NEID(true,label)].size()==0);
                         assert(dme.headmap()[NEID(true,bname)].size()==1);
                         dme.rename_head(NEID(true,bname),NEID(true,label));

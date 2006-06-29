@@ -58,7 +58,6 @@ struct SplicePartsIterator {
 		if(!layout_)
 			return 0;
 		return Typing::Get(layout_,partName(base_,prefix_,i_));
-);
 	}
 	SplicePartsIterator &operator ++() {
 		++i_;

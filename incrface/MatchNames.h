@@ -38,7 +38,6 @@ struct MatchNames : DinoInternalChanges {
 	void GraphChanged() {
         if(m_chain)
             m_chain->GraphChanged();
-        m_source->oopsRefreshDictionary();
 
 		// finding changes is easier than e.g. in diff_strgraph
 		// because everything must have a name and must be entered in the map
@@ -53,7 +52,7 @@ struct MatchNames : DinoInternalChanges {
             if(ii->second.empty())
                 continue;
 			if(ii->first.isEdge) {
-				if(!m_source->edict[ii->first.name]) { // deleted edge
+				if(!m_source->lookEdge(ii->first.name)) { // deleted edge
 					NEID_map::tset &s = ii->second;
 					assert(s.size()==1);
 					DString bname = s.begin()->name;
@@ -68,7 +67,7 @@ struct MatchNames : DinoInternalChanges {
             if(ii->second.empty())
                 continue;
 			if(!ii->first.isEdge) {
-				if(!m_source->ndict[ii->first.name]) { // deleted node
+				if(!m_source->lookNode(ii->first.name)) { // deleted node
 					NEID_map::tset &s = ii->second;
 					assert(s.size()==1);
 					DString bname = s.begin()->name;

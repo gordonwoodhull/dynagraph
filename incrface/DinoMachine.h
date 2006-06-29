@@ -118,7 +118,7 @@ struct DinoMachine : NamedGraph<ADTisCDT,NamedAttrs,DinoMachNode,DinoMachEdge> {
 	Node *m_start;
 	DinoMachine() : m_start(0) {}
     void changed(DString nodename) {
-        Node *n = ndict[nodename];
+        Node *n = lookNode(nodename);
 		if(!m_start)
 			m_start = n;
 		else if(m_start==n)

@@ -43,13 +43,13 @@ void incr_set_handler(DString name,IncrLangEvents *handler) {
     }
 }
 IncrLangEvents *incr_get_handler(DString name) {
-    DinoMachine::Node *n = g_dinoMachine.ndict[name];
+    DinoMachine::Node *n = g_dinoMachine.lookNode(name);
     if(!n)
         return 0;
     return gd<DinoMachNode>(n).handler;
 }
 extern void incr_set_allow_reopen(DString name,bool whether) {
-    DinoMachine::Node *n = g_dinoMachine.ndict[name];
+    DinoMachine::Node *n = g_dinoMachine.lookNode(name);
     if(!n)
         throw IncrSetHandlerFirst();
     gd<DinoMachNode>(n).allowOneReopen = whether;
@@ -98,7 +98,7 @@ void incr_close_graph(const char *graph) {
 		throw IncrGraphNotOpen(graph);
 	h->incr_interrupt_ev();
     h->incr_ev_close_graph();
-    g_dinoMachine.erase(g_dinoMachine.ndict[graph]); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
+    g_dinoMachine.erase(g_dinoMachine.lookNode(graph)); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
 }
 
 void incr_mod_graph(const char *graph) {
