@@ -1,0 +1,39 @@
+open graph V []
+insert node V a
+insert node V b
+insert node V c
+insert node V d
+insert node V e
+insert node V f
+insert node V g
+insert node V h
+insert node V i
+insert node V j
+
+insert edge V z b d
+insert edge V y a e
+insert edge V x h c
+insert edge V w g e
+insert edge V v b f
+insert edge V u a h
+insert edge V t e a
+insert edge V s f i
+insert edge V r i c
+insert edge V q j j
+insert edge V p d e
+insert edge V o c b
+insert edge V n b c
+insert edge V m f f
+insert edge V l g i
+insert edge V k e d
+
+modify node V d [suppressed=true]
+modify node V a [suppressed=true]
+modify node V c [suppressed=true]
+modify node V f [suppressed=true]
+modify node V g [suppressed=true]
+modify node V e [suppressed=true]
+modify node V i [suppressed=true]
+modify node V b [suppressed=true]
+modify node V j [suppressed=true]
+modify node V h [suppressed=true]
