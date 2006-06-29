@@ -166,6 +166,7 @@ void RouteBounds::path(DDModel::Edge *e) {
 		hr = bounding(e,RIGHT,DOWN,true),
 		ty = config.ranking.GetRank(gd<DDNode>(e->tail).rank)->yBase,
 		hy = config.ranking.GetRank(gd<DDNode>(e->head).rank)->yBase;
+	// cerr << "foo tl " << tl << " tr " << tr << " hl " << hl << " hr " << hr << " ty " << ty << " hy " << hy << endl;
 	appendQuad(tl,tr,hl,hr,ty,hy);
 }
 bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
@@ -185,7 +186,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 		Coord tailpt,
 			headpt;
-		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed) {
+		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::forward
+			|| gd<Suppression>(e).suppression==Suppression::headSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
 			DDPath::edge_iter ei;
 			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(!config.IsSuppressed(*ei)) {
@@ -196,7 +198,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 		else
 			tailpt = (gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
-		if(gd<Suppression>(e).suppression==Suppression::headSuppressed) {
+		if(gd<Suppression>(e).suppression==Suppression::headSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::forward
+			|| gd<Suppression>(e).suppression==Suppression::tailSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
 			DDPath::edge_iter ei;
 			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(config.IsSuppressed(*ei)) {

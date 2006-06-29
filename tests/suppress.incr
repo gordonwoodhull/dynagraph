@@ -14,4 +14,22 @@ insert edge V v f a
 insert edge V u g a
 
 modify node V a [suppressed=true]
-modify node V a [suppressed=false]
+
+insert node V n1 [suppressed=true]
+insert node V n2 [suppressed=true]
+insert node V n3 [suppressed=true]
+insert node V n4 [suppressed=true]
+insert node V n5 [suppressed=true]
+insert node V n6 [suppressed=true]
+insert node V n7 [suppressed=true]
+insert node V n8 [suppressed=true]
+insert node V n9 [suppressed=true]
+insert edge V ee1 n1 d
+insert edge V ee2 n2 d
+insert edge V ee3 n3 d
+insert edge V ee4 n4 d
+insert edge V ee5 n5 d
+insert edge V ee6 n6 d
+insert edge V ee7 n7 d
+insert edge V ee8 n8 d
+insert edge V ee9 n9 d
