@@ -79,8 +79,8 @@ void Config::makeRankList(DDChangeQueue &changeQ) {
 	// really a bunch of mini-engines should be running here modifying a ranks list
 	// and doing other stuff (suppression doesn't belong in makeRankList!!!)
 	int thirrank = Ranks::Xlator::HeightToDRank(whole,gd<GraphGeom>(whole).separation.y/3.);
-	for(DynaDAGLayout::graphedge_iter ei = whole->edges().begin(); ei!=whole->edges().end(); ++ei) {
-		dynaDAG->OpenModelEdge(0,0,*ei);
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.current->edges().begin(); ei!=changeQ.current->edges().end(); ++ei) {
+		dynaDAG->OpenModelEdge(0,0,whole->find(*ei));
 		DDPath *path = DDp(*ei);
 		findEdgeDirection(*ei);
 		if(findEdgeSuppression(*ei,thirrank)) {

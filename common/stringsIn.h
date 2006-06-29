@@ -76,6 +76,16 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 		}
 		else if(name=="intermediate") 
 			gd<GraphGeom>(l).reportIntermediate = value=="true";
+		else if(name=="splinelevel") {
+			if(value=="vnode")
+				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_VNODE;
+			else if(value=="bounds")
+				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_BOUNDS;
+			else if(value=="shortest")
+				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SHORTEST;
+			else if(value=="spline")
+				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SPLINE;
+		}
 		SetAndMark(l,ai->first,value);
 	}
 	return 0;

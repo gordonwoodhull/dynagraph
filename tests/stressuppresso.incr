@@ -37,3 +37,7 @@ modify node V i [suppressed=true]
 modify node V b [suppressed=true]
 modify node V j [suppressed=true]
 modify node V h [suppressed=true]
+
+delete node V c
+delete node V f
+delete node V i
