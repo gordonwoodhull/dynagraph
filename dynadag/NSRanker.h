@@ -221,6 +221,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 			continue;
 		bool weak = false;
 		if(typename Layout::Edge *e1 = this->world_->current_.find_edge(e->head,e->tail)) {
+			cerr << "found 2-cycle e " << e << '"' << gd<Name>(e) << "\" e1 " << e1 << '"' << gd<Name>(e1) << '"' << endl;
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
 			// if both get inserted at once, mark the second processed here (should be 2nd inserted)

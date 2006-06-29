@@ -333,6 +333,36 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 	if(nhr == ntr)
 		dynaDAG->CloseChain(chain,false);	/* flat edge / single node */
 	else {
+		if(!chain->first) {
+			cerr << "fucknuts!  it's the bug!" << endl;
+			cerr << "otr " << otr << " ohr " << ohr << " ntr " << ntr << " nhr " << nhr << endl;
+			if(ve) {
+				DDPath *path = DDp(ve);
+				cerr << "it's an edge with" << endl;
+				cerr << "tail " << gd<Name>(ve->tail) << " head " << gd<Name>(ve->head) << endl;
+				cerr << "secondOfTwo " << gd<NSRankerEdge>(ve).secondOfTwo << endl;
+				if(path) {
+					cerr << "first " << path->first << " last " << path->last << endl;
+					cerr << "direction " << path->direction << endl;
+					cerr << "suppression " << path->suppression << endl;
+				}
+				else cerr << "no path" << endl;
+				if(DynaDAGLayout::Edge *other = whole->find_edge(ve->head,ve->tail)) {
+					DDPath *path = DDp(other);
+					cerr << "it has a twin with" << endl;
+					cerr << "tail " << gd<Name>(other->tail) << " head " << gd<Name>(other->head) << endl;
+					cerr << "secondOfTwo " << gd<NSRankerEdge>(other).secondOfTwo << endl;
+					if(path) {
+						cerr << "first " << path->first << " last " << path->last << endl;
+						cerr << "direction " << path->direction << endl;
+						cerr << "suppression " << path->suppression << endl;
+					}
+					else cerr << "no path" << endl;
+				}
+			}
+			else if(vn)
+				cerr << "it's a node" << endl;
+		}
 		assert(chain->first);
 		if(!(Ranks::Xlator::Above(whole,otr,nhr)&&Ranks::Xlator::Above(whole,ntr,ohr))
 			|| ve && gd<EdgeGeom>(ve).pos.Empty()) {
@@ -375,7 +405,7 @@ void unbindEndpoints(DynaDAGLayout::Edge *ve) {
 void Config::insertEdge(DynaDAGLayout::Edge *ve) {
 	DDPath *path = dynaDAG->OpenModelEdge(0,0,ve).first;
 	if(ve->head==ve->tail || gd<NSRankerEdge>(ve).secondOfTwo)
-		dynaDAG->CloseChain(path,false); // do not model self-edges
+		dynaDAG->CloseChain(path,false); // do not model self-edges or 2-cycle second
 	else if(userDefinedMove(ve))
 		userRouteEdge(path);
 	else
