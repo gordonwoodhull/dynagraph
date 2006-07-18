@@ -38,6 +38,8 @@ modify node V b [suppressed=true]
 modify node V j [suppressed=true]
 modify node V h [suppressed=true]
 
+lock graph V
 delete node V c
 delete node V f
 delete node V i
+unlock graph V

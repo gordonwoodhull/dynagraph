@@ -67,13 +67,14 @@ struct Assertion : DGException {
 // cross-platform debug report mechanism
 void report(int rt,char *msg,...);
 void vreport(int rt, char *msg,va_list va);
-enum reportTypes {r_dynadag,r_cmdline,r_crossopt,r_wander,r_stats,r_error,
+enum reportTypes {r_input,r_output,r_dynadag,r_cmdline,r_crossopt,r_wander,r_stats,r_error,
 	r_splineRoute,r_shortestPath,r_grChange,r_timing,r_exchange,r_nsdump,
 	r_ranks,r_xsolver,r_modelDump,r_ranker,r_dumpQueue,r_stability,r_readability,r_progress,
 	r_bug
 };
 void enableReport(int rt,FILE *f = stdout);
 bool reportEnabled(int rt);
+FILE *getReportFile(int rt);
 void shush(bool whether);
 
 // writes fields to a file.  deals with combining reports that are going to the same file

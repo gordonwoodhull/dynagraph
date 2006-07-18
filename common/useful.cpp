@@ -29,6 +29,7 @@ using namespace std;
 namespace Dynagraph {
 
 std::vector<FILE*> g_files;
+//std::vector<ostream*> g_streams;
 bool g_shush = false;
 static bool gotIt(int rt) {
 	return ! (rt<0 || unsigned(rt)>=g_files.size() || !g_files[rt]);
@@ -41,6 +42,15 @@ void enableReport(int rt,FILE *f) {
 bool reportEnabled(int rt) {
 	return !g_shush && gotIt(rt);
 }
+FILE *getReportFile(int rt) {
+	return g_files[rt];
+}
+/*
+ostream &getReportStream(int rt) {
+	if(FILE *f = g_files[rt]) {
+
+}
+*/
 void vreport(int rt, char *msg,va_list va) {
 	if(!gotIt(rt))
 		return;

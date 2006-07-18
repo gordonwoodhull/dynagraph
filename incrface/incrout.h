@@ -21,8 +21,8 @@ struct Locker {
 	int something_;
 	std::ostream &os_;
 	std::stringstream strs;
-	const char *view_;
-	Locker(std::ostream &os,const char *view) : something_(0),os_(os),view_(view) {}
+	DString view_;
+	Locker(std::ostream &os,DString view) : something_(0),os_(os),view_(view) {}
 	template<typename T>
 	std::ostream &operator <<(const T &x) {
 		switch(something_++) {
@@ -43,7 +43,8 @@ struct Locker {
 	}
 };
 template<typename NGraph>
-void emitChanges(std::ostream &os,ChangeQueue<NGraph> &Q,const char *view) {
+void emitChanges(std::ostream &os,ChangeQueue<NGraph> &Q) {
+	DString view = gd<Name>(Q.whole);
 	Locker locker(os,view);
 	if(!igd<StrAttrChanges>(Q.ModGraph()).empty())
 		locker << "modify graph " << view << " " << changes(Q.ModGraph()) << std::endl;

@@ -32,6 +32,8 @@
 
 #include "incrface/createStringHandlers.h"
 
+#include "DuplicateStream.h"
+
 #include "dynagraph.version.h"
 
 using namespace std;
@@ -81,7 +83,7 @@ struct TextChangeOutput : LinkedChangeProcessor<Graph> {
 	// ChangeProcessor
 	void Process() {
 		LOCK_OUTPUT();
-		emitChanges(cout,this->world_->Q_,gd<Name>(&this->world_->whole_).c_str());
+		emitChanges(cout,this->world_->Q_);
 		doOutdot(&this->world_->current_);
 	}
 };
@@ -199,6 +201,8 @@ struct switchval {
 	char *desc;
 };
 switchval<enum reportTypes> g_reports[] = {
+	{'i',r_input,"input"},
+	{'o',r_output,"output"},
 	{'c',r_crossopt,"crossopt"},
 	{'t',r_timing,"timing breakdown"},
 	{'d',r_dynadag,"dynadag tallies"},
@@ -396,6 +400,15 @@ int main(int argc, char *args[]) {
 		}
 		enableReport(ri->first,f);
 	}
+	if(reportEnabled(r_input)) {
+		DuplicateIn *din = new DuplicateIn(stdin,getReportFile(r_input));
+		incr_yyin = din->getNewInput();
+	}
+	/*
+	if(reportEnabled(r_output)) {
+		DuplicateOut *dout = new DuplicateOut(stdout,getReportFile(r_output));
+		basic_ifstream
+	*/
 	if(!g_transform)
 		g_transform = new Transform(Coord(1,1),Coord(1,1));
 	while(1) {
