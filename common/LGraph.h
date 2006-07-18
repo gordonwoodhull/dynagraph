@@ -586,7 +586,7 @@ public:
 		erase(e);
 		if(t->degree()==0)
 			erase(t);
-		if(h->degree()==0)
+		if(t!=h && h->degree()==0)
 			erase(h);
 		return true;
 	}

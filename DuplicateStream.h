@@ -19,7 +19,12 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
+#ifdef WIN32
 #include <io.h>
+#define pipe(fds) _pipe(fds,1000,_O_BINARY)
+#else
+#include <unistd.h>
+#endif
 #include <fcntl.h>
 
 extern bool g_xeptOut;
@@ -32,7 +37,7 @@ struct DuplicateIn {
 
 	DuplicateIn(FILE *input, FILE *log) : input_(input), log_(log) {
 		int fd[2];
-		_pipe(fd,1000,_O_BINARY);
+		pipe(fd);
 		toPipe_ = fdopen(fd[1],"w");
 		setvbuf(toPipe_,0,_IONBF,0);
 		fromPipe_ = fdopen(fd[0],"r");
