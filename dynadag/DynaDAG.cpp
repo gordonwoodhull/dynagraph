@@ -147,6 +147,7 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 			outE.insert(*ei);
 	// and all adjacent (this will add the edges off of a node that has a new or changed edge, but not the other ends of those edges)
 	outN |= outE; // nodes adjacent to edges
+	// note that code below is iterating on the wrong subgraph which might be why this didn't work that well
 	for(ni = outN.nodes().begin(); ni!=outN.nodes().end(); ++ni) // edges adjacent to nodes
 		for(DynaDAGLayout::nodeedge_iter ei = (*ni)->alledges().begin(); ei!=(*ni)->alledges().end(); ++ei)
 			outE.insert(*ei);
@@ -230,10 +231,11 @@ void DynaDAGServer::findFlowSlope(DDMultiNode *mn) {
 			++nIns, avgIn -= vec;
 	}
 	// special case flat edges (they don't have model edges)
-	for(DynaDAGLayout::inedge_iter ei = mn->layoutN->ins().begin(); ei!=mn->layoutN->ins().end(); ++ei)
+	DynaDAGLayout::Node *n = world_->current_.find(mn->layoutN);
+	for(DynaDAGLayout::inedge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei)
 		if(DDp(*ei)->direction==DDPath::flat)
 			++nIns, avgIn += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
-	for(DynaDAGLayout::outedge_iter ei = mn->layoutN->outs().begin(); ei!=mn->layoutN->outs().end(); ++ei)
+	for(DynaDAGLayout::outedge_iter ei = n->outs().begin(); ei!=n->outs().end(); ++ei)
 		if(DDp(*ei)->direction==DDPath::flat)
 			++nOuts, avgOut += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
 	if(nIns)

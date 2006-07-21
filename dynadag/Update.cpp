@@ -133,7 +133,7 @@ void Config::insertNode(DynaDAGLayout::Node *n) {
 	}
 	else {
 		if(haveX = n->degree()!=0)
-			x = xAvgOfNeighbors(n);
+			x = xAvgOfNeighbors(current->find(n));
 		//n->coordFixed = false;
 	}
 	if(gd<NSRankerNode>(n).newTopRank!=gd<NSRankerNode>(n).newBottomRank) {

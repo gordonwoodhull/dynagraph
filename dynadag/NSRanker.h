@@ -116,7 +116,8 @@ void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
 // change edge strengths around a node
 template<typename Layout>
 void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
-	for(typename Layout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei) {
+	typename Layout::Node *cn = this->world_->current_.find(n);
+	for(typename Layout::nodeedge_iter ei = cn->alledges().begin(); ei!=cn->alledges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
 		if(gd<NSRankerEdge>(e).strong && fix) {
 			removePathConstraints(e);
