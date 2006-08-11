@@ -102,6 +102,8 @@ private:
 	void insertNewEdges(DDChangeQueue &changeQ);
 	void percolate(DDModel::Node *n,DDModel::Node *ref,Ranks::index destrank);
 	double placeAndReopt(DDModel::Node *n, Ranks::index r, double x);
+	void reattachEdgeTails(DDModel::Node *source,DDModel::Node *dest);
+	void moveOldNode(DynaDAGLayout::Node *vn);
 	void moveOldNodes(DDChangeQueue &changeQ);
 	void moveOldEdges(DDChangeQueue &changeQ);
 	void splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, DynaDAGLayout::Edge *ve);
@@ -113,6 +115,7 @@ private:
 	void resetBaselines();
 	// check
 	void checkEdges(bool strict);
+	void checkNodeRanks(DDChangeQueue &changeQ,bool news);
 	void checkX();
 };
 

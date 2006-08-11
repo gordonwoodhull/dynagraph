@@ -351,9 +351,9 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	assert(path->unclippedPath.Empty());
 	DynaDAGLayout::Edge *e = path->layoutE;
 
-	bool reversed = gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed;
+	EdgeDirection direction = getEdgeDirection(e);
 	DDModel::Node *tl,*hd;
-	if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat) {
+	if(direction==flat) {
 		tl = DDp(path->layoutE->tail)->bottom();
 		hd = DDp(path->layoutE->head)->top();
 	}
@@ -392,7 +392,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	else {
 		Line region;
 		bool adjustVNodes = false;
-		if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat)
+		if(direction==flat)
 			flatEdgeRegion(tl,hd,tailpt,headpt,region);
 		else {
 			forwardEdgeRegion(tl,hd,path,tailpt,headpt,region);
@@ -430,7 +430,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	}
 	NodeGeom &tg = gd<NodeGeom>(path->layoutE->tail),
 		&hg = gd<NodeGeom>(path->layoutE->head);
-	if(reversed) {
+	if(direction==reversed) {
 		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);
 		reverse(eg.pos.begin(),eg.pos.end());

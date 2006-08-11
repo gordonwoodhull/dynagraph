@@ -1,0 +1,421 @@
+open graph GRAPH1 []
+lock graph GRAPH1
+
+insert node GRAPH1 17881115 [shape=box,width=0.3333333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 17881115 [shape=box,width=0.3333333333333333,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 24431647 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 42312762 24431647 17881115 
+
+insert node GRAPH1 5439109 [shape=box,width=0.8333333333333334,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 24431647 [suppressed=false]
+
+modify node GRAPH1 5439109 [shape=box,width=0.8333333333333334,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 29870756 5439109 24431647 
+
+modify node GRAPH1 5439109 [shape=box,width=0.8472222222222222,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 25839584 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 31278693 25839584 5439109 
+
+insert node GRAPH1 12848256 [shape=box,width=0.9166666666666666,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 24431647 [suppressed=false]
+
+modify node GRAPH1 12848256 [shape=box,width=0.9166666666666666,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 37279903 12848256 24431647 
+
+insert node GRAPH1 31510384 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 25839584 [suppressed=false]
+
+modify node GRAPH1 31510384 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 57349968 31510384 25839584 
+
+modify node GRAPH1 31510384 [shape=box,width=1.0416666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 17108511 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 48618895 17108511 31510384 
+
+modify node GRAPH1 31510384 [shape=box,width=1.0416666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 14831146 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 46341530 14831146 31510384 
+
+insert node GRAPH1 9023134 [shape=box,width=0.75,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 25839584 [suppressed=false]
+
+modify node GRAPH1 9023134 [shape=box,width=0.75,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 34862718 9023134 25839584 
+
+insert node GRAPH1 5718203 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 17108511 [suppressed=false]
+
+modify node GRAPH1 5718203 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 22826714 5718203 17108511 
+
+modify node GRAPH1 5718203 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 20920201 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 26638404 20920201 5718203 
+
+insert node GRAPH1 6707027 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 17108511 [suppressed=false]
+
+modify node GRAPH1 6707027 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 23815538 6707027 17108511 
+
+modify node GRAPH1 6707027 [shape=box,width=1.1527777777777777,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 13249998 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 19957025 13249998 6707027 
+
+insert node GRAPH1 15672056 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 14831146 [suppressed=false]
+
+modify node GRAPH1 15672056 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 30503202 15672056 14831146 
+
+modify node GRAPH1 15672056 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 3373112 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 19045168 3373112 15672056 
+
+insert node GRAPH1 4875744 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 14831146 [suppressed=false]
+
+modify node GRAPH1 4875744 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 19706890 4875744 14831146 
+
+modify node GRAPH1 4875744 [shape=box,width=1.1527777777777777,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 25516242 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 30391986 25516242 4875744 
+
+insert node GRAPH1 23746042 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 20920201 [suppressed=false]
+
+modify node GRAPH1 23746042 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 44666243 23746042 20920201 
+
+modify node GRAPH1 23746042 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 22485126 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 46231168 22485126 23746042 
+
+insert node GRAPH1 14718739 [shape=box,width=1.5,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 20920201 [suppressed=false]
+
+modify node GRAPH1 14718739 [shape=box,width=1.5,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 35638940 14718739 20920201 
+
+insert node GRAPH1 29530802 [flow=0.1,shape=none,suppressed=true]
+
+modify node GRAPH1 14718739 [shape=box,width=1.5,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 44249541 14718739 29530802 
+
+modify node GRAPH1 3373112 [suppressed=false]
+
+modify node GRAPH1 14718739 [shape=box,width=1.5,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 18091851 14718739 3373112 
+
+insert node GRAPH1 21402567 [shape=box,width=1.8333333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 13249998 [suppressed=false]
+
+modify node GRAPH1 21402567 [shape=box,width=1.8333333333333333,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 34652565 21402567 13249998 
+
+modify node GRAPH1 21402567 [shape=box,width=1.7361111111111112,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 33537384 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 54939951 33537384 21402567 
+
+insert node GRAPH1 131577 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 13249998 [suppressed=false]
+
+modify node GRAPH1 131577 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 13381575 131577 13249998 
+
+modify node GRAPH1 131577 [shape=box,width=1.3611111111111112,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 30246505 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 30378082 30246505 131577 
+
+insert node GRAPH1 1088076 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 3373112 [suppressed=false]
+
+modify node GRAPH1 1088076 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 4461188 1088076 3373112 
+
+modify node GRAPH1 1088076 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 18468004 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 19556080 18468004 1088076 
+
+insert node GRAPH1 9443463 [shape=box,width=1.6666666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 25516242 [suppressed=false]
+
+modify node GRAPH1 9443463 [shape=box,width=1.6666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 34959705 9443463 25516242 
+
+modify node GRAPH1 9443463 [shape=box,width=1.5416666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 15472292 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 24915755 15472292 9443463 
+
+insert node GRAPH1 21091971 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 29530802 [suppressed=false]
+
+modify node GRAPH1 21091971 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 50622773 21091971 29530802 
+
+modify node GRAPH1 30246505 [suppressed=false]
+
+modify node GRAPH1 21091971 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 51338476 21091971 30246505 
+
+modify node GRAPH1 25516242 [suppressed=false]
+
+modify node GRAPH1 21091971 [shape=box,width=1.25,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 46608213 21091971 25516242 
+
+modify node GRAPH1 21091971 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 20591247 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 41683218 20591247 21091971 
+
+insert node GRAPH1 6336176 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 26130918 [flow=0.1,shape=none,suppressed=true]
+
+modify node GRAPH1 6336176 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 32467094 6336176 26130918 
+
+modify node GRAPH1 22485126 [suppressed=false]
+
+modify node GRAPH1 6336176 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 28821302 6336176 22485126 
+
+insert node GRAPH1 14737862 [shape=box,width=1.5,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 22485126 [suppressed=false]
+
+modify node GRAPH1 14737862 [shape=box,width=1.5,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 37222988 14737862 22485126 
+
+insert node GRAPH1 5947506 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 5947506 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 29530802 [suppressed=false]
+
+insert edge GRAPH1 35478308 29530802 5947506 
+
+insert node GRAPH1 20848735 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 33536220 [flow=0.1,shape=none,suppressed=true]
+
+modify node GRAPH1 20848735 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 54384955 20848735 33536220 
+
+modify node GRAPH1 33537384 [suppressed=false]
+
+modify node GRAPH1 20848735 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 54386119 20848735 33537384 
+
+modify node GRAPH1 20848735 [shape=box,width=1.0416666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 30028170 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 50876905 30028170 20848735 
+
+insert node GRAPH1 8637543 [shape=box,width=1.6666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 29459700 [flow=0.1,shape=none,suppressed=true]
+
+modify node GRAPH1 8637543 [shape=box,width=1.6666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 38097243 8637543 29459700 
+
+modify node GRAPH1 33537384 [suppressed=false]
+
+modify node GRAPH1 8637543 [shape=box,width=1.6666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 42174927 8637543 33537384 
+
+insert node GRAPH1 15244180 [shape=box,width=1.8333333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 30246505 [suppressed=false]
+
+modify node GRAPH1 15244180 [shape=box,width=1.8333333333333333,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 45490685 15244180 30246505 
+
+modify node GRAPH1 15244180 [shape=box,width=1.75,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 24825485 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 40069665 24825485 15244180 
+
+insert node GRAPH1 10851992 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 18468004 [suppressed=false]
+
+modify node GRAPH1 10851992 [shape=box,width=1.5833333333333333,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 29319996 10851992 18468004 
+
+modify node GRAPH1 10851992 [shape=box,width=1.4444444444444444,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 17514905 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 28366897 17514905 10851992 
+
+insert node GRAPH1 3327002 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 18468004 [suppressed=false]
+
+modify node GRAPH1 3327002 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 21795006 3327002 18468004 
+
+modify node GRAPH1 3327002 [shape=box,width=1.0555555555555556,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 29193342 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 32520344 29193342 3327002 
+
+insert node GRAPH1 29324282 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 29459700 [suppressed=false]
+
+modify node GRAPH1 29324282 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 58783982 29324282 29459700 
+
+modify node GRAPH1 15472292 [suppressed=false]
+
+modify node GRAPH1 29324282 [shape=box,width=1.1666666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 44796574 29324282 15472292 
+
+modify node GRAPH1 29324282 [shape=box,width=1.0416666666666667,height=0.2222222222222222,suppressed=false]
+
+insert node GRAPH1 24807699 [flow=0.1,shape=none,suppressed=true]
+
+insert edge GRAPH1 54131981 24807699 29324282 
+
+unlock graph GRAPH1
+
+lock graph GRAPH1
+
+unlock graph GRAPH1
+
+lock graph GRAPH1
+
+delete node GRAPH1 29324282
+
+delete node GRAPH1 3327002
+
+delete node GRAPH1 10851992
+
+delete node GRAPH1 15244180
+
+delete node GRAPH1 8637543
+
+delete node GRAPH1 20848735
+
+delete node GRAPH1 5947506
+
+delete node GRAPH1 14737862
+
+delete node GRAPH1 6336176
+
+delete node GRAPH1 21091971
+
+delete node GRAPH1 9443463
+
+delete node GRAPH1 1088076
+
+delete node GRAPH1 131577
+
+delete node GRAPH1 21402567
+
+delete node GRAPH1 14718739
+
+delete node GRAPH1 23746042
+
+delete node GRAPH1 4875744
+
+unlock graph GRAPH1
+
+lock graph GRAPH1
+
+insert node GRAPH1 6336176 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+modify node GRAPH1 26130918 [suppressed=false]
+
+modify node GRAPH1 6336176 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 32467094 6336176 26130918 
+
+modify node GRAPH1 22485126 [suppressed=false]
+
+modify node GRAPH1 6336176 [shape=box,width=1.4166666666666667,height=0.2222222222222222,suppressed=false]
+
+insert edge GRAPH1 28821302 6336176 22485126 
+
+unlock graph GRAPH1
+

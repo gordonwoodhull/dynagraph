@@ -36,7 +36,7 @@ private:
 	typedef FlexiRankXlator<Layout> RankXlator;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
 	void removePathConstraints(typename Layout::Edge *e);
-	void removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI);
+	void doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI);
 	void makeStrongConstraint(typename Layout::Edge *e);
 	void makeWeakConstraint(typename Layout::Edge *e);
 	void fixNode(typename Layout::Node *n,bool fix);
@@ -46,7 +46,6 @@ private:
 	void stabilizePositionedNodes(ChangeQueue<Layout> &changeQ);
 	void insertNewEdges(Layout &insE);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
-	void findEdgeDirections();
 };
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
@@ -73,7 +72,7 @@ void NSRanker<Layout>::removePathConstraints(typename Layout::Edge *e) {
 	gd<EdgeGeom>(e).constraint = false;
 }
 template<typename Layout>
-void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI) {
+void NSRanker<Layout>::doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI) {
 	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) {
 		removePathConstraints(*ei);
 		typename Layout::Edge *e = *ei;
@@ -131,7 +130,8 @@ void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
 // change edge strengths around a node
 template<typename Layout>
 void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
-	for(typename Layout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei) {
+	typename Layout::Node *cn = this->world_->current_.find(n);
+	for(typename Layout::nodeedge_iter ei = cn->alledges().begin(); ei!=cn->alledges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
 		if(gd<NSRankerEdge>(e).strong && fix) {
 			removePathConstraints(e);
@@ -150,7 +150,8 @@ void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
 		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
 	DDCGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
 	 // one-node chains cause trouble; make sure there's one edge
-	DDNS::NSd(heightC).minlen = std::max(1,RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height())));
+	//std::max(1,
+	DDNS::NSd(heightC).minlen = RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height()));
 	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
 template<typename Layout>
@@ -244,7 +245,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 			continue;
 		bool weak = false;
 		if(typename Layout::Edge *e1 = this->world_->current_.find_edge(e->head,e->tail)) {
-			//std::cerr << "found 2-cycle e " << e << '"' << gd<Name>(e) << "\" e1 " << e1 << '"' << gd<Name>(e1) << '"' << endl;
+			//std::cerr << "found 2-cycle e " << e << '"' << gd<Name>(e) << "\" e1 " << e1 << '"' << gd<Name>(e1) << '"' << std::endl;
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
 			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
@@ -289,27 +290,6 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
-inline void findEdgeDirection(typename Layout::Edge *e) {
-	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
-		hdr = gd<NSRankerNode>(e->head).newTopRank;
-	if(tlr==hdr)
-		gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
-	else if(tlr>hdr) {
-		tlr = gd<NSRankerNode>(e->head).newBottomRank;
-		hdr = gd<NSRankerNode>(e->tail).newTopRank;
-		if(tlr>hdr)
-			gd<NSRankerEdge>(e).direction = NSRankerEdge::flat;
-		else
-			gd<NSRankerEdge>(e).direction = NSRankerEdge::reversed;
-	}
-	else
-		gd<NSRankerEdge>(e).direction = NSRankerEdge::forward;
-}
-template<typename Layout>
-void NSRanker<Layout>::findEdgeDirections() {
-	std::for_each(this->world_->current_.edges().begin(),this->world_->current_.edges().end(),findEdgeDirection<Layout>);
-}
-template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
@@ -318,7 +298,7 @@ void NSRanker<Layout>::Process() {
 
 	moveOldNodes(Q);
 	Layout extraI(Q.whole);
-	removeOldConstraints(Q,extraI);
+	doDeletions(Q,extraI);
 	insertNewNodes(Q);
 	insertNewEdges(Q.insE);
 	insertNewEdges(extraI);
@@ -326,7 +306,6 @@ void NSRanker<Layout>::Process() {
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(Q);
 	recomputeRanks(Q);
-	findEdgeDirections();
 	this->NextProcess();
 }
 

@@ -95,7 +95,7 @@ template<typename Layout>
 struct NailWithoutPos : DGException {
 	typename Layout::Node *n;
 	NailWithoutPos(typename Layout::Node *n) :
-	  DGException("nailing a node without specifying a position"),
+	  DGException("nail a node without specifying a position"),
 	  n(n) {}
 };
 struct BackForth : DGException {

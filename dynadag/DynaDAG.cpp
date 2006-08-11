@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 #include "Measurements.h"
+#include <boost/bind.hpp>
 
 using namespace std;
 
@@ -147,6 +148,7 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 			outE.insert(*ei);
 	// and all adjacent (this will add the edges off of a node that has a new or changed edge, but not the other ends of those edges)
 	outN |= outE; // nodes adjacent to edges
+	// note that code below is iterating on the wrong subgraph which might be why this didn't work that well
 	for(ni = outN.nodes().begin(); ni!=outN.nodes().end(); ++ni) // edges adjacent to nodes
 		for(DynaDAGLayout::nodeedge_iter ei = (*ni)->alledges().begin(); ei!=(*ni)->alledges().end(); ++ei)
 			outE.insert(*ei);
@@ -260,8 +262,8 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 	assert(head!=tail); // self-edges handled in redrawEdges
 	// if a backedge (head is lower rank than tail), path->first->tail is head
 	// so we have to clip accordingly and then reverse the result (for arrowheads etc.)
-	bool reversed = gd<NSRankerEdge>(path->layoutE).direction==NSRankerEdge::reversed; //gd<DDNode>(DDp(head)->top()).rank<gd<DDNode>(DDp(tail)->bottom()).rank;
-	if(reversed)
+	bool isReversed = getEdgeDirection(path->layoutE)==reversed; //gd<DDNode>(DDp(head)->top()).rank<gd<DDNode>(DDp(tail)->bottom()).rank;
+	if(isReversed)
 		swap(head,tail);
 	if(!path->first) {
 		// there are three possible reasons why there's no path.
@@ -278,12 +280,12 @@ void DynaDAGServer::sketchEdge(DDPath *path) {
 	}
 	bool clipFirst = eg.headClipped,
 		clipLast = eg.tailClipped;
-	if(reversed)
+	if(isReversed)
 		swap(clipFirst,clipLast);
 	eg.pos.ClipEndpoints(path->unclippedPath,
 		gd<NodeGeom>(tail).pos,clipFirst?&gd<NodeGeom>(tail).region:0,
 		gd<NodeGeom>(head).pos,clipLast?&gd<NodeGeom>(head).region:0);
-	if(reversed)
+	if(isReversed)
 		reverse(eg.pos.begin(),eg.pos.end());
 }
 void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
@@ -351,42 +353,42 @@ void clearAllEdges(DynaDAGLayout::Node *n) {
 	for(DynaDAGLayout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei)
 		DDp(*ei)->unclippedPath.Clear();
 }
-void findFlowSlope(DynaDAGLayout::Node *n) {
-	DDMultiNode *mn = DDp(n);
-	if(!gd<NodeGeom>(n).flow) {
+void findFlowSlope(DynaDAGLayout::Node *cn) {
+	DDMultiNode *mn = DDp(cn);
+	if(!gd<NodeGeom>(cn).flow) {
 		if(assign(mn->flowSlope,Coord(0,0)))
-			clearAllEdges(n);
+			clearAllEdges(cn);
 		return;
 	}
 	Coord avgIn(0,0),avgOut(0,0);
 	int nIns=0,nOuts=0;
 	for(DDModel::inedge_iter ei = mn->top()->ins().begin(); ei!=mn->top()->ins().end(); ++ei) {
 		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
+		if(getEdgeDirection(gd<DDEdge>(*ei).path->layoutE)==forward)
 			++nIns, avgIn += vec;
 		else
 			++nOuts, avgOut -= vec;
 	}
 	for(DDModel::outedge_iter ei = mn->bottom()->outs().begin(); ei!=mn->bottom()->outs().end(); ++ei) {
 		Coord vec = (gd<DDNode>((*ei)->head).cur-gd<DDNode>((*ei)->tail).cur).Norm();
-		if(gd<NSRankerEdge>(gd<DDEdge>(*ei).path->layoutE).direction==NSRankerEdge::forward)
+		if(getEdgeDirection(gd<DDEdge>(*ei).path->layoutE)==forward)
 			++nOuts, avgOut += vec;
 		else
 			++nIns, avgIn -= vec;
 	}
 	// special case flat edges (they don't have model edges)
-	for(DynaDAGLayout::inedge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei)
-		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
+	for(DynaDAGLayout::inedge_iter ei = cn->ins().begin(); ei!=cn->ins().end(); ++ei)
+		if(getEdgeDirection(*ei)==flat)
 			++nIns, avgIn += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
-	for(DynaDAGLayout::outedge_iter ei = n->outs().begin(); ei!=n->outs().end(); ++ei)
-		if(gd<NSRankerEdge>(*ei).direction==NSRankerEdge::flat)
+	for(DynaDAGLayout::outedge_iter ei = cn->outs().begin(); ei!=cn->outs().end(); ++ei)
+		if(getEdgeDirection(*ei)==flat)
 			++nOuts, avgOut += (DDp((*ei)->head)->pos() - DDp((*ei)->tail)->pos()).Norm();
 	if(nIns)
 		avgIn /= nIns;
 	if(nOuts)
 		avgOut /= nOuts;
-	if(assign(mn->flowSlope,(avgIn+avgOut)/2*gd<NodeGeom>(n).flow))
-		clearAllEdges(n);
+	if(assign(mn->flowSlope,(avgIn+avgOut)/2*gd<NodeGeom>(cn).flow))
+		clearAllEdges(cn);
 }
 void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
 	for_each(world_->current_.nodes().begin(),world_->current_.nodes().end(),findFlowSlope);
@@ -454,11 +456,19 @@ void DynaDAGServer::dumpModel() {
 }
 void InsDelArePasse(DDChangeQueue &Q) {
 	Q.ExecuteDeletions();
-	for(DynaDAGLayout::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
-		ModifyNode(Q,*ni,DG_UPD_MOVE);
-	for(DynaDAGLayout::graphedge_iter ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
-		ModifyEdge(Q,*ei,DG_UPD_MOVE);
-	Q.insN.clear();
+	// turn inserts into modifies (this belongs within ChangeQueue, except the DG::Update specific part)
+	for(DynaDAGLayout::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end();) {
+		DynaDAGLayout::Node *n = *ni++,
+			*wn = Q.whole->find(n);
+		Q.insN.erase(n);
+		ModifyNode(Q,wn,DG_UPD_MOVE);
+	}
+	for(DynaDAGLayout::graphedge_iter ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end();) {
+		DynaDAGLayout::Edge *e = *ei++,
+			*we = Q.whole->find(e);
+		Q.insE.erase(e);
+		ModifyEdge(Q,we,DG_UPD_MOVE);
+	}
 	Q.insE.clear();
 }
 void DynaDAGServer::Process() {

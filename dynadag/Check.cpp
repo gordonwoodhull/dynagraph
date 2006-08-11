@@ -39,15 +39,20 @@ void Config::checkEdges(bool strict) {
 		DDModel::Node *t = (*ei)->tail,
 			*h = (*ei)->head;
 		// edges must be path parts or node parts; edges must belong to one node only
-		assert(gd<DDEdge>(*ei).amEdgePart() || gd<DDNode>(t).amNodePart() && gd<DDNode>(t).multi==gd<DDNode>(h).multi);
+		if(gd<DDEdge>(*ei).amEdgePart())
+			;
+		else {
+			assert(gd<DDNode>(t).amNodePart());
+			assert(gd<DDNode>(t).multi==gd<DDNode>(h).multi);
+		}
 		Ranks::index tr = gd<DDNode>(t).rank,
 			hr = gd<DDNode>(h).rank;
-		if(strict) // all edges span one rank
-			assert(ranking.Down(tr)==hr);
+		if(strict) 
+			assert(ranking.Down(tr)==hr); // edges must span exactly one rank
 		else
-			assert(Ranks::Xlator::Above(whole,tr,hr));
+			assert(Ranks::Xlator::Above(whole,tr,hr)); // edges must point "downward"
 	}
-	// nodes in paths belong to one path only
+	// nodes in paths must belong to one path only
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDModel::Node *n = *ni;
 		if(gd<DDNode>(n).amEdgePart()) {
@@ -61,12 +66,33 @@ void Config::checkEdges(bool strict) {
 	// view edges' paths connect the tops & bottoms of nodes
 	for(DynaDAGLayout::graphedge_iter ei2 = current->edges().begin(); ei2!=current->edges().end(); ++ei2) {
 		DDPath *path = DDp(*ei2);
+		if(!path)
+			continue;
+		if(!path->first)
+			continue;
 		DDMultiNode *n1 = DDp((*ei2)->tail),
 			*n2 = DDp((*ei2)->head);
-		if(path && path->first)
-			assert(path->first->tail==n1->bottom()&&path->last->head==n2->top()
-				||path->first->tail==n2->bottom()&&path->last->head==n1->top());
+		switch(getEdgeDirection(*ei2)) {
+			case forward:
+				assert(path->first->tail==n1->bottom());
+				assert(path->last->head==n2->top());
+				break;
+			case reversed:
+				assert(path->first->tail==n2->bottom());
+				assert(path->last->head==n1->top());
+				break;
+			case flat:
+				assert(false); // first and last should be null
+		}
 	}
+}
+void Config::checkNodeRanks(DDChangeQueue &Q, bool news) {
+	for(DynaDAGLayout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni)
+		if(news||!Q.insN.find(*ni)) {
+			DynaDAGLayout::Node *n = *ni;
+			assert(gd<DDNode>(DDp(n)->top()).rank==gd<NSRankerNode>(n).newTopRank);
+			assert(gd<DDNode>(DDp(n)->bottom()).rank==gd<NSRankerNode>(n).newBottomRank);
+		}
 }
 void Config::checkX() {
 	for(Ranks::iterator ri = ranking.begin(); ri!=ranking.end(); ++ri) {

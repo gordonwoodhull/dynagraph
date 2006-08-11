@@ -1,0 +1,5 @@
+open graph V
+insert node V m
+insert node V n
+insert edge V e m n [backward=true]
+insert edge V f n m

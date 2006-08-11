@@ -40,7 +40,7 @@ bool Config::IsSuppressed(DDModel::Node *n) {
 		case Suppression::headSuppressed:
 			return gd<DDNode>(n).rank!=gd<Suppression>(e).suppressRank // the suppressRank is itself never suppressed!
 				&& (gd<Suppression>(e).suppression==Suppression::headSuppressed)
-					^ (gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed)
+					^ (getEdgeDirection(e)==reversed)
 					^ (gd<DDNode>(n).rank<gd<Suppression>(e).suppressRank);
 		default:
 			return false;

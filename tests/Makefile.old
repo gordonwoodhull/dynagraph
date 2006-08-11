@@ -1,18 +1,27 @@
 .SUFFIXES  : .incr .incrout
 
 DYNAGRAPH=../dynagraph
-SLOW=cat
-INCRS=*.incr
+
+SUF_SUPER=super
+AT_SUPER=-a superengines=shapegen
+SUF_INTER=imed
+AT_INTER=-a intermediate=true
+SUF_EFLOW=eflow
+AT_EFLOW=-a emphasizeflow=true
 
 run: *.incr
 
 *.incr: always
-	$(SLOW) $@ | $(DYNAGRAPH) > $*.incrout
-	$(SLOW) $@ | $(DYNAGRAPH) -a superengines=shapegen > $*.super.incrout
-	$(SLOW) $@ | $(DYNAGRAPH) -a intermediate=true > $*.imed.incrout
-	$(SLOW) $@ | $(DYNAGRAPH) -a superengines=shapegen -a intermediate=true > $*.super.imed.incrout
+	-$(DYNAGRAPH) < $@ > $*.incrout
+	-$(DYNAGRAPH) $(AT_SUPER) < $@ > $*.$(SUF_SUPER).incrout
+	-$(DYNAGRAPH) $(AT_INTER) < $@ > $*.$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(AT_SUPER) $(AT_INTER) < $@ > $*.$(SUF_SUPER).$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(AT_SUPER) $(AT_EFLOW) < $@ > $*.$(SUF_SUPER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(AT_SUPER) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_SUPER).$(SUF_INTER).$(SUF_EFLOW).incrout
 
-always : 
+always: 
 
 clean:
 	rm -f *.incrout

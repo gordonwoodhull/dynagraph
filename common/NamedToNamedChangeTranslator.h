@@ -22,10 +22,10 @@
 
 namespace Dynagraph {
 struct NodeDoesntExistInconsistency : DGException2 {
-	NodeDoesntExistInconsistency(DString name) : DGException2("Internal inconsistency: node doesn't exist",name,true) {}
+	NodeDoesntExistInconsistency(DString name) : DGException2("internal inconsistency: node doesn't exist",name,true) {}
 };
 struct EdgeDoesntExistInconsistency : DGException2 {
-	EdgeDoesntExistInconsistency(DString name) : DGException2("Internal inconsistency: edge doesn't exist",name,true) {}
+	EdgeDoesntExistInconsistency(DString name) : DGException2("internal inconsistency: edge doesn't exist",name,true) {}
 };
 template<typename Graph1,typename Graph2,typename Transition,typename ChangeActions>
 struct NamedToNamedChangeTranslator : ChangeTranslator<Graph1,Graph2> {

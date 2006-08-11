@@ -104,7 +104,7 @@ void VoronoiServer::geomUpdate (vector<Site*> &sort) {
     /* compute ranges */
 	hedges.range = Rect(sort[0]->coord);
     for(size_t i = 1; i < this->world_->current_.nodes().size(); i++)
-		hedges.range |= sort[i]->coord;
+		hedges.range |= Rect(sort[i]->coord);
 }
 int VoronoiServer::countOverlap(int iter) {
     int          count = 0;

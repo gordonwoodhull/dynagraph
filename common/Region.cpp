@@ -22,6 +22,10 @@ using namespace std;
 
 namespace Dynagraph {
 
+void Region::Clear() {
+	shape.Clear();
+	boundary.valid = false;
+}
 void Region::updateBounds() {
 	if(!shape.size()) {
 		boundary.l = boundary.t = boundary.r = boundary.b = 0.0;

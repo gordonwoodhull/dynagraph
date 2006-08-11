@@ -131,8 +131,10 @@ struct Rect {
 	Rect() {}
 	Rect(const Rect &r) : l(r.l),t(r.t),r(r.r),b(r.b) {}
 	Rect(double l,double t,double r,double b) : l(l),t(t),r(r),b(b) {}
-	// note this allows implicit conversion from coord to rect
-	Rect(Coord c) : l(c.x),t(c.y),r(c.x),b(c.y) {}
+	explicit Rect(Coord c) : l(c.x),t(c.y),r(c.x),b(c.y) {}
+	void Clear() {
+		l = t = r = b = 0.;
+	}
 	bool operator==(const Rect &r) const {
 		return l==r.l && t==r.t && this->r==r.r && b==r.b;
 	}
@@ -190,6 +192,11 @@ struct Bounds : Rect {
 	bool valid;
 	Bounds() : valid(false) {}
 	Bounds(Rect r) : Rect(r),valid(true) {}
+	Bounds(Position p) : Rect(p),valid(p.valid) {}
+	void Clear() {
+		Rect::Clear();
+		valid = false;
+	}
 	bool operator ==(const Bounds &b) const {
 		if(valid!=b.valid)
 			return false;
@@ -242,7 +249,7 @@ struct Line : std::vector<Coord> {
 	Bounds BoundingBox() {
 		Bounds ret;
 		for(iterator ci = begin(); ci!=end(); ++ci)
-			ret |= *ci;
+			ret |= Rect(*ci);
 		return ret;
 	}
 	Line &operator +=(const Line &append) {
@@ -286,6 +293,7 @@ struct Region {
 	Line shape;
 	mutable int lastOut; // to make iterative calls quicker
 	Region() : lastOut(0) {}
+	void Clear();
 	void updateBounds(); // from new Line data
 	bool Hit(Coord c) const;
 	bool Overlaps(Coord ofs1,Coord ofs2,const Region &r);

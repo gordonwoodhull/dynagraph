@@ -259,6 +259,12 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\breakup NSRanker.h">
+			</File>
+			<File
+				RelativePath=".\ClearExtraRanksEngine.h">
+			</File>
+			<File
 				RelativePath=".\Config.h">
 			</File>
 			<File
@@ -295,7 +301,25 @@
 				RelativePath=".\DynaDAGServices.h">
 			</File>
 			<File
+				RelativePath=".\DynaDAGTranslatorTraits.h">
+			</File>
+			<File
+				RelativePath=".\EdgeSplicer.h">
+			</File>
+			<File
+				RelativePath=".\EdgeSuppressionAttrs.h">
+			</File>
+			<File
+				RelativePath=".\EdgeSuppressor.h">
+			</File>
+			<File
+				RelativePath=".\ExtraRanks.h">
+			</File>
+			<File
 				RelativePath=".\FlexiRanks.h">
+			</File>
+			<File
+				RelativePath=".\FlexiRankXlator.h">
 			</File>
 			<File
 				RelativePath=".\FlexiSpliner.h">
@@ -316,6 +340,21 @@
 				RelativePath=".\NSRanker.h">
 			</File>
 			<File
+				RelativePath=".\NSRankerAttrs.h">
+			</File>
+			<File
+				RelativePath=".\NSRankerModel.h">
+			</File>
+			<File
+				RelativePath=".\NSRankerModelConstraintTranslator.h">
+			</File>
+			<File
+				RelativePath=".\NSRankerModelTranslator.h">
+			</File>
+			<File
+				RelativePath=".\NSRankerSimpleCycleBreaker.h">
+			</File>
+			<File
 				RelativePath=".\Optimizer.h">
 			</File>
 			<File
@@ -325,7 +364,16 @@
 				RelativePath=".\Ranker.h">
 			</File>
 			<File
+				RelativePath=".\SEdger.h">
+			</File>
+			<File
 				RelativePath=".\SiftMatrix.h">
+			</File>
+			<File
+				RelativePath=".\SpanningEdgeLayoutTranslator.h">
+			</File>
+			<File
+				RelativePath=".\SpliceParts.h">
 			</File>
 			<File
 				RelativePath=".\Spliner.h">

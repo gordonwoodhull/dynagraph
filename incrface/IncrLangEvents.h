@@ -52,7 +52,7 @@ extern IncrCallbacks *g_incrCallback; // in incrcmds.cpp; fill this before calli
 
 extern void incr_set_handler(DString name,IncrLangEvents *handler);
 extern IncrLangEvents *incr_get_handler(DString name);
-struct IncrSetHandlerFirst : DGException { IncrSetHandlerFirst() : DGException("set handler before calling incr_set_allow_reopen()",true) {} };
+struct IncrSetHandlerFirst : DGException { IncrSetHandlerFirst() : DGException("incr_set_allow_reopen called before incr_set_handler",true) {} };
 extern void incr_set_allow_reopen(DString name,bool whether);
 extern void incr_shutdown();
 

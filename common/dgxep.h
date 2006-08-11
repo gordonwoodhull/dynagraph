@@ -35,25 +35,25 @@ struct DGException2 : DGException {
 
 // STANDARD GRAPH EXCEPTIONS
 struct DGNodeNameUsed : DGException2 {
-    DGNodeNameUsed(DString name) : DGException2("The node name has already been used",name) {}
+    DGNodeNameUsed(DString name) : DGException2("node name has already been used",name) {}
 };
 struct DGEdgeNameUsed : DGException2 {
-    DGEdgeNameUsed(DString name) : DGException2("The edge name has already been used",name) {}
+    DGEdgeNameUsed(DString name) : DGException2("edge name has already been used",name) {}
 };
 struct DGEdgeTailDoesNotExist : DGException2 {
-	DGEdgeTailDoesNotExist(DString name) : DGException2("Tail node does not exist",name) {}
+	DGEdgeTailDoesNotExist(DString name) : DGException2("tail node does not exist",name) {}
 };
 struct DGEdgeHeadDoesNotExist : DGException2 {
-	DGEdgeHeadDoesNotExist(DString name) : DGException2("Head node does not exist",name) {}
+	DGEdgeHeadDoesNotExist(DString name) : DGException2("head node does not exist",name) {}
 };
 struct DGNodeDoesNotExist : DGException2 {
-    DGNodeDoesNotExist(DString name) : DGException2("Node does not exist",name) {}
+    DGNodeDoesNotExist(DString name) : DGException2("node does not exist",name) {}
 };
 struct DGEdgeDoesNotExist : DGException2 {
-    DGEdgeDoesNotExist(DString name) : DGException2("Edge does not exist",name) {}
+    DGEdgeDoesNotExist(DString name) : DGException2("edge does not exist",name) {}
 };
 struct DGParallelEdgesNotSupported : DGException2 {
-    DGParallelEdgesNotSupported(DString name) : DGException2("Parallel edges between the same end-nodes are not yet supported",name) {}
+    DGParallelEdgesNotSupported(DString name) : DGException2("parallel edges (between the same end nodes) are not yet supported",name) {}
 };
 
 

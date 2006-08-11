@@ -54,9 +54,9 @@ struct ParseEOF : DGException {
 struct ParseExpected : DGException {
   DString expect,got;
   ParseExpected(DString expect,DString got) :
-    DGException("the std::string parser didn't get what it expected"),
+    DGException("string parser didn't get the token it expected"),
        expect(expect),got(got) {}
-  ParseExpected(char e,char g) : DGException("the std::string parser didn't get char it expected") {
+  ParseExpected(char e,char g) : DGException("string parser didn't get the character it expected") {
       char buf[2];
       buf[1] = 0;
       buf[0] = e;

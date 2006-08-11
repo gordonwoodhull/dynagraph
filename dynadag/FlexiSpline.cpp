@@ -174,9 +174,10 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 
 	DynaDAGLayout::Edge *e = path->layoutE;
 	EdgeGeom &eg = gd<EdgeGeom>(e);
+	EdgeDirection direction = getEdgeDirection(e);
 	if(gd<Suppression>(e).suppression!=Suppression::suppressed) {
 		DDModel::Node *tl,*hd;
-		if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat) {
+		if(direction==flat) {
 			tl = DDp(e->tail)->bottom();
 			hd = DDp(e->head)->top();
 		}
@@ -186,8 +187,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 		Coord tailpt,
 			headpt;
-		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::forward
-			|| gd<Suppression>(e).suppression==Suppression::headSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
+		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed&&direction==forward
+			|| gd<Suppression>(e).suppression==Suppression::headSuppressed&&direction==reversed) {
 			DDPath::edge_iter ei;
 			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(!config.IsSuppressed(*ei)) {
@@ -197,9 +198,9 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			assert(ei!=path->eEnd());
 		}
 		else
-			tailpt = (gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
-		if(gd<Suppression>(e).suppression==Suppression::headSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::forward
-			|| gd<Suppression>(e).suppression==Suppression::tailSuppressed&&gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
+			tailpt = (direction==reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
+		if(gd<Suppression>(e).suppression==Suppression::headSuppressed&&direction==forward
+			|| gd<Suppression>(e).suppression==Suppression::tailSuppressed&&direction==reversed) {
 			DDPath::edge_iter ei;
 			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
 				if(config.IsSuppressed(*ei)) {
@@ -209,11 +210,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			assert(ei!=path->eEnd());
 		}
 		else
-			headpt = (gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
+			headpt = (direction==reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
 		Line &unclipped = path->unclippedPath;
 		Line region;
 		assert(e->tail!=e->head); // DynaDAGServer should draw self-edges
-		if(gd<NSRankerEdge>(e).direction==NSRankerEdge::flat) { // flat edge
+		if(direction==flat) { // flat edge
 			/*
 			// disabled because of header dependencies (needs more work)
 			DDModel::Node *left = tl,
@@ -261,13 +262,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 							gd<Suppression>(e).suppression==Suppression::tailSuppressed ? (tailpt - gd<NodeGeom>(e->tail).pos) : DDp(e->tail)->flowSlope,
 							gd<Suppression>(e).suppression==Suppression::headSuppressed ? (gd<NodeGeom>(e->head).pos - headpt) : DDp(e->head)->flowSlope
 						);
-						if(gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
+						if(direction==reversed) {
 							Coord t = endSlopes.b;
 							endSlopes.b = -endSlopes.a;
 							endSlopes.a = -t;
 						}
 						/*
-						if(gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) {
+						if(direction==reversed) {
 							endSlopes.a = -endSlopes.a;
 							endSlopes.b = -endSlopes.b;
 						}
@@ -302,13 +303,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 	}
 	NodeGeom &tg = gd<NodeGeom>(e->tail),
 		&hg = gd<NodeGeom>(e->head);
-	if(gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed) 
+	if(direction==reversed) 
 		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);
 	else
 		eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
 			hg.pos,eg.headClipped?&hg.region:0);
-	if((gd<NSRankerEdge>(e).direction==NSRankerEdge::reversed)) // ^ gd<EdgeGeom>(e).backward) 
+	if((direction==reversed))
 		reverse(eg.pos.begin(),eg.pos.end());
 	return true;
 }

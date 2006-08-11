@@ -46,6 +46,8 @@ incrgram.cpp : incrgram.ypp
 	$(SED) "s/yy/incr_yy/g" < incrgram.tab.c > incrgram.cpp
 	$(SED) "s/yy/incr_yy/g" < incrgram.tab.h > incrgram.h
 	rm incrgram.tab.c incrgram.tab.h
+	
+parser: incrgram.cpp incrscan.cpp
 
 clean:
 	$(RM) *.o core incrscan.cpp incrgram.cpp incrgram.h

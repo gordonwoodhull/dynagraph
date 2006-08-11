@@ -279,7 +279,16 @@
 				RelativePath=".\bufferGraphStream.h">
 			</File>
 			<File
+				RelativePath=".\CalculateBounds.h">
+			</File>
+			<File
+				RelativePath=".\ChangeProcessor.h">
+			</File>
+			<File
 				RelativePath=".\ChangeQueue.h">
+			</File>
+			<File
+				RelativePath=".\ChangingGraph.h">
 			</File>
 			<File
 				RelativePath=".\ColorByAge.h">
@@ -289,6 +298,9 @@
 			</File>
 			<File
 				RelativePath=".\colortbl.h">
+			</File>
+			<File
+				RelativePath=".\createEngine.h">
 			</File>
 			<File
 				RelativePath=".\derivable_dt.h">
@@ -303,6 +315,9 @@
 				RelativePath=".\DiffStrGraph.h">
 			</File>
 			<File
+				RelativePath=".\dstringxep.h">
+			</File>
+			<File
 				RelativePath=".\dt.h">
 			</File>
 			<File
@@ -310,6 +325,9 @@
 			</File>
 			<File
 				RelativePath=".\DynagraphServer.h">
+			</File>
+			<File
+				RelativePath=".\DynagraphThread.h">
 			</File>
 			<File
 				RelativePath=".\ellipse2bezier.h">
@@ -327,6 +345,9 @@
 				RelativePath=".\freelist.h">
 			</File>
 			<File
+				RelativePath=".\GeneralLayout.h">
+			</File>
+			<File
 				RelativePath=".\genpoly.h">
 			</File>
 			<File
@@ -339,10 +360,19 @@
 				RelativePath=".\GraphBuffer.h">
 			</File>
 			<File
+				RelativePath=".\InternalTranslator.h">
+			</File>
+			<File
+				RelativePath=".\Interruptible.h">
+			</File>
+			<File
 				RelativePath=".\LabelPlacer.h">
 			</File>
 			<File
 				RelativePath=".\LayoutAttrs.h">
+			</File>
+			<File
+				RelativePath=".\LayoutToLayoutTranslator.h">
 			</File>
 			<File
 				RelativePath=".\LGraph-cdt.h">
@@ -354,10 +384,19 @@
 				RelativePath=".\LineTricks.h">
 			</File>
 			<File
+				RelativePath=".\Modify.h">
+			</File>
+			<File
 				RelativePath=".\moremath.h">
 			</File>
 			<File
+				RelativePath=".\NamedToNamedChangeTranslator.h">
+			</File>
+			<File
 				RelativePath=".\parsestr.h">
+			</File>
+			<File
+				RelativePath=".\QueueTransitions.h">
 			</File>
 			<File
 				RelativePath=".\randomName.h">
@@ -381,6 +420,12 @@
 				RelativePath=".\StringDict.h">
 			</File>
 			<File
+				RelativePath=".\stringizeEngine.h">
+			</File>
+			<File
+				RelativePath=".\StringLayoutTranslator.h">
+			</File>
+			<File
 				RelativePath=".\stringsIn.h">
 			</File>
 			<File
@@ -400,6 +445,9 @@
 			</File>
 			<File
 				RelativePath=".\weightedMedian.h">
+			</File>
+			<File
+				RelativePath=".\WorldInABox.h">
 			</File>
 		</Filter>
 	</Files>

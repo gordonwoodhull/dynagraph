@@ -119,13 +119,13 @@ struct NS {
 	struct CycleException : DGException {
 		Node *involving;
 		CycleException(Node *n) :
-		  DGException("the network symplex algorithm encountered a cycle",true),
+		  DGException("network symplex input has a cycle",true),
 		  involving(n) {}
 	};
 	struct DisconnectedException : DGException {
 		Node *bad;
 		DisconnectedException(Node *n) :
-		  DGException("the network symplex algorithm encountered a disconnected graph",true),
+		  DGException("network symplex input graph is not fully connected",true),
 		  bad(n) {}
 	};
 

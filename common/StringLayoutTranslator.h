@@ -34,10 +34,10 @@ struct StringToLayoutTranslator {
 		stringsIn<Layout>(transform_,le,gd<StrAttrs>(se),true);
 	}
 	void ModifyNode(typename StringGraph::Node *sn,typename Layout::Node *ln) {
-		stringsIn<Layout>(transform_,ln,getChanges(sn),false);
+		igd<Update>(ln) |= stringsIn<Layout>(transform_,ln,getChanges(sn),false);
 	}
 	void ModifyEdge(typename StringGraph::Edge *se,typename Layout::Edge *le) {
-		stringsIn<Layout>(transform_,le,getChanges(se),false);
+		igd<Update>(le) |= stringsIn<Layout>(transform_,le,getChanges(se),false);
 	}
 	void DeleteNode(typename StringGraph::Node *sn,typename Layout::Node *ln) {}
 	void DeleteEdge(typename StringGraph::Edge *se,typename Layout::Edge *le) {}

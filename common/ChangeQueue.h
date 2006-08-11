@@ -79,7 +79,7 @@ struct ChangeQueue {
 
 	// Exceptions
 	struct InsertInserted : DGException {
-		InsertInserted(bool fatal = false) : DGException("insertion of an already inserted object",fatal) {}
+		InsertInserted(bool fatal = false) : DGException("insert of an already inserted object",fatal) {}
 	};
 	struct ModifyDeleted : DGException {
 		ModifyDeleted(bool fatal = false) : DGException("modify of a deleted object",fatal) {}
@@ -88,13 +88,13 @@ struct ChangeQueue {
 		ModifyUninserted(bool fatal = false) : DGException("modify of an uninserted object",fatal) {}
 	};
 	struct DeleteDeleted : DGException {
-		DeleteDeleted(bool fatal = false) : DGException("deletion of an already deleted object",fatal) {}
+		DeleteDeleted(bool fatal = false) : DGException("delete of an already deleted object",fatal) {}
 	};
 	struct DeleteUninserted : DGException {
-		DeleteUninserted(bool fatal = false) : DGException("deletion of an uninserted object",fatal) {}
+		DeleteUninserted(bool fatal = false) : DGException("delete of an uninserted object",fatal) {}
 	};
 	struct EndnodesNotInserted : DGException {
-		EndnodesNotInserted(bool fatal = false) : DGException("insertion of edge without nodes",fatal) {}
+		EndnodesNotInserted(bool fatal = false) : DGException("insert of edge without nodes",fatal) {}
 	};
 };
 template<typename Graph>
@@ -109,7 +109,13 @@ typename ChangeQueue<Graph>::NodeResult ChangeQueue<Graph>::InsNode(typename Gra
 		result.action = inserted;
 		result.object = insN.insert(n).first;
 	}
-	else if(modN.find(n) || checkRedundancy&&(insN.find(n)||current->find(n)))
+	else if(typename Graph::Node *n2 = modN.find(n)) {
+		if(checkRedundancy)
+			throw InsertInserted();
+		result.action = modified;
+		result.object = n2;
+	}
+	else if(checkRedundancy&&(insN.find(n)||current->find(n)))
 		throw InsertInserted();
 	else {
 		result.action = inserted;
@@ -129,7 +135,13 @@ typename ChangeQueue<Graph>::EdgeResult ChangeQueue<Graph>::InsEdge(typename Gra
 		result.action = inserted;
 		result.object = insE.insert(e).first;
 	}
-	else if(modE.find(e) || checkRedundancy&&(insE.find(e)||current->find(e)))
+	else if(typename Graph::Edge *e2 = modE.find(e)) {
+		if(checkRedundancy)
+			throw InsertInserted();
+		result.action=modified;
+		result.object = e2;
+	}
+	else if(checkRedundancy&&(insE.find(e)||current->find(e)))
 		throw InsertInserted();
 	else {
 		result.action = inserted;

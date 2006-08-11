@@ -24,12 +24,12 @@ typedef std::vector<Segment> SegmentV;
 typedef std::vector<Line> LineV;
 
 struct InvalidBoundary : DGException {
-  InvalidBoundary() : DGException("the shortest path algorithm requires a polygon boundary",true) {}
+  InvalidBoundary() : DGException("input to shortest path algorithm is not a polygon boundary",true) {}
 };
 struct EndpointNotInPolygon : DGException {
   bool which;
   EndpointNotInPolygon(bool which) :
-	DGException("the shortest path algorithm requires end-points within the boundary polygon",true),
+	DGException("end-points in shortest path algorithm input are not within the boundary polygon",true),
 	which(which) {}
 };
 /* find shortest euclidean path within a simple polygon */

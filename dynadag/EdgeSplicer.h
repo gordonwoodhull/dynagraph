@@ -24,12 +24,12 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct EdgeSplicerEndsDontMatch : DGException {
-	EdgeSplicerEndsDontMatch() : DGException("Attempting to splice together two edge splines that don't share an endpoint") {}
+	EdgeSplicerEndsDontMatch() : DGException("attempt to splice together two edge splines that don't share an endpoint") {}
 };
 
 template<typename Layout1,typename Layout2>
 struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
-	LayoutToLayoutTranslator<Layout1,Layout2> actions_;
+	LayoutToLayoutTranslator<Layout1,Layout2,false> actions_;
 	EdgeSplicer(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2) 
 		: ChangeTranslator<Layout1,Layout2>(world1,world2) {}
 	void Process() {
@@ -74,6 +74,8 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 		// and look those up in the source to see if they've changed
 		// if anything has changed, redraw that edge
 		for(typename Layout2::graphedge_iter ei2 = Q2.current->edges().begin(); ei2!=Q2.current->edges().end(); ++ei2) {
+			if(Q1.current->fetch_edge(gd<Name>(*ei2)))
+				continue; // this is an unspliced edge (splice parts may have been deleted)
 			bool redraw = false;
 			Name ename = gd<Name>(*ei2);
 			typename Layout1::Edge *e;
@@ -103,15 +105,17 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 		eg2.pos.Clear();
 		eg2.pos.degree = 3;
 		typename Layout1::Edge *e1;
-		for(SpliceEdgePartsIterator<Layout1> ei1(&LinkedChangeProcessor<Layout1>::world_->whole_,ename,'e');e1 = *ei1;++ei1) {
+		for(SpliceEdgePartsIterator<Layout1> ei1(&LinkedChangeProcessor<Layout1>::world_->current_,ename,'e');e1 = *ei1;++ei1) {
 			EdgeGeom &eg1 = gd<EdgeGeom>(e1);
-			Line::iterator begin = eg1.pos.begin();
-			if(eg2.pos.size()) {
-				if(eg2.pos.back()!=*begin)
-					throw EdgeSplicerEndsDontMatch();
-				++begin;
+			if(eg1.pos.size()) {
+				Line::iterator begin = eg1.pos.begin();
+				if(eg2.pos.size()) {
+					if(eg2.pos.back()!=*begin)
+						throw EdgeSplicerEndsDontMatch();
+					++begin;
+				}
+				eg2.pos.insert(eg2.pos.end(),begin,eg1.pos.end());
 			}
-			eg2.pos.insert(eg2.pos.end(),begin,eg1.pos.end());
 		}
 	}
 };

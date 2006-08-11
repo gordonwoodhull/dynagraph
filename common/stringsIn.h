@@ -76,6 +76,8 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 		}
 		else if(name=="intermediate") 
 			gd<GraphGeom>(l).reportIntermediate = value=="true";
+		else if(name=="emphasizeflow")
+			gd<GraphGeom>(l).s_edges = value=="true";
 		else if(name=="splinelevel") {
 			if(value=="vnode")
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_VNODE;
@@ -291,6 +293,8 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 		}
 		else if(ai->first=="backward") 
 			eg.backward = ai->second=="true";
+		else if(ai->first=="emphasizeflow")
+			eg.s_edge = ai->second=="true";
 		if(!skip)
 			SetAndMark(e,ai->first,ai->second);
 	}

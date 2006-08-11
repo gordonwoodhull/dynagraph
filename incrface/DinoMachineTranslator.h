@@ -28,11 +28,11 @@ struct DinoMachineTranslator {
 		// the NEID_map is shared in a 2-cycle
 		if(DinoMachine::Edge *dme2 = dme->g->find_edge(dme->head,dme->tail)) {
 			gd<DinoMachEdge>(dme).mappings = gd<DinoMachEdge>(dme2).mappings;
-			gd<DinoMachEdge>(dme).reversed = !gd<DinoMachEdge>(dme2).reversed;
+			gd<DinoMachEdge>(dme).isReversed = !gd<DinoMachEdge>(dme2).isReversed;
 		}
 		else {
 			gd<DinoMachEdge>(dme).mappings = new NEID_map;
-			gd<DinoMachEdge>(dme).reversed = false;
+			gd<DinoMachEdge>(dme).isReversed = false;
 		}
 	}
 	void ModifyNode(DinoMachine::Node *dmn) {

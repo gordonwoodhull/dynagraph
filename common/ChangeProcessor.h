@@ -39,7 +39,7 @@ struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 		: ChangeProcessor<Graph>(world),next_(next) {}
 	virtual ~LinkedChangeProcessor() {
 		if(next_)
-			delete next_;
+				delete next_;
 	}
 	void NextProcess() {
 		if(next_)

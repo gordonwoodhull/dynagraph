@@ -112,9 +112,10 @@ struct GraphGeom {
 		defaultSize; // node size to use if neither width nor height specified
 	double edgeSeparation;
 	float ticks; // time limit, in seconds, 0 - no limit (NYI)
-	bool reportIntermediate; // report intermediate (crude) layouts
+	bool reportIntermediate, // report intermediate (crude) layouts
+		s_edges; // draw all reversed edges as Ss
 	GraphGeom() : splineLevel(DG_SPLINELEVEL_SPLINE),labelGap(0,0),resolution(0.1,0.1),
-		separation(0.5,0.5),defaultSize(1.5,1),edgeSeparation(-1.),ticks(0),reportIntermediate(false) {}
+		separation(0.5,0.5),defaultSize(1.5,1),edgeSeparation(-1.),ticks(0),reportIntermediate(false),s_edges(false) {}
 };
 struct StaticLabel {
 	Rect bounds;
@@ -226,10 +227,11 @@ struct EdgeGeom {
 		toTop; // default both true: measure from bottom of tail to top of head
 	bool constraint, // whether this edge affects ranking; set false by DynaDAG if last in cycle or if a node is nailed
 		manualRoute, // try to use the line specified in pos
-		backward; // do rank constaints backward
+		backward, // do rank constaints backward
+		s_edge; // draw as S if reversed (drawn against flow)
 	EdgeGeom() : tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),tailClipped(true),
 		headClipped(true),minLength(1.0),fromBottom(true),toTop(true),constraint(true),
-		manualRoute(false),backward(false) {}
+		manualRoute(false),backward(false),s_edge(false) {}
 };
 struct EdgeLabel {
 	// input
