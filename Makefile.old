@@ -30,7 +30,7 @@ OTHERLIBS = -Lincrface -lincrface \
 	-Lshortspline -lshortspline \
 	-Lvoronoi -lvoronoi
 
-OBJS = instantiateEngines.o
+OBJS = instantiateEngines.o IncrCalledBack.o DuplicateStream.o
 
 MANS = 
 

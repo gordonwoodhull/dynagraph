@@ -45,28 +45,28 @@ struct DynagraphThread {
 		}
 		catch(Assertion sert) {
 			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
+			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << std::endl;
 			if(g_xeptOut)
 				throw;
 			exit(23);
 		}
 		catch(DGException2 dgx) {
 			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << endl;
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << std::endl;
 			if(g_xeptOut)	
 				throw;
 			exit(23);
 		}
 		catch(DGException dgx) {
 			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << endl;
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << std::endl;
 			if(g_xeptOut)
 				throw;
 			exit(23);
 		}
 		catch(...) {
 			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) unknown exception\"" << endl;
+			reports[dgr::output] << "message \"(exception) unknown exception\"" << std::endl;
 			exit(23);
 		}
 	}

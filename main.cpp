@@ -85,7 +85,7 @@ switchval<dgr::reportType> g_reports[] = {
 	{'n',dgr::inner_input,"inner engine input"},
 	{'u',dgr::inner_output,"inner engine output"}
 };
-int g_nreports = sizeof(g_reports)/sizeof(switchval<enum reportTypes>);
+int g_nreports = sizeof(g_reports)/sizeof(switchval<dgr::reportTypeoutput>);
 template<typename V>
 pair<bool,V> findSwitchVal(switchval<V> *array,int n,char c) {
 	for(int i =0;i<n;++i)
