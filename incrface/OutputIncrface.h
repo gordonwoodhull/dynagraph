@@ -37,4 +37,3 @@ struct OutputIncrface : LinkedChangeProcessor<Graph> {
 } // namespace Dynagraph
 
 #endif //OutputIncrface_h
-dyn
