@@ -32,7 +32,7 @@ void Region::updateBounds() {
 		boundary.valid = false;
 	}
 	else {
-		assert(shape.degree!=0);
+		dgassert(shape.degree!=0);
 		boundary.l = boundary.r = shape.front().x;
 		boundary.t = boundary.b = shape.front().y;
 		for(Line::iterator i = shape.begin()+1; i!=shape.end(); ++i) {
@@ -88,7 +88,7 @@ bool Region::sameSide(const Coord &p0, const Coord &p1, int seg) const {
 		return nroots==0;
 	}
 	default:
-		assert(0);
+		dgassert(0);
 		return false;
 	}
 }

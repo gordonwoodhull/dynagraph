@@ -85,7 +85,7 @@ void NSRanker<Layout>::doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI) 
 }
 template<typename Layout>
 void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
-	assert(!gd<NSRankerEdge>(e).strong);
+	dgassert(!gd<NSRankerEdge>(e).strong);
 	gd<EdgeGeom>(e).constraint = true;
 
 	DDCGraph::Node *tvar,*hvar;
@@ -107,7 +107,7 @@ void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
 }
 template<typename Layout>
 void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
-	assert(!gd<NSRankerEdge>(e).weak);
+	dgassert(!gd<NSRankerEdge>(e).weak);
 	gd<EdgeGeom>(e).constraint = false;
 
 	DDCGraph::Node *tvar,*hvar;
@@ -278,7 +278,7 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 			continue;
 		int newTopRank = DDNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
 			newBottomRank = DDNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
-		assert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
+		dgassert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
 		if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 			gd<NSRankerNode>(n).newTopRank = newTopRank;
 			gd<NSRankerNode>(n).newBottomRank = newBottomRank;

@@ -94,12 +94,12 @@ static void
 printV (PtItem *vp)
 {
     if (vp == NULL) {
-       fprintf (stderr, "<empty>\n");
+       reports[dgr::error] <<  "<empty>" << endl;
        return;
     }
 
     while (vp != NULL) {
-       fprintf (stderr, "(%.16f,%.16f)\n", vp->p.x, vp->p.y);
+       reports[dgr::error] << '(' << vp->p << ')' << endl;
        vp = vp->next;
     }
 }
@@ -107,8 +107,7 @@ printV (PtItem *vp)
 static void
 error (Info* ip, Site* s, double x, double y)
 {
-    fprintf (stderr, "Unsorted vertex list for site %d (%.16f,%.16f), pt (%f,%f)\n",
-        s->sitenbr, s->coord.x, s->coord.y, x, y);
+    reports[dgr::error] <<  "Unsorted vertex list for site " << s->sitenbr << " (" << s->coord << "), pt (" << x << ',' << y << ')' << endl;
     printV (ip->verts);
 }
 
@@ -126,8 +125,7 @@ sorted (Coord* origin, PtItem* vp)
          next = next->next;
       }
       else {
-          fprintf (stderr, "(%.16f,%.16f) > (%.16f,%.16f)\n",
-            vp->p.x, vp->p.y, next->p.x, next->p.y);
+          reports[dgr::error] << '(' << vp->p << ") < (" << next->p << ')' << endl;
           return 0;
       }
     }
@@ -145,7 +143,7 @@ void Infos::addVertex (Site* s, Coord c) {
     PtItem    tmp;
     int       cmp;
 
-/* fprintf (stderr, "addVertex (%d, %f, %f)\n", s->sitenbr, x, y); */
+// reports[dgr::error] <<  "addVertex (" << s->sitenbr << ',' << c << ')' << endl;
     ip = &nodes[s->sitenbr];
     curr = ip->verts;
 

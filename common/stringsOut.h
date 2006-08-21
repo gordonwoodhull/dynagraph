@@ -168,6 +168,12 @@ void stringifyEdgePos(const Line &ep,Transform *trans,const Coord &res,GO *go) {
     o << std::ends;
 	SetAndMark(go,"pos",o.str());
 }
+template<typename T,typename GO>
+void stringifyAttr(const T &val,DString attr,GO *go); // undefined
+template<typename GO>
+inline void stringifyAttr(const bool &val,DString attr,GO *go) {
+	SetAndMark(go,attr,val?"true":"false");
+}
 
 // some attributes belong to all Geoms
 template<typename GO>
@@ -196,6 +202,8 @@ void stringsOut(Transform *trans,typename Layout::Node *n,Update u) {
 		stringifyPolyDef(gd<PolyDef>(n),trans,gg.resolution,n);
 	if(u.flags&DG_UPD_LABEL)
 		stringifyNodeLabels(gd<NodeLabels>(n),trans,gg.resolution,n);
+	if(u.flags&DG_UPD_SUPPRESSION)
+		stringifyAttr(gd<NodeGeom>(n).suppressed,"suppressed",n);
 }
 template<typename Layout>
 void stringsOut(Transform *trans,typename Layout::Edge *e,Update u) {

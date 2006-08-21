@@ -231,7 +231,7 @@ struct we_do_what_we_are_told {
 };
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_load_strgraph(StrGraph *sg,bool merge, bool del) {
-    assert(merge && del);
+    dgassert(merge && del);
     we_do_what_we_are_told<NGraph> react(this);
     incr_ev_lock();
     diff_strgraph(&world_->current_,sg,react);

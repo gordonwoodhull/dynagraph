@@ -26,8 +26,8 @@ struct DinoSearchLookIn : DinoInternalChanges {
             : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
-		assert(gd<DinoMachNode>(t).handler->dinotype()=="abstract");
-		assert(gd<DinoMachNode>(h).handler->dinotype()=="layout");
+		dgassert(gd<DinoMachNode>(t).handler->dinotype()=="abstract");
+		dgassert(gd<DinoMachNode>(h).handler->dinotype()=="layout");
 		m_source = &static_cast<IncrStrGraphHandler<StrChGraph>*>(gd<DinoMachNode>(t).handler)->world_->whole_;
 		m_dest = static_cast<IncrStrGraphHandler<Layout>*>(gd<DinoMachNode>(h).handler);
 	}
@@ -86,8 +86,8 @@ struct DinoSearchLookOut : DinoInternalChanges {
             : m_chain(chain),m_dinoe(de) {
         DinoMachine::Node *t = de->tail,
 			*h = de->head;
-		assert(gd<DinoMachNode>(t).handler->dinotype()=="layout");
-		assert(gd<DinoMachNode>(h).handler->dinotype()=="abstract");
+		dgassert(gd<DinoMachNode>(t).handler->dinotype()=="layout");
+		dgassert(gd<DinoMachNode>(h).handler->dinotype()=="abstract");
 		m_source = static_cast<IncrStrGraphHandler<Layout>*>(gd<DinoMachNode>(t).handler);
 		m_dest = &static_cast<IncrStrGraphHandler<StrChGraph>*>(gd<DinoMachNode>(h).handler)->world_->whole_;
 	}

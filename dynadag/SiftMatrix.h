@@ -31,21 +31,21 @@ struct SiftMatrix {
 		return m_light?crosslight(cc):crossweight(cc);
 	}
 	std::pair<unsigned,unsigned> &crossings(DDModel::Node *u,DDModel::Node *v) {
-		assert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
+		dgassert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
 		return data[gd<DDNode>(u).rank][gd<DDNode>(u).order][gd<DDNode>(v).order];
 	}
 	unsigned getCrossings(DDModel::Node *u, DDModel::Node *v,bool outs) {
 		std::pair<unsigned,unsigned> &p = crossings(u,v);
-		assert(p.first>=0 && p.second>=0);
+		dgassert(p.first>=0 && p.second>=0);
 		if(outs)
 			return p.second;
 		else
 			return p.first;
 	}
 	void setCrossings(DDModel::Node *u, DDModel::Node *v,bool outs,unsigned val) {
-		assert(val>=0);
+		dgassert(val>=0);
 		std::pair<unsigned,unsigned> &p = crossings(u,v);
-		assert(p.first>=0 && p.second>=0);
+		dgassert(p.first>=0 && p.second>=0);
 		if(outs)
 			p.second = val;
 		else
@@ -69,7 +69,7 @@ struct SiftMatrix {
 			for(NodeV::iterator ni = r->order.begin(); ni<end; ++ni)
 				for(NodeV::iterator ni2 = ni+1;ni2!=r->order.end(); ++ni2) {
 					unsigned c = getCrossings(*ni,*ni2,false);
-					assert(c>=0);
+					dgassert(c>=0);
 					ret += c;
 				}
 		}

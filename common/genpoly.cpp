@@ -54,7 +54,7 @@ void regpolygon(double size,int nsides,Line &out) {
   double		t,theta;
   int			i;
 
-  assert (nsides >= 3);
+  dgassert (nsides >= 3);
   out.clear();
   out.degree = 1;
 
@@ -308,9 +308,9 @@ static Coord distance_along_line(Coord pt,double slope,double dist,bool toward) 
   c = sqr(pt.x) + sqr(ofs) - 2.0*pt.y*ofs + sqr(pt.y) - sqr(dist);
 
   // quadratic formula
-  assert(a);
+  dgassert(a);
   tmp = -b/(2.0*a);
-  assert(sqr(b)>4.0*a*c);
+  dgassert(sqr(b)>4.0*a*c);
   tmp2 = sqrt(sqr(b)-4.0*a*c)/(2.0*a);
 
   // choose the solution that matches toward
@@ -347,7 +347,7 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
     E.b = poly[i+1];
 
     m = slope(E);
-    //assert(m);
+    //dgassert(m);
     if(fabs(m)<1e-3)
         n = m<0.0?Infinity:-Infinity;
     else
@@ -384,7 +384,7 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
 	  c.y = m*c.x+b;
 	}
       }
-      assert(c.y<1e5 && c.y>-1e5);
+      dgassert(c.y<1e5 && c.y>-1e5);
       out.push_back(c);
     }
 

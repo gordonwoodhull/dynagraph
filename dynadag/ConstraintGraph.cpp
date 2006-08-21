@@ -32,7 +32,7 @@ DDCGraph::Node *ConstraintGraph::GetVar(NodeConstraints &nc) {
 void ConstraintGraph::Stabilize(NodeConstraints &nc, int newrank, int weight) {
 	if(!nc.stab)
 		gd<ConstraintType>(nc.stab = create_node()).why = ConstraintType::stab;
-//	assert(newrank>-1000000 && newrank<1000000);
+//	dgassert(newrank>-1000000 && newrank<1000000);
 	DDCGraph::Node *var = GetVar(nc);
 	int len0,len1;
 	if (newrank >= 0) {

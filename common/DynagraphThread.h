@@ -44,33 +44,34 @@ struct DynagraphThread {
 			engine_->Process();
 		}
 		catch(Assertion sert) {
-			fprintf(stdout,"message \"(exception) Assertion: %s; %s, %d\"\n",sert.expr,sert.file,sert.line);
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
 			if(g_xeptOut)
 				throw;
-			if(sert.fatal)
-				exit(23);
+			exit(23);
 		}
 		catch(DGException2 dgx) {
-			fprintf(stdout,"message \"(exception) %s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
-			if(g_xeptOut)
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << endl;
+			if(g_xeptOut)	
 				throw;
-			if(dgx.fatal)
-				exit(23);
+			exit(23);
 		}
 		catch(DGException dgx) {
-			fprintf(stdout,"message \"(exception) %s\"\n",dgx.exceptype.c_str());
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << endl;
 			if(g_xeptOut)
 				throw;
-			if(dgx.fatal)
-				exit(23);
+			exit(23);
 		}
 		catch(...) {
-			fprintf(stdout,"message \"(exception) unknown exception\"");
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) unknown exception\"" << endl;
 			exit(23);
 		}
 	}
 	void interrupt() {
-		assert(boost::thread()!=*thread_);
+		dgassert(boost::thread()!=*thread_);
 		gd<Interruptible>(&world_.whole_).interrupt = true;
 		thread_->join();
 		gd<Interruptible>(&world_.whole_).interrupt = false;

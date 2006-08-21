@@ -27,8 +27,8 @@ namespace DynaDAG {
 template<typename Layout1,typename Layout2>
 struct SEdger : ChangeTranslator<Layout1,Layout2> {
 	LayoutToLayoutTranslator<Layout1,Layout2,true> actions_;
-	SEdger(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2) 
-		: ChangeTranslator<Layout1,Layout2>(world1,world2) 
+	SEdger(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2)
+		: ChangeTranslator<Layout1,Layout2>(world1,world2)
 	{}
 	typedef FlexiRankXlator<Layout2> RankXlator;
 	typedef enum {spliced,one,none} SpliceState;
@@ -60,11 +60,11 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 		Name ename = gd<Name>(e1);
 		ChangeQueue<Layout2> &Q2 = LinkedChangeProcessor<Layout2>::world_->Q_;
 		typename Layout2::Edge *e2;
-		for(SpliceEdgePartsIterator<Layout2> ei2(Q2.whole,ename,'e'); e2=*ei2; ++ei2)
+		for(SpliceEdgePartsIterator<Layout2> ei2(Q2.whole,ename,'e'); (e2=*ei2); ++ei2)
 			actions_.DeleteEdge(e1,Q2.DelEdge(e2).object);
 		typename Layout2::Node *n2;
-		for(SpliceNodePartsIterator<Layout2> ni2(Q2.whole,ename,'e'); n2=*ni2; ++ni2)
-			Q2.DelNode(n2); 
+		for(SpliceNodePartsIterator<Layout2> ni2(Q2.whole,ename,'e'); (n2=*ni2); ++ni2)
+			Q2.DelNode(n2);
 	}
 	void createSplice(typename Layout1::Edge *e1,ChangeQueue<Layout2> &Q2) {
 		Name ename = gd<Name>(e1);
@@ -97,7 +97,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 				break;
 			case one:
 				actions_.DeleteEdge(e1,Q2.DelEdge(Q2.whole->fetch_edge(ename)).object);
-			case none: 
+			case none:
 				createSplice(e1,Q2);
 			}
 			typename Layout2::Node *n2tf = Q2.whole->fetch_node(partName(ename,'e',1)),
@@ -118,7 +118,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 			}
 			if(mvhf) {
 				ModifyNode(Q2,n2hf,DG_UPD_MOVE);
-				ModifyEdge(Q2,e2ts,DG_UPD_MOVE);
+				ModifyEdge(Q2,e2hs,DG_UPD_MOVE);
 			}
 			if(mvtf||mvhf)
 				ModifyEdge(Q2,e2bs,DG_UPD_MOVE);
@@ -136,9 +136,9 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 				e2 = Q2.whole->fetch_edge(ename);
 				actions_.ModifyEdge(e1,Q2.ModEdge(e2).object);
 				break;
-			case spliced: 
+			case spliced:
 				eraseSplice(e1);
-			case none: 
+			case none:
 				e2 = Q2.whole->fetch_edge(n2t,n2h,ename,true).first;
 				actions_.InsertEdge(e1,Q2.InsEdge(e2).object);
 				break;
@@ -152,9 +152,9 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 		}
 		case none:
 			switch(splicedness) {
-			case none: 
+			case none:
 				break;
-			case spliced: 
+			case spliced:
 				eraseSplice(e1);
 				break;
 			case one: {
@@ -182,10 +182,10 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 				typename Layout2::Node *n2m = Q2.ModNode(n2).object;
 				actions_.ModifyNode(*ni,n2m);
 				for(typename Layout1::outedge_iter ei = n1->outs().begin(); ei!=n1->outs().end(); ++ei)
-					if(!Q1.insE.find(*ei) && !Q1.modE.find(*ei) && !Q1.delE.find(*ei)) 
+					if(!Q1.insE.find(*ei) && !Q1.modE.find(*ei) && !Q1.delE.find(*ei))
 						updateRepresentation(*ei,thirrank);
 				for(typename Layout1::inedge_iter ei = n1->ins().begin(); ei!=n1->ins().end(); ++ei)
-					if(!Q1.insE.find(*ei) && !Q1.modE.find(*ei) && !Q1.delE.find(*ei)) 
+					if(!Q1.insE.find(*ei) && !Q1.modE.find(*ei) && !Q1.delE.find(*ei))
 						updateRepresentation(*ei,thirrank);
 			}
 		for(typename Layout1::graphedge_iter ei = Q1.insE.edges().begin(); ei!=Q1.insE.edges().end(); ++ei)

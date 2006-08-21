@@ -70,7 +70,7 @@ protected:
 		for(hitpos = 0;hitpos<MAX_TRAVERSAL;++hitpos)
 			if(!gd<Hit>(m_g)[hitpos])
 				break;
-		assert(hitpos<MAX_TRAVERSAL);
+		dgassert(hitpos<MAX_TRAVERSAL);
 		gd<Hit>(m_g)[hitpos] = true;
 		return hitpos;
 	}
@@ -89,7 +89,7 @@ struct DFS : Traversal<G> {
 		if(m_curr.e)
 			gd<Hit>(m_curr.e)[Traversal<G>::m_hitpos] = true;
 		else {
-			assert(m_curr.n!=0);
+			dgassert(m_curr.n!=0);
 			gd<Hit>(m_curr.n)[Traversal<G>::m_hitpos] = true;
 		}
 		// try edges
@@ -128,7 +128,7 @@ private:
 				++(startOut = m_curr.n->outs().iter(deadpath));
 			}
 			else {
-				assert(deadpath->head==m_curr.n);
+				dgassert(deadpath->head==m_curr.n);
 				++(startIn = m_curr.n->ins().iter(deadpath));
 			}
 		}
@@ -203,7 +203,7 @@ struct BFS : Traversal<G> {
 	typedef typename G::Node Node;
 	typedef typename G::Edge Edge;
 	V operator *() {
-		assert(!m_queue.empty());
+		dgassert(!m_queue.empty());
 		return m_queue.front();
 	}
 	BFS &operator++() {

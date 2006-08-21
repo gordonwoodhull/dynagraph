@@ -239,7 +239,7 @@ struct Line : std::vector<Coord> {
 		It b = ci,
 			e = ci+degree+1;
 		if(size()) {
-			assert(back()==*b);
+			dgassert(back()==*b);
 			b++;
 		}
 		insert(end(),b,e);
@@ -253,9 +253,9 @@ struct Line : std::vector<Coord> {
 		return ret;
 	}
 	Line &operator +=(const Line &append) {
-		assert(degree==append.degree);
+		dgassert(degree==append.degree);
 		Coord b = back(),f = append.front();
-		assert(b==f);
+		dgassert(b==f);
 		insert(end(),append.begin()+1,append.end());
 		return *this;
 	}
@@ -301,7 +301,7 @@ private:
 	bool sameSide(const Coord &p0, const Coord &p1, int seg) const;
 };
 // check that e.g. YIntersection exists
-inline Coord checkPos(Position p) { check(p.valid); return p; }
+inline Coord checkPos(Position p) { dgassert(p.valid); return p; }
 
 } // namespace Dynagraph
 

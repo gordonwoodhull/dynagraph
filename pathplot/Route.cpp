@@ -19,6 +19,8 @@
 #include "common/Solvers.h"
 #include "BezCoeffs.h"
 
+using namespace std;
+
 #define PATHDEBUGGING 1
 
 #define EPSILON1 1E-6
@@ -52,15 +54,8 @@ bool Route(const SegmentV &barriers, const Line &input,Segment endSlopes,Line &o
 			if(barriers[i].b==barriers[j].a) continue;
 			if(barriers[i].b==barriers[j].b) continue;
 			if(segsIntersect(barriers[i].a,barriers[i].b,barriers[j].a,barriers[j].b)) {
-				report(r_error,"input region self-intersection: (%.3lf,%.3lf),(%.3lf,%.3lf) X (%.3lf,%.3lf),(%.3lf,%.3lf)\n",
-					barriers[i].a.x,
-					barriers[i].a.y,
-					barriers[i].b.x,
-					barriers[i].b.y,
-					barriers[j].a.x,
-					barriers[j].a.y,
-					barriers[j].b.x,
-					barriers[j].b.y);
+				reports[dgr::error] << "input region self-intersection: (" << barriers[i].a << "),(" << barriers[i].b 
+					<< ") X (" << barriers[j].a << "),(" << barriers[j].b << ')' << endl;
 				return false;
 			}
 		}
@@ -77,32 +72,32 @@ bool Route(const SegmentV &barriers, const Line &input,Segment endSlopes,Line &o
 	delete [] tnas;
 
 #if DEBUGPATH
-	fprintf(stderr, "%%!PS-splinomatic\n");
-	fprintf(stderr, "%% edges\n");
-	fprintf(stderr,"0 0 1 setrgbcolor\n");
+	reports[dgr::error] <<  "%%!PS-splinomatic" << endl;
+	reports[dgr::error] <<  "%% edges" << endl;
+	reports[dgr::error] << "0 0 1 setrgbcolor" << endl;
 	for(int ipi = 0; ipi < barriers.size(); ipi++)
-			fprintf(stderr, "newpath %f %f moveto %f %f lineto stroke\n",
+			reports[dgr::error] <<  "newpath %f %f moveto %f %f lineto stroke\n",
 	edges[ipi].a.x,edges[ipi].a.y,
 	edges[ipi].b.x,edges[ipi].b.y);
 
-	fprintf(stderr, "%% input path\n");
-	fprintf(stderr,"1 0 0 setrgbcolor\n");
-	fprintf(stderr,"newpath");
+	reports[dgr::error] <<  "%% input path" << endl;
+	reports[dgr::error] << "1 0 0 setrgbcolor" << endl;
+	reports[dgr::error] << "newpath";
 		for(ipi = 0; ipi < input.size(); ipi++) {
-			fprintf(stderr, " %f %f", inps[ipi].x, inps[ipi].y);
-	if(ipi == 0) fprintf(stderr," moveto");
-	else fprintf(stderr," lineto");
+			reports[dgr::error] <<  ' ' << inps[ipi].x << ' ' << inps[ipi].y;
+	if(ipi == 0) reports[dgr::error] << " moveto";
+	else reports[dgr::error] << " lineto";
 	}
-	fprintf(stderr," stroke\n");
-	fprintf(stderr, "%% output spline\n");
-	fprintf(stderr,"1 .9 .8 setrgbcolor\n");
-	fprintf(stderr,"newpath");
+	reports[dgr::error] << " stroke" << endl;
+	reports[dgr::error] <<  "%% output spline" << endl;
+	reports[dgr::error] << "1 .9 .8 setrgbcolor" << endl;
+	reports[dgr::error] << "newpath";
 		for(int opi = 0; opi < opl; opi++) {
-			fprintf(stderr, " %f %f", ops[opi].x, ops[opi].y);
-	if(opi == 0) fprintf(stderr," moveto");
-	else if(opi % 3 == 0) fprintf(stderr," curveto");
+			reports[dgr::error] << ' ' << ops[opi].x << ' ' << ops[opi].y;
+	if(opi == 0) reports[dgr::error] << " moveto";
+	else if(opi % 3 == 0) reports[dgr::error] << " curveto";
 	}
-	fprintf(stderr," stroke\n");
+	reports[dgr::error] << " stroke" << endl;
 #endif
 
     return true;
@@ -201,13 +196,13 @@ static bool splineFits(const SegmentV &barriers,Coord pa, Coord va,
 			pb};
         if(splineIsInside(barriers, sps)) {
 			out.AddSeg(sps);
-			report(r_splineRoute,"success: %f %f\n", a, b);
+			reports[dgr::splineRoute] << "success: " << a << ' ' << b << endl;
             return true;
         }
         if(a == 0 && b == 0) {
             if(forceflag) {
 				out.AddSeg(sps);
-				report(r_splineRoute,"forced straight line: %f %f\n", a, b);
+				reports[dgr::splineRoute] << "forced straight line: " << a << ' ' << b << endl;
                 return true;
             }
             break;
@@ -218,7 +213,7 @@ static bool splineFits(const SegmentV &barriers,Coord pa, Coord va,
             a = b = 0;
     }
 #if DEBUG >= 1
-fprintf(stderr, "failure\n");
+reports[dgr::error] <<  "failure" << endl;
 #endif
     return false;
 }

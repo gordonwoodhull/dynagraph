@@ -70,9 +70,9 @@ EnginePair<Graph> createEngine(DString engines,ChangingGraph<Graph> *world) {
 		typename EngineCreator<Graph>::create_fn crea = creators<Graph>::getMap()[*ei];
 		if(!crea) {
 			/*
-			std::cout << the_creators.size() << " creators:" << std::endl;
+			reports[dgr::error] << the_creators.size() << " creators:" << std::endl;
 			for(typename creators<Graph>::iterator ci = the_creators.begin(); ci!=the_creators.end(); ++ci)
-				std::cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
+				reports[dgr::error] << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
 			*/
 			delete first;
 			throw DGException2("engine name not known or not appropriate for graph type",*ei);

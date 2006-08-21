@@ -123,7 +123,7 @@ struct DinoMachine : NamedGraph<ADTisCDT,NamedAttrs,DinoMachNode,DinoMachEdge> {
 			m_start = n;
 		else if(m_start==n)
 			return;
-        assert(n);
+        dgassert(n);
         for(outedge_iter oi = n->outs().begin(); oi!=n->outs().end(); ++oi)
             if(DinoInternalChanges *handler = gd<DinoMachEdge>(*oi).handler)
                 handler->GraphChanged();

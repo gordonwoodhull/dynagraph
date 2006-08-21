@@ -17,6 +17,8 @@
 
 #include "Geometry.h"
 
+using namespace std;
+
 namespace Dynagraph {
 
 int Line::GetSeg(double y) {
@@ -119,18 +121,19 @@ Position Line::Intersection(int seg,Segment other) {
 
 void showshape(const Line &shape,Coord ul,Coord ofs = Coord(0,0)) {
 	if(shape.size()) {
-		report(r_bug,"<path d=\"M%f %f ",shape[0].x+ofs.x-ul.x,ul.y-(shape[0].y+ofs.y));
+		reports[dgr::bug] << "<path d=\"M" << shape[0].x+ofs.x-ul.x << ' ' << ul.y-(shape[0].y+ofs.y) << ' ';
 		switch(shape.degree) {
-		case 1: report(r_bug,"L");
+		case 1: reports[dgr::bug] << "L";
 			break;
-		case 3:	report(r_bug,"C");
+		case 3:	reports[dgr::bug] << "C";
 			break;
 		default:
-			assert(0);
+			dgassert(0);
 		}
 		for(Line::const_iterator ci = shape.begin()+1;ci!=shape.end(); ++ci)
-			report(r_bug,"%f %f ",ci->x+ofs.x-ul.x,ul.y-(ci->y+ofs.y));
-		report(r_bug,"\"\nstyle=\"fill:none;stroke:rgb(0,0,0);stroke-width:1\"/>\n");
+			reports[dgr::bug] << ci->x+ofs.x-ul.x << ' ' << ul.y-(ci->y+ofs.y);
+		reports[dgr::bug] << '"' << endl <<
+			"style=\"fill:none;stroke:rgb(0,0,0);stroke-width:1\"/>" << endl;
 	}
 }
 void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
@@ -162,17 +165,17 @@ void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
 		lastI = source.size() - degree - 1;
 	/*
 	if(firstI>lastI) {
-		report(r_bug,"<?xml version=\"1.0\" standalone=\"no\"?>\n"
-			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"\n"
-			"\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">\n");
-		report(r_bug,"<svg width=\"100%%\" height=\"100%%\">\n");
+		reports[dgr::bug] << "<?xml version=\"1.0\" standalone=\"no\"?>" << endl <<
+			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"" << endl <<
+			"\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">" << endl;
+		reports[dgr::bug] << "<svg width=\"100%%\" height=\"100%%\">" << endl;
 		const PolylineRegion *pr = static_cast<const PolylineRegion*>(tl);
 		Coord ul = offsetTail; // (offsetTail.x - pr->boundary.Width()/2,offsetTail.y + pr->boundary.Height()/2);
 		showshape(pr->shape,ul,offsetTail);
 		pr = static_cast<const PolylineRegion*>(hd);
 		showshape(pr->shape,ul,offsetHead);
 		showshape(source,ul);
-		report(r_bug,"</svg>\n");
+		reports[dgr::bug] << "</svg>" << endl;
 	}
 	*/
 	Coord temp[4];

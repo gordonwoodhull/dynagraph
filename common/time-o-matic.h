@@ -18,23 +18,20 @@
 #define time_o_matic_h
 
 
-#include <string>
-#include <vector>
-#include <map>
-#include <stdarg.h>
+#include "useful.h"
 
 namespace Dynagraph {
 
 struct Timer {
 	double Start();
-	double Elapsed(int rt,double start,char *s,...);
-	double Now(int rt,char *s,...);
+	double Elapsed(dgr::reportType rt,double start,char *s,...);
+	double Now(dgr::reportType rt,char *s,...);
 
-	void LoopPoint(int rt,char *s);
+	void LoopPoint(dgr::reportType rt,char *s);
 	Timer();
 private:
 	double currentTime();
-	double display(int rt,double last,char *format,char *s,va_list va);
+	double display(dgr::reportType rt,double last,char *format,char *s,va_list va);
 #ifdef _WIN32
 	__int64 m_frequency,m_start;
 #endif

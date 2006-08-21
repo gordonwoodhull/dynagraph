@@ -75,27 +75,27 @@ StrGraph &result(Session &s) {
 struct emitReact {
 	const char *view;
 	void ins(StrGraph::Node *n) {
-		cout << "insert node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << " "
+		reports[dgr::output] << "insert node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << " "
 			<< gd<StrAttrs>(n) << endl;
 	}
 	void ins(StrGraph::Edge *e) {
-		cout << "insert edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) <<
+		reports[dgr::output] << "insert edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) <<
             " " << mquote(gd<Name>(e->tail)) << " " << mquote(gd<Name>(e->head)) << " "
 			<< gd<StrAttrs>(e) << endl;
 	}
     void mod(StrGraph::Node*,StrGraph::Node *n,StrAttrs *attrs) {
-		cout << "modify node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << " "
+		reports[dgr::output] << "modify node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << " "
 			<< *attrs << endl;
 	}
     void mod(StrGraph::Edge*,StrGraph::Edge *e,StrAttrs *attrs) {
-		cout << "modify edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << " "
+		reports[dgr::output] << "modify edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << " "
 			<< *attrs << endl;
 	}
 	void del(StrGraph::Node *n) {
-		cout << "delete node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << endl;
+		reports[dgr::output] << "delete node " << mquote(view) << " " << mquote(gd<Name>(n).c_str()) << endl;
 	}
 	void del(StrGraph::Edge *e) {
-		cout << "delete edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << endl;
+		reports[dgr::output] << "delete edge " << mquote(view) << " " << mquote(gd<Name>(e).c_str()) << endl;
 	}
 };
 void remove_2cycles(StrGraph &g) {
@@ -113,13 +113,13 @@ void output_result(const char *view,StrGraph &start,Session &s) {
 	remove_2cycles(finish);
 	emitReact r;
 	r.view = view;
-	cout << "lock graph " << mquote(view) << endl;
+	reports[dgr::output] << "lock graph " << mquote(view) << endl;
 	diff_strgraph(&start,&finish,r);
-	cout << "unlock graph " << mquote(view) << endl;
+	reports[dgr::output] << "unlock graph " << mquote(view) << endl;
     /*
-	cout << "segue graph " << mquote(view) << endl;
-	cout.flush();
-	emitGraph(cout,&finish);
+	reports[dgr::output] << "segue graph " << mquote(view) << endl;
+	reports[dgr::output].flush();
+	emitGraph(reports[dgr::output],&finish);
     */
 }
 void run(Session &s,const char *view) {
@@ -143,7 +143,7 @@ void gs_open_graph(char *view)
 		gs_close_graph(view);
 	}
 	bool hasSearch = assign_search(s);
-	cout << "open graph " << mquote(view) << ' '
+	reports[dgr::output] << "open graph " << mquote(view) << ' '
 		<< g_currAttrs << endl;
 	if(hasSearch)
         run(s,view);
@@ -157,14 +157,14 @@ void gs_close_graph(char *view)
 		g_sessions.erase(view);
 	}
 	else gs_error(IF_ERR_NOT_OPEN,view);
-	cout << "close graph " << mquote(view) << endl;
+	reports[dgr::output] << "close graph " << mquote(view) << endl;
 }
 
 void gs_mod_graph(char *view) {
 	Session &s = g_sessions[view];
     if(!s.locks) {
-	    cout.flush();
-	    cout << "modify graph " << mquote(view) << ' '
+	    reports[dgr::output].flush();
+	    reports[dgr::output] << "modify graph " << mquote(view) << ' '
 	    	<< g_currAttrs << endl;
     }
 	if(assign_search(s))
@@ -229,7 +229,7 @@ void gs_define_search() {
 		search_changed(name,true);
 	}
 	catch(UndefinedPattern up) {
-		fprintf(stderr,"undefined pattern %s\n",up.name.c_str());
+		reports[dgr::error] << "undefined pattern " << up.name << endl;
 	}
 	delete sg;
 }
@@ -243,10 +243,10 @@ void gs_define_input() {
 		input->readSubgraph(sg);
 	}
 	catch(NodeNotFound nnf) {
-		fprintf(stderr,"input node %s not found\n",nnf.name.c_str());
+		reports[dgr::error] << "input node " << nnf.name << " not found " << endl;
 	}
 	catch(EdgeNotFound enf) {
-		fprintf(stderr,"input edge %s -> %s not found\n",enf.tail.c_str(),enf.head.c_str());
+		reports[dgr::error] << "input edge " << enf.tail << " -> " << enf.head << " not found" << endl;
 	}
     g_inputs[gd<Name>(sg)] = input;
     for(Sessions::iterator si = g_sessions.begin(); si!=g_sessions.end(); ++si) {
@@ -313,7 +313,7 @@ static char *ErrMsg[] = {
 void gs_error(int code, char *str)
 {
 	if (!str) str = "";
-	fprintf(stderr,"graphsearch interface: %s %s\n",ErrMsg[code],str);
+	reports[dgr::error] << "graphsearch interface: " << ErrMsg[code] << ' ' << str << endl;
 	throw GSError();
 }
 

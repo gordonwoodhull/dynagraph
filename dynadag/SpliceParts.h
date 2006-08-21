@@ -72,12 +72,12 @@ struct SplicePartsIterator {
 template<typename Layout>
 struct SpliceNodePartsIterator : SplicePartsIterator<Layout,NodeTyping<Layout> > {
 	SpliceNodePartsIterator(Layout *layout,Name base,char prefix,int i=1) : SplicePartsIterator<Layout,NodeTyping<Layout> >(layout,base,prefix,i) {}
-	SpliceNodePartsIterator(SpliceNodePartsIterator &it) : SplicePartsIterator(it) {}
+	SpliceNodePartsIterator(SpliceNodePartsIterator &it) : SplicePartsIterator<Layout,NodeTyping<Layout> >(it) {}
 };
 template<typename Layout>
 struct SpliceEdgePartsIterator : SplicePartsIterator<Layout,EdgeTyping<Layout> > {
 	SpliceEdgePartsIterator(Layout *layout,Name base,char prefix,int i=1) : SplicePartsIterator<Layout,EdgeTyping<Layout> >(layout,base,prefix,i) {}
-	SpliceEdgePartsIterator(SpliceEdgePartsIterator &it) : SplicePartsIterator(it) {}
+	SpliceEdgePartsIterator(SpliceEdgePartsIterator &it) : SplicePartsIterator<Layout,EdgeTyping<Layout> >(it) {}
 };
 
 } // namespace DynaDAG

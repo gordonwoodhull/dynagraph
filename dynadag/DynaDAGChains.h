@@ -34,7 +34,7 @@ struct Chain {
 			if(i==chain->last)
 				i = 0;
 			else {
-				assert(i);
+				dgassert(i);
 				i = *i->head->outs().begin();
 			}
 			return *this;
@@ -61,7 +61,7 @@ struct Chain {
 	private:
 		edge_iter(Chain *chain,E *i) : chain(chain), i(i) {
 			if(i)
-				assert(i->head->g); // make sure valid pointer
+				dgassert(i->head->g); // make sure valid pointer
 		}
 		E *i;
 	};
@@ -142,7 +142,7 @@ struct MultiNode : Chain<N,E> {
 				++ei;
 				return *this;
 			default:
-				assert(0);
+				dgassert(0);
 				return *this;
 			}
 		}

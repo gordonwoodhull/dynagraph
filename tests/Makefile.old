@@ -1,6 +1,7 @@
 .SUFFIXES  : .incr .incrout
 
 DYNAGRAPH=../dynagraph
+DY_OPTS=
 
 SUF_SUPER=super
 AT_SUPER=-a superengines=shapegen
@@ -12,14 +13,14 @@ AT_EFLOW=-a emphasizeflow=true
 run: *.incr
 
 *.incr: always
-	-$(DYNAGRAPH) < $@ > $*.incrout
-	-$(DYNAGRAPH) $(AT_SUPER) < $@ > $*.$(SUF_SUPER).incrout
-	-$(DYNAGRAPH) $(AT_INTER) < $@ > $*.$(SUF_INTER).incrout
-	-$(DYNAGRAPH) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(AT_SUPER) $(AT_INTER) < $@ > $*.$(SUF_SUPER).$(SUF_INTER).incrout
-	-$(DYNAGRAPH) $(AT_SUPER) $(AT_EFLOW) < $@ > $*.$(SUF_SUPER).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(AT_SUPER) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_SUPER).$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $*.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_SUPER) < $@ > $*.$(SUF_SUPER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) < $@ > $*.$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_SUPER) $(AT_INTER) < $@ > $*.$(SUF_SUPER).$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_SUPER) $(AT_EFLOW) < $@ > $*.$(SUF_SUPER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_SUPER) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_SUPER).$(SUF_INTER).$(SUF_EFLOW).incrout
 
 always: 
 

@@ -10,19 +10,24 @@ typedef FDP::FDPLayout Layout;
 
 void printChanges(ChangeQueue<Layout> &queue) {
 	for(Layout::node_iter ni = queue.insN.nodes().begin(); ni!=queue.insN.nodes().end(); ++ni)
-		cout << "node " << gd<Name>(*ni) << " inserted at " << gd<NodeGeom>(*ni).pos << endl;
+		reports[dgr::output] << "node " << gd<Name>(*ni) << " inserted at " << gd<NodeGeom>(*ni).pos << endl;
 	for(Layout::graphedge_iter ei = queue.insE.edges().begin(); ei!=queue.insE.edges().end(); ++ei)
-		cout << "edge " << gd<Name>(*ei) << " inserted at " << gd<EdgeGeom>(*ei).pos << endl;
+		reports[dgr::output] << "edge " << gd<Name>(*ei) << " inserted at " << gd<EdgeGeom>(*ei).pos << endl;
 	for(Layout::node_iter ni = queue.modN.nodes().begin(); ni!=queue.modN.nodes().end(); ++ni)
-		cout << "node " << gd<Name>(*ni) << " moved to " << gd<NodeGeom>(*ni).pos << endl;
+		reports[dgr::output] << "node " << gd<Name>(*ni) << " moved to " << gd<NodeGeom>(*ni).pos << endl;
 	for(Layout::graphedge_iter ei = queue.modE.edges().begin(); ei!=queue.modE.edges().end(); ++ei)
-		cout << "edge " << gd<Name>(*ei) << " moved to " << gd<EdgeGeom>(*ei).pos << endl;
+		reports[dgr::output] << "edge " << gd<Name>(*ei) << " moved to " << gd<EdgeGeom>(*ei).pos << endl;
 	for(Layout::node_iter ni = queue.delN.nodes().begin(); ni!=queue.delN.nodes().end(); ++ni)
-		cout << "node " << gd<Name>(*ni) << " deleted" << endl;
+		reports[dgr::output] << "node " << gd<Name>(*ni) << " deleted" << endl;
 	for(Layout::graphedge_iter ei = queue.delE.edges().begin(); ei!=queue.delE.edges().end(); ++ei)
-		cout << "edge " << gd<Name>(*ei) << " deleted" << endl;
+		reports[dgr::output] << "edge " << gd<Name>(*ei) << " deleted" << endl;
 }
 void main() {
+	// enable basic dynagraph report streams
+	reports.enable(dgr::error,&cerr);
+	reports.enable(dgr::cmdline);
+	reports.enable(dgr::output);
+
 	Layout layout,current(&layout);
 
 	gd<GraphGeom>(&layout).resolution = Coord(0.1,0.1);
@@ -41,7 +46,7 @@ void main() {
 	queue.InsNode(n);
 	queue.InsNode(m);
 
-	cout << "step 1" << endl;
+	reports[dgr::output] << "step 1" << endl;
 	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
@@ -50,7 +55,7 @@ void main() {
 	Layout::Edge *e = layout.create_edge(m,n,"e").first;
 	queue.InsEdge(e);
 
-	cout << "step 2" << endl;
+	reports[dgr::output] << "step 2" << endl;
 	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
@@ -59,7 +64,7 @@ void main() {
 	gd<NodeGeom>(n).pos = Coord(5,5);
 	ModifyNode(queue,n,DG_UPD_MOVE);
 
-	cout << "step 3" << endl;
+	reports[dgr::output] << "step 3" << endl;
 	server->Process();
 	printChanges(queue);
 	queue.Execute(true);
@@ -67,7 +72,7 @@ void main() {
 
 	queue.DelNode(n);
 
-	cout << "step 4" << endl;
+	reports[dgr::output] << "step 4" << endl;
 	server->Process();
 	printChanges(queue);
 	queue.Execute(true);

@@ -253,7 +253,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
                 eg.pos.Clear();
             }
             else {
-			    assert(s.length());
+			    dgassert(s.length());
 			    DString::size_type begin = 0,end=s.size();
                 // grr i know i'll get this wrong in some obscure way...
                 // just sloppily trying to throw away the [e,x,y ][s,x,y ]
@@ -261,7 +261,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 					if(s[begin]=='e'||s[begin]=='s') {
 						++begin;
                         for(int i = 0; i<2; ++i) {
-                            assert(s[begin]==',');
+                            dgassert(s[begin]==',');
 							++begin;
 							// much too expansive: -6.2.-9.4 would be one number...
                             while(s[begin]=='-'||isdigit(s[begin])||s[begin]=='.')

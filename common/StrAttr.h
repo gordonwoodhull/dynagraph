@@ -103,7 +103,7 @@ template<typename GO>
 Changes<GO> changes(GO *go) {
 	return Changes<GO>(go);
 }
-template<typename GO>	
+template<typename GO>
 inline std::ostream &operator << (std::ostream &os,const Changes<GO> &cgo) {
 	StrAttrChanges &cha = igd<StrAttrChanges>(cgo.go);
 	StrAttrs &att = gd<StrAttrs>(cgo.go);
@@ -122,114 +122,114 @@ struct NamedAttrs : StrAttrs,Name,Hit {
 };
 template<class ADTPolicy,class GData,class NData,class EData,class GIData=Nothing,class NIData=Nothing,class EIData=Nothing>
 struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
-    typedef LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> Graph;
+	typedef LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> Graph;
 	typedef typename Graph::Node Node;
 	typedef typename Graph::Edge Edge;
-    typedef std::map<DString,Node*> NDict;
+	typedef std::map<DString,Node*> NDict;
 	typedef std::map<DString,Edge*> EDict;
 	NDict ndict;
 	EDict edict;
 	NamedGraph(NamedGraph *parent = 0) : Graph(parent) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 	}
 	NamedGraph(const NamedGraph &o) : Graph(o.parent) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		*this = o;
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 	}
 	NamedGraph(const Graph &g) : Graph(g.parent) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		*(Graph*)this = g;
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 	}
 	Node *lookNode(Name name) {
-		NDict::iterator f = ndict.find(name);
-		return (f!=ndict.end())?f->second:(Node*)0;
+	    typename NDict::iterator f = ndict.find(name);
+	    return (f!=ndict.end())?f->second:(Node*)0;
 	}
 	Edge *lookEdge(Name name) {
-		EDict::iterator f = edict.find(name);
+		typename EDict::iterator f = edict.find(name);
 		return (f!=edict.end())?f->second:(Edge*)0;
 	}
 	// LGraph overrides
-    Node *create_node(DString name) { // non virtual
-		assert(ndict.size()==this->nodes().size());
+	Node *create_node(DString name) { // non virtual
+		dgassert(ndict.size()==this->nodes().size());
 		Node *ret = create_node(NData(name));
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	Node *create_node(const NData &nd) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		Node *ret = Graph::create_node(nd);
 		enter(nd,ret);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	std::pair<Edge *,bool> create_edge(Node *tail,Node *head,DString name) {// non virtual
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
         EData ed(name);
 		std::pair<Edge*,bool> ret = create_edge(tail,head,ed);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	std::pair<Edge *,bool> create_edge(Node *tail,Node *head,EData &ed) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		std::pair<Edge *,bool> ret = Graph::create_edge(tail,head,ed);
 		if(!ret.second)
 			throw DGParallelEdgesNotSupported(ed);
 		else
 			enter(ed,ret.first);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	std::pair<Node *,bool> insert_subnode(Node *n) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		std::pair<Node *,bool> ret = Graph::insert_subnode(n);
 		if(ret.second)
 			enter(gd<Name>(n),ret.first);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	std::pair<Edge *,bool> insert_subedge(Edge *e) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		std::pair<Edge *,bool> ret = Graph::insert_subedge(e);
 		if(ret.second)
 			enter(gd<Name>(e),ret.first);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	bool erase_node(Node *n) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		Name name = gd<Name>(n);
         bool ret = Graph::erase_node(n);
 		forgetNode(name);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
     bool erase_edge(Edge *e) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		Name name = gd<Name>(e);
         bool ret = Graph::erase_edge(e);
 		forgetEdge(name);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
     }
 	// not in LGraph
 	std::pair<Node *,bool> fetch_node(DString name,bool create) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		if(Node *n = lookNode(name))
 			return make_pair(n,false);
 		if(!create)
 			return make_pair((Node*)0,false);
 		std::pair<Node*,bool> ret = make_pair(create_node(name),true);
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
 	Node *fetch_node(DString name) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return fetch_node(name,false).first;
 	}
 	std::pair<Edge *,bool> fetch_edge(DString tail, DString head, DString name,bool create) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		if(Edge *e = lookEdge(name)) {
 			if(gd<Name>(e->tail)!=tail || gd<Name>(e->head)!=head)
 				throw DGEdgeNameUsed(name);
@@ -246,7 +246,7 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
         return create_edge(t,h,name);
 	}
 	std::pair<Edge *,bool> fetch_edge(Node *tail,Node *head,DString name,bool create) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		if(Edge *e = lookEdge(name)) {
 			if(e->tail!=tail || e->head!=head)
 				throw DGEdgeNameUsed(name);
@@ -257,7 +257,7 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
         return create_edge(tail,head,name);
 	}
 	Edge *fetch_edge(DString name) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		return lookEdge(name);
 	}
 	void forgetNode(Name name) {
@@ -273,16 +273,16 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 		forgetEdge(gd<Name>(e));
 	}
     void rename(Node *n,DString name) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		forget(n);
         ndict[gd<Name>(n) = name] = n;
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
     }
     void rename(Edge *e,DString name) {
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
 		forget(e);
         edict[gd<Name>(e) = name] = e;
-		assert(ndict.size()==this->nodes().size());
+		dgassert(ndict.size()==this->nodes().size());
     }
 	void readSubgraph(NamedGraph *what) {
 		std::map<DString,Node*> &pardict = static_cast<NamedGraph*>(Graph::parent)->ndict;

@@ -27,15 +27,20 @@ using namespace std;
 using namespace Dynagraph;
 
 void usage() {
-	fprintf(stderr,"gengraph\n"
-		"\t-v N\tN vertices\n"
-		"\t-e N\tN edges\n"
-		"\t-c\tassign random colors (red,yellow,blue) to edges\n"
-		"\t-w W\tassign random weights [0..W) to edges\n");
+	reports[dgr::cmdline] << "gengraph" << endl <<
+		"\t-v N\tN vertices" << endl <<
+		"\t-e N\tN edges" << endl <<
+		"\t-c\tassign random colors (red,yellow,blue) to edges" << endl <<
+		"\t-w W\tassign random weights [0..W) to edges" << endl;
 	exit(-1);
 }
 
 int main(int narg,char *argh[]) {
+	// enable basic dynagraph report streams
+	reports.enable(dgr::error,&cerr);
+	reports.enable(dgr::cmdline);
+	reports.enable(dgr::output);
+
 	int V = 100, E = 100;
 	bool colors = false;
 	int maxweight = 0;
@@ -106,6 +111,6 @@ int main(int narg,char *argh[]) {
 			gd<StrAttrs>(e)["weight"] = os.str();
 		}
 	}
-	emitGraph(cout,&g);
+	emitGraph(reports[dgr::output],&g);
 	return 0;
 }

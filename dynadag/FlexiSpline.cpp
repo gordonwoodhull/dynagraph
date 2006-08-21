@@ -25,7 +25,7 @@ namespace DynaDAG {
 
 struct RouteBounds {
 	RouteBounds(Config &config,Bounds &bounds) : config(config),bounds(bounds) {
-		assert(bounds.valid);
+		dgassert(bounds.valid);
 	}
 	void poly(Line &out);
 	void term(DDModel::Edge *e,Coord t, bool start);
@@ -38,7 +38,7 @@ private:
 		if(side==LEFT)
 			return left;
 		else {
-			assert(side==RIGHT);
+			dgassert(side==RIGHT);
 			return right;
 		}
 	}
@@ -47,9 +47,9 @@ private:
 		if(l.size()) {
 			Coord c0 = getSide(side).back();
 #ifndef DOWN_GREATER
-			assert(c0.y>=c.y);
+			dgassert(c0.y>=c.y);
 #else
-			assert(c0.y<=c.y);
+			dgassert(c0.y<=c.y);
 #endif
 			if(c==c0)
 				return;
@@ -81,10 +81,10 @@ double RouteBounds::side(DDModel::Node *n,int s) {
 }
 bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 	const int dist=2;
-	assert(gd<DDNode>(n).amEdgePart());
+	dgassert(gd<DDNode>(n).amEdgePart());
 	DDModel::Node *v = ud==UP?e->tail:e->head,
 		*w = n;
-	assert(gd<DDNode>(v).rank==gd<DDNode>(w).rank);
+	dgassert(gd<DDNode>(v).rank==gd<DDNode>(w).rank);
 	bool vw = gd<DDNode>(v).order<gd<DDNode>(w).order;
 	int i;
 	for(i = 0;i<dist;++i) {
@@ -100,7 +100,7 @@ bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 			vv = (*v->outs().begin())->head;
 		if(vv==ww) // common end node
 			return false;
-		assert(gd<DDNode>(vv).rank==gd<DDNode>(ww).rank);
+		dgassert(gd<DDNode>(vv).rank==gd<DDNode>(ww).rank);
 		if((gd<DDNode>(vv).order<gd<DDNode>(ww).order) != vw)
 			return true;
 		v = vv;
@@ -121,7 +121,7 @@ bool RouteBounds::localCrossing(DDModel::Edge *e,UpDown ud, DDModel::Node *n) {
 			vv = (*v->ins().begin())->tail;
 		if(vv==ww) // common end node
 			return false;
-		assert(gd<DDNode>(vv).rank==gd<DDNode>(ww).rank);
+		dgassert(gd<DDNode>(vv).rank==gd<DDNode>(ww).rank);
 		if((gd<DDNode>(vv).order<gd<DDNode>(ww).order) != vw)
 			return true;
 		v = vv;
@@ -170,7 +170,7 @@ void RouteBounds::path(DDModel::Edge *e) {
 	appendQuad(tl,tr,hl,hr,ty,hy);
 }
 bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
-	assert(path->unclippedPath.Empty());
+	dgassert(path->unclippedPath.Empty());
 
 	DynaDAGLayout::Edge *e = path->layoutE;
 	EdgeGeom &eg = gd<EdgeGeom>(e);
@@ -195,7 +195,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 					tailpt = gd<DDNode>((*ei)->tail).cur;
 					break;
 				}
-			assert(ei!=path->eEnd());
+			dgassert(ei!=path->eEnd());
 		}
 		else
 			tailpt = (direction==reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
@@ -207,13 +207,13 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 					headpt = gd<DDNode>((*ei)->tail).cur;
 					break;
 				}
-			assert(ei!=path->eEnd());
+			dgassert(ei!=path->eEnd());
 		}
 		else
 			headpt = (direction==reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
 		Line &unclipped = path->unclippedPath;
 		Line region;
-		assert(e->tail!=e->head); // DynaDAGServer should draw self-edges
+		dgassert(e->tail!=e->head); // DynaDAGServer should draw self-edges
 		if(direction==flat) { // flat edge
 			/*
 			// disabled because of header dependencies (needs more work)
@@ -230,7 +230,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			unclipped.push_back(headpt);
 		}
 		else { // normal edge
-			assert(path->first); // no flat or self edges!
+			dgassert(path->first); // no flat or self edges!
 			RouteBounds rb(config,gd<GraphGeom>(e->g).bounds);
 			if(!config.IsSuppressed(tl))
 				for(DDMultiNode::edge_iter ei0 = gd<DDNode>(tl).multi->eBegin(); ei0!=gd<DDNode>(tl).multi->eEnd(); ++ei0)
@@ -257,7 +257,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 						PathPlot::SegmentV barriers;
 						PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
 
-						//cout << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
+						//reports[dgr::error] << "message \"endslopes " << DDp(e->tail)->flowSlope << " " << DDp(e->head)->flowSlope << '"' << endl;
 						Segment endSlopes(
 							gd<Suppression>(e).suppression==Suppression::tailSuppressed ? (tailpt - gd<NodeGeom>(e->tail).pos) : DDp(e->tail)->flowSlope,
 							gd<Suppression>(e).suppression==Suppression::headSuppressed ? (gd<NodeGeom>(e->head).pos - headpt) : DDp(e->head)->flowSlope
@@ -277,7 +277,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 							endSlopes.b = -endSlopes.b;
 						}
 						*/
-						check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
+						dgcheck(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 					}
 					else
 						unclipped = polylineRoute;
@@ -297,7 +297,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 				break;
 			}
 			default:
-				assert(0);
+				dgassert(0);
 			}
 		}
 	}

@@ -59,12 +59,12 @@ struct NSRankerModelToLayoutTranslator : ChangeTranslator<NSRankerModel,Layout> 
 		for(NSRankerModel::node_iter ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni) {
 			NSRankerModel::Node *mn = *ni;
 			typename Layout::Node *n = Q2.current->fetch_node(gd<Name>(mn),false);
-			assert(n);
+			dgassert(n);
 			if(Q2.delN.find(n))
 				continue;
 			int newTopRank = DDNS::NSd(gd<NSRankerModelNode>(mn).topC.n).rank - anchorRank,
 				newBottomRank = DDNS::NSd(gd<NSRankerModelNode>(mn).bottomC.n).rank - anchorRank;
-			assert(!rankXlate_.Below(newTopRank,newBottomRank));
+			dgassert(!rankXlate_.Below(newTopRank,newBottomRank));
 			if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 				gd<NSRankerNode>(n).newTopRank = newTopRank;
 				gd<NSRankerNode>(n).newBottomRank = newBottomRank;

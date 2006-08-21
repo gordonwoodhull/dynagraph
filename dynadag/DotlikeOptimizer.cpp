@@ -61,8 +61,8 @@ struct CrossingCompare {
 		return true;
 	}
 	bool shouldSwitch(DDModel::Node *l,DDModel::Node *r) {
-		assert(gd<DDNode>(l).rank==gd<DDNode>(r).rank);
-		assert(gd<DDNode>(l).order<gd<DDNode>(r).order);
+		dgassert(gd<DDNode>(l).rank==gd<DDNode>(r).rank);
+		dgassert(gd<DDNode>(l).order<gd<DDNode>(r).order);
 		Rank *rank = config.ranking.GetRank(gd<DDNode>(l).rank);
 		int numcross=0;
 		for(int o = gd<DDNode>(l).order; o<=gd<DDNode>(r).order; ++o)
@@ -162,15 +162,15 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 				}
 				else
 					gd<DDNode>(*ni).orderConstraint = gd<DDNode>(*ni).order;
-		assert(wot==optimVec.end());
-		loops.Field(r_crossopt,"model nodes for crossopt",optimVec.size());
-		loops.Field(r_crossopt,"total model nodes",optimVec.front()->g->nodes().size());
+		dgassert(wot==optimVec.end());
+		loops.Field(dgr::crossopt,"model nodes for crossopt",optimVec.size());
+		loops.Field(dgr::crossopt,"total model nodes",optimVec.front()->g->nodes().size());
 
 		for(NodeV::iterator ni = optimVec.begin(); ni!=optimVec.end(); ++ni)
 			if(affectedRanks.empty() || affectedRanks.back()!=gd<DDNode>(*ni).rank)
 				affectedRanks.push_back(gd<DDNode>(*ni).rank);
-		loops.Field(r_crossopt,"ranks for crossopt",affectedRanks.size());
-		loops.Field(r_crossopt,"total ranks",config.ranking.size());
+		loops.Field(dgr::crossopt,"ranks for crossopt",affectedRanks.size());
+		loops.Field(dgr::crossopt,"total ranks",config.ranking.size());
 	}
 	SiftMatrix matrix(config),backupM(config);
 	MedianCompare median(DOWN,false);
@@ -184,17 +184,17 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	matrix.recompute();
 	backupM = matrix;
 	unsigned best = matrix.sumCrossings(),bestPass=0;
-	loops.Field(r_crossopt,"crossings before crossopt",best);
+	loops.Field(dgr::crossopt,"crossings before crossopt",best);
 	unsigned passes = 32,pass=0,score=0;
 	while(pass<passes && best) {
 		int tired = 0;
 		while(pass<passes && tired<TIRE) {
-				assert(matrix.m_light);
+				dgassert(matrix.m_light);
 			median.m_allowEqual = pass%8>4;
 			crossing.m_allowEqual = !median.m_allowEqual;
 			LeftRight way = (pass%2) ? RIGHT : LEFT;
 			UpDown dir;
-				assert(matrix.m_light);
+				dgassert(matrix.m_light);
 			if(pass%4<2) {
 				median.m_dir = UP;
 				dir = DOWN;
@@ -204,25 +204,25 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 				dir = UP;
 			}
 			bubblePass(config,matrix,affectedRanks,dir,way,switchable,median);
-				assert(matrix.m_light);
+				dgassert(matrix.m_light);
 
 			// something in the next dozen lines crashes MS Visual C++ .NET
 			// if run-time checks are enabled so i've disabled them for this file - ?
 			unsigned score2 = matrix.sumCrossings();
 			do {
 				score = score2;
-				assert(matrix.m_light);
+				dgassert(matrix.m_light);
 				bubblePass(config,matrix,affectedRanks,dir,way,switchable,crossing);
 				score2 = matrix.sumCrossings();
-				assert(score2<=score);
+				dgassert(score2<=score);
 			}
 			while(score2<score);
 			score = score2;
 
-			if(reportEnabled(r_crossopt)) {
+			if(reports.enabled(dgr::crossopt)) {
 				char buf[10];
 				sprintf(buf,"crossings pass %d",pass);
-				loops.Field(r_crossopt,buf,score);
+				loops.Field(dgr::crossopt,buf,score);
 			}
 
 			if(score<best) {
@@ -243,29 +243,29 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 			tired = 0;
 		}
 	}
-	if(reportEnabled(r_crossopt))
+	if(reports.enabled(dgr::crossopt))
 		for(;pass<passes;++pass) {
 			char buf[10];
 			sprintf(buf,"crossings pass %d",pass);
-			loops.Field(r_crossopt,buf,0);
+			loops.Field(dgr::crossopt,buf,0);
 		}
 
 	if(score>=best) {
 		config.Restore(backup);
 	}
-	loops.Field(r_crossopt,"model edge crossings",best);
+	loops.Field(dgr::crossopt,"model edge crossings",best);
 
 	// sift out node crossings
 	matrix.m_light = false;
 	matrix.recompute();
 	score = matrix.sumCrossings();
-	loops.Field(r_crossopt,"weighted crossings before heavy pass",score);
+	loops.Field(dgr::crossopt,"weighted crossings before heavy pass",score);
 	/*
-	report(r_crossopt,"%d node-node crossings; %d node-edge crossings; %d edge-edge crossings\n",score/(NODECROSS_PENALTY*NODECROSS_PENALTY),
+	reports[dgr::crossopt] << "%d node-node crossings; %d node-edge crossings; %d edge-edge crossings\n",score/(NODECROSS_PENALTY*NODECROSS_PENALTY),
 		(score/NODECROSS_PENALTY)%NODECROSS_PENALTY,score%NODECROSS_PENALTY);
 	*/
 	if(score<NODECROSS_PENALTY) {
-		loops.Field(r_crossopt,"weighted crossings after heavy pass",-1);
+		loops.Field(dgr::crossopt,"weighted crossings after heavy pass",-1);
 		return;
 	}
 	pass = 0;
@@ -295,9 +295,9 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 		}
 	}
 	while(improved);
-	loops.Field(r_crossopt,"weighted crossings after heavy pass",score);
+	loops.Field(dgr::crossopt,"weighted crossings after heavy pass",score);
 	// absolutely must not leave here with nodes crossing nodes!!
-	assert(score<NODECROSS_PENALTY*NODECROSS_PENALTY);
+	dgassert(score<NODECROSS_PENALTY*NODECROSS_PENALTY);
 }
 double DotlikeOptimizer::Reopt(DDModel::Node *n,UpDown dir) {
 	return gd<DDNode>(n).cur.x;

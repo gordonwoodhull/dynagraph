@@ -106,7 +106,7 @@ struct FlexiRanks : std::set<Rank*,CompRank> {
 			return *ri;
 	}
 	iterator EnsureRank(index r,double sep) {
-		assert(r!=INT_MAX && r!=INT_MIN); // off bottom or top
+		dgassert(r!=INT_MAX && r!=INT_MIN); // off bottom or top
 		iterator ri = GetIter(r);
 		if(ri==end()) {
 			Rank *rank = new Rank(sep);

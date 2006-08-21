@@ -76,7 +76,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
 	PolyDef ret;
 	StrAttrs::iterator ai;
 	if((ai = attrs.find("shape"))!=attrs.end()) {
-        assert(!ai->second.empty()); // this must be set up by assureattrs
+        dgassert(!ai->second.empty()); // this must be set up by assureattrs
 		if(ai->second=="ellipse")
 			ret.isEllipse = true;
 		else if(ai->second=="hexagon") {
@@ -198,12 +198,12 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
 		stream >> ret.interior_box;
 	}
 	if((ai = attrs.find("width"))!=attrs.end()) {
-        assert(!ai->second.empty()); // this must be set up by assureattrs
+        dgassert(!ai->second.empty()); // this must be set up by assureattrs
 		istringstream stream(ai->second);
 		stream >> ret.exterior_box.x;
 	}
 	if((ai = attrs.find("height"))!=attrs.end()) {
-        assert(!ai->second.empty()); // this must be set up by assureattrs
+        dgassert(!ai->second.empty()); // this must be set up by assureattrs
 		istringstream stream(ai->second);
 		stream >> ret.exterior_box.y;
 	}

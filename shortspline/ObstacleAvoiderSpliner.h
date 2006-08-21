@@ -59,9 +59,9 @@ ObstacleAvoiderSpliner<Layout>::ObstacleAvoiderSpliner(Layout *layout) {
 		polys_[i].pn = (int)polydat_[i].size()-1;
 		++i;
 	}
-	assert(i==N);
+	dgassert(i==N);
 	if (!Plegal_arrangement(&*obs_.begin(),N)) {
-		//if (Verbose) fprintf(stderr,"nodes touch - falling back to straight line edges\n");
+		//if (Verbose) reports[dgr::error] << "nodes touch - falling back to straight line edges" << endl;
 		vconfig_ = 0;
 	}
 	else
@@ -134,7 +134,7 @@ void ObstacleAvoiderSpliner<Layout>::make_barriers(int pp, int qp, Pedge_t **bar
 			b++;
 		}
 	}
-	assert(b == n);
+	dgassert(b == n);
 	*barriers = bar;
 	*n_barriers = n;
 }

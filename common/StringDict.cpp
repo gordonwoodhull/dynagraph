@@ -25,8 +25,10 @@
 namespace Dynagraph {
 
 StringDict &StringDict::GlobalStringDict() {
-	static StringDict s_dict;
-	return s_dict;
+	static StringDict *s_dict=0;
+	if(!s_dict)
+		s_dict = new StringDict();
+	return *s_dict;
 }
 const DString::size_type DString::npos = DString::size_type(-1);
 
@@ -55,6 +57,9 @@ static Dtdisc_t Refstrdisc = {
 	((Dtmemory_f)0),
 	((Dtevent_f)0)
 };
+StringDict::StringDict() : dict(0) { 
+	init(); 
+}
 
 void StringDict::init() {
 	LOCK_DICT();
@@ -129,6 +134,9 @@ int ds2int(const DString &s) {
 } // namespace Dynagraph
 
 #else // STRINGDICT_USE_STL
+StringDict::StringDict() : strs(0) {
+	init();
+}
 void StringDict::init() { 
 	LOCK_DICT();
 	strs = new mapstrs; 
@@ -148,7 +156,7 @@ void StringDict::release(const char *val) {
 	mapstrs::iterator mi = strs->find(val);
 	if(mi==strs->end())
 		throw DictStringLost(val);
-	assert(mi->second>0);
+	dgassert(mi->second>0);
 	if(!--mi->second)
 		strs->erase(mi);
 }
@@ -159,7 +167,7 @@ void StringDict::ref(const char *val) {
 	mapstrs::iterator mi = strs->find(val);
 	if(mi==strs->end())
 		return;
-	assert(mi->second>0);
+	dgassert(mi->second>0);
 	++mi->second;
 }
 #endif // STRINGDICT_USE_STL

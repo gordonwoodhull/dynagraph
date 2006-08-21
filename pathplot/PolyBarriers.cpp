@@ -33,7 +33,7 @@ void PolyBarriers(const LineV &polygons, SegmentV &out) {
 			out.push_back(Segment(pp[j],pp[k]));
 		}
 	}
-	assert(out.size() == n);
+	dgassert(out.size() == n);
 }
 
 } // namespace PathPlot

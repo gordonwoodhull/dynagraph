@@ -17,6 +17,10 @@
 #ifndef StringLayoutTranslator_h
 #define StringLayoutTranslator_h
 
+#include "Transform.h"
+#include "stringsIn.h"
+#include "stringsOut.h"
+
 namespace Dynagraph {
 
 template<typename StringGraph,typename Layout>

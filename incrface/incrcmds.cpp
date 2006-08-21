@@ -131,15 +131,15 @@ void incr_segue(const char *graph) {
 		throw IncrGraphNotOpen(graph);
 	h->incr_interrupt_ev();
     //bufferGraphStream fix(incr_yyin);
-    //assert(!feof(fix.fin));
+    //dgassert(!feof(fix.fin));
     StrGraph *sg = readStrGraph(incr_yyin);
     /*
-    assert(!feof(fix.fin));
+    dgassert(!feof(fix.fin));
     char buf[200];
     fgets(buf,200,fix.fin);
     */
     if(!sg)
-        fprintf(stderr,"graph read error\n");
+        reports[dgr::error] << "graph read error" << endl;
     else
         h->incr_ev_load_strgraph(sg,true,true);
 }

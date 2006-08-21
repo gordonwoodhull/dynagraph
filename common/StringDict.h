@@ -41,7 +41,7 @@
 namespace Dynagraph {
 
 struct StringDict {
-	StringDict() { init(); }
+	StringDict();
 	void init();
 	const char *enter(const char *val);
 	void release(const char *val);

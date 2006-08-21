@@ -155,10 +155,10 @@ private:
 	bool step(G *g, int iter, int verbose) {
 		/*
 		if (verbose && (iter % 100 == 0)) {
-			int d = iter % 1000;
-			if (d == 0) fputs("network simplex: ",stderr);
-			fprintf(stderr,"%d ",iter);
-			if (d == 9) fputc('\n',stderr);
+			int d = (iter % 1000)/100;
+			if (d == 0) reports[dgr::error] << "network simplex: ";
+			reports[dgr::error] << iter << ' ';
+			if (d == 9) reports[dgr::error] << endl;
 		}
 		*/
 		return iter >= NSd(g).maxiter;
@@ -166,10 +166,10 @@ private:
 	/* tight tree maintenance */
 	void addTreeEdge(Edge *e) {
 		NSE &nse = NSd(e);
-		assert(!nse.prv[INEDGE]);
-		assert(!nse.prv[OUTEDGE]);
-		assert(!nse.nxt[INEDGE]);
-		assert(!nse.nxt[OUTEDGE]);
+		dgassert(!nse.prv[INEDGE]);
+		dgassert(!nse.prv[OUTEDGE]);
+		dgassert(!nse.nxt[INEDGE]);
+		dgassert(!nse.nxt[OUTEDGE]);
 
 		Node *v[2] = {e->head,e->tail};
 		for(int i=0; i<2; ++i) {
@@ -178,7 +178,7 @@ private:
 			Edge *f = nsv.tree[i];
 			if(f) {
 				NSE &nsf = NSd(f);
-				assert(!nsf.prv[i]);
+				dgassert(!nsf.prv[i]);
 				nsf.prv[i] = e;
 			}
 			nse.nxt[i] = f;
@@ -225,12 +225,12 @@ private:
 			}
 			for(outedge_iter outi = n->outs().begin(); outi!=n->outs().end(); ++outi) {
 				NSN &nsh = NSd((*outi)->head);
-				check(nsh.priority>0);
+				dgassert(nsh.priority>0);
 				if(!--nsh.priority)
 					Q.push((*outi)->head);
 			}
 		}
-		check(ctr == g->nodes().size());
+		dgassert(ctr == g->nodes().size());
 	}
 	Node *incident(Edge *e) {
 		if(NSd(e->tail).mark==NSd(e->head).mark)
@@ -354,7 +354,7 @@ private:
 			Edge *e = 0;
 			for(node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {
 				if(NSd(*ni).mark) {
-					assert(NSd(*ni).tree[INEDGE] || NSd(*ni).tree[OUTEDGE] || (t == 1));
+					dgassert(NSd(*ni).tree[INEDGE] || NSd(*ni).tree[OUTEDGE] || (t == 1));
 					nodes.push_back(*ni);
 				}
 				for(nodeedge_iter ei = (*ni)->alledges().begin(); ei!=(*ni)->alledges().end(); ++ei)
@@ -362,10 +362,10 @@ private:
 						if(!e || calcSlack(*ei)<calcSlack(e))
 							e = *ei;
 			}
-			check(e);
-			// fprintf(stderr,"bring in %s\n",agnameof(incident(e)));
+			dgassert(e);
+			// reports[dgr::error] << "bring in " << e << std::endl;
 			int adj = calcSlack(e);
-			check(adj);
+			dgassert(adj);
 			if(incident(e) == e->tail)
 				adj = -adj;
 			for(typename NodeV::iterator i = nodes.begin(); i!=nodes.end(); ++i)
@@ -413,7 +413,7 @@ private:
 
 		int cutvalue = NSd(e).cutval;
 		Node *lca = treeUpdate(f->tail,f->head,cutvalue,1);
-		check(treeUpdate(f->head,f->tail,cutvalue,0) == lca);
+		dgcheck(treeUpdate(f->head,f->tail,cutvalue,0) == lca);
 		NSd(e).cutval = 0;
 		NSd(f).cutval = -cutvalue;
 		delTreeEdge(e);
@@ -522,12 +522,12 @@ public:
 	*/
 	int Run;
 	void Solve(G *g, unsigned int flags) {
-		if(reportEnabled(r_nsdump)) {
+		if(reports.enabled(dgr::nsdump)) {
 			for(node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni)
-				report(r_nsdump,"%p ",*ni);
-			report(r_nsdump,"\n");
+				reports[dgr::nsdump] << *ni << ' ';
+			reports[dgr::nsdump] << std::endl;
 			for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei)
-				report(r_nsdump,"%p->%p\n",(*ei)->tail,(*ei)->head);
+				reports[dgr::nsdump] << (*ei)->tail << "->" << (*ei)->head << std::endl;
 		}
 		Run++;
 		bool verbose = flags & VERBOSE;
@@ -581,13 +581,13 @@ private:
 				Edge *e = *ei;
 				Node *h = (*ei)->head;
 				int len = NSd(h).rank - NSd(t).rank;
-				check(len >= NSd(e).minlen);
+				dgassert(len >= NSd(e).minlen);
 				cost += NSd(e).weight*len;
 			}
 		}
 		/*
 		if(verbose)
-			fprintf(stderr,"ns: %s, %d iter, %d cost\n",agnameof(g),iter,cost);
+			reports[dgr::error] << "ns: " << g << ", " << iter << " iter, " << cost << " cost" << std::endl;
 		*/
 		return cost;
 	}
@@ -596,12 +596,12 @@ private:
 			for(Edge *e = NSd(*ni).tree[OUTEDGE]; e; e = NSd(e).nxt[OUTEDGE]) {
 				int save = NSd(e).cutval;
 				setCutVal(e);
-				check(save == NSd(e).cutval);
+				dgassert(save == NSd(e).cutval);
 
 				Edge *f;
 				for(f = NSd(e->head).tree[INEDGE]; f; f = NSd(f).nxt[INEDGE])
 					if(e==f) break;
-				check(f);
+				dgassert(f);
 			}
 		}
 	}

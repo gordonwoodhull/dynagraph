@@ -28,17 +28,17 @@ struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
 		// often this method will need to map Layout nodes & edges to application objects
 		// sorry, there is no better way than to use a map<>
 		for(Layout::node_iter ni = this->world_->Q_.insN.nodes().begin(); ni!=this->world_->Q_.insN.nodes().end(); ++ni)
-			cout << "node " << gd<Name>(*ni) << " inserted at " << gd<NodeGeom>(*ni).pos << endl;
+			reports[dgr::output] << "node " << gd<Name>(*ni) << " inserted at " << gd<NodeGeom>(*ni).pos << endl;
 		for(Layout::graphedge_iter ei = this->world_->Q_.insE.edges().begin(); ei!=this->world_->Q_.insE.edges().end(); ++ei)
-			cout << "edge " << gd<Name>(*ei) << " inserted at " << gd<EdgeGeom>(*ei).pos << endl;
+			reports[dgr::output] << "edge " << gd<Name>(*ei) << " inserted at " << gd<EdgeGeom>(*ei).pos << endl;
 		for(Layout::node_iter ni = this->world_->Q_.modN.nodes().begin(); ni!=this->world_->Q_.modN.nodes().end(); ++ni)
-			cout << "node " << gd<Name>(*ni) << " moved to " << gd<NodeGeom>(*ni).pos << endl;
+			reports[dgr::output] << "node " << gd<Name>(*ni) << " moved to " << gd<NodeGeom>(*ni).pos << endl;
 		for(Layout::graphedge_iter ei = this->world_->Q_.modE.edges().begin(); ei!=this->world_->Q_.modE.edges().end(); ++ei)
-			cout << "edge " << gd<Name>(*ei) << " moved to " << gd<EdgeGeom>(*ei).pos << endl;
+			reports[dgr::output] << "edge " << gd<Name>(*ei) << " moved to " << gd<EdgeGeom>(*ei).pos << endl;
 		for(Layout::node_iter ni = this->world_->Q_.delN.nodes().begin(); ni!=this->world_->Q_.delN.nodes().end(); ++ni)
-			cout << "node " << gd<Name>(*ni) << " deleted" << endl;
+			reports[dgr::output] << "node " << gd<Name>(*ni) << " deleted" << endl;
 		for(Layout::graphedge_iter ei = this->world_->Q_.delE.edges().begin(); ei!=this->world_->Q_.delE.edges().end(); ++ei)
-			cout << "edge " << gd<Name>(*ei) << " deleted" << endl;
+			reports[dgr::output] << "edge " << gd<Name>(*ei) << " deleted" << endl;
 		// Being at the end of the processing chain, this must clear the queue
 		this->world_->Q_.Execute(true);
 	}
@@ -91,6 +91,11 @@ struct IncrCalledBack : IncrCallbacks {
 } g_incrCalledBack;
 
 void main() {
+	// enable basic dynagraph report streams
+	reports.enable(dgr::error,&cerr);
+	reports.enable(dgr::cmdline);
+	reports.enable(dgr::output);
+
 	IncrLangEvents *view;
 	StrAttrs attrs;
 #ifdef CREATE_YOURSELF
@@ -106,7 +111,7 @@ void main() {
 	// now we have access to THREE APIs!  
 	// ONE: access using strings through IncrLangEvents
 	// this is pretty much just like using the incrface language
-	cout << "step 1" << endl;
+	reports[dgr::output] << "step 1" << endl;
 	attrs["shape"] = "box";
 	attrs["width"] = attrs["height"] = "1";
 	view->incr_ev_ins_node("m",attrs,false);
@@ -114,7 +119,7 @@ void main() {
 	// TWO: access using C++ through DynaView.  
 	// this is the most powerful, direct, and efficient way
 	// (but that's not always what's important)
-	cout << "step 2" << endl;
+	reports[dgr::output] << "step 2" << endl;
 	DynaView *dynaview = static_cast<DynaView*>(view);
 	// (modify)
 	Layout::Node *m = dynaview->getNode("m",false).first;
@@ -122,19 +127,19 @@ void main() {
 	ModifyNode(dynaview->Q,m,DG_UPD_MOVE);
 	dynaview->maybe_go();
 	// (create node)
-	cout << "step 2b" << endl;
+	reports[dgr::output] << "step 2b" << endl;
 	Layout::Node *n = dynaview->getNode("n",true).first;
 	gd<NodeGeom>(n).pos = Coord(10,10);
 	dynaview->Q.InsNode(n);
 	dynaview->maybe_go();
 	// (create edge)
-	cout << "step 2c" << endl;
+	reports[dgr::output] << "step 2c" << endl;
 	Layout::Edge *e = dynaview->getEdge("e",m,n,true).first;
 	dynaview->Q.InsEdge(e);
 	dynaview->maybe_go();
 
 	// THREE: the incrface language parser
-	cout << "step 3" << endl;
+	reports[dgr::output] << "step 3" << endl;
 	const char *incr_commands = 
 		"open graph Z\n" // this is okay because the EgzampleView constructor set m_allowOneReopen
 		"insert node Z o [shape=hexagon,height=2,width=2]\n"
@@ -148,19 +153,30 @@ void main() {
 		try {
 			incr_yyparse();
 		}
-		catch(DVException dvx) { // DynaView exceptions are recoverable
-			fprintf(stdout,"message \"%s %s\"\n",dvx.exceptype,dvx.param);;
+		catch(Assertion sert) {
+			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
+			if(g_xeptOut)
+				throw;
+			if(sert.fatal)
+				exit(23);
 		}
-		catch(IncrGraphNotOpen gnotop) { // graph not open too
-			fprintf(stdout,"message \"%s %s\"\n",gnotop.exceptype,gnotop.param);;
+		catch(DGException2 dgx) {
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << endl;
+			if(g_xeptOut)
+				throw;
+			if(dgx.fatal)
+				exit(23);
 		}
-		catch(IncrError ie) { // parser errors are not
-			fprintf(stdout,"message \"%s\"\n",ie.descrip.c_str());
-			return;
+		catch(DGException dgx) {
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << endl;
+			if(g_xeptOut)
+				throw;
+			if(dgx.fatal)
+				exit(23);
 		}
-		catch(DGException dgx) { // probably an internal error
-			fprintf(stdout,"message \"exception: %s\"\n",dgx.exceptype);
-			return;
+		catch(...) {
+			reports[dgr::output] << "message \"(exception) unknown exception\"" << endl;
+			exit(23);
 		}
 		incr_yyin = stdin; // pass the mike to you
 	}

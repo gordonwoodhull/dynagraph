@@ -223,6 +223,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\DuplicateStream.cpp">
+			</File>
+			<File
 				RelativePath="dynagraph.rc">
 			</File>
 			<File
@@ -266,6 +269,9 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\IncrCalledBack.cpp">
 			</File>
 			<File
 				RelativePath=".\instantiateEngines.cpp">

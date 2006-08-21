@@ -81,7 +81,7 @@ struct DDEdgeT {
 		cn = 0;
 	}
 	~DDEdgeT() {
-		assert(!cn);
+		dgassert(!cn);
 	}
 	bool amNodePart() {
 		return path==0;

@@ -71,11 +71,11 @@ void runPattern(queue<Match> &Q,PathsFollowed &followed,int limit,StrGraph *dest
 	while(!Q.empty()) {
 		Match match = Q.front();
 		Q.pop();
-		//printf("consider %x %x\n",match.pattern,match.match);
+		//reports[dgr::error] << "consider " << match.pattern << ' ' << match.match << endl;
 		for(Pattern::outedge_iter pei = match.pattern->outs().begin(); pei!=match.pattern->outs().end(); ++pei) {
 			if(gd<Path>(*pei).direction&matchDown)
 				for(StrGraph::outedge_iter sei = match.match->outs().begin(); sei!=match.match->outs().end(); ++sei) {
-					//printf("look %x -> %x\n",(*sei)->tail,(*sei)->head);
+					//reports[dgr::error] << "look " << (*sei)->tail << " -> " << (*sei)->head << endl;
 					if(!followed.insert(FollowedPath(*pei,*sei)).second)
 						continue;
 					if(gd<Path>(*pei).matches(*sei)) {
@@ -87,7 +87,7 @@ void runPattern(queue<Match> &Q,PathsFollowed &followed,int limit,StrGraph *dest
 				}
 			if(gd<Path>(*pei).direction&matchUp)
 				for(StrGraph::inedge_iter sei = match.match->ins().begin(); sei!=match.match->ins().end(); ++sei) {
-					//printf("look %x -> %x\n",(*sei)->tail,(*sei)->head);
+					//reports[dgr::error] << "look " << (*sei)->tail << " -> " << (*sei)->head << endl;
 					if(!followed.insert(FollowedPath(*pei,*sei)).second)
 						continue;
 					if(gd<Path>(*pei).matches(*sei)) {

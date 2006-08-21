@@ -62,7 +62,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
     void makeStrongConstraint(NSRankerModel::Edge *e) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
-        assert(!re.strong);
+        dgassert(!re.strong);
 
         DDCGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
             *hvar = cg.GetVar(gd<NSRankerNode>(e->head).topC);
@@ -77,7 +77,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
     void makeWeakConstraint(NSRankerModel::Edge *e) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
-        assert(!re.weak);
+        dgassert(!re.weak);
 
         DDCGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
             *hvar = cg.GetVar(gd<NSRankerNode>(e->head).topC);
