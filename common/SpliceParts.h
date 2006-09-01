@@ -18,7 +18,6 @@
 #define SpliceParts_h
 
 namespace Dynagraph {
-namespace DynaDAG {
 
 template<typename Layout>
 struct NodeTyping {
@@ -80,7 +79,6 @@ struct SpliceEdgePartsIterator : SplicePartsIterator<Layout,EdgeTyping<Layout> >
 	SpliceEdgePartsIterator(SpliceEdgePartsIterator &it) : SplicePartsIterator<Layout,EdgeTyping<Layout> >(it) {}
 };
 
-} // namespace DynaDAG
 } // namespace Dynagraph
 
 #endif // SpliceParts_h

@@ -73,7 +73,7 @@ struct switchval {
 switchval<dgr::reportType> g_reports[] = {
 	{'i',dgr::input,"input"},
 	{'o',dgr::output,"output"},
-	{'c',dgr::crossopt,"crossopt"},
+	{'c',dgr::crossopt,"crossing optimization stats"},
 	{'t',dgr::timing,"timing breakdown"},
 	{'d',dgr::dynadag,"dynadag tallies"},
 	{'g',dgr::modelDump,"dump graph"},
@@ -152,7 +152,7 @@ int main(int argc, char *args[]) {
 			return 1;
 		}
 		switch(args[i][1]) {
-		case 'i': // input file (otherwise dynamic)
+		case 'i': // input dot file (for batch layout)
 			if(i==argc-1) {
 				reports[dgr::error] << "-i must be followed by filename" << endl;
 				return 1;

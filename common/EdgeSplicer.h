@@ -17,11 +17,10 @@
 #ifndef EdgeSplicer_h
 #define EdgeSplicer_h
 
-#include "common/LayoutToLayoutTranslator.h"
+#include "LayoutToLayoutTranslator.h"
 #include "SpliceParts.h"
 
 namespace Dynagraph {
-namespace DynaDAG {
 
 struct EdgeSplicerEndsDontMatch : DGException {
 	EdgeSplicerEndsDontMatch() : DGException("attempt to splice together two edge splines that don't share an endpoint",true) {}
@@ -36,6 +35,14 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 		ChangeQueue<Layout1> &Q1 = LinkedChangeProcessor<Layout1>::world_->Q_;
 		ChangeQueue<Layout2> &Q2 = LinkedChangeProcessor<Layout2>::world_->Q_;
 		actions_.ModifyGraph(Q1.ModGraph(),Q2.ModGraph());
+
+		// consider: maybe it would make more sense if all edges were checked "backward"
+		// that is, use the loop at bottom to check for sources from targets
+		// then an insert is when already inserted in target AND there exist either single or spliced source(s)
+		// a modify is when any sources are ins/mod/del
+		// a delete is when all sources are deleted
+		// this strategy only works when target is the "outer world" i.e. when inserts must be initiated there
+		// any truly new edges created in inner world will not be seen by either strategy
 
 		// any node or edge that matches by name, we just copy layout
 		for(typename Layout1::node_iter ni = Q1.insN.nodes().begin(); ni!=Q1.insN.nodes().end(); ++ni)
@@ -123,7 +130,6 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 	}
 };
 
-} // namespace DynaDAG
 } // namespace Dynagraph
 
 #endif // EdgeSplicer_h

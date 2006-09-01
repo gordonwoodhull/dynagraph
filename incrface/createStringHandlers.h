@@ -45,7 +45,7 @@ struct WorldGuts {
 			typename translator_traitses<GeneralLayout,Layout>::out_translator> Box;
 		Box *box = new Box(&chraph);
 		box->assignEngine(engines_,transform);
-		EnginePair<GeneralLayout> engines = createEngine<GeneralLayout>(superengines_,&chraph);
+		EnginePair<GeneralLayout> engines = createEngine(superengines_,&chraph);
 		engines.Append(box);
 		return engines;
 	}

@@ -18,7 +18,7 @@
 #define SEdger_h
 
 #include "common/LayoutToLayoutTranslator.h"
-#include "SpliceParts.h"
+#include "common/SpliceParts.h"
 #include "FlexiRankXlator.h"
 
 namespace Dynagraph {

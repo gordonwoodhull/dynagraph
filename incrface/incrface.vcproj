@@ -187,13 +187,16 @@
 				RelativePath=".\AbsGraphHandler.h">
 			</File>
 			<File
-				RelativePath=".\createLayoutServer.h">
+				RelativePath=".\createStringHandlers.h">
 			</File>
 			<File
 				RelativePath=".\DinoMachine.h">
 			</File>
 			<File
 				RelativePath=".\DinoMachineHandler.h">
+			</File>
+			<File
+				RelativePath=".\DinoMachineTranslator.h">
 			</File>
 			<File
 				RelativePath=".\DinoPatternLook.h">
@@ -208,9 +211,6 @@
 				RelativePath=".\incrcmds.h">
 			</File>
 			<File
-				RelativePath=".\incrgram.h">
-			</File>
-			<File
 				RelativePath=".\IncrLangEvents.h">
 			</File>
 			<File
@@ -223,6 +223,12 @@
 				RelativePath=".\incrparse.h">
 			</File>
 			<File
+				RelativePath=".\IncrStrGraphHandler.h">
+			</File>
+			<File
+				RelativePath=".\IncrViewWatcher.h">
+			</File>
+			<File
 				RelativePath=".\incrxep.h">
 			</File>
 			<File
@@ -232,7 +238,13 @@
 				RelativePath=".\MatchNames.h">
 			</File>
 			<File
+				RelativePath=".\OutputIncrface.h">
+			</File>
+			<File
 				RelativePath=".\two_way_map.h">
+			</File>
+			<File
+				RelativePath=".\WorldInABox.h">
 			</File>
 		</Filter>
 		<Filter
