@@ -37,7 +37,6 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
 
-		Transition::EndLastQ(Q1);
 		LinkedChangeProcessor<Graph2>::NextProcess();
 	}
     void removeLayoutNodeConstraints(NSRankerModel::Node *n) {
@@ -118,7 +117,6 @@ struct ConstraintToNSRankerModelTranslator : ChangeTranslator<ConstraintGraph,NS
 	void Process() {
 		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
 		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
-		Transition::EndLastQ(Q1);
 		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
 	}
 

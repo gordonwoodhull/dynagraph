@@ -124,7 +124,7 @@ void XSolver::checkLRConstraints() {
 					missing = true;
 				}
 				else
-					dgassert(DDNS::NSd(e).minlen >= ROUND(xScale*config.UVSep(left,*ni)));
+					dgassert(DDNS::NSd(e).minlen >= ROUND(config.UVSep(left,*ni)/gd<GraphGeom>(config.current).resolution.x));
 				/*
 				// (hopeless)
 				// don't allow extraneous constraints: only edge,stab, and L-R are good

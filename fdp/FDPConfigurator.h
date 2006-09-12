@@ -13,25 +13,28 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef FDPConfigurator_h
+#define FDPConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "common/Configurator.h"
+#include "fdp/FDPLayout.h"
+#include "fdp/fdp.h"
 
 namespace Dynagraph {
+namespace FDP {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
+struct FDPConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>) {
+		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
+		ChangingGraph<FDPLayout> *world = new ChangingGraph<FDPLayout>;
+		EnginePair<FDPLayout> engines;
+		engines.Prepend(new FDPServer(world));
+		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
-	}
-};
 
+} // namespace FDP
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //FDPConfigurator_h

@@ -54,11 +54,15 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 		model(),
 		config(this,model,&world->whole_,&world->current_,&xsolver),
 		optimizer(new DotlikeOptimizer(config)),
-		xsolver(config,gd<GraphGeom>(&world->current_).resolution.x),
+		xsolver(config),
 		spliner(config)
 	{}
 	~DynaDAGServer();
 	// ChangeProcessor
+	void Open() {
+		NextOpen();
+		this->world_->Q_.Clear();
+	}
 	void Process();
 	// DynaDAGServices
 	std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN);

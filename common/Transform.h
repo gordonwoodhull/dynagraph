@@ -56,8 +56,7 @@ public:
 		return Rect(ul.x,ul.y,lr.x,lr.y);
 	}
 };
-// dot transform: node size in inches, coords in down-positive points
-// (dynagraph will do calcs in up-positive points)
+// dot transform: node size in inches
 extern Transform g_dotRatios;
 
 bool transformShape(Transform *trans,Line &shape);

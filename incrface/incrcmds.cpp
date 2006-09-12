@@ -68,9 +68,9 @@ void incr_open_graph(const char *graph) {
 	        throw IncrReopenXep(graph);
 		dmn.allowOneReopen = false;
 	}
-    IncrLangEvents *h = dmn.handler;
+    IncrLangEvents *&h = dmn.handler;
     if(!h)
-        h = g_incrCallback->incr_cb_create_handler(graph,g_currAttrs);
+        g_incrCallback->incr_cb_create_handler(graph,g_currAttrs);
 	else
 		h->incr_interrupt_ev();
     if(!h)

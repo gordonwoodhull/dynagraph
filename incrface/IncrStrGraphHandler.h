@@ -14,6 +14,8 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef IncrStrGraphHandler_h
+#define IncrStrGraphHandler_h
 
 #include "common/ChangeQueue.h"
 #include "common/ChangeProcessor.h"
@@ -65,14 +67,14 @@ struct IncrStrGraphHandler : IncrLangEvents {
 		}
 #endif
 	}
-    bool maybe_go() {
+	bool maybe_go(typename ChangeProcessor<NGraph>::Function purpose = &ChangeProcessor<NGraph>::Process) {
 		if(locks_>0)
 			return false;
 		if(next_) {
 #ifdef STRHANDLER_DO_THREADS
-			layoutThread_ = new DynagraphThread<NGraph>(*world_,next_);
+			layoutThread_ = new DynagraphThread<NGraph>(*world_,next_,purpose);
 #else
-			next_->Process();
+			(next_->*purpose)();
 #endif
 		}
 		return true;
@@ -118,16 +120,11 @@ struct IncrStrGraphHandler : IncrLangEvents {
 
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
-	// open is an anomaly: normally engines run and client sits at end of chain
-	// here we leap and then clear Q ourself
-    if(watcher_)
-		watcher_->IncrOpen(world_->Q_);
-	world_->Q_.Clear();
+	maybe_go(&ChangeProcessor<NGraph>::Open);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {
-    if(watcher_)
-		watcher_->IncrClose(world_->Q_);
+	maybe_go(&ChangeProcessor<NGraph>::Close);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_mod_graph(const StrAttrs &attrs) {
@@ -239,3 +236,5 @@ void IncrStrGraphHandler<NGraph>::incr_ev_load_strgraph(StrGraph *sg,bool merge,
 }
 
 } // namespace Dynagraph
+
+#endif //IncrStrGraphHandler_h

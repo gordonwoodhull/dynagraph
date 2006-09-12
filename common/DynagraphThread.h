@@ -20,7 +20,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 
-extern bool g_xeptOut;
+extern bool g_xeptFatal;
 
 namespace Dynagraph {
 
@@ -29,11 +29,10 @@ struct DynagraphThread {
 	ChangingGraph<Graph> &world_;
 	ChangeProcessor<Graph> *engine_;
 	boost::thread *thread_;
-	//DGException2 xep_;
-	//bool xepted_;
+	typename ChangeProcessor<Graph>::Function purpose_;
 
-	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine) :
-	  world_(world),engine_(engine) /*,xep_("","",false),xepted_(false)*/ {
+	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine,typename ChangeProcessor<Graph>::Function purpose) :
+	  world_(world),engine_(engine),purpose_(purpose) {
 		thread_ = new boost::thread(boost::bind(&DynagraphThread::go,this));
 	}
 	~DynagraphThread() {
@@ -41,27 +40,21 @@ struct DynagraphThread {
 	}
 	void go() {
 		try {
-			engine_->Process();
+			(engine_->*purpose_)();
 		}
 		catch(Assertion sert) {
 			LOCK_REPORT(dgr::output);
 			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << std::endl;
-			if(g_xeptOut)
-				throw;
 			exit(23);
 		}
 		catch(DGException2 dgx) {
 			LOCK_REPORT(dgr::output);
 			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << std::endl;
-			if(g_xeptOut)	
-				throw;
 			exit(23);
 		}
 		catch(DGException dgx) {
 			LOCK_REPORT(dgr::output);
 			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << std::endl;
-			if(g_xeptOut)
-				throw;
 			exit(23);
 		}
 		catch(...) {

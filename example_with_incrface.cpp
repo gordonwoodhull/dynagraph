@@ -65,15 +65,13 @@ struct IncrCalledBack : IncrCallbacks {
     IncrCalledBack() {
         g_incrCallback = this;
     }
-    IncrLangEvents *incr_cb_create_handler(Name name,const StrAttrs &attrs) {
-        DinoMachine::Node *dn = g_dinoMachine.lookNode(name);
+    void incr_cb_create_handler(Name name,const StrAttrs &attrs) {
 #ifdef CREATE_YOURSELF
 		// must be created before opened
 		// "open graph" with a new name is an error
-		return dn?gd<DinoMachNode>(dn).handler:0;
+		dgassert(false);
 #else
-		// must not already be open
-		return dn?0:new ExampleResponse(name);
+		incr_set_handler(name,new ExampleResponse(name))
 #endif
 	}
 	void incr_cb_destroy_handler(IncrLangEvents *h) {
@@ -101,7 +99,8 @@ void main() {
 #ifdef CREATE_YOURSELF
 	view = new ExampleResponse("Z");
 #else
-	view = g_incrCalledBack.incr_cb_create_handler("Z",attrs);
+	g_incrCalledBack.incr_cb_create_handler("Z",attrs);
+	view = incr_get_handler("Z");
 #endif
 	attrs["engines"] = "shapegen,dynadag,labels";
 	attrs["resolution"] = "0.1,0.1";
@@ -155,21 +154,21 @@ void main() {
 		}
 		catch(Assertion sert) {
 			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
-			if(g_xeptOut)
+			if(g_xeptFatal)
 				throw;
 			if(sert.fatal)
 				exit(23);
 		}
 		catch(DGException2 dgx) {
 			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << endl;
-			if(g_xeptOut)
+			if(g_xeptFatal)
 				throw;
 			if(dgx.fatal)
 				exit(23);
 		}
 		catch(DGException dgx) {
 			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << endl;
-			if(g_xeptOut)
+			if(g_xeptFatal)
 				throw;
 			if(dgx.fatal)
 				exit(23);

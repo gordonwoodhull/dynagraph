@@ -13,25 +13,25 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef RankerConfigurator_h
+#define RankerConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "common/Configurator.h"
+#include "NSRanker.h"
 
 namespace Dynagraph {
+namespace DynaDAG {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
+struct RankerConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		if(attrs.look("layout","dynadag")=="dynadag" && attrs.look("ranker","nsranker")=="nsranker") // i dream of smarter rankers
+			engines.Prepend(new NSRanker<Layout>(world));
+		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
 
+} // namespace DynaDAG
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //RankerConfigurator_h

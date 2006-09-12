@@ -1,10 +1,10 @@
 .SUFFIXES  : .incr .incrout
 
 DYNAGRAPH=../dynagraph
-DY_OPTS=
+DY_OPTS=-x
 
 SUF_SUPER=super
-AT_SUPER=-a superengines=shapegen
+AT_SUPER=-a flowemphasizable=true
 SUF_INTER=imed
 AT_INTER=-a intermediate=true
 SUF_EFLOW=eflow

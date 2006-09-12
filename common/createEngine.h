@@ -18,6 +18,7 @@
 #define createEngine_h
 
 #include "ChangeProcessor.h"
+#include "EnginePair.h"
 #include "common/FindChangeRect.h"
 #include "common/breakList.h"
 
@@ -61,9 +62,7 @@ EnginePair<Graph> createEngine(DString engines,ChangingGraph<Graph> *world) {
     FCRBefore<Graph> *fcrbefore = new FCRBefore<Graph>(fcrdata);
     FCRAfter<Graph> *fcrafter = new FCRAfter<Graph>(fcrdata);
 	LinkedChangeProcessor<Graph> *first,*now,*last;
-	first = last = fcrbefore;
-	last->next_ = now = new UpdateCurrentProcessor<Graph>(world);
-	last = now;
+	first = last = now = fcrbefore;
     std::vector<DString> engs;
     breakList(engines,engs);
     for(std::vector<DString>::iterator ei = engs.begin(); ei!=engs.end(); ++ei) {

@@ -243,9 +243,11 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 		typename Layout::Edge *e = *ei;
 		if(e->head == e->tail)
 			continue;
+		typename Layout::Node *curtail = this->world_->current_.find(e->tail),
+			*curhead = this->world_->current_.find(e->head);
+		dgassert(curtail&&curhead); // if this fails, probably lack of UpdateCurrentProcessor
 		bool weak = false;
 		if(typename Layout::Edge *e1 = this->world_->current_.find_edge(e->head,e->tail)) {
-			//std::cerr << "found 2-cycle e " << e << '"' << gd<Name>(e) << "\" e1 " << e1 << '"' << gd<Name>(e1) << '"' << std::endl;
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
 			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
@@ -254,7 +256,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 				continue;
 			}
 		}
-		else if(pathExists<Layout>(this->world_->current_.find(e->head),this->world_->current_.find(e->tail)))
+		else if(pathExists<Layout>(curhead,curtail))
 			weak = true;
 		if(gd<NSRankerNode>(e->tail).rankFixed || gd<NSRankerNode>(e->head).rankFixed)
 			weak = true;
@@ -262,9 +264,9 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 			makeWeakConstraint(e);
 		else
 			makeStrongConstraint(e);
-		if(this->world_->current_.find(e->head)->degree()==1)
+		if(curhead->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->head).topC);
-		if(this->world_->current_.find(e->tail)->degree()==1)
+		if(curtail->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->tail).topC);
 	}
 }

@@ -13,25 +13,28 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef DynaDAGConfigurator_h
+#define DynaDAGConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "common/Configurator.h"
+#include "dynadag/DynaDAGLayout.h"
+#include "dynadag/DynaDAG.h"
 
 namespace Dynagraph {
+namespace DynaDAG {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
+struct DynaDAGConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>) {
+		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
+		ChangingGraph<DynaDAG::DynaDAGLayout> *world = new ChangingGraph<DynaDAG::DynaDAGLayout>;
+		EnginePair<DynaDAG::DynaDAGLayout> engines;
+		engines.Append(new DynaDAG::DynaDAGServer(world));
+		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
-	}
-};
 
+} // namespace DynaDAG
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //DynaDAGConfigurator_h

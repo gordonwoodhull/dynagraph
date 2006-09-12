@@ -79,7 +79,7 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 	}
 
 	DDCGraph::Edge *ce = cg.create_edge(left_var,var).first;
-	int scaled_len = ROUND(xScale * (lnei_ext + lnei_sep + left_sep + left_ext));
+	int scaled_len = ROUND((lnei_ext + lnei_sep + left_sep + left_ext)/gd<GraphGeom>(config.current).resolution.x);
 	DDNS::NSd(ce).minlen = scaled_len;
 	DDNS::NSd(ce).weight = COMPACTION_STRENGTH;
 	/*
@@ -92,7 +92,7 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 		rnei_ext = config.LeftExtent(right);
 		rnei_sep = config.LeftSep(right);
 		ce = cg.create_edge(var,right_var).first;
-		scaled_len = ROUND(xScale * (right_ext + right_sep + rnei_sep + rnei_ext));
+		scaled_len = ROUND((right_ext + right_sep + rnei_sep + rnei_ext)/gd<GraphGeom>(config.current).resolution.x);
 		DDNS::NSd(ce).minlen = scaled_len;
 		DDNS::NSd(ce).weight = COMPACTION_STRENGTH;
 		/*
@@ -126,7 +126,7 @@ void XSolver::doEdgesep(DynaDAGLayout *subLayout) {
 					*vvar = gd<DDNode>(v).getXcon().n;
 				DDCGraph::Edge *ce = cg.create_edge(uvar,vvar).first;
 				double sep = config.RightExtent(u) + config.LeftExtent(v) + 3.0 * gd<GraphGeom>(config.whole).separation.x;
-				DDNS::NSd(ce).minlen = ROUND(xScale * sep);
+				DDNS::NSd(ce).minlen = ROUND(sep/gd<GraphGeom>(config.current).resolution.x);
 			}
 		}
 		else {} /* self */
@@ -190,7 +190,7 @@ void XSolver::stabilizeNodes(DDChangeQueue &changeQ) {
 #ifdef REDO_ALL
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
         if(gd<NodeGeom>(*ni).pos.valid)  // DDp(*ni)->coordFixed) { dgassert(gd<NodeGeom>(*ni).pos.valid);
-			cg.Stabilize(gd<DDNode>(DDp(*ni)->top()).getXcon(),ROUND(xScale * gd<NodeGeom>(*ni).pos.x),STABILITY_FACTOR_X);
+			cg.Stabilize(gd<DDNode>(DDp(*ni)->top()).getXcon(),ROUND(gd<NodeGeom>(*ni).pos.x/gd<GraphGeom>(config.current).resolution.x),STABILITY_FACTOR_X);
     /*
 	DynaDAGLayout *modedges[2] = {&changeQ.insE,&changeQ.modE};
     // it's not necessary to unstabilize nodes that are connected to edges because the cost
@@ -227,7 +227,7 @@ void XSolver::readoutCoords() {
 	int anchor_rank = DDNS::NSd(cg.anchor).rank;
 	for(DDModel::node_iter ni = config.model.nodes().begin(); ni!=config.model.nodes().end(); ++ni)
 		if(DDCGraph::Node *cn = gd<DDNode>(*ni).getXcon().n)
-			gd<DDNode>(*ni).cur.x = (DDNS::NSd(cn).rank - anchor_rank) / xScale;
+			gd<DDNode>(*ni).cur.x = (DDNS::NSd(cn).rank - anchor_rank)*gd<GraphGeom>(config.current).resolution.x;
 }
 // DynaDAG callin
 void XSolver::Place(DDChangeQueue &changeQ) {

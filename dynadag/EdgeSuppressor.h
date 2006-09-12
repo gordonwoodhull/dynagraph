@@ -16,6 +16,8 @@
 #ifndef EdgeSuppressor_h
 #define EdgeSuppressor_h
 
+#include "FlexiRanks.h"
+
 namespace Dynagraph {
 namespace DynaDAG {
 

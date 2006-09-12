@@ -13,25 +13,13 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#ifndef createConfiguration_h
+#define createConfiguration_h
 
 namespace Dynagraph {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
-	}
-};
+void createConfiguration(Name name,StrAttrs &attrs);
 
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif // createConfiguration_h

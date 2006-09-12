@@ -17,6 +17,8 @@
 #ifndef IncrLangEvents_h
 #define IncrLangEvents_h
 
+#include "common/StrAttr.h"
+
 namespace Dynagraph {
 
 struct IncrLangEvents {
@@ -41,7 +43,7 @@ struct IncrLangEvents {
 };
 struct IncrCallbacks {
 	virtual ~IncrCallbacks() {}
-	virtual IncrLangEvents *incr_cb_create_handler(Name name,StrAttrs &attrs) = 0; // (may modify attrs)
+	virtual void incr_cb_create_handler(Name name,StrAttrs &attrs) = 0; // (may modify attrs)
 	virtual void incr_cb_destroy_handler(IncrLangEvents *hand) = 0;
 	virtual void incr_cb_fulfil_graph(DString name,StrGraph *sg) = 0;
 	virtual void incr_cb_fulfil_node(DString graphname,DString nodename,const StrAttrs &attrs) = 0;

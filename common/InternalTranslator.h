@@ -25,6 +25,14 @@ struct InternalTranslator : LinkedChangeProcessor<Graph> {
 	ChangeActions actions_;
 	InternalTranslator(ChangingGraph<Graph> *world,const ChangeActions &action) 
 		: LinkedChangeProcessor<Graph>(world),actions_(action) {}
+	virtual void Open() {
+		// graph open is like node/edge insert in that changes don't get marked
+		// so use Mod code and then clear flags!
+		ChangeQueue<Graph> &Q = this->world_->Q_;
+		actions_.ModifyGraph(Q.ModGraph(),Q.ModGraph());
+		igd<Update>(Q.ModGraph()).flags = 0;
+		this->NextOpen();
+	}
 	virtual void Process() {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.ModifyGraph(Q.ModGraph());
@@ -48,6 +56,14 @@ struct InternalTranslator2 : LinkedChangeProcessor<Graph> {
 	ChangeActions actions_;
 	InternalTranslator2(ChangingGraph<Graph> *world,const ChangeActions &action) 
 		: LinkedChangeProcessor<Graph>(world),actions_(action) {}
+	virtual void Open() {
+		// graph open is like node/edge insert in that changes don't get marked
+		// so use Mod code and then clear flags!
+		ChangeQueue<Graph> &Q = this->world_->Q_;
+		actions_.ModifyGraph(Q.ModGraph(),Q.ModGraph());
+		igd<Update>(Q.ModGraph()).flags = 0;
+		this->NextOpen();
+	}
 	virtual void Process() {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.ModifyGraph(Q.ModGraph(),Q.ModGraph());

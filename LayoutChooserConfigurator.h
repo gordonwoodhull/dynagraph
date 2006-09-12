@@ -13,25 +13,28 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef LayoutChooserConfigurator_h
+#define LayoutChooserConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "common/Configurator.h"
+
+#include "dynadag/DynaDAGConfigurator.h"
+#include "fdp/FDPConfigurator.h"
 
 namespace Dynagraph {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
+struct LayoutChooserConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this Configurator must go first
+		DString layout = attrs.look("layout","dynadag");
+		if(layout=="dynadag") 
+			DynaDAG::DynaDAGConfigurator::config<ConfiguratorVec>(name,attrs,world,engines);
+		else if(layout=="fdp")
+			FDP::FDPConfigurator::config<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
 
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //LayoutChooserConfigurator_h

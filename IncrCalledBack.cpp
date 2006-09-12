@@ -13,72 +13,44 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+//#define USE_OLD_GROSS_CONFIGURATOR
+
 #include "incrface/incrparse.h"
-#include "dynadag/DynaDAGLayout.h"
-#include "fdp/FDPLayout.h"
+#include "IncrCalledBack.h"
+#include "common/useful.h"
+#include "common/emitGraph.h"
+
+#ifdef USE_OLD_GROSS_CONFIGURATOR
 #include "common/GeneralLayout.h"
 #include "incrface/createStringHandlers.h"
 #include "dynadag/DynaDAGTranslatorTraits.h"
-#include "common/emitGraph.h"
-#include "IncrCalledBack.h"
+#else
+#include "createConfiguration.h"
+#endif
 
 using namespace std;
 
 namespace Dynagraph {
 
+#ifdef USE_OLD_GROSS_CONFIGURATOR
 using DynaDAG::DynaDAGLayout;
 using FDP::FDPLayout;
+extern bool g_useDotDefaults;
+extern Transform *g_transform;
+#endif 
 
+extern StrAttrs g_defaultGraphAttrs;
 IncrCalledBack g_incrPhone;
-Transform *g_transform;
-bool g_useDotDefaults;
-StrAttrs g_defaultGraphAttrs;
 
 
-template<typename Graph>
-struct TextWatcherOutput : IncrViewWatcher<Graph> {
-	// IncrViewWatcher
-	void IncrOpen(ChangeQueue<Graph> &Q) {
-		LOCK_REPORT(dgr::output);
-		reports[dgr::output] << "open graph " << gd<Name>(Q.whole) << " " << gd<StrAttrs>(Q.whole) << endl;
-		igd<StrAttrChanges>(Q.ModGraph()).clear();
-	}
-	void IncrClose(ChangeQueue<Graph> &Q) {
-		LOCK_REPORT(dgr::output);
-		reports[dgr::output] << "close graph " << gd<Name>(Q.whole) << endl;
-	}
-	void FulfilGraph(Graph *g) {
-		LOCK_REPORT(dgr::output);
-		reports[dgr::output] << "fulfil graph " << gd<Name>(g) << endl;
-		emitGraph(reports[dgr::output],g);
-	}
-	void FulfilNode(typename Graph::Node *n) {
-		LOCK_REPORT(dgr::output);
-		reports[dgr::output] << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << endl;
-	}
-	void FulfilEdge(typename Graph::Edge *e) {
-		LOCK_REPORT(dgr::output);
-		reports[dgr::output] << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << endl;
-	}
-};
-
-template<typename Layout>
-IncrLangEvents *createHandlers(DString gname,const StrAttrs &attrs) {
-	if(attrs.look("superengines")) {
-		ChangingGraph<GeneralLayout> *world = new ChangingGraph<GeneralLayout>;
-		return createStringHandlers<GeneralLayout>(world,WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
-			new TextWatcherOutput<GeneralLayout>,0,new OutputIncrface<GeneralLayout>(world,dgr::output),
-			gname,attrs,g_transform,g_useDotDefaults);
-	}
-	else {
-		ChangingGraph<Layout> *world = new ChangingGraph<Layout>;
-		return createStringHandlers<Layout>(world,SimpleGuts<Layout>(attrs.look("engines")),
-			new TextWatcherOutput<Layout>,0,new OutputIncrface<Layout>(world,dgr::output),
-			gname,attrs,g_transform,g_useDotDefaults);
-	}
-}
-IncrLangEvents *IncrCalledBack::incr_cb_create_handler(Name name,StrAttrs &attrs) {
+void IncrCalledBack::incr_cb_create_handler(Name name,StrAttrs &attrs) {
 	attrs = g_defaultGraphAttrs+attrs;
+#ifndef USE_OLD_GROSS_CONFIGURATOR
+	createConfiguration(name,attrs);
+	// hopefully you'll get a more helpful error if something failed but this one is here if the configurator chain itself failed
+	if(!incr_get_handler(name))
+		throw HandlerCreationFailed(); 
+#else
 	DString type = attrs.look("type"),
 		&engines = attrs["engines"],
 		&superengines=attrs["superengines"];
@@ -121,12 +93,9 @@ IncrLangEvents *IncrCalledBack::incr_cb_create_handler(Name name,StrAttrs &attrs
 		else
 			throw DGException2("could not deduce graph type from engine list",engines);
 	}
-	IncrLangEvents *ret;
-	if(type=="dynadag") 
-		ret = createHandlers<DynaDAGLayout>(name,attrs);
-	else if(type=="fdp")
-		ret = createHandlers<FDPLayout>(name,attrs);
-    return ret;
+    IncrLangEvents *handler = createHandlers(type,name,attrs);
+	incr_set_handler(name,handler);
+#endif
 }
 void IncrCalledBack::incr_cb_destroy_handler(IncrLangEvents *h) {
     delete h;

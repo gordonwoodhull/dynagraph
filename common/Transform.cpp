@@ -21,7 +21,7 @@
 namespace Dynagraph {
 
 Transform g_dotRatios(Coord(72,72), // node sizes in inches
-						Coord(1,1)); // position in up-positive points
+						Coord(1,1)); // position in up-positive points (isn't this inverted from dot?)
 
 bool transformShape(Transform *trans,Line &shape) {
 	bool nonzero = false;

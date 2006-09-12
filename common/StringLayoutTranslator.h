@@ -29,7 +29,7 @@ struct StringToLayoutTranslator {
 	bool useDotDefaults_;
 	StringToLayoutTranslator(Transform *transform,bool useDotDefaults) : transform_(transform),useDotDefaults_(useDotDefaults) {}
 	void ModifyGraph(StringGraph *sg,Layout *lg) {
-		stringsIn<Layout>(transform_,useDotDefaults_,lg,getChanges(sg),false);
+		igd<Update>(lg) |= stringsIn<Layout>(transform_,useDotDefaults_,lg,getChanges(sg),false);
 	}
 	void InsertNode(typename StringGraph::Node *sn,typename Layout::Node *ln) {
 		stringsIn<Layout>(transform_,ln,gd<StrAttrs>(sn),true);

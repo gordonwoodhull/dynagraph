@@ -16,6 +16,8 @@
 #ifndef IncrCalledBack_h
 #define IncrCalledBack_h
 
+#include "incrface/IncrLangEvents.h"
+
 namespace Dynagraph {
 
 struct IncrCalledBack : IncrCallbacks {
@@ -25,7 +27,7 @@ struct IncrCalledBack : IncrCallbacks {
     ~IncrCalledBack() {
 		g_incrCallback = 0;
     }
-    IncrLangEvents *incr_cb_create_handler(Name name,StrAttrs &attrs);
+    void incr_cb_create_handler(Name name,StrAttrs &attrs);
     void incr_cb_destroy_handler(IncrLangEvents *h);
     void incr_cb_fulfil_graph(DString name,StrGraph *sg);
     void incr_cb_fulfil_node(DString graphname,DString nodename,const StrAttrs &attrs);
@@ -33,6 +35,10 @@ struct IncrCalledBack : IncrCallbacks {
     void incr_cb_message(const char *msg);
 };
 extern IncrCalledBack g_incrPhone;
+
+struct HandlerCreationFailed : DGException {
+	HandlerCreationFailed() : DGException("failed to create layout or engines",true) {}
+};
 
 } // namespace Dynagraph
 

@@ -13,25 +13,22 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef UpdateCurrentConfigurator_h
+#define UpdateCurrentConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "Configurator.h"
+#include "SimpleEngines.h"
 
 namespace Dynagraph {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
+struct UpdateCurrentConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		engines.Prepend(new UpdateCurrentProcessor<Layout>(world));
+		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
 
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //UpdateCurrentConfigurator_h

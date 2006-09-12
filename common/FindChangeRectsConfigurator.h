@@ -13,25 +13,28 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef FindChangeRectsConfigurator_h
+#define FindChangeRectsConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "Configurator.h"
+#include "FindChangeRect.h"
 
 namespace Dynagraph {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
+struct FindChangeRectsConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		if(attrs.look("findchangerects","false")=="true") {
+			FCRData<Layout> *fcrdata = new FCRData<Layout>(world);
+			FCRBefore<Layout> *fcrbefore = new FCRBefore<Layout>(fcrdata);
+			FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(fcrdata);
+			engines.Prepend(fcrbefore);
+			engines.Append(fcrafter);
+		}
+		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
 
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //FindChangeRectsConfigurator_h

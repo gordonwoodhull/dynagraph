@@ -13,40 +13,33 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-#ifndef OutputIncrface_h
-#define OutputIncrface_h
 
-#include "incrout.h"
+#ifndef TextWatcherOutput_h
+#define TextWatcherOutput_h
+
+#include "IncrStrGraphHandler.h"
+#include "common/emitGraph.h"
 
 namespace Dynagraph {
 
 template<typename Graph>
-struct OutputIncrface : LinkedChangeProcessor<Graph> {
-	dgr::reportType reportType_;
-	OutputIncrface(ChangingGraph<Graph> *world,dgr::reportType report_type) : LinkedChangeProcessor<Graph>(world),reportType_(report_type) {}
-	// ChangeProcessor
-	void Open() {
-		if(reports.enabled(reportType_)) {
-			LOCK_REPORT(reportType_);
-			reports[reportType_] << "open graph " << gd<Name>(&this->world_->whole_) << " " << gd<StrAttrs>(&this->world_->whole_) << std::endl;
-		}
-		this->NextOpen();
+struct TextWatcherOutput : IncrViewWatcher<Graph> {
+	// IncrViewWatcher
+	void FulfilGraph(Graph *g) {
+		LOCK_REPORT(dgr::output);
+		reports[dgr::output] << "fulfil graph " << gd<Name>(g) << std::endl;
+		emitGraph(reports[dgr::output],g);
 	}
-	void Process() {
-		if(reports.enabled(reportType_)) {
-			LOCK_REPORT(reportType_);
-			emitChanges(reports[reportType_],this->world_->Q_);
-		}
-		this->NextProcess();
+	void FulfilNode(typename Graph::Node *n) {
+		LOCK_REPORT(dgr::output);
+		reports[dgr::output] << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << std::endl;
 	}
-	void IncrClose() {
-		if(reports.enabled(reportType_)) {
-			LOCK_REPORT(reportType_);
-			reports[reportType_] << "close graph " << gd<Name>(&this->world_->whole_) << std::endl;
-		}
+	void FulfilEdge(typename Graph::Edge *e) {
+		LOCK_REPORT(dgr::output);
+		reports[dgr::output] << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << std::endl;
 	}
 };
 
 } // namespace Dynagraph
 
-#endif //OutputIncrface_h
+#endif //TextWatcherOutput_h

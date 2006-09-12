@@ -28,7 +28,7 @@
 #endif
 #include <fcntl.h>
 
-extern bool g_xeptOut;
+extern bool g_xeptFatal;
 extern int g_maxWait;
 extern bool g_randomizeWait;
 

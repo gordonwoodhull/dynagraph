@@ -217,10 +217,10 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 	std::pair<Node *,bool> fetch_node(DString name,bool create) {
 		dgassert(ndict.size()==this->nodes().size());
 		if(Node *n = lookNode(name))
-			return make_pair(n,false);
+			return std::make_pair(n,false);
 		if(!create)
-			return make_pair((Node*)0,false);
-		std::pair<Node*,bool> ret = make_pair(create_node(name),true);
+			return std::make_pair((Node*)0,false);
+		std::pair<Node*,bool> ret = std::make_pair(create_node(name),true);
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
@@ -233,10 +233,10 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 		if(Edge *e = lookEdge(name)) {
 			if(gd<Name>(e->tail)!=tail || gd<Name>(e->head)!=head)
 				throw DGEdgeNameUsed(name);
-			return make_pair(e,false);
+			return std::make_pair(e,false);
 		}
 		if(!create)
-			return make_pair((Edge*)0,false);
+			return std::make_pair((Edge*)0,false);
 		Node *t = fetch_node(tail,false).first,
 			*h = fetch_node(head,false).first;
 		if(!t)
@@ -250,10 +250,10 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 		if(Edge *e = lookEdge(name)) {
 			if(e->tail!=tail || e->head!=head)
 				throw DGEdgeNameUsed(name);
-			return make_pair(e,false);
+			return std::make_pair(e,false);
 		}
 		if(!create)
-			return make_pair((Edge*)0,false);
+			return std::make_pair((Edge*)0,false);
         return create_edge(tail,head,name);
 	}
 	Edge *fetch_edge(DString name) {

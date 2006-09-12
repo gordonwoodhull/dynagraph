@@ -55,7 +55,8 @@ typedef enum {
 	DG_UPD_DRAWN = 1<<15, // nodes,graphs,edges: the Drawn lines have changed
 	DG_UPD_POLYDEF = 1<<16, // anything in node's PolyDef
 	DG_UPD_CHANGERECT = 1<<17, // GraphGeom::changerect
-	DG_UPD_SUPPRESSION = 1<<18 // (wrong?) DynaDAG::Suppression
+	DG_UPD_SUPPRESSION = 1<<18, // (wrong?) DynaDAG::Suppression
+	DG_UPD_TRANSLATION = 1<<19 // layout's Translation
 } UpdateFlags;
 struct Update { // subgraph-specific datum
 	unsigned flags;
@@ -123,11 +124,8 @@ struct StaticLabel {
 struct StaticLabels {
 	std::vector<StaticLabel> labels;
 };
-// at present dynagraph has no orientation parameter; that is, you can't
-// specify which way is down and thus which way dynadag edges will point.
-// instead, translate your coords to and from dynagraph using e.g. reorient.h
-// and set this parameter so that things that don't want to be translated,
-// like the shape generator and label placer, know how to compensate.
+// used by CoordTranslator; intention is to design this so that full matrix-based translation
+// could be supported in future
 typedef enum {
 	DG_ORIENT_RIGHT,
 	DG_ORIENT_UP,

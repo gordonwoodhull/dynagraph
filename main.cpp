@@ -34,14 +34,14 @@ using namespace Dynagraph;
 
 char *g_outdot=0;
 int g_count=1;
-bool g_xeptOut=false;
+bool g_xeptFatal=false;
 int g_maxWait=-1;
 bool g_randomizeWait = false;
 
 namespace Dynagraph {
-	extern StrAttrs g_defaultGraphAttrs;
-	extern Transform *g_transform;
-	extern bool g_useDotDefaults;
+	StrAttrs g_defaultGraphAttrs;
+	Transform *g_transform;
+	bool g_useDotDefaults;
 }
 
 struct CouldntOpen {};
@@ -249,7 +249,7 @@ int main(int argc, char *args[]) {
 			g_maxWait = atoi(args[++i]);
 			break;
 		case 'x':
-			g_xeptOut = true;
+			g_xeptFatal = true;
 			break;
 		case 'h':
 		case '?':
@@ -314,25 +314,19 @@ int main(int argc, char *args[]) {
 		catch(Assertion sert) {
 			LOCK_REPORT(dgr::output);
 			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
-			if(g_xeptOut)
-				throw;
-			if(sert.fatal)
+			if(g_xeptFatal||sert.fatal)
 				exit(23);
 		}
 		catch(DGException2 dgx) {
 			LOCK_REPORT(dgr::output);
 			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << endl;
-			if(g_xeptOut)
-				throw;
-			if(dgx.fatal)
+			if(g_xeptFatal||dgx.fatal)
 				exit(23);
 		}
 		catch(DGException dgx) {
 			LOCK_REPORT(dgr::output);
 			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << endl;
-			if(g_xeptOut)
-				throw;
-			if(dgx.fatal)
+			if(g_xeptFatal||dgx.fatal)
 				exit(23);
 		}
 		catch(...) {

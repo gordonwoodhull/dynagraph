@@ -495,8 +495,9 @@ void DynaDAGServer::Process() {
 	loops.Field(dgr::dynadag,"nodes deleted - input",Q.delN.nodes().size());
 	loops.Field(dgr::dynadag,"edges deleted - input",Q.delE.nodes().size());
 	
-	if(Q.Empty()) {
+	if(Q.Empty()&&igd<Update>(Q.ModGraph()).flags==0) {
 		NextProcess();
+		Q.Clear(); // e.g. to clear irrelevant StrChanges
 		return;
 	}
 

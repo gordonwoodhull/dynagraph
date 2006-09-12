@@ -13,25 +13,23 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef ShapeGeneratorConfigurator_h
+#define ShapeGeneratorConfigurator_h
 
-#ifndef QueueTransitions_h
-#define QueueTransitions_h
+#include "common/Configurator.h"
+#include "ShapeGenerator.h"
 
 namespace Dynagraph {
 
-template<typename Graph1>
-struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
-};
-template<typename Graph1>
-struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
+struct ShapeGeneratorConfigurator {
+	template<typename ConfiguratorVec,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		if(attrs.look("shapegen","true")=="true") 
+			engines.Prepend(new ShapeGenerator<Layout>(world));
+		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
 	}
 };
 
 } // namespace Dynagraph
 
-#endif // QueueTransitions_h
+#endif //ShapeGeneratorConfigurator_h

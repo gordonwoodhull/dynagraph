@@ -40,7 +40,6 @@ struct LayoutToNSRankerModelTranslator : ChangeTranslator<Layout,NSRankerModel> 
         for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
 
-		Transition::EndLastQ(Q1);
 		LinkedChangeProcessor<Graph2>::NextProcess();
 	}
 };
@@ -74,7 +73,6 @@ struct NSRankerModelToLayoutTranslator : ChangeTranslator<NSRankerModel,Layout> 
 					ModifyEdge(Q2,*ei,DG_UPD_MOVE);
 			}
 		}
-		Transition::EndLastQ(Q1);
 		LinkedChangeProcessor<Layout>::NextProcess();
 	}
 };

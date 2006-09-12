@@ -21,13 +21,10 @@
 
 namespace Dynagraph {
 
+// this is a weird interface that is slowly dwindling into nothing
 template<typename Graph>
 struct IncrViewWatcher {
 	virtual ~IncrViewWatcher() {}
-	virtual void IncrOpen(ChangeQueue<Graph> &Q) = 0;
-	virtual void IncrClose(ChangeQueue<Graph> &Q) = 0;
-	// do these belong here?  all i know is the implementation does not belong e.g. in IncrStrGraphHandler
-	// and it neatly encapsulates all output in main's TextViewWatcher
 	virtual void FulfilGraph(Graph *g) = 0;
 	virtual void FulfilNode(typename Graph::Node *n) = 0;
 	virtual void FulfilEdge(typename Graph::Edge *e) = 0;
