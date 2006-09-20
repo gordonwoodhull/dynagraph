@@ -16,13 +16,16 @@
 #include "LayoutChooserConfigurator.h"
 #include "dynadag/EdgeSuppressorConfigurator.h"
 #include "dynadag/ClearExtraRanksConfigurator.h"
-#include "dynadag/RankerConfigurator.h"
 #include "dynadag/EmphasizeFlowConfigurator.h"
+#include "dynadag/RankerConfigurator.h"
+#include "common/CoordTranslatorConfigurator.h"
 #include "common/ShapeGeneratorConfigurator.h"
 #include "common/FindChangeRectsConfigurator.h"
 #include "common/UpdateCurrentConfigurator.h"
 #include "common/StringizerConfigurator.h"
 #include "incrface/RegisteringConfigurator.h"
+
+#include <boost/mpl/list.hpp>
 
 namespace mpl = boost::mpl;
 
@@ -31,21 +34,22 @@ namespace Dynagraph {
 // the order of configurators is "magic" 
 // a more clever (perhaps too clever) way to do this might be to specify 
 // dependencies and order constraints on configurators(?)
-typedef mpl::vector<
+typedef mpl::list<
 	LayoutChooserConfigurator,
 	DynaDAG::EdgeSuppressorConfigurator,
 	DynaDAG::ClearExtraRanksConfigurator,
 	DynaDAG::EmphasizeFlowConfigurator,
 	DynaDAG::RankerConfigurator,
+	CoordTranslatorConfigurator,
 	ShapeGeneratorConfigurator,
 	FindChangeRectsConfigurator,
 	UpdateCurrentConfigurator,
 	StringizerConfigurator,
 	RegisteringConfigurator
-> ConfiguratorVec;
+> Configurators;
 
 void createConfiguration(Name name,StrAttrs &attrs) {
-	configureLayout<ConfiguratorVec>(name,attrs);
+	configureLayout<Configurators>(name,attrs);
 }
 
 } // namespace Dynagraph

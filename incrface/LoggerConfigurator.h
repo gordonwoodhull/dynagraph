@@ -13,36 +13,40 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-#ifndef StringizerConfigurator_h
-#define StringizerConfigurator_h
+#ifndef LoggerConfigurator_h
+#define LoggerConfigurator_h
 
-#include "Configurator.h"
-#include "InternalTranslator.h"
-#include "StringLayoutTranslator.h"
-
-namespace Dynagraph {
+#include "common/Configurator.h"
+#include "common/InternalTranslator.h"
+#include "common/StringLayoutTranslator.h"
+#include "common/OutputIncrface.h"
 
 // these globals should get folded into graph attributes, eliminating much useless code
 extern Transform *g_transform;
-extern bool g_useDotDefaults;
 
-
-struct StringizerConfigurator {
+struct LoggerConfigurator {
 	template<typename Configurators,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		// engine to translate strings to binary attrs
-		typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
-		StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(g_transform,g_useDotDefaults));
-		engines.Prepend(xlateIn);
-
-		// engine to translate binary attrs to strings
-		typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
-		StringsOutEngine *xlateOut = new StringsOutEngine(engines.first->world_,g_transform);
-		engines.Append(xlateOut);
+		// debug loggers to see what the "inner engine" is doing
+		// (which require engines to "stringize" attributes before them)
+		typedef InternalTranslator2<InnerLayout,LayoutToStringTranslator<InnerLayout,InnerLayout> > MakeStrings;
+		if(reports.enabled(dgr::inner_input)) {
+			OutputIncrface<InnerLayout> *logIn = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_input);
+			engines.Prepend(logIn);
+			MakeStrings *makeStrings = new MakeStrings(innerWorld_,g_transform);
+			engines.Prepend(makeStrings);
+		}
+		if(reports.enabled(dgr::inner_output)) {
+			MakeStrings *makeStrings = new MakeStrings(innerWorld_,g_transform);
+			engines.Append(makeStrings);
+			OutputIncrface<InnerLayout> *logOut = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_output);
+			engines.Append(logOut);
+		}
 		configureLayout<Configurators>(name,attrs,world,engines);
 	}
 };
 
+
 } // namespace Dynagraph
 
-#endif //StringizerConfigurator_h
+#endif //LoggerConfigurator_h

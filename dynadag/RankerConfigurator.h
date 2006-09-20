@@ -23,11 +23,11 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct RankerConfigurator {
-	template<typename ConfiguratorVec,typename Layout> 
+	template<typename Configurators,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
 		if(attrs.look("layout","dynadag")=="dynadag" && attrs.look("ranker","nsranker")=="nsranker") // i dream of smarter rankers
 			engines.Prepend(new NSRanker<Layout>(world));
-		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
+		configureLayout<Configurators>(name,attrs,world,engines);
 	}
 };
 

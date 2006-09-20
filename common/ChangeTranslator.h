@@ -13,30 +13,33 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-#ifndef FDPConfigurator_h
-#define FDPConfigurator_h
+#ifndef ChangeTranslator_h
+#define ChangeTranslator_h
 
-#include "common/Configurator.h"
-#include "fdp/FDPLayout.h"
-#include "fdp/fdp.h"
-#include "common/SimpleEngines.h"
+#include "ChangeProcessor.h"
 
 namespace Dynagraph {
-namespace FDP {
 
-struct FDPConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>) {
-		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
-		ChangingGraph<FDPLayout> *world = new ChangingGraph<FDPLayout>;
-		EnginePair<FDPLayout> engines;
-		engines.Prepend(new FDPServer(world));
-		engines.Prepend(new OkayEngine<FDPLayout>(world));
-		configureLayout<Configurators>(name,attrs,world,engines);
-	}
+/* translators are different from processors in that
+	* they have both a source and destination world
+	* they are not chained
+  the first difference is obvious.  the second one is debatable.  
+  it does not allow e.g. intermediate translations.
+  it does make InternalWorld slightly easier to implement, but not so much so.
+  we'll see.
+*/
+template<typename SourceGraph,typename DestGraph>
+struct ChangeTranslator {
+	ChangingGraph<SourceGraph> *sourceWorld_;
+	ChangingGraph<DestGraph> *destWorld_;
+	ChangeTranslator(ChangingGraph<SourceGraph> *sourceWorld,ChangingGraph<DestGraph> *destWorld)
+		: sourceWorld_(sourceWorld),destWorld_(destWorld) {}
+
+	virtual void Open() {}
+	virtual void Process() {}
+	virtual void Close() {}
 };
 
-} // namespace FDP
 } // namespace Dynagraph
 
-#endif //FDPConfigurator_h
+#endif // ChangeTranslator_h

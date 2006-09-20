@@ -30,10 +30,10 @@ struct SkipEngine : LinkedChangeProcessor<Graph> {
 	SkipEngine(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0) 
 		: LinkedChangeProcessor<Graph>(world,next) {}
 	~SkipEngine() {
-		next_ = 0; // do not chain deletion (?!)
+		this->next_ = 0; // do not chain deletion (?!)
 	}
 	void Process() {
-		next_->next_->Process();
+		this->next_->next_->Process();
 	}
 };
 
@@ -75,15 +75,15 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 		// translators to/from outside world
 		InTranslator *inTranslator = new InTranslator(this->world_,innerWorld_);
 		OutTranslator *outTranslator = new OutTranslator(innerWorld_,this->world_);
-		innerEngines.Prepend(inTranslator);
-		innerEngines.Append(outTranslator);
+		innerEngines.Prepend(static_cast<DestProcessor<InnerLayout>*>(inTranslator));
+		innerEngines.Append(static_cast<SrcProcessor<InnerLayout>*>(outTranslator));
 		// something to clear outside world's changes
 		LinkedChangeProcessor<OuterLayout> *okayEngine  = new OkayEngine<OuterLayout>(this->world_);
 		// and something to tie back to my next_
 		LinkedChangeProcessor<OuterLayout> *delegator = new SkipEngine<OuterLayout>(this->world_,this);
-		static_cast<LinkedChangeProcessor<OuterLayout>*>(outTranslator)->next_ = okayEngine;
+		static_cast<DestProcessor<OuterLayout>*>(outTranslator)->next_ = okayEngine;
 		okayEngine->next_ = delegator;
-		inXlator_ = inTranslator;
+		inXlator_ = static_cast<SrcProcessor<OuterLayout>*>(inTranslator);
 	}
 	void Process() {
 		inXlator_->Process();

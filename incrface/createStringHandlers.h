@@ -35,9 +35,9 @@ namespace Dynagraph {
 template<typename OuterLayout,typename InnerLayout>
 struct translator_traitses {
 	typedef NamedToNamedChangeTranslator<OuterLayout,InnerLayout,
-		LayoutToLayoutTranslator<OuterLayout,InnerLayout>,false> in_translator;
+		LayoutToLayoutTranslator<OuterLayout,InnerLayout> > in_translator;
 	typedef NamedToNamedChangeTranslator<InnerLayout,OuterLayout,
-		LayoutToLayoutTranslator<InnerLayout,OuterLayout>,true> out_translator;
+		LayoutToLayoutTranslator<InnerLayout,OuterLayout> > out_translator;
 };
 
 template<typename Layout>

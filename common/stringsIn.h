@@ -24,9 +24,6 @@
 
 namespace Dynagraph {
 
-struct NonSizeableShape {};
-struct UnknownShape {};
-
 void clearRemoved(const StrAttrs &current,const StrAttrs &apply,StrAttrs &ret);
 void ensureAttr(const StrAttrs &att,StrAttrs &A, DString name);
 bool shapeChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs);
@@ -35,6 +32,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs);
 template<typename Layout>
 Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	using std::istringstream;
+	Update ret;
 	StrAttrs allChanges = attrs;
 	if(clearOld)
 		clearRemoved(gd<StrAttrs>(l),attrs,allChanges);
@@ -49,18 +47,26 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			if(value.empty())
                 value = useDotDefaults?"1,1":"0.1,0.1";
 			istringstream s(value);
-			s >> gd<GraphGeom>(l).resolution;
-
+			Coord res;
+			s >> res;
+			if(assign(gd<GraphGeom>(l).resolution,res))
+				ret |= DG_UPD_RESOLUTION;
 		}
 		else if(name=="separation") {
 			if(value.empty())
                 value = useDotDefaults?"24,24":"0.5,0.5";
 			istringstream s(value);
-			s >> gd<GraphGeom>(l).separation;
+			Coord sep;
+			s >> sep;
+			if(assign(gd<GraphGeom>(l).separation,sep))
+				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="edgeseparation") {
 			istringstream s(value);
-			s >> gd<GraphGeom>(l).edgeSeparation;
+			double esep;
+			s >> esep;
+			if(assign(gd<GraphGeom>(l).edgeSeparation,esep))
+				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="defaultsize") {
 			if(value.empty())
@@ -88,9 +94,22 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			else if(value=="spline")
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SPLINE;
 		}
+		else if(name=="rankdir") {
+			Orientation or;
+			if(value=="TB")
+				or = DG_ORIENT_DOWN;
+			else if(value=="LR")
+				or = DG_ORIENT_RIGHT;
+			else if(value=="BT")
+				or = DG_ORIENT_UP;
+			else if(value=="RL")
+				or = DG_ORIENT_LEFT;
+			if(assign(gd<Translation>(l).orientation,or))
+				ret |= DG_UPD_TRANSLATION;
+		}
 		SetAndMark(l,ai->first,value);
 	}
-	return 0;
+	return ret;
 }
 template<typename Layout>
 Update assureAttrs(Transform *trans,typename Layout::Node *n) {

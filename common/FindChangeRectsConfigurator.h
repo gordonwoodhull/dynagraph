@@ -22,7 +22,7 @@
 namespace Dynagraph {
 
 struct FindChangeRectsConfigurator {
-	template<typename ConfiguratorVec,typename Layout> 
+	template<typename Configurators,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
 		if(attrs.look("findchangerects","false")=="true") {
 			FCRData<Layout> *fcrdata = new FCRData<Layout>(world);
@@ -31,7 +31,7 @@ struct FindChangeRectsConfigurator {
 			engines.Prepend(fcrbefore);
 			engines.Append(fcrafter);
 		}
-		configureLayout<ConfiguratorVec>(name,attrs,world,engines);
+		configureLayout<Configurators>(name,attrs,world,engines);
 	}
 };
 

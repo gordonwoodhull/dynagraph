@@ -29,15 +29,13 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 	NSRankerModelToConstraintTranslator(ConstraintGraph *whole,ConstraintGraph *current)
 		: transition_(whole,current) {}
 	void Process() {
-		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
-		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
+		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
+		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
             removePathConstraints(*ei);
 
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
-
-		LinkedChangeProcessor<Graph2>::NextProcess();
 	}
     void removeLayoutNodeConstraints(NSRankerModel::Node *n) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(n->g);
@@ -115,9 +113,8 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 struct ConstraintToNSRankerModelTranslator : ChangeTranslator<ConstraintGraph,NSRankerModel> {
 	typedef ReturningQueueTransition<ConstraintGraph,NSRankerModel> Transition;
 	void Process() {
-		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
-		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
-		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
+		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
+		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
 	}
 
 } // namespace DynaDAG

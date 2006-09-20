@@ -17,7 +17,7 @@
 #ifndef InternalTranslator_h
 #define InternalTranslator_h
 
-#include "ChangeProcessor.h"
+#include "ChangeTranslator.h"
 
 namespace Dynagraph {
 template<typename Graph,typename ChangeActions>

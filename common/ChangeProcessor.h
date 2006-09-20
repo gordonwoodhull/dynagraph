@@ -69,14 +69,6 @@ struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 		NextClose();
 	}
 };
-// a ChangeTranslator is the end of one chain of processors and the beginning of another
-template<typename Graph1,typename Graph2>
-struct ChangeTranslator : LinkedChangeProcessor<Graph1>, LinkedChangeProcessor<Graph2> {
-	ChangeTranslator(ChangingGraph<Graph1> *world1,ChangingGraph<Graph2> *world2)
-		: LinkedChangeProcessor<Graph1>(world1),LinkedChangeProcessor<Graph2>(world2) {}
-	// LinkedChangeProcessor<Graph1>::next_ must be null
-};
-
 
 } // namespace Dynagraph
 

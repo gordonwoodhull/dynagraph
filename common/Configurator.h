@@ -22,7 +22,6 @@
 #include "EnginePair.h"
 #include <boost/mpl/assert.hpp>
 #include <boost/mpl/apply.hpp>
-#include <boost/mpl/vector.hpp>
 #include <boost/mpl/front.hpp>
 #include <boost/mpl/pop_front.hpp>
 #include <boost/mpl/empty.hpp>
@@ -34,7 +33,8 @@ namespace Dynagraph {
 	Configurators are semi-autonomous builders of Engines and Worlds
 	The configuration gets built from the inside out.
 	Each Configurator (so far) either pre/appends Engines to the chain,
-	or boxes up a chain and world into a WorldInABox, which is an Engine in a new world.
+	or boxes up a chain and world into an InternalWorld, 
+	and creates a new world in which it's an Engine.
 	All of this sounds almost philosophical, no?  
 	Unforch it craves better language; for now it's a mixed-up metaphor.
 
@@ -48,30 +48,30 @@ namespace Dynagraph {
 */
 
 struct PopConfigurator {
-	template<typename ConfiguratorVector,typename Layout>
+	template<typename Configurators,typename Layout>
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		typedef typename boost::mpl::front<ConfiguratorVector>::type FirstConfigurator;
-		typedef typename boost::mpl::pop_front<ConfiguratorVector>::type Rest;
+		typedef typename boost::mpl::front<Configurators>::type FirstConfigurator;
+		typedef typename boost::mpl::pop_front<Configurators>::type Rest;
 		FirstConfigurator::template config<Rest>(name,attrs,world,engines);
 	}
 };
 struct DoNothingConfigurator {
-	template<typename ConfiguratorVector,typename Layout>
+	template<typename Configurators,typename Layout>
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {}
 };
-template<typename ConfiguratorVector,typename Layout>
+template<typename Configurators,typename Layout>
 void configureLayout(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-	boost::mpl::if_<boost::mpl::empty<ConfiguratorVector>,DoNothingConfigurator,PopConfigurator>::type
-		::template config<ConfiguratorVector>(name,attrs,world,engines);
+	boost::mpl::if_<boost::mpl::empty<Configurators>,DoNothingConfigurator,PopConfigurator>::type
+		::template config<Configurators>(name,attrs,world,engines);
 }
-template<typename ConfiguratorVector>
+template<typename Configurators>
 void configureLayout(DString name,const StrAttrs &attrs) {
-	configureLayout<ConfiguratorVector,void>(name,attrs,0,EnginePair<void>());
+	configureLayout<Configurators,void>(name,attrs,0,EnginePair<void>());
 }
 struct PassConfigurator {
-	template<typename ConfiguratorVector,typename Layout>
+	template<typename Configurators,typename Layout>
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		configureLayout<ConfiguratorVector>(name,attrs,world,engines);
+		configureLayout<Configurators>(name,attrs,world,engines);
 	}
 };
 

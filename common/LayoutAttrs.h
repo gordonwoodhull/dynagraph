@@ -55,7 +55,7 @@ typedef enum {
 	DG_UPD_DRAWN = 1<<15, // nodes,graphs,edges: the Drawn lines have changed
 	DG_UPD_POLYDEF = 1<<16, // anything in node's PolyDef
 	DG_UPD_CHANGERECT = 1<<17, // GraphGeom::changerect
-	DG_UPD_SUPPRESSION = 1<<18, // (wrong?) DynaDAG::Suppression
+	DG_UPD_SUPPRESSION = 1<<18, // NodeGeom::suppressed, DynaDAG::Suppression
 	DG_UPD_TRANSLATION = 1<<19 // layout's Translation
 } UpdateFlags;
 struct Update { // subgraph-specific datum

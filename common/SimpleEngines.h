@@ -26,11 +26,11 @@ template<typename Graph>
 struct OkayEngine : LinkedChangeProcessor<Graph> {
 	OkayEngine(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
 	void Open() {
-		NextOpen();
+		this->NextOpen();
 		this->world_->Q_.Clear();
 	}
 	void Process() {
-		NextProcess();
+		this->NextProcess();
 		this->world_->Q_.ExecuteDeletions();
 		this->world_->Q_.Clear();
 	}

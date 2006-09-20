@@ -19,11 +19,27 @@
 
 namespace Dynagraph {
 
-template<typename Layout1,typename Layout2,bool CopySecondOfTwo=true>
+struct LayoutToLayoutCopyAllPolicy {
+	enum {
+		CopySecondOfTwo = true,
+		CopyDrawn = true,
+		CopyNodePos = true,
+		CopyNodeRegion = true,
+		CopyEdgePos = true,
+	};
+};
+template<typename Layout1,typename Layout2,typename CopyPolicy = LayoutToLayoutCopyAllPolicy>
 struct LayoutToLayoutTranslator {
 	void copyNodeAttrs(typename Layout1::Node *ln1,typename Layout2::Node *ln2) {
-		gd<Drawn>(ln2) = gd<Drawn>(ln1);
-		gd<NodeGeom>(ln2) = gd<NodeGeom>(ln1);
+		if(CopyPolicy::CopyDrawn)
+			gd<Drawn>(ln2) = gd<Drawn>(ln1);
+		if(CopyPolicy::CopyNodePos)
+			gd<NodeGeom>(ln2).pos = gd<NodeGeom>(ln1).pos;
+		if(CopyPolicy::CopyNodeRegion)
+			gd<NodeGeom>(ln2).region = gd<NodeGeom>(ln1).region;
+		gd<NodeGeom>(ln2).nail = gd<NodeGeom>(ln1).nail;
+		gd<NodeGeom>(ln2).flow = gd<NodeGeom>(ln1).flow;
+		gd<NodeGeom>(ln2).suppressed = gd<NodeGeom>(ln1).suppressed;
 		gd<NodeLabels>(ln2) = gd<NodeLabels>(ln1);
 		gd<IfPolyDef>(ln2) = gd<IfPolyDef>(ln1);
 		gd<DynaDAG::NSRankerNode>(ln2) = gd<DynaDAG::NSRankerNode>(ln1);
@@ -31,10 +47,16 @@ struct LayoutToLayoutTranslator {
 		igd<Update>(ln2) = igd<Update>(ln1);
 	}
 	void copyEdgeAttrs(typename Layout1::Edge *le1,typename Layout2::Edge *le2) {
-		gd<Drawn>(le2) = gd<Drawn>(le1);
-		gd<EdgeGeom>(le2) = gd<EdgeGeom>(le1);
+		if(CopyPolicy::CopyDrawn)
+			gd<Drawn>(le2) = gd<Drawn>(le1);
+		if(CopyPolicy::CopyEdgePos)
+			gd<EdgeGeom>(le2).pos = gd<EdgeGeom>(le1).pos;
+		gd<EdgeGeom>(le2).headPort = gd<EdgeGeom>(le1).headPort;
+		gd<EdgeGeom>(le2).tailPort = gd<EdgeGeom>(le1).tailPort;
+		gd<EdgeGeom>(le2).headClipped = gd<EdgeGeom>(le1).headClipped;
+		gd<EdgeGeom>(le2).tailClipped = gd<EdgeGeom>(le1).tailClipped;
 		gd<EdgeLabels>(le2) = gd<EdgeLabels>(le1);
-		if(CopySecondOfTwo)
+		if(CopyPolicy::CopySecondOfTwo)
 			gd<DynaDAG::NSRankerEdge>(le2).secondOfTwo = gd<DynaDAG::NSRankerEdge>(le1).secondOfTwo;
 		gd<DynaDAG::Suppression>(le2) = gd<DynaDAG::Suppression>(le1);
 	

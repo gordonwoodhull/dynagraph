@@ -24,9 +24,9 @@
 namespace Dynagraph {
 
 struct RegisteringConfigurator {
-	template<typename ConfiguratorVec,typename Layout> 
+	template<typename Configurators,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		BOOST_MPL_ASSERT((boost::mpl::empty<ConfiguratorVec>)); // must be end of line
+		BOOST_MPL_ASSERT((boost::mpl::empty<Configurators>)); // must be end of line
 		// name & attrs get applied to outermost world
 		gd<Name>(&world->whole_) = name;
 	    SetAndMark(world->Q_.ModGraph(),attrs);
