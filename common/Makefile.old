@@ -10,7 +10,6 @@ INCS =	-I.. -I../.. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	createGeneralEngine.o \
 	Colors.o	Line.o			LineTricks.o	Region.o \
 	Solvers.o	StringDict.o		Transform.o \
 	ag2str.o	ellipse2bezier.o	genpoly.o	parsestr.o \

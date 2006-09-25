@@ -277,9 +277,6 @@
 				RelativePath=".\IncrCalledBack.cpp">
 			</File>
 			<File
-				RelativePath=".\instantiateEngines.cpp">
-			</File>
-			<File
 				RelativePath="main.cpp">
 			</File>
 		</Filter>

@@ -18,7 +18,6 @@
 
 #include "Configurator.h"
 #include "GeneralLayout.h"
-#include "Transform.h"
 #include "InternalWorld.h" 
 #include "NamedToNamedChangeTranslator.h"
 #include "CoordTranslator.h"

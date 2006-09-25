@@ -20,6 +20,7 @@
 #include "dynadag/RankerConfigurator.h"
 #include "common/CoordTranslatorConfigurator.h"
 #include "common/ShapeGeneratorConfigurator.h"
+#include "common/ColorByAgeConfigurator.h"
 #include "common/FindChangeRectsConfigurator.h"
 #include "common/UpdateCurrentConfigurator.h"
 #include "common/StringizerConfigurator.h"
@@ -42,6 +43,7 @@ typedef mpl::list<
 	DynaDAG::RankerConfigurator,
 	CoordTranslatorConfigurator,
 	ShapeGeneratorConfigurator,
+	ColorByAgeConfigurator,
 	FindChangeRectsConfigurator,
 	UpdateCurrentConfigurator,
 	StringizerConfigurator,

@@ -200,9 +200,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath=".\createFDPEngine.cpp">
-			</File>
-			<File
 				RelativePath="grid.cpp">
 			</File>
 			<File

@@ -27,8 +27,6 @@ extern Transform *g_transform;
 struct LoggerConfigurator {
 	template<typename Configurators,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		// debug loggers to see what the "inner engine" is doing
-		// (which require engines to "stringize" attributes before them)
 		typedef InternalTranslator2<InnerLayout,LayoutToStringTranslator<InnerLayout,InnerLayout> > MakeStrings;
 		if(reports.enabled(dgr::inner_input)) {
 			OutputIncrface<InnerLayout> *logIn = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_input);

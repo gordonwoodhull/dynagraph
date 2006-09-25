@@ -28,7 +28,7 @@ void clearRemoved(const StrAttrs &current,const StrAttrs &apply,StrAttrs &ret);
 void ensureAttr(const StrAttrs &att,StrAttrs &A, DString name);
 bool shapeChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs);
 PolyDef readPolyDef(Transform *trans,StrAttrs &attrs);
-	
+
 template<typename Layout>
 Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	using std::istringstream;
@@ -80,7 +80,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).ticks;
 		}
-		else if(name=="intermediate") 
+		else if(name=="intermediate")
 			gd<GraphGeom>(l).reportIntermediate = value=="true";
 		else if(name=="emphasizeflow")
 			gd<GraphGeom>(l).s_edges = value=="true";
@@ -95,16 +95,16 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SPLINE;
 		}
 		else if(name=="rankdir") {
-			Orientation or;
+			Orientation ori;
 			if(value=="TB")
-				or = DG_ORIENT_DOWN;
+				ori = DG_ORIENT_DOWN;
 			else if(value=="LR")
-				or = DG_ORIENT_RIGHT;
+				ori = DG_ORIENT_RIGHT;
 			else if(value=="BT")
-				or = DG_ORIENT_UP;
+				ori = DG_ORIENT_UP;
 			else if(value=="RL")
-				or = DG_ORIENT_LEFT;
-			if(assign(gd<Translation>(l).orientation,or))
+				ori = DG_ORIENT_LEFT;
+			if(assign(gd<Translation>(l).orientation,ori))
 				ret |= DG_UPD_TRANSLATION;
 		}
 		SetAndMark(l,ai->first,value);
@@ -139,7 +139,7 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	}
 	*/
 	// new strategy: allow zero size if shape=none or plaintext
-	// otherwise use resolution as a minimum 
+	// otherwise use resolution as a minimum
 	if(shape!="none" && shape!="plaintext") {
 		Coord mini = trans->outSize(gd<GraphGeom>(n->g).resolution);
 		size.x = std::max(size.x,mini.x);
@@ -310,7 +310,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 			else
 				skip = true;
 		}
-		else if(ai->first=="backward") 
+		else if(ai->first=="backward")
 			eg.backward = ai->second=="true";
 		else if(ai->first=="emphasizeflow")
 			eg.s_edge = ai->second=="true";

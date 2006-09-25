@@ -17,6 +17,9 @@
 
 using namespace Dynagraph;
 
+// this system of engine creation is deprecated in favor of the Configurator model
+// keeping these files intact in case anyone is using createEngine (LMK!)
+
 AddEngine<GeneralLayout, DynaDAG::NSRanker<GeneralLayout> > GLRanker("nsranker");
 AddEngine<GeneralLayout, LabelPlacer<GeneralLayout> > GLLabels("labels");
 AddEngine<GeneralLayout, ShapeGenerator<GeneralLayout> > GLShapes("shapegen");

@@ -13,33 +13,23 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-#ifndef ChangeTranslator_h
-#define ChangeTranslator_h
+#ifndef ColorByAgeConfigurator_h
+#define ColorByAgeConfigurator_h
 
-#include "ChangeProcessor.h"
+#include "Configurator.h"
+#include "ColorByAge.h"
 
 namespace Dynagraph {
 
-/* translators are different from processors in that
-	* they have both a source and destination world
-	* they are not chained
-  the first difference is obvious.  the second one is debatable.
-  it does not allow e.g. intermediate translations.
-  it does make InternalWorld slightly easier to implement, but not so much so.
-  we'll see.
-*/
-template<typename SourceGraph,typename DestGraph>
-struct ChangeTranslator {
-	ChangingGraph<SourceGraph> *sourceWorld_;
-	ChangingGraph<DestGraph> *destWorld_;
-	ChangeTranslator(ChangingGraph<SourceGraph> *sourceWorld,ChangingGraph<DestGraph> *destWorld)
-		: sourceWorld_(sourceWorld),destWorld_(destWorld) {}
-    virtual ~ChangeTranslator() {}
-	virtual void Open() {}
-	virtual void Process() {}
-	virtual void Close() {}
+struct ColorByAgeConfigurator {
+	template<typename Configurators,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		if(attrs.look("colorbyage")||attrs.look("agecolors"))
+			engines.Append(new ColorByAge<Layout>(world));
+		configureLayout<Configurators>(name,attrs,world,engines);
+	}
 };
 
 } // namespace Dynagraph
 
-#endif // ChangeTranslator_h
+#endif //ColorByAgeConfigurator_h

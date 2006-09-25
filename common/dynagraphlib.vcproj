@@ -203,9 +203,6 @@
 				RelativePath="colors.cpp">
 			</File>
 			<File
-				RelativePath=".\createGeneralEngine.cpp">
-			</File>
-			<File
 				RelativePath="ellipse2bezier.cpp">
 			</File>
 			<File

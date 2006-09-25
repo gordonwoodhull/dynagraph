@@ -48,13 +48,13 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
 			me_->innerCloseComplete();
 		}
 	};
-	InternalWorld(ChangingGraph<OuterLayout> *outerWorld,ChangingGraph<InnerLayout> *innerWorld) 
+	InternalWorld(ChangingGraph<OuterLayout> *outerWorld,ChangingGraph<InnerLayout> *innerWorld)
 		: LinkedChangeProcessor<OuterLayout>(outerWorld),innerWorld_(innerWorld) {
 	}
 	~InternalWorld() {
-		for(InTranslatorList::iterator ti = inTranslators_.begin(); ti!=inTranslators_.end(); ++ti)
+		for(typename InTranslatorList::iterator ti = inTranslators_.begin(); ti!=inTranslators_.end(); ++ti)
 			delete *ti;
-		for(OutTranslatorList::iterator ti = outTranslators_.begin(); ti!=outTranslators_.end(); ++ti)
+		for(typename OutTranslatorList::iterator ti = outTranslators_.begin(); ti!=outTranslators_.end(); ++ti)
 			delete *ti;
 		delete innerEngines_.first;
 		delete innerWorld_;
@@ -63,27 +63,27 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
 		innerEngines_.Append(new InnerCatcher(this));
 	}
 	void Open() {
-		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(InTranslator::Open));
+		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Open));
 		innerEngines_.first->Open();
 	}
 	void Process() {
-		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(InTranslator::Process));
+		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Process));
 		innerEngines_.first->Process();
 	}
 	void Close() {
-		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(InTranslator::Close));
+		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Close));
 		innerEngines_.first->Close();
 	}
 	void innerOpenComplete() {
-		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(OutTranslator::Open));
+		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Open));
 		this->NextOpen();
 	}
 	void innerProcessComplete() {
-		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(OutTranslator::Process));
+		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Process));
 		this->NextProcess();
 	}
 	void innerCloseComplete() {
-		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(OutTranslator::Close));
+		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Close));
 		this->NextClose();
 	}
 };

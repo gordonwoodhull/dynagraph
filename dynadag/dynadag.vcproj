@@ -208,9 +208,6 @@
 				RelativePath="ConstraintGraph.cpp">
 			</File>
 			<File
-				RelativePath=".\createDynaDAGEngine.cpp">
-			</File>
-			<File
 				RelativePath="DotlikeOptimizer.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">

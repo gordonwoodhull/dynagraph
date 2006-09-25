@@ -4,7 +4,7 @@
 <TITLE>Dynagraph</TITLE>
 <META name="Generator" CONTENT="TextPad 4.4">
 <META name="Author" CONTENT="Gordon Woodhull">
-<META name="Keywords" CONTENT="">
+<META name="Keywords" CONTENT="dynamic graph layout directed undirected server incrface dynagraph">
 <META name="Description" CONTENT="dynagraph graph layout server">
 <style>
 	dt {
@@ -46,6 +46,7 @@
 
 <BODY>
 <h1>Dynagraph</h1>
+<p>Welcome to the documentation for Dynagraph 1.1.4.*.  (As Dynagraph is always changing, be sure this matches the version of Dynagraph you are using!)</p>
 <ol type=I>
 	<li><a href="#introduction">Introduction</a></li>
 	<li><a href="#front_ends">The front ends</a>
@@ -85,7 +86,7 @@
 <h2><a name="introduction"/>Introduction</h2>
 <p>Dynagraph is a platform-independent graph layout engine.  Dynagraph calculates geometric coordinates for nodes and edges of a graph diagram.  Dynagraph responds to changes in the graph - insertion, deletion, or modification of nodes and edges.  It balances stability (unchanged parts of the graph should not change much) with readability (edges should be short and direct, and should cross each other as little as possible).</p>
 
-<p>Dynagraph itself does not render to a screen, graphic file, or printer, nor does it provide a GUI for editing graphs.  Dynagraph only computes the coordinates, and front ends like <a href="#dgwin">Dynagraph for Windows (dgwin)</a> and <a href="#dggrappa">Dynagraph for Grappa</a> handle all the platform-specific rendering and GUI functions.  (This document briefly describes how to use these front ends.)  Since Dynagraph shares its file format and most of the attributes with the other graphviz tools (dot,neato,lefty), those tools can also be used to render Dynagraph output. </p>
+<p>Dynagraph itself does not render to a screen, graphic file, or printer, nor does it provide a GUI for editing graphs.  Dynagraph only computes the coordinates, and front ends such as <a href="#dgwin">Dynagraph for Windows (dgwin)</a> and <a href="#dggrappa">Dynagraph for Grappa</a> handle all the platform-specific rendering and GUI functions.  (This document briefly describes how to use these front ends.)  Since Dynagraph shares its file format and most of the attributes with the other graphviz tools (dot,neato,lefty), those tools can also be used to render Dynagraph output. </p>
 
 <p>This document is mostly concerned with how to connect programs to the Dynagraph layout engines.  Dynagraph supports three ways to do this:</p>
 <ul>
@@ -432,65 +433,88 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 <a href="#node_attributes">node attrs</a>&nbsp;&nbsp;&nbsp;---&nbsp;&nbsp;&nbsp;
 <a href="#edge_attributes">edge attrs</a>
 ]</SMALL>
-<p>Graph attributes control general parameters about the layout, as well as what layout engines are used.
+<p>Graph attributes control general parameters about the layout, as well as what layout engines are used.  Many graph attributes can not be changed after the layout is opened.
 </p>
 
-<a name="graph_engines"/>
+<a name="graph_layout"/>
 <table class="lined">
 	<tr>
 		<th>incrface attribute</th>
 		<th>C++ class and field</th>
 		<th>COM interface and method</th>
 	<tr>
-		<td>engines = "<i>eng1</i>,<i>eng2</i>,..."</td>
+		<td>layout = dynadag|fdp</td>
 		<td>use string attribute</td>
 		<td>use string attribute</td>
 	</tr>
 </table>
-<p>(in) Specifies which layout engines to use.  Every time a change happens to the graph and the lock count is zero, these engines get called in the order listed here.  This parameter should be specified when the graph is opened, e.g. in the open graph incrface command, or before IDGLayout::Initialize is called.  (C++ programs: before DynaView::createServer or createLayoutServer.)  This parameter may be changed after the graph is opened, with the effect that all nodes and edges get inserted as new objects using the new engines.  (Layout replacement is disabled as of Dynagraph 1.1, but it will return.)  To do this in COM, first set the string attribute and then call IDGLayout::Initialize again.</p>
+<p>(in) Specifies which type of layout to perform.  At present DynaDAG (directed) and FDP (undirected) layout are supported; DynaDAG is the default.  Layout cannot (currently) be changed after the graph is opened.</p>
 
-<p>The most common settings are "shapegen,fdp,voronoi,visspline" for neato-like layouts, and "shapegen,dynadag" for dot-like layouts.  The available engines are:
-<table>
-	<tr>
-		<th>dynadag</th>
-		<td>DynaDAG tries to get edges to point downward and usually aligns them in rows.</td>
-	</tr>
-	<tr>
-		<th>fdp</th>
-		<td>Force-Directed Placement: uses a spring model to place nodes.  They can still overlap, and this algorithm does not handle edges, so this is intended to be used with voronoi and visspline</td>
-	</tr>
-	<tr>
-		<th>voronoi</th>
-		<td>Using a previously generated layout, tries to adjust the nodes so that they don't overlap, while keeping the same relative placement.</td>
-	</tr>
-	<tr>
-		<th>visspline</th>
-		<td>Routes spline edges so as to avoid crossing nodes.  Does not affect node positions.</td>
-	</tr>
-	<tr>
-		<th>labels</th>
-		<td>Places node and edge labels; does not affect node or edge placement.</td>
-	</tr>
-	<tr>
-		<th>shapegen</th>
-		<td>Generates shapes for nodes based on an interior (text) size, a minimum external size, and various shape parameters.</td>
-	</tr>
-	<tr>
-		<th>colorbyage</th>
-		<td>Each time a layout happens, updates the colors of all nodes based on the graph <a href="#graph_agecolors">agecolors</a> attribute.</td>
-	</tr>
-</table>
-<p>Default: "shapegen,dynadag,labels"</p>
-<p>There are other engines which are not intended to be manipulated by clients.  For example, DynaDAG relies on the  NSRanker (Network Simplex Ranker) to place the nodes into ranks.  Also ShapeGen is required by all layouts, and there are other required engines which are not worth explaining.  Dynagraph will automatically add these extra engines to the engines or superengines attributes.  (This is a temporary kludge until some more user-friendly way to specify engines/features is devised.</p>
-
-<a name="graph_superengines"/>
+<a name="graph_coordtranslation"/>
 <table class="lined">
 	<tr>
-		<td>superengines = "<i>eng1</i>,<i>eng2</i>,..."</td>
+		<td>coordtranslation = true|false</td>
 		<td>use string attribute</td>
 		<td>use string attribute</td>
 </table>
-<p>The superengines attribute is a temporary kludge to add another level of abstraction onto layout.  With this extra layer, effects such as S-shaped backedges (emphasized flow) become possible.  Shape generation must happen at the top level of layout, so the best way to activate S-shaped back edges is to set [superengines="shapegen"].
+<p>(in) By default, DynaDAG lays out graphs from top to bottom; that is, edges point downward.  (Dynagraph and this document assume that Y increases upward, as it does in the real world but often not on computer screens. :-)  However, if coordinate translation is enabled, the graph can be rotated so that edges point rightward, downward, or leftward.  This attribute works in conjunction with the <a href="#graph_rankdir">rankdir</a> attribute.  It or rankdir must be set when the graph is opened in order for coordinate transation to be enabled.  This feature is also available for undirected layout, but is of dubious worth there.</p>
+
+<a name="graph_rankdir"/>
+<table class="lined">
+	<tr>
+		<td>rankdir = TB|LR|BT|RL</td>
+		<td>Orientation Translation::orientation</td>
+		<td>interface IDGEngine<br>
+        [propget] HRESULT Orientation([out,retval] enum DG_ORIENTATION *ret);<br>
+		[propput] HRESULT Orientation([in] enum DG_ORIENTATION val);
+		</td>
+</table>
+<p>(in) Rotates the layout from the default of top-down (TB).  Coordinate translation must be enabled for this attribute to have effect: <a href="#graph_coordtranslation">coordtranslation</a> or rankdir must be set upon opening the graph.  This attribute <em>can</em> be changed after the graph is opened, causing the full layout to rotate.</p>
+
+<a name="graph_findchangerects"/>
+<table class="lined">
+	<tr>
+		<td>findchangerects = true|false</td>
+		<td>use string attribute</td>
+		<td>use string attribute</td>
+</table>
+<p>(in) If this feature is enabled upon opening the graph, Dynagraph will calculate the minimal rectangle that contains all inserted, deleted, and moved nodes and edges in the <a href="#graph_changerect">changerect</a> attribute.  Default: false</p>
+
+<a name="graph_shapegen"/>
+<table class="lined">
+	<tr>
+		<td>shapegen = true|false</td>
+		<td>use string attribute</td>
+		<td>use string attribute</td>
+</table>
+<p>(in) Enables/disables shape generation.  The shape generator uses the nodes' <a href="#node_shape">shape</a> attribute and related attributes to draw their shapes.  Otherwise shapes should be specified using the nodes' <a href="#common_lines">lines</a> attribute.  This attribute must be set upon opening the graph, and cannot be changed later.  Default: true</p>
+
+<a name="graph_nodesuppression"/>
+<table class="lined">
+	<tr>
+		<td>nodesuppression = true|false</td>
+		<td>use string attribute</td>
+		<td>use string attribute</td>
+</table>
+<p>(in) Enables/disables node suppression.  When a node is suppressed using the <a href="#node_suppressed">suppressed</a> attribute, it is not drawn, takes up very little space, and its edges are cut short at the other end.  This attribute must be set upon opening the graph, and cannot be changed later.  Default: true</p>
+
+<a name="graph_flowemphasizable"/>
+<table class="lined">
+	<tr>
+		<td>flowemphasizable = true|false</td>
+		<td>use string attribute</td>
+		<td>use string attribute</td>
+</table>
+<p>(in) DynaDAG only.  Enables the <a href="edge_emphasizeflow">emphasizeflow</a> attribute for edges.  Setting <a href="#graph_emphasizeflow">emphasizeflow</a> when opening the graph also enables this feature. This attribute must be set upon opening the graph, and cannot be changed later.  Default: true</p>
+
+<a name="graph_emphasizeflow"/>
+<table class="lined">
+	<tr>
+		<td>emphasizeflow = true|false</td>
+		<td>bool GraphGeom::s_edges</td>
+		<td>N/A</td></tr>
+</table>
+<p>Setting this is the equivalent of setting the edge attribute <a href="#edge_emphasizeflow">emphasizeflow</a>=true for all edges in the graph.  Either this or <a href="#graph_flowemphasizable">flowemphasizable</a> must be set upon opening the graph in order to enable this feature.  Default: false</p>
 
 <a name="graph_defaultsize"/>
 <table class="lined">
@@ -499,7 +523,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		<td>Coord GraphGeom::defaultSize</td>
 		<td>N/A</td></tr>
 </table>
-<p>(in) The <a href="#node_extersize">minimum size</a> to use for nodes for which that parameter was not set.  Because this gets checked when looking at the string attributres, this is only relevant for programs using incrface.  Default: (1.5,1) without <a href="#cmdline_dot_coords">-d</a>, (54,36) with.
+<p>(in) The <a href="#node_extersize">minimum size</a> to use for nodes for which that parameter was not set.  Because this is used when looking at the string attributes, this is only relevant for programs using incrface.  Default: (1.5,1) without <a href="#cmdline_dot_coords">-d</a>, (54,36) with.
 </p>
 
 <a name="graph_resolution"/>
@@ -511,7 +535,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		[propget] HRESULT Resolution([out,retval] POINTD *ret);<br>
         [propput] HRESULT Resolution([in] POINTD val);</td></tr>
 </table>
-<p>(in) The smallest increment to recognize in the internal model.  For example, specify 1,1 for integer precision.  Default: (0.1,0.1) without <a href="#cmdline_dot_coords">-d</a>, (1,1) with.
+<p>(in) DynaDAG only.  The smallest increment to recognize in the internal model.  For example, specify 1,1 for integer precision.  Default: (0.1,0.1) without <a href="#cmdline_dot_coords">-d</a>, (1,1) with.  If <a href="#graph_rankdir">rankdir</a> is LR or RL, then x and y are reversed.
 </p>
 
 <a name="graph_separation"/>
@@ -523,7 +547,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		[propget] HRESULT Separation([out,retval] POINTD *ret);<br>
         [propput] HRESULT Separation([in] POINTD val);</td></tr>
 </table>
-<p>(in) The amount of separation to leave between elements of the layout.  For DynaDAG layout, x specifies the horizontal gap between nodes (and, if <a href="#graph_edgeseparation">edgeseparation</a> is not set, four times the gap between edges), and y specifies the amount by which to multiply the <a href="#edge_length">edge length</a> to get the minimum vertical displacement.  Default: (0.5,0.5) without <a href="#cmdline_dot_coords">-d</a>, (24,24) with.
+<p>(in) The amount of separation to leave between elements of the layout.  For DynaDAG layout, x specifies the horizontal gap between nodes (and, if <a href="#graph_edgeseparation">edgeseparation</a> is not set, four times the gap between edges), and y specifies the amount by which to multiply the <a href="#edge_length">edge length</a> to get the minimum vertical displacement.  When <a href="#graph_rankdir">rankdir</a> is LR or RL, x specifies the vertical gap between nodes and y still specifies the edge length.  Default: (0.5,0.5) without <a href="#cmdline_dot_coords">-d</a>, (24,24) with.
 </p>
 
 <a name="graph_edgeseparation"/>
@@ -533,7 +557,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		<td>N/A</td>
 		<td>N/A</td></tr>
 </table>
-<p>(in) If specified, sets the horizontal gap between edges where they are running parallel.  Otherwise, the gap is one quarter of <a href="#graph_separation">separation</a>.x.
+<p>(in) If specified, sets the horizontal gap (or vertical if <a href="#graph_rankdir">rankdir</a> is LR or RL) between edges where they are running parallel.  Otherwise, the gap is one quarter of <a href="#graph_separation">separation</a>.x.
 </p>
 
 <a name="graph_intermediate"/>
@@ -545,16 +569,6 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 </table>
 <p>(in) Whether DynaDAG should generate intermediate (crude) layouts&mdash;if set, DynaDAG will report node and edge positions as soon as it has calculated the Y positions and set up its internal models but before doing the more time-consuming untangling, X-coordinate assignment, and splining.  Since the rough coordinates are much quicker to calculate, this allows immediate feedback to the user.</p>
 <p>This attribute also enables layout interruption: if a command arrives after the intermediate layout has been generated but before layout is complete, DynaDAG will terminate layout and start again with the new requests accounted for.
-</p>
-
-<a name="graph_emphasizeflow"/>
-<table class="lined">
-	<tr>
-		<td>emphasizeflow = true|false</td>
-		<td>bool GraphGeom::s_edges</td>
-		<td>N/A</td></tr>
-</table>
-<p>Setting this is the equivalent of setting the edge attribute <a href="#edge_emphasizeflow">emphasizeflow</a>=true for all edges in the graph.
 </p>
 
 <a name="graph_labelgap"/>
@@ -576,7 +590,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		[propget] HRESULT Bounds([out,retval] RECTD *ret);
 		</td></tr>
 </table>
-<p>(out) Reports the bounding box of the current layout.
+<p>(out) Reports the bounding box of the current layout.  DynaDAG only.
 </p>
 
 <a name="graph_changerect"/>
@@ -588,7 +602,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		[propget] HRESULT ChangeRect([out,retval] RECTD *ret);
 		</td></tr>
 </table>
-<p>(out) Supplies a rectangle which contains all of the changes just made to the layout
+<p>(out) Supplies a rectangle which contains all of the changes just made to the layout. Only output if <a href="#graph_findchangerects">findchangerects</a> was set for the graph on opening.</p>
 </p>
 
 <a name="graph_splinelevel"/>
@@ -633,21 +647,15 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 </table>
 </p>
 
-<a name="graph_orientation"/>
+<a name="graph_colorbyage"/>
 <table class="lined">
 	<tr>
-		<td>N/A<br>
-		<td>Orientation Translation::orientation</td>
-		<td>interface IDGEngine<br>
-        [propget] HRESULT Orientation([out,retval] enum DG_ORIENTATION *ret);<br>
-		[propput] HRESULT Orientation([in] enum DG_ORIENTATION val);
-		</td>
+		<td>colorbyage = true|false</td>
+		<td>use string attribute</td>
+		<td>use string attribute</td>
 	</tr>
 </table>
-<p>(in) This feature is only complete in the COM library.  Specifies the orientation of the graph, that is, which way edges should point in Dynadag.  At the C++ API level, the layouts always are oriented downward: the heads of edges have lesser Y values than the tails, unless there are loops in the graph.  It is a trivial matter to translate the coordinates to obtain different orientations, by inverting and swapping the x and y coordinates.  (See dynagraph/common/reorient.h.)  Then offset the coordinates to bring them into the right quadrant.
-</p>
-<p>The C++ <code>Translation::orientation</code> attribute does not cause the coordinates to actually be translated, but the ShapeGenerator reads this and rotates the nodes' <code>NodeGeom::region</code> <i>the opposite way</i> to cancel for the translation the client (or the COM library) will do.
-</p>
+<p>This feature is intended to show the age of nodes in the graph by updating their colors based on the graph <a href="#graph_agecolors">agecolors</a> attribute.  This or agecolors must be set on opening the graph in order to enable this feature.</p>
 
 <a name="graph_agecolors"/>
 <table class="lined">
@@ -657,7 +665,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		<td>use string attribute</td>
 	</tr>
 </table>
-<p>Parameter to the colorbyage "layout" <a href="#graph_engines">engine</a>.  If this parameter exists, then any node which does not have a color will receive color=color1, any node which has color=color1 will receive color=color2, etc.</p>
+<p>Parameter to the colorbyage "layout" <a href="#graph_engines">engine</a>.  If this parameter exists, then any node which does not have a color will receive color=color1, any node which has color=color1 will receive color=color2, etc.  Once nodes reach the final color they stop changing.</p>
 
 <a name="graph_ticks"/>
 <table class="lined">
@@ -709,8 +717,7 @@ nstrings->SetAttr(CComBSTR("shape"),CComBSTR("ellipse"));</code><br>
 		<td>bool NodeGeom::suppressed</td>
 		<td>N/A</td>
 </table>
-<p>(in) If a node is suppressed, it will not be drawn and will not take up space in the layout.  In addition, edges approaching this node are cut at a height of <a href="#graph_separation">separation</a>.y/3 and the cut portion will not take up space either.
-</p>
+<p>(in) If a node is suppressed, it will not be drawn and will not take up space in the layout.  In addition, edges approaching this node are cut at a height of <a href="#graph_separation">separation</a>.y/3 and the cut portion will not take up space either. <a href="#graph_nodesuppression">Node suppression</a> must be enabled on the graph.</p>
 
 <a name="node_shape"/>
 <table class="lined">
