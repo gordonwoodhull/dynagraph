@@ -33,11 +33,46 @@ namespace DynaDAG {
 #define med_eq(m1,m2) (m1==m2)
 #endif
 
+/*
 struct OrderConstraintSwitchable {
-	bool canSwitch(DDModel::Node *l,DDModel::Node *r) {
+	bool canSwitch(DDModel::Node *l,DDModel::Node *r) const {
 		return gd<DDNode>(l).orderConstraint<0 || gd<DDNode>(r).orderConstraint<0 ||
 			gd<DDNode>(l).orderConstraint > gd<DDNode>(r).orderConstraint;
 	}
+};
+*/
+struct ConstraintMatrixSwitchable {
+	struct BadRank {
+		int r_;
+		BadRank(int r) : r_(r) {}
+	};
+	void initRank(int r,int size) {
+		vector<vector<bool> > &rm = data_[r];
+		rm.resize(size);
+		for(int i=0;i<size;++i)
+			rm[i].resize(size,true);
+	}
+	// could do triangular matrix but instead go redundant
+	void set(DDModel::Node *l,DDModel::Node *r,bool val) {
+		dgassert(gd<DDNode>(l).rank==gd<DDNode>(r).rank);
+		int rank = gd<DDNode>(l).rank,
+			u = gd<DDNode>(l).preorder,
+			v = gd<DDNode>(r).preorder;
+		data_[rank][u][v] = data_[rank][v][u] = val;
+	}
+	bool canSwitch(DDModel::Node *l,DDModel::Node *r) const {
+		dgassert(gd<DDNode>(l).rank==gd<DDNode>(r).rank);
+		int rank = gd<DDNode>(l).rank,
+			u = gd<DDNode>(l).preorder,
+			v = gd<DDNode>(r).preorder;
+		ConstraintMatrix::const_iterator rowMat = data_.find(rank);
+		if(rowMat==data_.end())
+			throw BadRank(rank);
+		return rowMat->second[u][v];
+	}
+private:
+	typedef map<int,vector<vector<bool> > > ConstraintMatrix;
+	ConstraintMatrix data_;
 };
 struct MedianCompare {
 	UpDown m_dir;
@@ -80,7 +115,7 @@ void moveBefore(Config &config,SiftMatrix &matrix,DDModel::Node *n,DDModel::Node
 		config.InstallAtRight(n,rank);
 }
 template<class Switchable, class Compare>
-void bubblePassR(Config &config,SiftMatrix &matrix,Rank *r,Switchable &switchable,Compare &compare) {
+void bubblePassR(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
 	NodeV::iterator li;
 	for(li = r->order.begin(); li<r->order.end()-1; ++li) {
 		if(!compare.comparable(*li))
@@ -100,7 +135,7 @@ void bubblePassR(Config &config,SiftMatrix &matrix,Rank *r,Switchable &switchabl
 	}
 }
 template<class Switchable, class Compare>
-void bubblePassL(Config &config,SiftMatrix &matrix,Rank *r,Switchable &switchable,Compare &compare) {
+void bubblePassL(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
 	NodeV::reverse_iterator ri;
 	for(ri = r->order.rbegin(); ri<r->order.rend()-1; ++ri) {
 		if(!compare.comparable(*ri))
@@ -118,7 +153,7 @@ void bubblePassL(Config &config,SiftMatrix &matrix,Rank *r,Switchable &switchabl
 	}
 }
 template<class Switchable, class Compare>
-void bubblePass(Config &config,SiftMatrix &matrix,const vector<int> &ranks,UpDown dir,LeftRight way,Switchable &switchable,Compare &compare) {
+void bubblePass(Config &config,SiftMatrix &matrix,const vector<int> &ranks,UpDown dir,LeftRight way,const Switchable &switchable,Compare &compare) {
 	if(dir==DOWN)
 		for(vector<int>::const_iterator ri = ranks.begin(); ri!=ranks.end(); ++ri) {
 			Rank *r = config.ranking.GetRank(*ri);
@@ -137,16 +172,25 @@ void bubblePass(Config &config,SiftMatrix &matrix,const vector<int> &ranks,UpDow
 		}
 	//matrix.check();
 }
+struct OrderLess {
+	bool operator()(DDModel::Node *u,DDModel::Node *v) {
+		return gd<DDNode>(u).order < gd<DDNode>(v).order;
+	}
+};
 struct RankLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
 		if(gd<DDNode>(u).rank == gd<DDNode>(v).rank)
-			return gd<DDNode>(u).order < gd<DDNode>(v).order;
+			return OrderLess().operator()(u,v);
 		return gd<DDNode>(u).rank < gd<DDNode>(v).rank;
 	}
 };
 #define TIRE 6
-void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
+void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	vector<int> affectedRanks;
+	ConstraintMatrixSwitchable switchable;
+	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
+		switchable.initRank(Config::Ranks::Xlator::CoordToRank(config.current,((*ri)->yBase)), 
+			(*ri)->order.size());
 	{
 		NodeV optimVec;
 		getCrossoptModelNodes(nodes,edges,optimVec);
@@ -154,14 +198,21 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 			return;
 		sort(optimVec.begin(),optimVec.end(),RankLess());
 		NodeV::iterator wot = optimVec.begin();
+		DDModel::Node *lastNoOpti=0;
 		for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
-			for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni)
+			for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni) {
+				gd<DDNode>(*ni).preorder = gd<DDNode>(*ni).order;
 				if(wot!=optimVec.end() && *ni==*wot) {
-					gd<DDNode>(*ni).orderConstraint = -1;
+					//gd<DDNode>(*ni).orderConstraint = -1;
 					++wot;
 				}
-				else
-					gd<DDNode>(*ni).orderConstraint = gd<DDNode>(*ni).order;
+				else {
+					if(lastNoOpti&&gd<DDNode>(lastNoOpti).rank==gd<DDNode>(*ni).rank)
+						switchable.set(lastNoOpti,*ni,false);
+					lastNoOpti = *ni;
+					//gd<DDNode>(*ni).orderConstraint = gd<DDNode>(*ni).order;
+				}
+			}
 		dgassert(wot==optimVec.end());
 		loops.Field(dgr::crossopt,"model nodes for crossopt",optimVec.size());
 		loops.Field(dgr::crossopt,"total model nodes",optimVec.front()->g->nodes().size());
@@ -172,10 +223,44 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 		loops.Field(dgr::crossopt,"ranks for crossopt",affectedRanks.size());
 		loops.Field(dgr::crossopt,"total ranks",config.ranking.size());
 	}
+	NodeV fanVec;
+	for(DynaDAGLayout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni) {
+		if(gd<NodeGeom>(*ni).freezeHeadFanning) {
+			// klunky but efficient?
+			DDModel::Node *top = DDp(*ni)->top();
+			fanVec.resize(0);
+			fanVec.reserve(top->ins().size());
+			for(DDModel::inedge_iter ei = top->ins().begin(); ei!=top->ins().end(); ++ei) {
+				dgassert(gd<DDEdge>(*ei).amEdgePart());
+				// only freeze old edges
+				if(!Q.insE.find(gd<DDEdge>(*ei).path->layoutE))
+					fanVec.push_back((*ei)->tail);
+			}
+			sort(fanVec.begin(),fanVec.end(),OrderLess());
+			for(NodeV::iterator ni = fanVec.begin(); ni!=fanVec.end(); ++ni)
+				if(ni!=fanVec.begin())
+					switchable.set(*(ni-1),*ni,false);
+		}
+		if(gd<NodeGeom>(*ni).freezeTailFanning) {
+			// klunky but efficient?
+			DDModel::Node *bottom = DDp(*ni)->bottom();
+			fanVec.resize(0);
+			fanVec.reserve(bottom->outs().size());
+			for(DDModel::outedge_iter ei = bottom->outs().begin(); ei!=bottom->outs().end(); ++ei) {
+				dgassert(gd<DDEdge>(*ei).amEdgePart());
+				// only freeze old edges
+				if(!Q.insE.find(gd<DDEdge>(*ei).path->layoutE))
+					fanVec.push_back((*ei)->head);
+			}
+			sort(fanVec.begin(),fanVec.end(),OrderLess());
+			for(NodeV::iterator ni = fanVec.begin(); ni!=fanVec.end(); ++ni)
+				if(ni!=fanVec.begin())
+					switchable.set(*(ni-1),*ni,false);
+		}
+	}
 	SiftMatrix matrix(config),backupM(config);
 	MedianCompare median(DOWN,false);
 	CrossingCompare crossing(config,matrix,false);
-	OrderConstraintSwitchable switchable;
 
 	Config::Ranks backup = config.ranking;
 	// optimize once ignoring node crossings (they can scare the sifting alg)

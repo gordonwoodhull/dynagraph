@@ -141,6 +141,8 @@ DDModel::Node *Config::Right(DDModel::Node *n) {
 DDModel::Node *Config::Left(DDModel::Node *n) {
 	return RelNode(n,-1);
 }
+// "monster atoms"
+// contains: one vector append, one graph insertion
 void Config::InstallAtRight(DDModel::Node *n, int r) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	DDModel::Node *right = rank->order.size()?rank->order.back():0;
@@ -156,6 +158,7 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 	ddn.cur.y = rank->yBase; // estimate
 	model.dirty().insert(n);
 }
+// contains: one vector insert, one node-edge iteration, one vector iterate-and-set, one graph insertion
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	dgassert(o<=rank->order.size() && o>=0);
@@ -196,6 +199,7 @@ void Config::InstallAtPos(DDModel::Node *n, int r, double x) {
 		*R = i==rank->order.end()?0:*i;
 	InstallAtOrder(n,r,R?gd<DDNode>(R).order:L?gd<DDNode>(L).order+1:0,x);
 }
+// cheap atom; unused: two node-edge iterations, two graph insertions
 void Config::Exchange(DDModel::Node *u, DDModel::Node *v) {
 	DDNode &ddu = gd<DDNode>(u),
 		&ddv = gd<DDNode>(v);
@@ -224,6 +228,7 @@ void Config::Exchange(DDModel::Node *u, DDModel::Node *v) {
 	model.dirty().insert(u);
 	model.dirty().insert(v);
 }
+// contains: one edge delete, one node-edge iteration, one vector iterate-and-set, one vector erase, one graph insertion
 void Config::RemoveNode(DDModel::Node *n) {
 	xconOwner->RemoveNodeConstraints(n);
 	InvalidateAdjMVals(n);

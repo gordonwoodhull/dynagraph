@@ -37,7 +37,7 @@ inline T absol(T n) {
 }
 /*  don't use "round(..)" as it collides with a system definition */
 inline int ROUND(double f) {
-	return f>=0.0?int(f + .5):int(f - .5);
+	return int(f + ((f>=0.)?.5:-.5));
 }
 // silly little
 template<typename T>

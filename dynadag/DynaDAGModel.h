@@ -51,12 +51,13 @@ struct DDNodeT {
 	// config
 	Median med[2]; // UpDown
 	int rank,
-		order;
+		order,
+		preorder; // for optimizer to have consistent indices
 	bool inConfig;
+	// old way of excluding nodes from crossopt
+	//int orderConstraint;
 	// geometry
 	Position cur, prev;
-	// mincross order w/in rank constraint
-	int orderConstraint;
 	// only used in path vnodes:
 	double actualX;	// spline intercept
 	bool actualXValid;

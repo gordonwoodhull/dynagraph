@@ -22,7 +22,7 @@ namespace DynaDAG {
 
 struct Optimizer {
 	virtual ~Optimizer() {}
-	virtual void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) = 0;
+	virtual void Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayout &edges) = 0;
 	virtual double Reopt(DDModel::Node *n,UpDown dir) = 0;
 };
 

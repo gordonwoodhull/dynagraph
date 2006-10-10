@@ -505,11 +505,6 @@ void DynaDAGServer::Process() {
 	executeDeletions(Q);
 	timer.LoopPoint(dgr::timing,"preliminary");
 
-	// figure out subgraph for crossing optimization
-	//DynaDAGLayout crossN(&world_->current_),crossE(&world_->current_);
-	//findOrdererSubgraph(Q,crossN,crossE);
-	//optimizer = optChooser.choose(crossN.nodes().size()); // should prob. be no. of nodes in corresponding model subgraph
-
 	// synch model graph with changes
 	config.Update(Q);
 	loops.Field(dgr::dynadag,"model nodes",model.nodes().size());
@@ -529,7 +524,7 @@ void DynaDAGServer::Process() {
 	}
 
 	// crossing optimization
-	optimizer->Reorder(world_->current_,world_->current_);//crossN,crossE);
+	optimizer->Reorder(Q,world_->current_,world_->current_);
 	timer.LoopPoint(dgr::timing,"crossing optimization");
 
 	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {

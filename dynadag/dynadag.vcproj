@@ -225,7 +225,7 @@
 				RelativePath="FlexiSpline.cpp">
 			</File>
 			<File
-				RelativePath="getCrossoptModelNodes.cpp">
+				RelativePath=".\getCrossoptModelNodes.cpp">
 			</File>
 			<File
 				RelativePath="Measurements.cpp">
