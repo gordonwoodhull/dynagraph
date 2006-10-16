@@ -17,8 +17,6 @@
 #ifndef ShapeGenerator_h
 #define ShapeGenerator_h
 
-#include "reorient.h"
-
 namespace Dynagraph {
 
 template<typename Layout>
@@ -37,7 +35,7 @@ struct ShapeGenerator : LinkedChangeProcessor<Layout> {
 							genpoly(gd<PolyDef>(n),gd<Drawn>(n));
 					}
 					catch(GenPolyXep xep) {
-						std::cout << "message \"" << xep.exceptype << '"' << std::endl;
+						reports[dgr::output] << "message \"" << xep.exceptype << '"' << std::endl;
 						// bad or incomplete definitions: just leave blank
 					}
 					ng.region.shape.Clear();
@@ -45,10 +43,12 @@ struct ShapeGenerator : LinkedChangeProcessor<Layout> {
 						// it would be nice to make this section an update for a DG_UPD_DRAWN
 						// flag, so that the user could specify gd<Drawn> instead of this shapegen...
 						Line &biggest = gd<Drawn>(n).front(); // first one is biggest
+						ng.region.shape = biggest;
+						/* not necessary to translate coords because CoordTranslator handles this
+						ng.region.shape.degree = biggest.degree;
 						ng.region.shape.resize(biggest.size());
 						for(size_t i = 0; i<biggest.size(); ++i)
-							ng.region.shape[i] = reorient(biggest[i],true,gd<Translation>(&this->world_->current_).orientation);
-						ng.region.shape.degree = biggest.degree;
+							ng.region.shape[i] = reorient(biggest[i],true,gd<Translation>(&this->world_->current_).orientation); */
 					}
 					ng.region.updateBounds();
 					ModifyNode(this->world_->Q_,n,DG_UPD_REGION|DG_UPD_DRAWN);

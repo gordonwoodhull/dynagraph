@@ -14,26 +14,19 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifndef Interruptible_h
+#define Interruptible_h
 
-#ifndef stringizeEngine_h
-#define stringizeEngine_h
-
-#include "common/InternalTranslator.h"
-#include "common/StringLayoutTranslator.h"
+#include "StrAttr.h"
 
 namespace Dynagraph {
 
-template<typename Layout>
-EnginePair<Layout> stringizeEngine(EnginePair<Layout> engines,Transform *transform,bool useDotDefaults) {
-	EnginePair<Layout> ret;
-	typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
-	typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
-	StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(transform,useDotDefaults));
-	StringsOutEngine *xlateOut = new StringsOutEngine(engines.first->world_,transform);
-	xlateIn->next_ = engines.first;
-	engines.second->next_ = xlateOut;
-	return EnginePair<Layout>(xlateIn,xlateOut);
-}
+struct Interruptible {
+	bool interrupt;
+	StrAttrs attrs; // specific instructions about when to stop (e.g. from incrface pulse command)
+	Interruptible() : interrupt(false) {}
+};
 
 } // namespace Dynagraph
-#endif // stringizeEngine_h
+
+#endif // Interruptible_h

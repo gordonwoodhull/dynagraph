@@ -28,8 +28,8 @@ void getCrossoptModelNodes(DynaDAGLayout &nodes,DynaDAGLayout &edges,NodeV &out)
 	for(DynaDAGLayout::graphedge_iter ei = edges.edges().begin(); ei!=edges.edges().end(); ++ei,++ec)
 		for(DDPath::node_iter pni = DDp(*ei)->nBegin(); pni!=DDp(*ei)->nEnd(); ++ pni)
 			out.push_back(*pni);
-	loops.Field(r_crossopt,"layout nodes for crossopt",nodes.nodes().size());
-	loops.Field(r_crossopt,"layout edges for crossopt",ec);
+	loops.Field(dgr::crossopt,"layout nodes for crossopt",nodes.nodes().size());
+	loops.Field(dgr::crossopt,"layout edges for crossopt",ec);
 
 }
 

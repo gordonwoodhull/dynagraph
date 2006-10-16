@@ -31,7 +31,7 @@ struct Inconsistency : DGException {
   Inconsistency() : DGException("fdp's internal model has become inconsistent with the client graph",true) {}
 };
 struct StillHasEdges : DGException {
-  StillHasEdges() : DGException("a node was deleted without all of its edges being deleted (impossible!)",true) {}
+  StillHasEdges() : DGException("node was deleted without all of its edges being deleted (impossible!)",true) {}
 };
 
 struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {

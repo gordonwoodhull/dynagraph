@@ -34,7 +34,7 @@ struct Chain {
 			if(i==chain->last)
 				i = 0;
 			else {
-				assert(i);
+				dgassert(i);
 				i = *i->head->outs().begin();
 			}
 			return *this;
@@ -61,7 +61,7 @@ struct Chain {
 	private:
 		edge_iter(Chain *chain,E *i) : chain(chain), i(i) {
 			if(i)
-				assert(i->head->g); // make sure valid pointer
+				dgassert(i->head->g); // make sure valid pointer
 		}
 		E *i;
 	};
@@ -142,7 +142,7 @@ struct MultiNode : Chain<N,E> {
 				++ei;
 				return *this;
 			default:
-				assert(0);
+				dgassert(0);
 				return *this;
 			}
 		}
@@ -207,11 +207,8 @@ template<typename N,typename E>
 struct Path : Chain<N,E> {
 	// self or flat: first==last==0; use layoutE to figure out ends
 	DynaDAGLayout::Edge *layoutE;
-	enum Direction {forward,flat,reversed} direction;
-	enum Suppression {unsuppressed,tailSuppressed,headSuppressed,suppressed} suppression;
-	int suppressRank;
 	Line unclippedPath;
-	Path() : layoutE(0),direction(forward),suppression(unsuppressed),suppressRank(-17) {}
+	Path() : layoutE(0) {}
 };
 
 } // namespace Dynagraph

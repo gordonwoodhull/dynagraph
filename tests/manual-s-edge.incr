@@ -1,0 +1,10 @@
+open graph V 
+lock graph V
+insert node V n
+insert node V m
+insert node V A [label="",flow=1,shape=none,width=0,height=0]
+insert node V B [label="",flow=1,shape=none,width=0,height=0]
+insert edge V t m B [minlen=0.3333333]
+insert edge V e B A [backward=true,minlen=5]
+insert edge V h A n [minlen=0.3333333]
+unlock graph V

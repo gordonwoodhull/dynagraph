@@ -17,7 +17,7 @@
 #ifndef GeneralLayout_h
 #define GeneralLayout_h
 
-#include "common/LayoutAttrs.h"
+#include "LayoutAttrs.h"
 
 namespace Dynagraph {
 

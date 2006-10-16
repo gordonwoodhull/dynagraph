@@ -59,48 +59,48 @@ struct DinoMachNode : NamedAttrs {
 struct DinoMachEdge : NamedAttrs {
     DinoInternalChanges *handler;
     // if there are edges a->b and b->a there's still just one NEID_map.
-    // (DinoMachineHandler assures this.)  reversed means B is tail and A is head
+    // (DinoMachineHandler assures this.)  isReversed means B is tail and A is head
     NEID_map *mappings;
-    bool reversed;
-    // generalize two_way_map interface to take reversed into account
+    bool isReversed;
+    // generalize two_way_map interface to take isReversed into account
     NEID_map::tmap &tailmap() {
-        return !reversed?mappings->A:mappings->B;
+        return !isReversed?mappings->A:mappings->B;
     }
     NEID_map::tmap &headmap() {
-        return !reversed?mappings->B:mappings->A;
+        return !isReversed?mappings->B:mappings->A;
     }
     void connect(NEID a,NEID b) {
-        if(!reversed)
+        if(!isReversed)
             mappings->connect(a,b);
         else
             mappings->connect(b,a);
     }
     void disconnect(NEID a,NEID b) {
-        if(!reversed)
+        if(!isReversed)
             mappings->disconnect(a,b);
         else
             mappings->disconnect(b,a);
     }
     void erase_tail(NEID t) {
-        if(!reversed)
+        if(!isReversed)
             mappings->erase_a(t);
         else
             mappings->erase_b(t);
     }
     void erase_head(NEID h) {
-        if(!reversed)
+        if(!isReversed)
             mappings->erase_b(h);
         else
             mappings->erase_a(h);
     }
     void rename_tail(NEID t,NEID t2) {
-        if(!reversed)
+        if(!isReversed)
             mappings->rename_a(t,t2);
         else
             mappings->rename_b(t,t2);
     }
     void rename_head(NEID h,NEID h2) {
-        if(!reversed)
+        if(!isReversed)
             mappings->rename_b(h,h2);
         else
             mappings->rename_a(h,h2);
@@ -118,12 +118,12 @@ struct DinoMachine : NamedGraph<ADTisCDT,NamedAttrs,DinoMachNode,DinoMachEdge> {
 	Node *m_start;
 	DinoMachine() : m_start(0) {}
     void changed(DString nodename) {
-        Node *n = ndict[nodename];
+        Node *n = lookNode(nodename);
 		if(!m_start)
 			m_start = n;
 		else if(m_start==n)
 			return;
-        assert(n);
+        dgassert(n);
         for(outedge_iter oi = n->outs().begin(); oi!=n->outs().end(); ++oi)
             if(DinoInternalChanges *handler = gd<DinoMachEdge>(*oi).handler)
                 handler->GraphChanged();

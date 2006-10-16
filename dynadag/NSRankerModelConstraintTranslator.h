@@ -29,16 +29,13 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 	NSRankerModelToConstraintTranslator(ConstraintGraph *whole,ConstraintGraph *current)
 		: transition_(whole,current) {}
 	void Process() {
-		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
-		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
+		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
+		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
             removePathConstraints(*ei);
 
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
-
-		Transition::EndLastQ(Q1);
-		LinkedChangeProcessor<Graph2>::NextProcess();
 	}
     void removeLayoutNodeConstraints(NSRankerModel::Node *n) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(n->g);
@@ -62,7 +59,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
     void makeStrongConstraint(NSRankerModel::Edge *e) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
-        assert(!re.strong);
+        dgassert(!re.strong);
 
         DDCGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
             *hvar = cg.GetVar(gd<NSRankerNode>(e->head).topC);
@@ -77,7 +74,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
     void makeWeakConstraint(NSRankerModel::Edge *e) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
-        assert(!re.weak);
+        dgassert(!re.weak);
 
         DDCGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
             *hvar = cg.GetVar(gd<NSRankerNode>(e->head).topC);
@@ -116,10 +113,8 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 struct ConstraintToNSRankerModelTranslator : ChangeTranslator<ConstraintGraph,NSRankerModel> {
 	typedef ReturningQueueTransition<ConstraintGraph,NSRankerModel> Transition;
 	void Process() {
-		ChangeQueue<Graph1> &Q1 = LinkedChangeProcessor<Graph1>::world_->Q_;
-		ChangeQueue<Graph2> &Q2 = LinkedChangeProcessor<Graph2>::world_->Q_;
-		Transition::EndLastQ(Q1);
-		LinkedChangeProcessor<Graph2>::NextProcess(Q2);
+		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
+		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
 	}
 
 } // namespace DynaDAG

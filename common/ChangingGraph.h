@@ -17,8 +17,11 @@
 #ifndef ChangingGraph_h
 #define ChangingGraph_h
 
+#include "ChangeQueue.h"
+
 namespace Dynagraph {
 
+// a.k.a. World
 template<typename Graph>
 struct ChangingGraph {
 	Graph whole_,current_;

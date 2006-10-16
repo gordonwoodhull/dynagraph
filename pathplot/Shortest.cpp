@@ -67,11 +67,11 @@ struct PnLD {
 	}
 	size_t apex;
 	PnL *front() {
-		assert(!empty());
+		dgassert(!empty());
 		return impl[begin];
 	}
 	PnL *back() {
-		assert(!empty());
+		dgassert(!empty());
 		return impl[end];
 	}
 	size_t add_front(PnL *pnlp) {
@@ -156,22 +156,21 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
 			pnlps.push_back(&pnls.back());
         }
 
-	if(reportEnabled(r_shortestPath)) {
-    report(r_shortestPath,"shortest: points (%d)\n", pnlps.size());
-    for(PnLPV::iterator pnli = pnlps.begin(); pnli!=pnlps.end(); ++pnli)
-        report(r_shortestPath,"%f,%f\n", (*pnli)->pp->x, (*pnli)->pp->y);
+	if(reports.enabled(dgr::shortestPath)) {
+		reports[dgr::shortestPath] << "shortest: points (" << (int)pnlps.size() << ')' << endl;
+		for(PnLPV::iterator pnli = pnlps.begin(); pnli!=pnlps.end(); ++pnli)
+			reports[dgr::shortestPath] << (*pnli)->pp << endl;
 	}
 
     /* generate list of triangles */
     triangulate(pnlps,tris);
 
-	if(reportEnabled(r_shortestPath)) {
-		report(r_shortestPath,"triangles\n%d\n", tris.size());
+	if(reports.enabled(dgr::shortestPath)) {
+		reports[dgr::shortestPath] << "triangles " << (int)tris.size() << endl;
 		for(TriangleV::iterator trii = tris.begin(); trii!=tris.end(); ++trii) {
 			for(int ei = 0; ei < 3; ei++)
-				report(r_shortestPath,"(%f,%f) ", trii->e[ei].pnl0p->pp->x,
-						trii->e[ei].pnl0p->pp->y);
-			report(r_shortestPath,"\n");
+				reports[dgr::shortestPath] << "(" << trii->e[ei].pnl0p->pp << ") ";
+			reports[dgr::shortestPath] << endl;
 		}
 	}
 
@@ -197,7 +196,7 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
     ltrii = ti;
 
     /* mark the strip of triangles from eps[0] to eps[1] */
-    check(markTriPath(*ftrii, *ltrii)); // prerror("cannot find triangle path");
+    dgcheck(markTriPath(*ftrii, *ltrii)); // prerror("cannot find triangle path");
 
     /* if endpoints in same triangle, use a single line */
     if(ftrii == ltrii) {
@@ -261,11 +260,11 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
             }
     }
 
-	if(reportEnabled(r_shortestPath)) {
-		report(r_shortestPath,"polypath");
+	if(reports.enabled(dgr::shortestPath)) {
+		reports[dgr::shortestPath] << "polypath";
 		for(PnL *pnlp = &epnls[1]; pnlp; pnlp = pnlp->link)
-			report(r_shortestPath," %f %f", pnlp->pp->x, pnlp->pp->y);
-		report(r_shortestPath,"\n");
+			reports[dgr::shortestPath] << " " << pnlp->pp;
+		reports[dgr::shortestPath] << endl;
 	}
 
 	out.degree = 1;

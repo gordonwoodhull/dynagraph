@@ -54,11 +54,15 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 		model(),
 		config(this,model,&world->whole_,&world->current_,&xsolver),
 		optimizer(new DotlikeOptimizer(config)),
-		xsolver(config,gd<GraphGeom>(&world->current_).resolution.x),
+		xsolver(config),
 		spliner(config)
 	{}
 	~DynaDAGServer();
 	// ChangeProcessor
+	void Open() {
+		NextOpen();
+		this->world_->Q_.Clear();
+	}
 	void Process();
 	// DynaDAGServices
 	std::pair<DDMultiNode*,DDModel::Node*> OpenModelNode(DynaDAGLayout::Node *layoutN);
@@ -74,7 +78,7 @@ private:
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
 	void findChangedNodes(DDChangeQueue &changeQ);
-	void findFlowSlope(DDMultiNode *mn);
+	//void findFlowSlope(DynaDAGLayout::Node *n);
 	void findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
 	void sketchEdge(DDPath *path); // draw polyline, for debug
@@ -95,7 +99,7 @@ template<typename Layout>
 struct NailWithoutPos : DGException {
 	typename Layout::Node *n;
 	NailWithoutPos(typename Layout::Node *n) :
-	  DGException("nailing a node without specifying a position"),
+	  DGException("nail a node without specifying a position"),
 	  n(n) {}
 };
 struct BackForth : DGException {

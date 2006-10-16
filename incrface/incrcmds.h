@@ -27,6 +27,7 @@ namespace Dynagraph {
 void incr_open_graph(const char *id);
 void incr_close_graph(const char *id);
 void incr_mod_graph(const char *id);
+void incr_pulse(const char *id);
 void incr_lock(const char *id);
 void incr_unlock(const char *id);
 void incr_segue(const char *id);

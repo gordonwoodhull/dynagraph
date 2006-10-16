@@ -64,6 +64,26 @@ struct NSRankerEdge {
 	}
 };
 
+enum EdgeDirection {forward,flat,reversed};
+template<typename LayoutEdge>
+inline EdgeDirection getEdgeDirection(LayoutEdge *e) {
+	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
+		hdr = gd<NSRankerNode>(e->head).newTopRank;
+	if(tlr==hdr)
+		return flat;
+	else if(tlr>hdr) {
+		tlr = gd<NSRankerNode>(e->head).newBottomRank;
+		hdr = gd<NSRankerNode>(e->tail).newTopRank;
+		if(tlr>hdr)
+			return flat;
+		else
+			return reversed;
+	}
+	else
+		return forward;
+}
+
+
 
 } // namespace DynaDAG
 } // namespace Dynagraph

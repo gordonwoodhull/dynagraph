@@ -24,72 +24,16 @@ namespace DynaDAG {
 
 // once a translation of dag/order.c
 
-void findEdgeDirection(DynaDAGLayout::Edge *e) {
-	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
-		hdr = gd<NSRankerNode>(e->head).newTopRank;
-	if(tlr==hdr)
-		DDp(e)->direction = DDPath::flat;
-	else if(tlr>hdr) {
-		tlr = gd<NSRankerNode>(e->head).newBottomRank;
-		hdr = gd<NSRankerNode>(e->tail).newTopRank;
-		if(tlr>hdr)
-			DDp(e)->direction = DDPath::flat;
-		else
-			DDp(e)->direction = DDPath::reversed;
-	}
-	else
-		DDp(e)->direction = DDPath::forward;
-}
-bool findEdgeSuppression(DynaDAGLayout::Edge *e,int thirrank) {
-	DDPath *path = DDp(e);
-	DynaDAGLayout::Node *t = e->tail, *h = e->head;
-	DDPath::Suppression suppression;
-	int suppressRank(-17);
-	if(gd<NodeGeom>(t).suppressed)
-		if(gd<NodeGeom>(h).suppressed)
-			suppression = DDPath::suppressed;
-		else {
-			suppression = DDPath::tailSuppressed;
-			suppressRank = path->direction==DDPath::reversed
-				? gd<NSRankerNode>(h).newBottomRank+thirrank
-				: gd<NSRankerNode>(h).newTopRank-thirrank;
-		}
-	else if(gd<NodeGeom>(h).suppressed) {
-		suppression = DDPath::headSuppressed;
-		suppressRank = path->direction==DDPath::reversed
-			? gd<NSRankerNode>(t).newTopRank-thirrank
-			: gd<NSRankerNode>(t).newBottomRank+thirrank;
-	}
-	else suppression = DDPath::unsuppressed;
-	bool ret = assign(path->suppression,suppression);
-	if(path->suppression==DDPath::headSuppressed || path->suppression==DDPath::tailSuppressed)
-		ret |= assign(path->suppressRank,suppressRank);
-	return ret;
-}
 void Config::makeRankList(DDChangeQueue &changeQ) {
-	Ranks::IndexV &newRanks = ranking.newRanks;
-	// the ranks consist of tops and bottoms of nodes, 
-	// and Ys where phantom nodes for stubs,
-	// fanning order and parallel/2-cycle edges go
+	Ranks::IndexV &newRanks = ranking.newRanks,
+		&extraRanks = gd<ExtraRanks>(changeQ.whole).extraRanks;
+	newRanks.clear();
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
 			newRanks.push_back(gd<NSRankerNode>(*ni).newTopRank);
 			newRanks.push_back(gd<NSRankerNode>(*ni).newBottomRank);
 		}
-	// really a bunch of mini-engines should be running here modifying a ranks list
-	// and doing other stuff (suppression doesn't belong in makeRankList!!!)
-	int thirrank = Ranks::Xlator::HeightToDRank(whole,gd<GraphGeom>(whole).separation.y/3.);
-	for(DynaDAGLayout::graphedge_iter ei = changeQ.current->edges().begin(); ei!=changeQ.current->edges().end(); ++ei) {
-		dynaDAG->OpenModelEdge(0,0,whole->find(*ei));
-		DDPath *path = DDp(*ei);
-		findEdgeDirection(*ei);
-		if(findEdgeSuppression(*ei,thirrank)) {
-			path->unclippedPath.Clear();
-			ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-		}
-		if(path->suppression==DDPath::tailSuppressed || path->suppression==DDPath::headSuppressed)
-			newRanks.push_back(path->suppressRank);
-	}
+	newRanks.insert(newRanks.end(),extraRanks.begin(),extraRanks.end());
 	sort(newRanks.begin(),newRanks.end());
 	Ranks::IndexV::iterator uniquend = unique(newRanks.begin(),newRanks.end());
 	newRanks.resize(uniquend-newRanks.begin());
@@ -164,16 +108,32 @@ Coord interpolate(Coord p0, Coord p1, double t) {
 
 /* returns model nodes of layout edge, ordered with tail=low rank */
 bool getLayoutEndpoints(DynaDAGLayout::Edge *ve, DDModel::Node **p_tl, DDModel::Node **p_hd) {
-	bool ret = true;
 	DDMultiNode *tail = DDp(ve->tail),
 		*head = DDp(ve->head);
+	switch(getEdgeDirection(ve)) {
+	case forward:
+		*p_tl = tail->bottom(),
+		*p_hd = head->top();
+		return true;
+	case reversed:
+		*p_tl = head->bottom();
+		*p_hd = tail->top();
+		return true;
+	default:
+		dgassert(false);
+	case flat:
+		*p_tl = *p_hd = 0;
+		return false;
+	}
+	/*
+	bool ret = true;
 	DDModel::Node *t = tail->bottom(),
 		*h = head->top();
 	if(gd<DDNode>(h).rank < gd<DDNode>(t).rank) {
 		DDModel::Node *rt = head->bottom(),
 			*rh = tail->top();
 		if(gd<DDNode>(rh).rank < gd<DDNode>(rt).rank) {
-			assert(gd<DDNode>(t).rank==gd<DDNode>(rt).rank && gd<DDNode>(h).rank==gd<DDNode>(rh).rank); // make sure it's flat
+			dgassert(gd<DDNode>(t).rank==gd<DDNode>(rt).rank && gd<DDNode>(h).rank==gd<DDNode>(rh).rank); // make sure it's flat
 			ret = false;
 		}
 		t = rt;
@@ -181,6 +141,7 @@ bool getLayoutEndpoints(DynaDAGLayout::Edge *ve, DDModel::Node **p_tl, DDModel::
 	}
 	*p_tl = t; *p_hd = h;
 	return ret;
+	*/
 }
 void Config::buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGenerator *xgen,DynaDAGLayout::Node *vn,DynaDAGLayout::Edge *ve) {
 	dynaDAG->CloseChain(chain,false);
@@ -190,7 +151,7 @@ void Config::buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGen
 		hr = gd<DDNode>(h).rank;
 	if(tr==hr)
 		return;
-	assert(Ranks::Xlator::Above(whole,tr,hr));
+	dgassert(Ranks::Xlator::Above(whole,tr,hr));
 	Ranks::iterator ti = ranking.GetIter(tr),
 		hi = ranking.GetIter(hr),
 		ri = ti;
@@ -207,14 +168,14 @@ void Config::buildChain(DDChain *chain, DDModel::Node *t, DDModel::Node *h, XGen
 			prev = mn;
 		}
 		chain->first = dynaDAG->OpenModelEdge(t,prev,ve).second;
-		assert(chain->last);
+		dgassert(chain->last);
 	}
 	else chain->first = chain->last = dynaDAG->OpenModelEdge(t,h,ve).second;
 }
 struct autoX : XGenerator {
 	Coord tc,hc;
 	autoX(Coord tc,Coord hc) : tc(tc),hc(hc) {
-	  assert(tc.y!=hc.y);
+	  dgassert(tc.y!=hc.y);
 	}
 	double xval(double y) {
 		return interpolate(tc,hc,(tc.y-y)/(tc.y-hc.y)).x;
@@ -233,7 +194,10 @@ struct userX : autoX {
 };
 void Config::userRouteEdge(DDPath *path) {
 	DDModel::Node *t, *h;
-	getLayoutEndpoints(path->layoutE,&t,&h);
+	if(!getLayoutEndpoints(path->layoutE,&t,&h)) { // flat
+		dynaDAG->CloseChain(path,false); 
+		return;
+	}
 	userX xgen(gd<DDNode>(t).multi->pos(),gd<DDNode>(h).multi->pos(),gd<EdgeGeom>(path->layoutE).pos);
 	buildChain(path,t,h,&xgen,0,path->layoutE);
 }
@@ -245,7 +209,7 @@ void Config::autoRouteEdge(DDPath *path) {
 	else {
 		Position tp = gd<DDNode>(t).multi->pos(),
 		  hp = gd<DDNode>(h).multi->pos();
-		assert(tp.valid && hp.valid);
+		dgassert(tp.valid && hp.valid);
 		autoX xgen(tp,hp);
 		buildChain(path,t,h,&xgen,0,path->layoutE);
 	}
@@ -294,11 +258,11 @@ void Config::adjustChain(DDChain *chain, bool tail,Ranks::index dest,DynaDAGLayo
 				(*v->outs().begin())->head:
 				(*v->ins().begin())->tail;
 			if(gd<DDNode>(v).multi)
-				assert(gd<DDNode>(v).multi==chain);
+				dgassert(gd<DDNode>(v).multi==chain);
 			for(DDModel::nodeedge_iter ei=v->alledges().begin(); ei!=v->alledges().end();) {
 				DDModel::Edge *del = *ei++;
 				if(gd<DDEdge>(del).path)
-					assert(gd<DDEdge>(del).path==chain);
+					dgassert(gd<DDEdge>(del).path==chain);
 				dynaDAG->CloseModelEdge(del);
 				if(del==beginEdge)
 					beginEdge = 0;
@@ -334,36 +298,32 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 		dynaDAG->CloseChain(chain,false);	/* flat edge / single node */
 	else {
 		if(!chain->first) {
-			cerr << "fucknuts!  it's the bug!" << endl;
+			cerr << "jeepers!  it's the bug!" << endl;
 			cerr << "otr " << otr << " ohr " << ohr << " ntr " << ntr << " nhr " << nhr << endl;
 			if(ve) {
 				DDPath *path = DDp(ve);
 				cerr << "it's an edge with" << endl;
 				cerr << "tail " << gd<Name>(ve->tail) << " head " << gd<Name>(ve->head) << endl;
 				cerr << "secondOfTwo " << gd<NSRankerEdge>(ve).secondOfTwo << endl;
-				if(path) {
-					cerr << "first " << path->first << " last " << path->last << endl;
-					cerr << "direction " << path->direction << endl;
-					cerr << "suppression " << path->suppression << endl;
-				}
+				if(path) cerr << "first " << path->first << " last " << path->last << endl;
 				else cerr << "no path" << endl;
+				cerr << "direction " << getEdgeDirection(ve) << endl;
+				cerr << "suppression " << gd<Suppression>(ve).suppression << endl;
 				if(DynaDAGLayout::Edge *other = whole->find_edge(ve->head,ve->tail)) {
 					DDPath *path = DDp(other);
 					cerr << "it has a twin with" << endl;
 					cerr << "tail " << gd<Name>(other->tail) << " head " << gd<Name>(other->head) << endl;
 					cerr << "secondOfTwo " << gd<NSRankerEdge>(other).secondOfTwo << endl;
-					if(path) {
-						cerr << "first " << path->first << " last " << path->last << endl;
-						cerr << "direction " << path->direction << endl;
-						cerr << "suppression " << path->suppression << endl;
-					}
+					if(path) cerr << "first " << path->first << " last " << path->last << endl;
 					else cerr << "no path" << endl;
+					cerr << "direction " << getEdgeDirection(other) << endl;
+					cerr << "suppression " << gd<Suppression>(other).suppression << endl;
 				}
 			}
 			else if(vn)
 				cerr << "it's a node" << endl;
 		}
-		assert(chain->first);
+		dgassert(chain->first);
 		if(!(Ranks::Xlator::Above(whole,otr,nhr)&&Ranks::Xlator::Above(whole,ntr,ohr))
 			|| ve && gd<EdgeGeom>(ve).pos.Empty()) {
 			if(vn) {
@@ -382,8 +342,11 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 }
 void Config::autoAdjustEdge(DDPath *path) {
 	DDModel::Node *t, *h;
-	getLayoutEndpoints(path->layoutE,&t,&h);
-	assert(gd<DDNode>(t).amNodePart()&&gd<DDNode>(h).amNodePart());
+	if(!getLayoutEndpoints(path->layoutE,&t,&h)) { // flat
+		dynaDAG->CloseChain(path,false); 
+		return;
+	}
+	dgassert(gd<DDNode>(t).amNodePart()&&gd<DDNode>(h).amNodePart());
 	// not the same as ve->tail,ve->head if reversed
 	DynaDAGLayout::Node *tn = gd<DDNode>(t).multi->layoutN,
 		*hn = gd<DDNode>(h).multi->layoutN;
@@ -462,6 +425,100 @@ double Config::placeAndReopt(DDModel::Node *n, Ranks::index r, double x) {
 	UpDown dir = (oldRank < r)? DOWN : UP;
 	return dynaDAG->GetOptimizer()->Reopt(n,dir);
 }
+void Config::reattachEdgeTails(DDModel::Node *source,DDModel::Node *dest) {
+	for(DDModel::outedge_iter ei = source->outs().begin(); ei!=source->outs().end();) {
+		DDModel::Edge *e = *ei++;
+		DDPath *path = gd<DDEdge>(e).path;
+		DDModel::Edge *newe = dynaDAG->OpenModelEdge(dest,e->head,path->layoutE).second;
+		if(path->first==path->last)
+			path->last = newe;
+		path->first = newe;
+		dynaDAG->CloseModelEdge(e);
+	}
+}
+void Config::moveOldNode(DynaDAGLayout::Node *vn) {
+	DynaDAGLayout::Node *mvn = whole->find(vn);
+	NodeGeom &ng = gd<NodeGeom>(vn);
+	DDMultiNode *n = DDp(vn);
+	NSRankerNode &nsn = gd<NSRankerNode>(vn);
+	if(nsn.newTopRank!=nsn.oldTopRank || nsn.newBottomRank!=nsn.oldBottomRank) {
+		double x;
+		DDMultiNode::node_iter ni;
+		// move all nodes to either specified X or percolated X
+		if(igd<Dynagraph::Update>(vn).flags & DG_UPD_MOVE && ng.pos.valid ||
+				gd<NodeGeom>(vn).nail & DG_NAIL_X) {
+			if(!ng.pos.valid)
+				throw NailWithoutPos<DynaDAGLayout>(vn);
+			x = ng.pos.x;
+			//n->coordFixed = true;
+			ni = n->nBegin();
+		}
+		else {
+			percolate(n->top(),n->top(),nsn.newTopRank);
+			x = gd<DDNode>(n->top()).cur.x;
+			(ni = n->nBegin())++;
+			//n->coordFixed = false;
+		}
+		for(; ni!=n->nEnd(); ++ni) {
+			int r = gd<DDNode>(*ni).rank;
+			RemoveNode(*ni);
+			InstallAtPos(*ni,r,x);
+		}
+		if(!n->first) {
+			if(nsn.newTopRank!=nsn.newBottomRank) { // 1-node is becoming a chain
+				RemoveNode(n->node);
+				InstallAtPos(n->node,nsn.newTopRank,x);
+				DDModel::Node *bottom = dynaDAG->OpenModelNode(mvn).second;
+				InstallAtPos(bottom,nsn.newBottomRank,x);
+				reattachEdgeTails(n->node,bottom);
+				constX cx(x);
+				buildChain(n,n->node,bottom,&cx,mvn,0);
+				n->node = 0;
+			}
+			else {
+				RemoveNode(n->node);
+				InstallAtPos(n->node,nsn.newTopRank,x);
+			}
+		}
+		else { // already a chain
+			DDModel::Node *top = n->top(),
+				*bottom = n->bottom();
+			RemoveNode(top);
+			InstallAtPos(top,nsn.newTopRank,gd<DDNode>(top).cur.x);
+			RemoveNode(bottom);
+			if(nsn.newTopRank==nsn.newBottomRank) { // chain becoming 1-node
+				reattachEdgeTails(bottom,top);
+				dynaDAG->CloseChain(n,false);
+				dynaDAG->CloseModelNode(bottom);
+				n->node = top;
+			}
+			else {
+				InstallAtPos(n->bottom(),nsn.newBottomRank,gd<DDNode>(n->bottom()).cur.x);
+				// stretch/shrink chain
+				autoAdjustChain(n,nsn.oldTopRank,nsn.oldBottomRank,nsn.newTopRank,nsn.newBottomRank,mvn,0);
+			}
+		}
+	}
+	else { // only x has changed
+		if(ng.pos.valid) {
+			for(DDMultiNode::node_iter ni = n->nBegin(); ni!=n->nEnd(); ++ni) {
+				DDModel::Node *mn = *ni,
+					*left = Left(mn),
+					*right = Right(mn);
+				if((left && (gd<DDNode>(left).cur.x > ng.pos.x)) ||
+					(right && (gd<DDNode>(right).cur.x < ng.pos.x))) {
+					int r = gd<DDNode>(mn).rank;
+					RemoveNode(mn);
+					InstallAtPos(mn,r,ng.pos.x);
+				}
+				else
+					gd<DDNode>(mn).cur.x = ng.pos.x;
+			}
+			//n->coordFixed = true;
+		}
+		//else n->coordFixed = false;
+	}
+}
 struct compOldRank {
 	bool operator()(DynaDAGLayout::Node *n1,DynaDAGLayout::Node *n2) {
 		return gd<NSRankerNode>(n1).oldTopRank < gd<NSRankerNode>(n2).oldTopRank;
@@ -470,85 +527,11 @@ struct compOldRank {
 void Config::moveOldNodes(DDChangeQueue &changeQ) {
 	LNodeV moveOrder;
 	for(DynaDAGLayout::node_iter vni = changeQ.modN.nodes().begin(); vni!=changeQ.modN.nodes().end(); ++vni)
-		moveOrder.push_back(*vni);
+		if(igd<Dynagraph::Update>(*vni).flags&DG_UPD_MOVE)
+			moveOrder.push_back(*vni);
 	sort(moveOrder.begin(),moveOrder.end(),compOldRank());
-	for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) {
-		DynaDAGLayout::Node *vn = *ni,
-			*mvn = whole->find(*ni);
-		NodeGeom &ng = gd<NodeGeom>(vn);
-		DDMultiNode *n = DDp(vn);
-		NSRankerNode &nsn = gd<NSRankerNode>(vn);
-		if(nsn.newTopRank!=nsn.oldTopRank || nsn.newBottomRank!=nsn.oldBottomRank) {
-			double x;
-			DDMultiNode::node_iter ni;
-			// move all nodes to either specified X or percolated X
-			if(igd<Dynagraph::Update>(vn).flags & DG_UPD_MOVE && ng.pos.valid ||
-					gd<NodeGeom>(vn).nail & DG_NAIL_X) {
-				if(!ng.pos.valid)
-					throw NailWithoutPos<DynaDAGLayout>(vn);
-				x = ng.pos.x;
-				//n->coordFixed = true;
-				ni = n->nBegin();
-			}
-			else {
-				percolate(n->top(),n->top(),nsn.newTopRank);
-				x = gd<DDNode>(n->top()).cur.x;
-				(ni = n->nBegin())++;
-				//n->coordFixed = false;
-			}
-			for(; ni!=n->nEnd(); ++ni) {
-				int r = gd<DDNode>(*ni).rank;
-				RemoveNode(*ni);
-				InstallAtPos(*ni,r,x);
-			}
-			if(!n->first) {
-				if(nsn.newTopRank!=nsn.newBottomRank) { // 1-node is becoming a chain
-					RemoveNode(n->node);
-					InstallAtPos(n->node,nsn.newTopRank,x);
-					DDModel::Node *bottom = dynaDAG->OpenModelNode(mvn).second;
-					InstallAtPos(bottom,nsn.newBottomRank,x);
-					constX cx(x);
-					buildChain(n,n->node,bottom,&cx,mvn,0);
-					n->node = 0;
-				}
-				else {
-					RemoveNode(n->node);
-					InstallAtPos(n->node,nsn.newTopRank,x);
-				}
-			}
-			else { // already a chain
-				DDModel::Node *top = n->top(); // cache in case last edge gets broken
-				RemoveNode(n->top());
-				InstallAtPos(n->top(),nsn.newTopRank,gd<DDNode>(n->top()).cur.x);
-				RemoveNode(n->bottom());
-				InstallAtPos(n->bottom(),nsn.newBottomRank,gd<DDNode>(n->bottom()).cur.x);
-				// stretch/shrink chain
-				autoAdjustChain(n,nsn.oldTopRank,nsn.oldBottomRank,nsn.newTopRank,nsn.newBottomRank,mvn,0);
-				// chain became a 1-node
-				if(!n->node && !n->first)
-					n->node = top;
-			}
-		}
-		else { // only x has changed
-			if(ng.pos.valid) {
-				for(DDMultiNode::node_iter ni = n->nBegin(); ni!=n->nEnd(); ++ni) {
-					DDModel::Node *mn = *ni,
-						*left = Left(mn),
-						*right = Right(mn);
-					if((left && (gd<DDNode>(left).cur.x > ng.pos.x)) ||
-						(right && (gd<DDNode>(right).cur.x < ng.pos.x))) {
-						int r = gd<DDNode>(mn).rank;
-						RemoveNode(mn);
-						InstallAtPos(mn,r,ng.pos.x);
-					}
-					else
-						gd<DDNode>(mn).cur.x = ng.pos.x;
-				}
-				//n->coordFixed = true;
-			}
-			//else n->coordFixed = false;
-		}
-	}
+	for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) 
+		moveOldNode(*ni);
 }
 void Config::moveOldEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
@@ -568,9 +551,10 @@ void Config::splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, 
 	Ranks::index newR = ranking.Down(gd<DDNode>(e->tail).rank);
 	if(newR==gd<DDNode>(e->head).rank)
 		return; // already there
-	assert(Ranks::Xlator::Above(whole,newR,gd<DDNode>(e->head).rank));
-	report(r_ranks,"%s %p: chain split at %d->%d:\n",vn?"multinode":"path",chain,
-		gd<DDNode>(e->tail).rank,gd<DDNode>(e->head).rank);
+	dgassert(Ranks::Xlator::Above(whole,newR,gd<DDNode>(e->head).rank));
+	reports[dgr::ranks] << 
+		(vn?"multinode ":"path ") << chain << ": chain split at " <<
+		gd<DDNode>(e->tail).rank << "->" << gd<DDNode>(e->head).rank << ':' << endl;
 	DDModel::Node *v = dynaDAG->OpenModelNode(vn).second;
 	double x = (gd<DDNode>(e->tail).cur.x+gd<DDNode>(e->head).cur.x)/2.0; // roughly interpolate so as not to introduce crossings
 	InstallAtPos(v,newR,x);
@@ -580,35 +564,35 @@ void Config::splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, 
 		chain->first = newE1;
 	if(chain->last==e)
 		chain->last = newE2;
-	assert(chain->first && chain->last);
+	dgassert(chain->first && chain->last);
 	dynaDAG->CloseModelEdge(e);
 	Ranks::index ur = gd<DDNode>(newE1->tail).rank,
 		vr = gd<DDNode>(newE1->head).rank,
 		wr = gd<DDNode>(newE2->head).rank;
-	report(r_ranks,"now %d->%d->%d\n",ur,vr,wr);
+	reports[dgr::ranks] << "now " << ur << "->" << vr << "->" << wr << endl;
 }
 void Config::joinRanks(DDChain *chain,DDModel::Node *n,DynaDAGLayout::Edge *ve) {
-	assert(n->ins().size()==1);
-	assert(n->outs().size()==1);
+	dgassert(n->ins().size()==1);
+	dgassert(n->outs().size()==1);
 	DDModel::Edge *e1 = *n->ins().begin(),
 		*e2 = *n->outs().begin(),
 		*newE = dynaDAG->OpenModelEdge(e1->tail,e2->head,ve).second;
-	report(r_ranks,"%s %p: chain joined at %d->%d->%d\n",ve?"path":"multinode",chain,
-		gd<DDNode>(e1->tail).rank,gd<DDNode>(n).rank,gd<DDNode>(e2->head).rank);
+	reports[dgr::ranks] << (ve?"path":"multinode") << ' ' << chain << ": chain joined at " <<
+		gd<DDNode>(e1->tail).rank << "->" << gd<DDNode>(n).rank << "->" << gd<DDNode>(e2->head).rank << endl;
 	// make sure this is in the middle of the specified chain
 	if(gd<DDNode>(n).amNodePart())
-		assert(gd<DDEdge>(e1).amNodePart() && gd<DDEdge>(e2).amNodePart() && gd<DDNode>(n).multi==chain);
+		dgassert(gd<DDEdge>(e1).amNodePart() && gd<DDEdge>(e2).amNodePart() && gd<DDNode>(n).multi==chain);
 	else
-		assert(gd<DDEdge>(e1).amEdgePart() && gd<DDEdge>(e1).path==chain && gd<DDEdge>(e1).path==gd<DDEdge>(e2).path);
+		dgassert(gd<DDEdge>(e1).amEdgePart() && gd<DDEdge>(e1).path==chain && gd<DDEdge>(e1).path==gd<DDEdge>(e2).path);
 	if(chain->first==e1)
 		chain->first = newE;
 	if(chain->last==e2)
 		chain->last = newE;
-	assert(chain->first && chain->last);
+	dgassert(chain->first && chain->last);
 	dynaDAG->CloseModelEdge(e1);
 	dynaDAG->CloseModelEdge(e2);
 	dynaDAG->CloseModelNode(n);
-	report(r_ranks,"now %d->%d\n",gd<DDNode>(newE->tail).rank,gd<DDNode>(newE->head).rank);
+	reports[dgr::ranks] << "now " << gd<DDNode>(newE->tail).rank << "->" << gd<DDNode>(newE->head).rank << endl;
 }
 void Config::updateRanks(DDChangeQueue &changeQ) {
 	// everything old has already been moved around, so we don't have to
@@ -618,17 +602,17 @@ void Config::updateRanks(DDChangeQueue &changeQ) {
 		ranking.oldRanks.push_back(INT_MAX);
 	Ranks::IndexV::iterator ni=ranking.newRanks.begin(),
 		oi = ranking.oldRanks.begin();
-	if(reportEnabled(r_ranks)) {
+	if(reports.enabled(dgr::ranks)) {
 		int dr = ranking.newRanks.size()-ranking.oldRanks.size();
-		report(r_ranks,"update config: %d ranks (%s %d)\n",ranking.newRanks.size(),dr<0?"closing":"creating",abs(dr));
+		reports[dgr::ranks] << "update config: " << ranking.newRanks.size() << " ranks (" << (dr<0?"closing ":"creating ") << abs(dr) << ')' << endl;
 		/*
-		report(r_ranks,"old ranks: ");
+		reports[dgr::ranks] << "old ranks: ";
 		for(Ranks::IndexV::iterator test = ranking.oldRanks.begin(); test!=ranking.oldRanks.end(); ++test)
-			report(r_ranks,"%d ",*test);
-		report(r_ranks,"\nnew ranks: ");
+			reports[dgr::ranks] << *test << ' ';
+		reports[dgr::ranks] << endl << "new ranks: ");
 		for(test = ranking.newRanks.begin(); test!=ranking.newRanks.end(); ++test)
-			report(r_ranks,"%d ",*test);
-		report(r_ranks,"\n");
+			reports[dgr::ranks] << *test << ' ';
+		reports[dgr::ranks] << endl;
 		*/
 	}
 	while(*ni!=INT_MAX || *oi!=INT_MAX) {
@@ -637,7 +621,7 @@ void Config::updateRanks(DDChangeQueue &changeQ) {
 			++oi;
 		}
 		while(Ranks::Xlator::Above(whole,*ni,*oi)) { // additions
-			report(r_ranks,"adding %d\n",*ni);
+			reports[dgr::ranks] << "adding " << *ni << endl;
 			Ranks::iterator ri = ranking.EnsureRank(*ni,gd<GraphGeom>(changeQ.current).separation.y);
 			if(ri!=ranking.begin()) {
 				Ranks::iterator ri2 = ri;
@@ -649,15 +633,15 @@ void Config::updateRanks(DDChangeQueue &changeQ) {
 							splitRank(gd<DDEdge>(e).path,e,0,gd<DDEdge>(e).path->layoutE);
 						else if(gd<DDNode>(*ni).amNodePart() && gd<DDNode>(*ni).multi==gd<DDNode>(e->head).multi)
 							splitRank(gd<DDNode>(*ni).multi,e,gd<DDNode>(*ni).multi->layoutN,0);
-						else assert(0); // what's this edge doing?
+						else dgassert(false); // what's this edge doing?
 					}
 			}
 			++ni;
 		}
 		while(Ranks::Xlator::Above(whole,*oi,*ni)) { // deletions
-			report(r_ranks,"removing %d\n",*oi);
+			reports[dgr::ranks] << "removing " << *oi << endl;
 			Ranks::iterator ri = ranking.GetIter(*oi);
-			assert(ri!=ranking.end());
+			dgassert(ri!=ranking.end());
 			while((*ri)->order.size()) {
 				DDModel::Node *n = (*ri)->order.back();
 				if(gd<DDNode>(n).amEdgePart()) {
@@ -675,10 +659,12 @@ void Config::updateRanks(DDChangeQueue &changeQ) {
 }
 void Config::Update(DDChangeQueue &changeQ) {
 	makeRankList(changeQ);
+
 	moveOldNodes(changeQ);
 	moveOldEdges(changeQ);
-
 	checkEdges(false);
+	checkNodeRanks(changeQ,false);
+
 	updateRanks(changeQ);
 	ranking.Check();
 	checkEdges(true);
@@ -686,6 +672,7 @@ void Config::Update(DDChangeQueue &changeQ) {
 	insertNewNodes(changeQ);
 	insertNewEdges(changeQ);
 	checkEdges(true);
+	checkNodeRanks(changeQ,true);
 	checkX();
 }
 

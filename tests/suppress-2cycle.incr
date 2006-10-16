@@ -1,0 +1,6 @@
+open graph V []
+insert node V q
+insert node V r
+insert edge V e q r
+insert edge V f r q
+modify node V r [suppressed=true]

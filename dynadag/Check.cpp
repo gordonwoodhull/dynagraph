@@ -19,6 +19,8 @@
 
 #include "DynaDAG.h"
 
+using namespace std;
+
 namespace Dynagraph {
 namespace DynaDAG {
 
@@ -30,7 +32,7 @@ void FlexiRanks::Check() {
 	(next=ri)++;
 	while(next!=end()) {
 		index a = IndexOfIter(ri), b = IndexOfIter(next);
-		assert(Xlator::Above(layout_,a,b));
+		dgassert(Xlator::Above(layout_,a,b));
 		ri = next++;
 	}
 }
@@ -39,34 +41,61 @@ void Config::checkEdges(bool strict) {
 		DDModel::Node *t = (*ei)->tail,
 			*h = (*ei)->head;
 		// edges must be path parts or node parts; edges must belong to one node only
-		assert(gd<DDEdge>(*ei).amEdgePart() || gd<DDNode>(t).amNodePart() && gd<DDNode>(t).multi==gd<DDNode>(h).multi);
+		if(gd<DDEdge>(*ei).amEdgePart())
+			;
+		else {
+			dgassert(gd<DDNode>(t).amNodePart());
+			dgassert(gd<DDNode>(t).multi==gd<DDNode>(h).multi);
+		}
 		Ranks::index tr = gd<DDNode>(t).rank,
 			hr = gd<DDNode>(h).rank;
-		if(strict) // all edges span one rank
-			assert(ranking.Down(tr)==hr);
+		if(strict) 
+			dgassert(ranking.Down(tr)==hr); // edges must span exactly one rank
 		else
-			assert(Ranks::Xlator::Above(whole,tr,hr));
+			dgassert(Ranks::Xlator::Above(whole,tr,hr)); // edges must point "downward"
 	}
-	// nodes in paths belong to one path only
+	// nodes in paths must belong to one path only
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDModel::Node *n = *ni;
 		if(gd<DDNode>(n).amEdgePart()) {
-			assert(n->ins().size()==1);
-			assert(n->outs().size()==1);
+			dgassert(n->ins().size()==1);
+			dgassert(n->outs().size()==1);
 			DDModel::Edge *e1 = *n->ins().begin(),
 				*e2 = *n->outs().begin();
-			assert(gd<DDEdge>(e1).path==gd<DDEdge>(e2).path);
+			dgassert(gd<DDEdge>(e1).path==gd<DDEdge>(e2).path);
 		}
 	}
 	// view edges' paths connect the tops & bottoms of nodes
 	for(DynaDAGLayout::graphedge_iter ei2 = current->edges().begin(); ei2!=current->edges().end(); ++ei2) {
-		DDPath *path = DDp(*ei2);
-		DDMultiNode *n1 = DDp((*ei2)->tail),
-			*n2 = DDp((*ei2)->head);
-		if(path && path->first)
-			assert(path->first->tail==n1->bottom()&&path->last->head==n2->top()
-				||path->first->tail==n2->bottom()&&path->last->head==n1->top());
+		DynaDAGLayout::Edge *e = *ei2;
+		DDPath *path = DDp(e);
+		if(!path)
+			continue;
+		if(!path->first)
+			continue;
+		DDMultiNode *tn = DDp(e->tail),
+			*hn = DDp(e->head);
+		switch(getEdgeDirection(e)) {
+			case forward:
+				dgassert(path->first->tail==tn->bottom());
+				dgassert(path->last->head==hn->top());
+				break;
+			case reversed:
+				dgassert(path->first->tail==hn->bottom());
+				dgassert(path->last->head==tn->top());
+				break;
+			case flat:
+				dgassert(false); // first and last should be null
+		}
 	}
+}
+void Config::checkNodeRanks(DDChangeQueue &Q, bool news) {
+	for(DynaDAGLayout::node_iter ni = current->nodes().begin(); ni!=current->nodes().end(); ++ni)
+		if(news||!Q.insN.find(*ni)) {
+			DynaDAGLayout::Node *n = *ni;
+			dgassert(gd<DDNode>(DDp(n)->top()).rank==gd<NSRankerNode>(n).newTopRank);
+			dgassert(gd<DDNode>(DDp(n)->bottom()).rank==gd<NSRankerNode>(n).newBottomRank);
+		}
 }
 void Config::checkX() {
 	for(Ranks::iterator ri = ranking.begin(); ri!=ranking.end(); ++ri) {
@@ -75,7 +104,7 @@ void Config::checkX() {
 			if(ni!=r->order.begin()) {
 				double cx = gd<DDNode>(*ni).cur.x,
 					px = gd<DDNode>(*(ni-1)).cur.x;
-				assert(cx>=px);
+				dgassert(cx>=px);
 			}
 	}
 }
@@ -87,40 +116,40 @@ void XSolver::checkLRConstraints() {
 			if(DDModel::Node *left = config.Left(*ni)) {
 				DDCGraph::Node *l = gd<DDNode>(left).getXcon().n,
 					*n = gd<DDNode>(*ni).getXcon().n;
-				assert(l&&n);
+				dgassert(l&&n);
 				DDCGraph::Edge *e = cg.find_edge(l,n);
 				if(!e) {
-					report(r_error,"constraint missing between %x (%s %x) and %x (%s %x)\n",
-						left,type(left),thing(left),*ni,type(*ni),thing(*ni));
+					reports[dgr::error] << 
+						left << " (" << type(left) << ' ' << thing(left) << ") and " << *ni << " (" << type(*ni) << ' ' << thing(*ni) << ')' << endl;
 					missing = true;
 				}
 				else
-					assert(DDNS::NSd(e).minlen >= ROUND(xScale*config.UVSep(left,*ni)));
+					dgassert(DDNS::NSd(e).minlen >= ROUND(config.UVSep(left,*ni)/gd<GraphGeom>(config.current).resolution.x));
 				/*
 				// (hopeless)
 				// don't allow extraneous constraints: only edge,stab, and L-R are good
 				for(DDCGraph::edge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei) {
 					DDCGraph::Edge *e2 = *ei;
-					assert(e2==e ||
+					dgassert(e2==e ||
 						e2->tail == gd<DDNode>(*ni).getXcon().stab ||
 						gd<ConstraintType>(e2->tail).why==ConstraintType::orderEdgeStraighten);
 				}
 				*/
 			}
 	}
-	assert(!missing);
+	dgassert(!missing);
 }
 void XSolver::checkEdgeConstraints() {
 	for(DDModel::graphedge_iter ei = config.model.edges().begin(); ei!=config.model.edges().end(); ++ei)
 		if(gd<DDEdge>(*ei).amEdgePart()) {
 			DDCGraph::Node *cn = gd<DDEdge>(*ei).cn;
-			assert(cn);
-			assert(cn->ins().size()==0);
+			dgassert(cn);
+			dgassert(cn->ins().size()==0);
 			if(cn->outs().size()!=2) {
-				report(r_error,"AARGH!  Why isn't node %p of %s %p constrained with\n",
-					(*ei)->tail,gd<DDNode>((*ei)->tail).amEdgePart()?"path":"multinode",thing((*ei)->tail));
-				report(r_error,"node %p of %s %p????\n",(*ei)->head,gd<DDNode>((*ei)->head).amEdgePart()?
-					"path":"multinode",thing((*ei)->head));
+				reports[dgr::error] << "AARGH!  Why isn't node " << (*ei)->tail << " of " << 
+					(gd<DDNode>((*ei)->tail).amEdgePart()?"path":"multinode") << ' ' << thing((*ei)->tail) << " constrained with" << endl;
+				reports[dgr::error] << "node %p of %s %p????\n" << (*ei)->head << " of " <<
+					(gd<DDNode>((*ei)->head).amEdgePart()?"path":"multinode") << ' ' << thing((*ei)->head) << "???" << endl;
 				throw BadXConstraints();
 			}
 		}
@@ -149,16 +178,16 @@ void Rank::check(int r) {
 
 	DDModel::Node *ln=0;
 	for(NodeV::iterator ni = order.begin(); ni!=order.end(); ++ni) {
-		assert(gd<DDNode>(*ni).inConfig);
-		assert(gd<DDNode>(*ni).rank == r);
+		dgassert(gd<DDNode>(*ni).inConfig);
+		dgassert(gd<DDNode>(*ni).rank == r);
 		dd_check_elts(*ni);
 		if(ln) {
-			assert(gd<DDNode>(ln).order + 1 == gd<DDNode>(*ni).order);
-			assert(gd<DDNode>(ln).cur.x + BASE(view)->whole->separation.x <= dd_pos(rn).x);
+			dgassert(gd<DDNode>(ln).order + 1 == gd<DDNode>(*ni).order);
+			dgassert(gd<DDNode>(ln).cur.x + BASE(view)->whole->separation.x <= dd_pos(rn).x);
 		}
 		ln = rn;
 	}
-	assert (i == rd->n);
+	dgassert (i == rd->n);
 }
 
 void dd_check_containment(ddview_t *view, int r, Agnode_t *n, int must_be_in)
@@ -167,9 +196,9 @@ void dd_check_containment(ddview_t *view, int r, Agnode_t *n, int must_be_in)
 
 	for(rn = dd_leftmost(view,r); rn; rn = dd_right(view,rn)) {
 		if(must_be_in) { if(n == rn) break; }
-		else assert (n != rn);
+		else dgassert (n != rn);
 	}
-	if(must_be_in) assert (n == rn);
+	if(must_be_in) dgassert (n == rn);
 }
 
 ilbool dd_check_pathnode(ddview_t *view, Agnode_t *n)
@@ -180,7 +209,7 @@ ilbool dd_check_pathnode(ddview_t *view, Agnode_t *n)
 	i = dd_order(n);
 	r = dd_rank(n);
 	rd = dd_rankd(view,r);
-	assert(rd->v[i] == n);
+	dgassert(rd->v[i] == n);
 	return FALSE;
 }
 
@@ -192,7 +221,7 @@ void dd_check_vnode_path(ddview_t *view, Agedge_t **vpath)
 	f = NILedge;
 	for(i = 0; (e = vpath[i]); i++) {
 		dd_check_pathnode(view,agtail(e));
-		if(i > 0) assert(dd_is_a_vnode(agtail(e)));
+		if(i > 0) dgassert(dd_is_a_vnode(agtail(e)));
 		f = e;
 	}
 	dd_check_pathnode(view,aghead(f));
@@ -223,7 +252,7 @@ void dd_check_newranks(Agraph_t *g)
 		if(dd_is_a_vnode(n)) continue;
 		for(e = agfstout(n); e; e = agnxtout(e)) {
 			if(NOT(dd_constraint(e))) continue;
-			assert (dd_newrank(dd_pathhead(e)) - dd_newrank(dd_pathtail(e)) >= 1);
+			dgassert (dd_newrank(dd_pathhead(e)) - dd_newrank(dd_pathtail(e)) >= 1);
 		}
 	}
 }
@@ -234,11 +263,11 @@ static void check_mg(Agraph_t *g, Agraph_t *root)
 	Agedge_t	*me;
 
 	for(mn = agfstnode(g); mn; mn = agnxtnode(mn)) {
-		assert(mn->base.data);
-		assert(agsubnode(root,mn,FALSE));
+		dgassert(mn->base.data);
+		dgassert(agsubnode(root,mn,FALSE));
 		for(me = agfstout(mn); me; me = agnxtout(me)) {
-			assert(me->base.data);
-			assert(agsubedge(root,me,FALSE));
+			dgassert(me->base.data);
+			dgassert(agsubedge(root,me,FALSE));
 		}
 	}
 }
@@ -262,12 +291,12 @@ void dd_check_really_gone(Agraph_t *g, Agnode_t *n, ulong id)
 	Agnode_t	*u;
 	Agedge_t	*e;
 
-	assert (agidnode(g,id,FALSE) == NILnode);
+	dgassert (agidnode(g,id,FALSE) == NILnode);
 
 	for(u = agfstnode(g); u; u = agnxtnode(u)) {
-		assert(u != n);
+		dgassert(u != n);
 		for(e = agfstedge(u); e; e = agnxtedge(e,u))
-			assert(e->node != n);
+			dgassert(e->node != n);
 	}
 }
 
@@ -300,31 +329,31 @@ dd_check_model(view);
 	for(mn = agfstnode(model); mn; mn = agnxtnode(mn)) {
 		ln = dd_rep(mn);
 		if(ln == NILnode) continue;
-		assert(dd_node(ln)->model == mn);
+		dgassert(dd_node(ln)->model == mn);
 
 		for(me = agfstedge(mn); me; me = agnxtedge(me,mn)) {
 			path = dd_pathrep(me);
 			mme = path->model;
 			if(mme == NILedge) continue;
-			assert((mme == me) || (mme == AGOPP(me)));
+			dgassert((mme == me) || (mme == AGOPP(me)));
 		}
 	}
 
 	for(ln = agfstnode(layout); ln; ln = agnxtnode(ln)) {
 		if(dd_is_a_vnode(ln) == FALSE) {
 			mn = dd_node(ln)->model;
-			assert(mn);
-			assert(agsubnode(model,mn,FALSE) == mn);
-			assert(ln == dd_rep(mn));
+			dgassert(mn);
+			dgassert(agsubnode(model,mn,FALSE) == mn);
+			dgassert(ln == dd_rep(mn));
 			for(le = agfstedge(ln); le; le = agnxtedge(le,ln)) {
 				path = dd_edge(le)->path;
 				me = path->model;
-				assert(agsubedge(model,me,FALSE) == me);
+				dgassert(agsubedge(model,me,FALSE) == me);
 			}
 		}
 		else {
-			assert(agfstin(ln) != NILedge);
-			assert(agfstout(ln) != NILedge);
+			dgassert(agfstin(ln) != NILedge);
+			dgassert(agfstout(ln) != NILedge);
 		}
 	}
 CLcnt++;

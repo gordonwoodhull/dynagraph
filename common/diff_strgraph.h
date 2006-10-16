@@ -59,8 +59,6 @@ struct React {
 */
 template<typename React,typename NGraph1,typename NGraph2>
 void diff_strgraph(NGraph1 *sg1,NGraph2 *sg2,React &react) {
-	sg1->oopsRefreshDictionary();
-	sg2->oopsRefreshDictionary();
 	{ // find deletions
 		for(typename NGraph1::graphedge_iter ei1 = sg1->edges().begin(),ej1; ei1!=sg1->edges().end(); ei1=ej1) {
             (ej1 = ei1)++;

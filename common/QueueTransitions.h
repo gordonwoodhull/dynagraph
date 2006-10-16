@@ -24,14 +24,11 @@ struct GoingQueueTransition {
 	static bool CheckRedundancy() {
 		return true;
 	}
-	static void EndLastQ(ChangeQueue<Graph1> &Q) {}
 };
 template<typename Graph1>
 struct ReturningQueueTransition {
 	static bool CheckRedundancy() {
 		return false;
-	}
-	static void EndLastQ(ChangeQueue<Graph1> &Q) {
 	}
 };
 

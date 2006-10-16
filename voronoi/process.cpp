@@ -104,7 +104,7 @@ void VoronoiServer::geomUpdate (vector<Site*> &sort) {
     /* compute ranges */
 	hedges.range = Rect(sort[0]->coord);
     for(size_t i = 1; i < this->world_->current_.nodes().size(); i++)
-		hedges.range |= sort[i]->coord;
+		hedges.range |= Rect(sort[i]->coord);
 }
 int VoronoiServer::countOverlap(int iter) {
     int          count = 0;
@@ -124,7 +124,7 @@ int VoronoiServer::countOverlap(int iter) {
 
 			/*
     if (Verbose > 1)
-      fprintf (stderr, "overlap [%d] : %d\n", iter, count);
+      reports[dgr::error] <<  "overlap [" << iter << "] : " << count << endl;
 	  */
     return count;
 }
@@ -303,8 +303,8 @@ bool VoronoiServer::vAdjust () {
 
 	/*
     if (Verbose) {
-      fprintf (stderr, "Number of iterations = %d\n", iterCnt);
-      fprintf (stderr, "Number of increases = %d\n", increaseCnt);
+      reports[dgr::error] <<  "Number of iterations = " << iterCnt << endl;
+      reports[dgr::error] <<  "Number of increases = " << increaseCnt << endl;
     }
 	*/
 
@@ -354,8 +354,8 @@ sAdjust ()
     }
 
     if (Verbose) {
-      fprintf (stderr, "Number of iterations = %d\n", iterCnt);
-      fprintf (stderr, "Number of increases = %d\n", increaseCnt);
+      reports[dgr::error] <<  "Number of iterations = " << iterCnt << endl;
+      reports[dgr::error] <<  "Number of increases = " << increaseCnt << endl;
     }
 
     return 1;

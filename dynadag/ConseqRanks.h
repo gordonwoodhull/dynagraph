@@ -154,7 +154,7 @@ private:
 		  y = where?at(high-low)->yBase:at(0)->yBase;
 		}
 		else {
-		  assert(nsize==1);
+		  dgassert(nsize==1);
 		  y = dy = -17; // will get reset
 		}
 		insert(begin()+where,nsize-osize,(Rank*)0);

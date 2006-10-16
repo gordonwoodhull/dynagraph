@@ -80,7 +80,7 @@ void Grid::add(int i, int j, FDPModel::Node *n) {
     cellp->nodes.push_front(n);
 	/*
     if(Verbose >= 3) {
-      fprintf(stderr, "grid(%d,%d): %s\n", i, j, n->name);
+      reports[dgr::error] <<  "grid(" << i << ',' << j << "): " << gd<Name>(n) << endl;
     }
 	*/
 }

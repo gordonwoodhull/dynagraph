@@ -17,49 +17,39 @@
 
 #include <stdio.h>
 #include <fstream>
-#include <string.h>
+#include <time.h>
 
-#include "common/ag2str.h"
 #include "common/emitGraph.h"
-#include "common/stringsIn.h"
-#include "common/stringsOut.h"
-#include "incrface/incrout.h"
+#include "common/Transform.h"
 #include "incrface/incrparse.h"
+#include "incrface/IncrLangEvents.h"
 
-#include "dynadag/DynaDAGLayout.h"
-#include "fdp/FDPLayout.h"
-#include "common/GeneralLayout.h"
-
-#include "incrface/createStringHandlers.h"
-
+#include "common/time-o-matic.h"
 #include "DuplicateStream.h"
+#include <boost/iostreams/tee.hpp>
+#include <boost/iostreams/stream.hpp>
 
 #include "dynagraph.version.h"
 
 using namespace std;
 using namespace Dynagraph;
 
-using DynaDAG::DynaDAGLayout;
-using FDP::FDPLayout;
-
-Transform *g_transform;
-bool g_useDotDefaults;
 char *g_outdot=0;
 int g_count=1;
-StrAttrs g_defaultGraphAttrs;
-bool g_xeptOut=false;
+bool g_xeptFatal=false;
+int g_maxWait=-1;
+bool g_randomizeWait = false;
+
+namespace Dynagraph {
+	StrAttrs g_defaultGraphAttrs;
+	Transform *g_transform;
+	bool g_useDotDefaults;
+}
 
 struct CouldntOpen {};
 
 #ifndef DYNAGRAPH_NO_THREADS
 #define TEXT_OUTPUT_MUTEX
-#endif
-
-#ifdef TEXT_OUTPUT_MUTEX
-boost::mutex g_outputMutex;
-#define LOCK_OUTPUT() boost::mutex::scoped_lock lock(g_outputMutex)
-#else
-#define LOCK_OUTPUT()
 #endif
 
 template<typename Layout>
@@ -69,151 +59,35 @@ void doOutdot(Layout *l) {
 		sprintf(filename,"%s%d.dot",g_outdot,g_count);
 		fstream f(filename,fstream::out);
 		if(f.fail()) {
-			report(r_error,"couldn't write to %s\n",filename);
+			reports[dgr::error] << "couldn't write to " << filename << endl;
 			throw CouldntOpen();
 		}
 		emitGraph(f,l);
 		++g_count;
 	}
 }
-
-template<typename Graph>
-struct TextChangeOutput : LinkedChangeProcessor<Graph> {
-	TextChangeOutput(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
-	// ChangeProcessor
-	void Process() {
-		LOCK_OUTPUT();
-		emitChanges(cout,this->world_->Q_);
-		doOutdot(&this->world_->current_);
-	}
-};
-template<typename Graph>
-struct TextWatcherOutput : IncrViewWatcher<Graph> {
-	// IncrViewWatcher
-	void IncrOpen(ChangeQueue<Graph> &Q) {
-		LOCK_OUTPUT();
-		cout << "open graph " << gd<Name>(Q.whole) << " " << gd<StrAttrs>(Q.whole) << endl;
-		igd<StrAttrChanges>(Q.ModGraph()).clear();
-	}
-	void IncrClose(ChangeQueue<Graph> &Q) {
-		LOCK_OUTPUT();
-		cout << "close graph " << gd<Name>(Q.whole) << endl;
-	}
-	void FulfilGraph(Graph *g) {
-		LOCK_OUTPUT();
-		cout << "fulfil graph " << gd<Name>(g) << endl;
-		emitGraph(cout,g);
-	}
-	void FulfilNode(typename Graph::Node *n) {
-		LOCK_OUTPUT();
-		cout << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << endl;
-	}
-	void FulfilEdge(typename Graph::Edge *e) {
-		LOCK_OUTPUT();
-		cout << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << endl;
-	}
-};
-template<typename Layout>
-IncrLangEvents *createHandlers(DString gname,const StrAttrs &attrs) {
-	if(attrs.look("superengines")) {
-		ChangingGraph<GeneralLayout> *world = new ChangingGraph<GeneralLayout>;
-		return createStringHandlers<GeneralLayout>(world,WorldGuts<Layout>(attrs.look("superengines"),attrs.look("engines")),
-			new TextWatcherOutput<GeneralLayout>,0,new TextChangeOutput<GeneralLayout>(world),
-			gname,attrs,g_transform,g_useDotDefaults);
-	}
-	else {
-		ChangingGraph<Layout> *world = new ChangingGraph<Layout>;
-		return createStringHandlers<Layout>(world,SimpleGuts<Layout>(attrs.look("engines")),
-			new TextWatcherOutput<Layout>,0,new TextChangeOutput<Layout>(world),
-			gname,attrs,g_transform,g_useDotDefaults);
-	}
-}
-
-struct IncrCalledBack : IncrCallbacks {
-    IncrCalledBack() {
-        g_incrCallback = this;
-    }
-    ~IncrCalledBack() {
-		g_incrCallback = 0;
-    }
-    IncrLangEvents *incr_cb_create_handler(Name name,StrAttrs &attrs) {
-		attrs = g_defaultGraphAttrs+attrs;
-		DString type = attrs.look("type"),
-			&engines = attrs["engines"],
-			&superengines=attrs["superengines"];
-		if(!type) {
-			if(!engines) {
-				if(superengines.find("shapegen",0)!=DString::npos)
-					engines = "dynadag";
-				else
-					engines = "shapegen,dynadag";
-			}
-			DString::size_type ddpos = engines.find("dynadag",0);
-			if(ddpos!=DString::npos) 
-				if(engines.find("nsranker",0)==DString::npos && superengines.find("nsranker",0)==DString::npos)
-					if(superengines) {
-						string s = superengines.c_str(); // ick
-						s += ",nsranker";
-						superengines = s.c_str();
-					}
-					else {
-						string s = engines.c_str();
-						s.insert(ddpos,"nsranker,");
-						engines = s.c_str();
-					}
-			if(engines.find("dynadag",0)!=DString::npos)
-				type = "dynadag";
-			else if(engines.find("fdp",0)!=DString::npos)
-				type = "fdp";
-			else
-				throw DGException2("could not deduce graph type from engine list",engines);
-		}
-		IncrLangEvents *ret;
-		if(type=="dynadag") 
-			ret = createHandlers<DynaDAGLayout>(name,attrs);
-		else if(type=="fdp")
-			ret = createHandlers<FDPLayout>(name,attrs);
-    	return ret;
-	}
-    void incr_cb_destroy_handler(IncrLangEvents *h) {
-        delete h;
-    }
-    // echo all fulfils (prob from another server not client!)
-    void incr_cb_fulfil_graph(DString name,StrGraph *sg) {
-        cout << "fulfil graph " << name << endl;
-        cout << *sg;
-	}
-    void incr_cb_fulfil_node(DString graphname,DString nodename,const StrAttrs &attrs) {
-        cout << "fulfil node " << graphname << ' ' << nodename << attrs << endl;
-	}
-    void incr_cb_fulfil_edge(DString graphname,DString edgename,const StrAttrs &attrs) {
-        cout << "fulfil edge " << graphname << ' ' << edgename << attrs << endl;
-	}
-    void incr_cb_message(const char *msg) {
-        // pass through
-        cout << "message \"" << msg << '"' << endl;
-	}
-} g_incrPhone;
 template<typename V>
 struct switchval {
 	char c;
 	V v;
 	char *desc;
 };
-switchval<enum reportTypes> g_reports[] = {
-	{'i',r_input,"input"},
-	{'o',r_output,"output"},
-	{'c',r_crossopt,"crossopt"},
-	{'t',r_timing,"timing breakdown"},
-	{'d',r_dynadag,"dynadag tallies"},
-	{'g',r_modelDump,"dump graph"},
-	{'q',r_dumpQueue,"dump input queue before each cycle"},
-	{'r',r_readability,"readability"},
-	{'s',r_stability,"stability"},
-	{'p',r_progress,"progress"},
-	{'b',r_bug,"bug of the day"}
+switchval<dgr::reportType> g_reports[] = {
+	{'i',dgr::input,"input"},
+	{'o',dgr::output,"(copy of) output"},
+	{'c',dgr::crossopt,"crossing optimization stats"},
+	{'t',dgr::timing,"timing breakdown"},
+	{'d',dgr::dynadag,"dynadag tallies"},
+	{'g',dgr::modelDump,"dump graph"},
+	{'q',dgr::dumpQueue,"dump input queue before each cycle"},
+	{'r',dgr::readability,"readability"},
+	{'s',dgr::stability,"stability"},
+	{'p',dgr::progress,"progress"},
+	{'b',dgr::bug,"bug of the day"},
+	{'n',dgr::inner_input,"inner engine input"},
+	{'u',dgr::inner_output,"inner engine output"}
 };
-int g_nreports = sizeof(g_reports)/sizeof(switchval<enum reportTypes>);
+int g_nreports = sizeof(g_reports)/sizeof(switchval<dgr::reportType>);
 template<typename V>
 pair<bool,V> findSwitchVal(switchval<V> *array,int n,char c) {
 	for(int i =0;i<n;++i)
@@ -229,86 +103,91 @@ pair<bool,char*> findDescription(switchval<V> *array,int n,V v) {
 	return make_pair(false,(char*)0);
 }
 void print_version() {
-	report(r_cmdline,"Dynagraph version %s\n",DYNAGRAPH_VERSION_DOTS_QUOTED);
+	reports[dgr::cmdline] << "Dynagraph version " << DYNAGRAPH_VERSION_DOTS_QUOTED << endl;
 }
 void print_help() {
-	report(r_cmdline,
-		"dynagraph arguments:\n"
-		"   -v (--version) print version information only\n"
-		"	-h (-?) print this help\n"
-		"   -d use dot-compatible coordinates (position in points, node size in inches)\n"
-		"   -i filename input .dot file (static layout)\n"
-		"   -s filename input .incr file (incrface dynamic layout)\n"
-		"   -oN filename write stream N to filename\n"
-		"   -oL filename output layout steps to filename{step}.dot\n"
-		"   -raN report on a to stream N\n"
-		"	-a attr=value set default graph attribute\n"
-		"   -x break on any exception\n");
+	reports[dgr::cmdline] << 
+		"dynagraph arguments:" << endl << 
+		"   -v (--version) print version information only" << endl <<
+		"	-h (-?) print this help" << endl <<
+		"   -d use dot-compatible coordinates (position in points, node size in inches)" << endl <<
+		"   -i filename input .dot file (static layout)" << endl <<
+		"   -s filename input .incr file (incrface dynamic layout)" << endl <<
+		"   -oN filename write stream N to filename" << endl <<
+		"   -oL filename output layout steps to filename{step}.dot" << endl <<
+		"   -raN report on a to stream N" << endl <<
+		"	-a attr=value set default graph attribute" << endl <<
+		"	-w[r] N wait [randomly up to] N nanoseconds before processing each line" << endl <<
+		"	-e specify random number seed" << endl <<
+		"   -x break on any exception" << endl;
 	for(int i = 0;i<g_nreports;++i)
-		report(r_cmdline,"      %c %s\n",g_reports[i].c,g_reports[i].desc);
+		reports[dgr::cmdline] << g_reports[i].c << ' ' << g_reports[i].desc << endl;
 }
 void print_report_syntax() {
-	report(r_error,
-		"-o: specify output filename\n"
-		"   -oN filename, N is [0-9], a file # specified in -r\n"
-		"   -oL filename output layouts to filename1.dot,filename2.dot,...\n");
+	reports[dgr::error] <<
+		"-o: specify output filename" << endl <<
+		"   -oN filename, N is [0-9], a file # specified in -r" << endl <<
+		"   -oL filename output layouts to filename1.dot,filename2.dot,..." << endl;
 }
 void print_attribute_syntax() {
-	report(r_error,
-		"-a: specify default graph attribute\n"
-		"   -a attr=value\n"
-		"   effectively attr=value is prepended onto every 'open graph' attribute list\n");
+	reports[dgr::error] << 
+		"-a: specify default graph attribute" << endl <<
+		"   -a attr=value" << endl <<
+		"   effectively attr=value is prepended onto every 'open graph' attribute list" << endl;
 }
 int main(int argc, char *args[]) {
-	enableReport(r_error,stderr);
-	enableReport(r_cmdline,stdout);
-	loops.sep = ',';
-	char *dotfile = 0;
-	FILE *outfile[10];
 	timer.Start();
+	// enable basic dynagraph report streams
+	reports.enable(dgr::error,&cerr);
+	reports.enable(dgr::cmdline);
+	loops.sep = ',';
+	int random_seed = -1;
+	map<dgr::reportType,int> reportDests;
+	char *dotfile = 0;
+	ostream *outfile[10];
+	FILE *input_file = stdin;
 	for(int i = 0;i<10;++i) outfile[i] = 0;
-	map<int,int> reports;
 	for(int i = 1; i<argc; ++i) {
 		if(args[i][0]!='-') {
-			report(r_error,"not a valid command: %s\n",args[i]);
+			reports[dgr::error] << "not a valid command: " << args[i] << endl;
 			return 1;
 		}
 		switch(args[i][1]) {
-		case 'i': // input file (otherwise dynamic)
+		case 'i': // input dot file (for batch layout)
 			if(i==argc-1) {
-				report(r_error,"-i must be followed by filename\n");
+				reports[dgr::error] << "-i must be followed by filename" << endl;
 				return 1;
 			}
 			if(args[i][2]) {
-				report(r_error,"syntax: -i filename\n");
+				reports[dgr::error] << "syntax: -i filename" << endl;
 				return 1;
 			}
 			dotfile = args[++i];
 			break;
 		case 's': // dynamic script
 			if(i==argc-1 || args[i][2]) {
-				report(r_error,
-					"-s: specify input incrface script\n"
-					"   -s filename: use script in filename (instead of stdin)\n");
+				reports[dgr::error] << 
+					"-s: specify input incrface script" << endl <<
+					"   -s filename: use script in filename (instead of stdin)" << endl;
 				return 1;
 			}
-			if(!(incr_yyin = fopen(args[++i],"r"))) {
-				report(r_error,"could not open input script %s\n",args[i]);
+			if(!(input_file = fopen(args[++i],"r"))) {
+				reports[dgr::error] << "could not open input script " << args[i] << endl;
 				return 1;
 			}
-			//setvbuf(incr_yyin,0,_IONBF,0);
+			//setvbuf(input_file,0,_IONBF,0);
 			break;
 		case 'r': {// reports
 			char last = args[i][strlen(args[i])-1];
 			int o = isdigit(last)?(last-'0'):-1;
 			for(int j = 2; args[i][j] && isalpha(args[i][j]); ++j) {
-				pair<bool,enum reportTypes> val = findSwitchVal(g_reports,g_nreports,args[i][j]);
+				pair<bool,dgr::reportType> val = findSwitchVal(g_reports,g_nreports,args[i][j]);
 				if(!val.first) {
-					report(r_error,"-r: generate report\n"
-								   "   report code '%c' not recognized\n",args[i][j]);
+					reports[dgr::error] << "-r: generate report" << endl << 
+								   "   report code " << args[i][j] << " not recognized" << endl;
 					return 1;
 				}
-				reports[val.second] = o;
+				reportDests[val.second] = o;
 			}
 			break;
 				  }
@@ -326,9 +205,9 @@ int main(int argc, char *args[]) {
 				return 1;
 			} else {
 				int n = args[i][2]-'0';
-				outfile[n] = fopen(args[++i],"w");
-				if(!outfile[n]) {
-					report(r_error,"-o error: couldn't open file %s for writing\n",args[i]+3);
+				outfile[n] = new fstream(args[++i],fstream::out);
+				if(outfile[n]->fail()) {
+					reports[dgr::error] << "-o error: couldn't open file " << args[i] << " for writing" << endl;
 					return 1;
 				}
 			}
@@ -354,8 +233,24 @@ int main(int argc, char *args[]) {
 				g_defaultGraphAttrs[attr] = value;
 			}
 			break;
+		case 'e':
+			if(i==argc-1) {
+				reports[dgr::error] << "-e random number sEed needs integer arg" << endl;
+				return 1;
+			}
+			random_seed = atoi(args[++i]);
+			break;
+		case 'w':
+			if(i==argc-1) {
+				reports[dgr::error] << "-w wait time needs nanosecond arg" << endl;
+				return 1;
+			}
+			if(args[i][2]=='r')
+				g_randomizeWait = true;
+			g_maxWait = atoi(args[++i]);
+			break;
 		case 'x':
-			g_xeptOut = true;
+			g_xeptFatal = true;
 			break;
 		case 'h':
 		case '?':
@@ -377,38 +272,49 @@ int main(int argc, char *args[]) {
 			}
 			//else fallthru
 		default:
-			report(r_error,"command not recognized: %s\n",args[i]);
+			reports[dgr::error] << "command not recognized: " << args[i] << endl;
 			print_version();
 			print_help();
 			return 1;
 		}
 	}
+	if(random_seed<0)
+		random_seed = time(NULL);
+	srand(random_seed);
 	setvbuf(stdin,0,_IONBF,0);
 	setvbuf(stdout,0,_IONBF,0);
 	setvbuf(stderr,0,_IONBF,0);
-	for(map<int,int>::iterator ri = reports.begin(); ri!=reports.end(); ++ri) {
-		FILE *f = ri->second==-1?stderr:outfile[ri->second];
+	for(map<dgr::reportType,int>::iterator ri = reportDests.begin(); ri!=reportDests.end(); ++ri) {
+		ostream *f = ri->second==-1?&cerr:outfile[ri->second];
 		if(!f) {
 			char c = '0' + ri->second;
 			char outfilename[300];
 			sprintf(outfilename,"%s.dd%c",dotfile,c);
-			report(r_cmdline,"outfile %c not specified; opening %s\n",c,outfilename);
-			if(!(outfile[ri->second] = fopen(outfilename,"w"))) {
-				report(r_error,"couldn't open %s for writing\n",outfilename);
+			reports[dgr::cmdline] << "outfile " << c << " not specified; opening " << outfilename << endl;
+			outfile[ri->second] = new fstream(outfilename,fstream::out);
+			if(outfile[ri->second]->fail()) {
+				reports[dgr::error] << "couldn't open " << outfilename << " for writing" << endl;
 				return 1;
 			}
 		}
-		enableReport(ri->first,f);
+		reports.enable(ri->first,f);
 	}
-	if(reportEnabled(r_input)) {
-		DuplicateIn *din = new DuplicateIn(stdin,getReportFile(r_input));
+	if(reports.enabled(dgr::input) || g_maxWait>=0) {
+		DuplicateIn *din = new DuplicateIn(input_file,reports[dgr::input]);
 		incr_yyin = din->getNewInput();
 	}
+	else
+		incr_yyin = input_file;
 	/*
-	if(reportEnabled(r_output)) {
-		DuplicateOut *dout = new DuplicateOut(stdout,getReportFile(r_output));
-		basic_ifstream
-	*/
+	if(reports.enabled(dgr::output)) { // output is being logged; dup to cout
+		typedef boost::iostreams::tee_device<std::ostream,std::ostream> t_dev_t;
+		typedef boost::iostreams::stream<t_dev_t> t_stream_t;
+		t_dev_t *t_dev = new t_dev_t(reports[dgr::output],std::cout);
+		t_stream_t *t_stream = new t_stream_t(*t_dev);
+		reports.enable(dgr::output,t_stream);
+	}
+	else*/
+		reports.enable(dgr::output); // just send to cout
 	if(!g_transform)
 		g_transform = new Transform(Coord(1,1),Coord(1,1));
 	while(1) {
@@ -417,28 +323,30 @@ int main(int argc, char *args[]) {
 			break; // end of stream
 		}
 		catch(Assertion sert) {
-			fprintf(stdout,"message \"(exception) Assertion: %s; %s, %d\"\n",sert.expr,sert.file,sert.line);
-			if(g_xeptOut)
-				throw;
-			if(sert.fatal)
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
+			if(g_xeptFatal||sert.fatal)
 				exit(23);
 		}
 		catch(DGException2 dgx) {
-			fprintf(stdout,"message \"(exception) %s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
-			if(g_xeptOut)
-				throw;
-			if(dgx.fatal)
-				break;
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << endl;
+			if(g_xeptFatal||dgx.fatal)
+				exit(23);
 		}
 		catch(DGException dgx) {
-			fprintf(stdout,"message \"(exception) %s\"\n",dgx.exceptype.c_str());
-			if(g_xeptOut)
-				throw;
-			if(dgx.fatal)
-				break;
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << endl;
+			if(g_xeptFatal||dgx.fatal)
+				exit(23);
+		}
+		catch(...) {
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) unknown exception\"" << endl;
+			exit(23);
 		}
 	}
 	incr_shutdown();
-	fprintf(stdout,"message \"dynagraph closing\"\n");
+	reports[dgr::output] << "message \"dynagraph closing\"" << endl;
 	return 0;
 }

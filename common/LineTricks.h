@@ -91,7 +91,7 @@ struct segsizes : std::vector<double> {
 			if(i)
 				at(i) += at(i-1);
 		}
-		assert(fabs(at(nseg-1)-1.0)<0.00001);
+		dgassert(fabs(at(nseg-1)-1.0)<0.00001);
 	}
 };
 template<typename Pred>
@@ -126,13 +126,13 @@ struct dist_pred {
 	}
 };
 inline std::pair<Coord,Coord> secant(Coord *ps,int n,int degree,const segsizes &sizes,double portion,double len) {
-	assert(portion>=0.0 && portion <=1.0);
+	dgassert(portion>=0.0 && portion <=1.0);
 	int nseg = (n-1)/degree;
 	int seg;
 	for(seg = 0; seg<nseg; ++seg)
 		if((sizes[seg]-portion)>-0.0001)
 			break;
-	assert(seg<nseg);
+	dgassert(seg<nseg);
 	double t = seg?(portion-sizes[seg-1])/(sizes[seg]-sizes[seg-1])
 		:portion/sizes[0];
 	std::pair<Coord,Coord> ret;

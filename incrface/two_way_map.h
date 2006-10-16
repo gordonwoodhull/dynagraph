@@ -32,12 +32,12 @@ struct two_way_map {
     void disconnect(Type a,Type b) {
         tset &Aa = A[a],
             &Bb = B[b];
-        check(Aa.erase(b)==1);
-        check(Bb.erase(a)==1);
+        dgcheck(Aa.erase(b)==1);
+        dgcheck(Bb.erase(a)==1);
         if(Aa.empty())
-            check(A.erase(a)==1);
+            dgcheck(A.erase(a)==1);
         if(Bb.empty())
-            check(B.erase(b)==1);
+            dgcheck(B.erase(b)==1);
     }
     void erase_a(Type a) {
         rename(A,B,a);
@@ -52,19 +52,19 @@ struct two_way_map {
         rename(B,A,b,b2);
     }
     void rename(tmap &M,tmap &N,Type v,Type v2 = Type()) {
-        assert(v2==Type()||M[v2].empty());
+        dgassert(v2==Type()||M[v2].empty());
         tset &S = M[v];
         for(typename tset::iterator in = S.begin(); in!=S.end(); ++in) {
             tset &T = N[*in];
-            check(T.erase(v)==1);
+            dgcheck(T.erase(v)==1);
             if(v2!=Type())
-                check(T.insert(v2).second);
+                dgcheck(T.insert(v2).second);
             if(T.empty())
-                check(N.erase(*in)==1);
+                dgcheck(N.erase(*in)==1);
         }
         if(v2!=Type())
             M[v2] = M[v];
-        check(M.erase(v)==1);
+        dgcheck(M.erase(v)==1);
     }
 };
 

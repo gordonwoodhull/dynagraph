@@ -25,27 +25,31 @@ StrGraph *g_sourceGraph;
 extern FILE *gs_yyin;
 extern int gs_yyparse(); // in gsgram.c
 int main(int argc, char *args[]) {
+	// enable basic dynagraph report streams
+	reports.enable(dgr::error,&cerr);
+	reports.enable(dgr::cmdline);
+	reports.enable(dgr::output);
 	setvbuf(stderr,0,_IONBF,0);
 	setvbuf(stdout,0,_IONBF,0);
 	setvbuf(stdin,0,_IONBF,0);
 	if(argc<2) {
-		fprintf(stderr,"please specify a graph to search!\n");
+		reports[dgr::error] << "please specify a graph to search!" << endl;
 		return -1;
 	}
 	FILE *fSource = fopen(args[1],"r");
 	if(!fSource) {
-		fprintf(stderr,"file %s not found!\n",args[1]);
+		reports[dgr::error] << "file " << args[1] << " not found!" << endl;
 		return -1;
 	}
 	try {
 	    if(!(g_sourceGraph = readStrGraph(fSource))) {
-		    fprintf(stderr,"error parsing %s\n",args[1]);
+		    reports[dgr::error] << "error parsing " << args[1] << endl;
 		    return -1;
 	    }
 	    if(argc>2) {
 		    gs_yyin = fopen(args[2],"r");
 		    if(!gs_yyin) {
-			    fprintf(stderr,"couldn't open script %s\n",args[2]);
+			    reports[dgr::error] << "couldn't open script " << args[2] << endl;
 			    return -1;
 		    }
 	    }
@@ -55,10 +59,10 @@ int main(int argc, char *args[]) {
 			gs_yyparse();
 	}
     catch(DGException xep) {
-        fprintf(stderr,"Dynagraph exception: %s\n",xep.exceptype);
+        reports[dgr::error] << "Dynagraph exception: " << xep.exceptype << endl;
     }
 	catch(...) {
-		fprintf(stderr,"unhandled exception: closing...\n");
+		reports[dgr::error] << "unhandled exception: closing..." << endl;
 	}
 	return 0;
 }
@@ -66,7 +70,7 @@ int main(int argc, char *args[]) {
 /*
 	FILE *fPattern = 0,*fSearch = stdin,*fSource = stdin,*fStart = stdin;
 	if(argc<2) {
-		fprintf(stderr,"graphsearch pattern-file [search-file] [source-file] [startset-file]\n");
+		reports[dgr::error] << "graphsearch pattern-file [search-file] [source-file] [startset-file]" << endl;
 		return -1;
 	}
 	fPattern = fopen(args[1],"r");
@@ -93,17 +97,17 @@ int main(int argc, char *args[]) {
 	search.readStrGraph(patterns,*sSearch);
 	Search::Node *searchFinish = search.dict["finish"];
 	if(!searchFinish) {
-		fprintf(stderr,"search must have a stage named \"finish\"\n");
+		reports[dgr::error] << "search must have a stage named \"finish\"" << endl;
 		return -1;
 	}
 	search.Run(inputs);
-	emitGraph(stdout,&gd<SearchStage>(searchFinish).result);
+	emitGraph(reports[dgr::output],&gd<SearchStage>(searchFinish).result);
 */
 // pattern test only
 /*
 	Pattern::Node *startstate = pattern.dict["start"];
 	if(!start) {
-		fprintf(stderr,"pattern must have a state named \"start\"\n");
+		reports[dgr::error] << "pattern must have a state named \"start\"" << endl;
 		return;
 	}
 	queue<Match> Q;
@@ -112,13 +116,13 @@ int main(int argc, char *args[]) {
 	for(StrGraph::node_iter ni = start->nodes().begin(); ni !=start->nodes().end(); ++ni) {
 		StrGraph::Node *nn = source->dict[gd<Name>(*ni)];
 		if(!nn) {
-			fprintf(stderr,"start set node \"%s\" not found\n",gd<Name>(*ni));
+			reports[dgr::error] << "start set node \"" << gd<Name>(*ni) << "\" not found" << endl;
 			return;
 		}
 		found.insert(nn);
 		Q.push(Match(startstate,nn));
 	}
 	runPattern(Q,followed,&found);
-	emitGraph(stdout,&found);
+	emitGraph(reports[dgr::output],&found);
 
 */

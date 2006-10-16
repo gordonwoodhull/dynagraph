@@ -20,7 +20,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 
-extern bool g_xeptOut;
+extern bool g_xeptFatal;
 
 namespace Dynagraph {
 
@@ -29,11 +29,10 @@ struct DynagraphThread {
 	ChangingGraph<Graph> &world_;
 	ChangeProcessor<Graph> *engine_;
 	boost::thread *thread_;
-	//DGException2 xep_;
-	//bool xepted_;
+	typename ChangeProcessor<Graph>::Function purpose_;
 
-	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine) :
-	  world_(world),engine_(engine) /*,xep_("","",false),xepted_(false)*/ {
+	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine,typename ChangeProcessor<Graph>::Function purpose) :
+	  world_(world),engine_(engine),purpose_(purpose) {
 		thread_ = new boost::thread(boost::bind(&DynagraphThread::go,this));
 	}
 	~DynagraphThread() {
@@ -41,39 +40,38 @@ struct DynagraphThread {
 	}
 	void go() {
 		try {
-			engine_->Process();
+			(engine_->*purpose_)();
 		}
 		catch(Assertion sert) {
-			fprintf(stdout,"message \"(exception) Assertion: %s; %s, %d\"\n",sert.expr,sert.file,sert.line);
-			if(g_xeptOut)
-				throw;
-			if(sert.fatal)
-				exit(23);
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << std::endl;
+			exit(23);
 		}
 		catch(DGException2 dgx) {
-			fprintf(stdout,"message \"(exception) %s: %s\"\n",dgx.exceptype.c_str(),dgx.param.c_str());
-			if(g_xeptOut)
-				throw;
-			if(dgx.fatal)
-				exit(23);
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << std::endl;
+			exit(23);
 		}
 		catch(DGException dgx) {
-			fprintf(stdout,"message \"(exception) %s\"\n",dgx.exceptype.c_str());
-			if(g_xeptOut)
-				throw;
-			if(dgx.fatal)
-				exit(23);
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << std::endl;
+			exit(23);
 		}
 		catch(...) {
-			fprintf(stdout,"message \"(exception) unknown exception\"");
+			LOCK_REPORT(dgr::output);
+			reports[dgr::output] << "message \"(exception) unknown exception\"" << std::endl;
 			exit(23);
 		}
 	}
 	void interrupt() {
-		assert(boost::thread()!=*thread_);
-		gd<Interruptable>(&world_.whole_).interrupt = true;
+		dgassert(boost::thread()!=*thread_);
+		dgassert(!gd<Interruptible>(&world_.whole_).interrupt);
+		gd<Interruptible>(&world_.whole_).interrupt = true;
+		wait();
+		gd<Interruptible>(&world_.whole_).interrupt = false;
+	}
+	void wait() {
 		thread_->join();
-		gd<Interruptable>(&world_.whole_).interrupt = false;
 	}
 };
 

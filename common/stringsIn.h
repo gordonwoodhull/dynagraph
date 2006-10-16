@@ -24,17 +24,15 @@
 
 namespace Dynagraph {
 
-struct NonSizeableShape {};
-struct UnknownShape {};
-
 void clearRemoved(const StrAttrs &current,const StrAttrs &apply,StrAttrs &ret);
 void ensureAttr(const StrAttrs &att,StrAttrs &A, DString name);
 bool shapeChanged(const StrAttrs &oldAttrs,const StrAttrs &newAttrs);
 PolyDef readPolyDef(Transform *trans,StrAttrs &attrs);
-	
+
 template<typename Layout>
 Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &attrs,bool clearOld) {
 	using std::istringstream;
+	Update ret;
 	StrAttrs allChanges = attrs;
 	if(clearOld)
 		clearRemoved(gd<StrAttrs>(l),attrs,allChanges);
@@ -49,18 +47,26 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			if(value.empty())
                 value = useDotDefaults?"1,1":"0.1,0.1";
 			istringstream s(value);
-			s >> gd<GraphGeom>(l).resolution;
-
+			Coord res;
+			s >> res;
+			if(assign(gd<GraphGeom>(l).resolution,res))
+				ret |= DG_UPD_RESOLUTION;
 		}
 		else if(name=="separation") {
 			if(value.empty())
                 value = useDotDefaults?"24,24":"0.5,0.5";
 			istringstream s(value);
-			s >> gd<GraphGeom>(l).separation;
+			Coord sep;
+			s >> sep;
+			if(assign(gd<GraphGeom>(l).separation,sep))
+				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="edgeseparation") {
 			istringstream s(value);
-			s >> gd<GraphGeom>(l).edgeSeparation;
+			double esep;
+			s >> esep;
+			if(assign(gd<GraphGeom>(l).edgeSeparation,esep))
+				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="defaultsize") {
 			if(value.empty())
@@ -74,8 +80,10 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			s >> gd<GraphGeom>(l).ticks;
 		}
-		else if(name=="intermediate") 
+		else if(name=="intermediate")
 			gd<GraphGeom>(l).reportIntermediate = value=="true";
+		else if(name=="emphasizeflow")
+			gd<GraphGeom>(l).s_edges = value=="true";
 		else if(name=="splinelevel") {
 			if(value=="vnode")
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_VNODE;
@@ -86,9 +94,22 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			else if(value=="spline")
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SPLINE;
 		}
+		else if(name=="rankdir") {
+			Orientation ori;
+			if(value=="TB")
+				ori = DG_ORIENT_DOWN;
+			else if(value=="LR")
+				ori = DG_ORIENT_RIGHT;
+			else if(value=="BT")
+				ori = DG_ORIENT_UP;
+			else if(value=="RL")
+				ori = DG_ORIENT_LEFT;
+			if(assign(gd<Translation>(l).orientation,ori))
+				ret |= DG_UPD_TRANSLATION;
+		}
 		SetAndMark(l,ai->first,value);
 	}
-	return 0;
+	return ret;
 }
 template<typename Layout>
 Update assureAttrs(Transform *trans,typename Layout::Node *n) {
@@ -118,7 +139,7 @@ Update assureAttrs(Transform *trans,typename Layout::Node *n) {
 	}
 	*/
 	// new strategy: allow zero size if shape=none or plaintext
-	// otherwise use resolution as a minimum 
+	// otherwise use resolution as a minimum
 	if(shape!="none" && shape!="plaintext") {
 		Coord mini = trans->outSize(gd<GraphGeom>(n->g).resolution);
 		size.x = std::max(size.x,mini.x);
@@ -167,7 +188,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 			ng.flow = atof(ai->second.c_str());
 		else if(ai->first=="suppressed") {
 			if(assign(ng.suppressed,ai->second=="true"))
-				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE;
+				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE|DG_UPD_SUPPRESSION;
 		}
 		else if(ai->first.compare(0,9,"labelsize")==0) {
 			int i=ds2int(ai->first.substr(9));
@@ -251,7 +272,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
                 eg.pos.Clear();
             }
             else {
-			    assert(s.length());
+			    dgassert(s.length());
 			    DString::size_type begin = 0,end=s.size();
                 // grr i know i'll get this wrong in some obscure way...
                 // just sloppily trying to throw away the [e,x,y ][s,x,y ]
@@ -259,7 +280,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 					if(s[begin]=='e'||s[begin]=='s') {
 						++begin;
                         for(int i = 0; i<2; ++i) {
-                            assert(s[begin]==',');
+                            dgassert(s[begin]==',');
 							++begin;
 							// much too expansive: -6.2.-9.4 would be one number...
                             while(s[begin]=='-'||isdigit(s[begin])||s[begin]=='.')
@@ -289,8 +310,10 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
 			else
 				skip = true;
 		}
-		else if(ai->first=="backward") 
+		else if(ai->first=="backward")
 			eg.backward = ai->second=="true";
+		else if(ai->first=="emphasizeflow")
+			eg.s_edge = ai->second=="true";
 		if(!skip)
 			SetAndMark(e,ai->first,ai->second);
 	}

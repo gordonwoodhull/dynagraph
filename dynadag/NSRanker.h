@@ -36,7 +36,7 @@ private:
 	typedef FlexiRankXlator<Layout> RankXlator;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
 	void removePathConstraints(typename Layout::Edge *e);
-	void removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI);
+	void doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI);
 	void makeStrongConstraint(typename Layout::Edge *e);
 	void makeWeakConstraint(typename Layout::Edge *e);
 	void fixNode(typename Layout::Node *n,bool fix);
@@ -72,7 +72,7 @@ void NSRanker<Layout>::removePathConstraints(typename Layout::Edge *e) {
 	gd<EdgeGeom>(e).constraint = false;
 }
 template<typename Layout>
-void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI) {
+void NSRanker<Layout>::doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI) {
 	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) {
 		removePathConstraints(*ei);
 		typename Layout::Edge *e = *ei;
@@ -85,11 +85,18 @@ void NSRanker<Layout>::removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout 
 }
 template<typename Layout>
 void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
-	assert(!gd<NSRankerEdge>(e).strong);
+	dgassert(!gd<NSRankerEdge>(e).strong);
 	gd<EdgeGeom>(e).constraint = true;
 
-	DDCGraph::Node *tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC),
-		*hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	DDCGraph::Node *tvar,*hvar;
+	if(gd<EdgeGeom>(e).backward) {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->head).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->tail).topC);
+	}
+	else {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	}
 
 	DDCGraph::Edge *constr = cg_.create_edge(tvar,hvar).first;
 	gd<NSRankerEdge>(e).strong = constr;
@@ -100,11 +107,18 @@ void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
 }
 template<typename Layout>
 void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
-	assert(!gd<NSRankerEdge>(e).weak);
+	dgassert(!gd<NSRankerEdge>(e).weak);
 	gd<EdgeGeom>(e).constraint = false;
 
-	DDCGraph::Node *tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC),
-		*hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	DDCGraph::Node *tvar,*hvar;
+	if(gd<EdgeGeom>(e).backward) {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->head).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->tail).topC);
+	}
+	else {
+		tvar = cg_.GetVar(gd<NSRankerNode>(e->tail).bottomC);
+		hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
+	}
 	gd<NSRankerEdge>(e).weak = cg_.create_node();
 	gd<ConstraintType>(gd<NSRankerEdge>(e).weak).why = ConstraintType::rankWeak;
 	NSEdgePair ep(gd<NSRankerEdge>(e).weak,tvar,hvar);
@@ -136,7 +150,8 @@ void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
 		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
 	DDCGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
 	 // one-node chains cause trouble; make sure there's one edge
-	DDNS::NSd(heightC).minlen = std::max(1,RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height())));
+	//std::max(1,
+	DDNS::NSd(heightC).minlen = RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height()));
 	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
 template<typename Layout>
@@ -190,28 +205,36 @@ void NSRanker<Layout>::stabilizePositionedNodes(ChangeQueue<Layout> &changeQ) {
 }
 /* is there a path from head(e) to tail(e)? next two fns. */
 template<typename Layout>
-int dfs(typename Layout::Node *src, typename Layout::Node *dest, std::vector<typename Layout::Node*> &hit) {
+int dfs(typename Layout::Node *src, typename Layout::Node *dest) {
     if(src == dest) {
 		return true;
 	}
     if(gd<NSRankerNode>(src).hit)
 		return false;
 	gd<NSRankerNode>(src).hit = true;
-	hit.push_back(src);
     for(typename Layout::outedge_iter ei = src->outs().begin(); ei!=src->outs().end(); ++ei) {
+		if(gd<EdgeGeom>(*ei).backward)
+			continue;
 		if(!gd<NSRankerEdge>(*ei).strong)
 			continue;
-        if(dfs<Layout>((*ei)->head,dest,hit))
+        if(dfs<Layout>((*ei)->head,dest))
+			return true;
+    }
+    for(typename Layout::inedge_iter ei = src->ins().begin(); ei!=src->ins().end(); ++ei) {
+		if(!gd<EdgeGeom>(*ei).backward)
+			continue;
+		if(!gd<NSRankerEdge>(*ei).strong)
+			continue;
+        if(dfs<Layout>((*ei)->tail,dest))
 			return true;
     }
     return false;
 }
 template<typename Layout>
 int pathExists(typename Layout::Node *src, typename Layout::Node *dest) {
-    std::vector<typename Layout::Node*> hit;
-    bool result = dfs<Layout>(src,dest,hit);
-	for(typename std::vector<typename Layout::Node*>::iterator i=hit.begin(); i!=hit.end(); ++i)
-		gd<NSRankerNode>(*i).hit = false;
+	for(typename Layout::node_iter ni = src->g->nodes().begin(); ni!=src->g->nodes().end(); ++ni)
+		gd<NSRankerNode>(*ni).hit = false;
+    bool result = dfs<Layout>(src,dest);
 	return result;
 }
 template<typename Layout>
@@ -220,9 +243,11 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 		typename Layout::Edge *e = *ei;
 		if(e->head == e->tail)
 			continue;
+		typename Layout::Node *curtail = this->world_->current_.find(e->tail),
+			*curhead = this->world_->current_.find(e->head);
+		dgassert(curtail&&curhead); // if this fails, probably lack of UpdateCurrentProcessor
 		bool weak = false;
 		if(typename Layout::Edge *e1 = this->world_->current_.find_edge(e->head,e->tail)) {
-			//std::cerr << "found 2-cycle e " << e << '"' << gd<Name>(e) << "\" e1 " << e1 << '"' << gd<Name>(e1) << '"' << std::endl;
 			// mark & ignore second leg of 2-cycle for all modeling purposes
 			// DynaDAGServer will draw it by reversing the other
 			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
@@ -231,7 +256,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 				continue;
 			}
 		}
-		else if(pathExists<Layout>(this->world_->current_.find(e->head),this->world_->current_.find(e->tail)))
+		else if(pathExists<Layout>(curhead,curtail))
 			weak = true;
 		if(gd<NSRankerNode>(e->tail).rankFixed || gd<NSRankerNode>(e->head).rankFixed)
 			weak = true;
@@ -239,9 +264,9 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 			makeWeakConstraint(e);
 		else
 			makeStrongConstraint(e);
-		if(this->world_->current_.find(e->head)->degree()==1)
+		if(curhead->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->head).topC);
-		if(this->world_->current_.find(e->tail)->degree()==1)
+		if(curtail->degree()==1)
 			cg_.Unstabilize(gd<NSRankerNode>(e->tail).topC);
 	}
 }
@@ -255,7 +280,7 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 			continue;
 		int newTopRank = DDNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
 			newBottomRank = DDNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
-		assert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
+		dgassert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
 		if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 			gd<NSRankerNode>(n).newTopRank = newTopRank;
 			gd<NSRankerNode>(n).newBottomRank = newBottomRank;
@@ -275,7 +300,7 @@ void NSRanker<Layout>::Process() {
 
 	moveOldNodes(Q);
 	Layout extraI(Q.whole);
-	removeOldConstraints(Q,extraI);
+	doDeletions(Q,extraI);
 	insertNewNodes(Q);
 	insertNewEdges(Q.insE);
 	insertNewEdges(extraI);

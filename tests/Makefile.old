@@ -1,18 +1,29 @@
 .SUFFIXES  : .incr .incrout
 
 DYNAGRAPH=../dynagraph
-SLOW=cat
-INCRS=*.incr
+DY_OPTS=-x
+
+SUF_ROTAT=rotat
+AT_ROTAT=-a rankdir=LR
+SUF_INTER=imed
+AT_INTER=-a intermediate=true
+SUF_EFLOW=eflow
+AT_EFLOW=-a emphasizeflow=true
 
 run: *.incr
+	if grep exception *.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
 
 *.incr: always
-	$(SLOW) $@ | $(DYNAGRAPH) > $*.incrout
-	$(SLOW) $@ | $(DYNAGRAPH) -a superengines=shapegen > $*.super.incrout
-	$(SLOW) $@ | $(DYNAGRAPH) -a intermediate=true > $*.imed.incrout
-	$(SLOW) $@ | $(DYNAGRAPH) -a superengines=shapegen -a intermediate=true > $*.super.imed.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $*.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) < $@ > $*.$(SUF_ROTAT).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) < $@ > $*.$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).incrout
 
-always : 
+always: 
 
 clean:
 	rm -f *.incrout

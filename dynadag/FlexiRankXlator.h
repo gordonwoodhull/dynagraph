@@ -14,16 +14,41 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
-#ifndef Interruptable_h
-#define Interruptable_h
+#ifndef FlexiRankXlator_h
+#define FlexiRankXlator_h
 
 namespace Dynagraph {
+namespace DynaDAG {
 
-struct Interruptable {
-	bool interrupt;
-	Interruptable() : interrupt(false) {}
+template<typename Layout>
+struct FlexiRankXlator {
+	typedef int index;
+	static bool Above(Layout *l,index a,index b) {
+		return a<b;
+	}
+	static bool Below(Layout *l,index a,index b) {
+		return a>b;
+	}
+	static index CoordToRank(Layout *l,double y) {
+#ifndef DOWN_GREATER
+		return -ROUND(y/gd<GraphGeom>(l).resolution.y);
+#else
+		return ROUND(y/gd<GraphGeom>(l).resolution.y);
+#endif
+	}
+	static double RankToCoord(Layout *l,index r) {
+#ifndef DOWN_GREATER
+		return -r*gd<GraphGeom>(l).resolution.y;
+#else
+		return r*gd<GraphGeom>(l).resolution.y;
+#endif
+	}
+	static index HeightToDRank(Layout *l,double dy) {
+		return ROUND(dy/gd<GraphGeom>(l).resolution.y);
+	}
 };
 
+} // namespace DynaDAG
 } // namespace Dynagraph
 
-#endif // Interruptable_h
+#endif // FlexiRankXlator_h

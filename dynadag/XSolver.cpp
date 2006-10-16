@@ -79,7 +79,7 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 	}
 
 	DDCGraph::Edge *ce = cg.create_edge(left_var,var).first;
-	int scaled_len = ROUND(xScale * (lnei_ext + lnei_sep + left_sep + left_ext));
+	int scaled_len = ROUND((lnei_ext + lnei_sep + left_sep + left_ext)/gd<GraphGeom>(config.current).resolution.x);
 	DDNS::NSd(ce).minlen = scaled_len;
 	DDNS::NSd(ce).weight = COMPACTION_STRENGTH;
 	/*
@@ -92,7 +92,7 @@ void XSolver::fixSeparation(DDModel::Node *mn) {
 		rnei_ext = config.LeftExtent(right);
 		rnei_sep = config.LeftSep(right);
 		ce = cg.create_edge(var,right_var).first;
-		scaled_len = ROUND(xScale * (right_ext + right_sep + rnei_sep + rnei_ext));
+		scaled_len = ROUND((right_ext + right_sep + rnei_sep + rnei_ext)/gd<GraphGeom>(config.current).resolution.x);
 		DDNS::NSd(ce).minlen = scaled_len;
 		DDNS::NSd(ce).weight = COMPACTION_STRENGTH;
 		/*
@@ -126,7 +126,7 @@ void XSolver::doEdgesep(DynaDAGLayout *subLayout) {
 					*vvar = gd<DDNode>(v).getXcon().n;
 				DDCGraph::Edge *ce = cg.create_edge(uvar,vvar).first;
 				double sep = config.RightExtent(u) + config.LeftExtent(v) + 3.0 * gd<GraphGeom>(config.whole).separation.x;
-				DDNS::NSd(ce).minlen = ROUND(xScale * sep);
+				DDNS::NSd(ce).minlen = ROUND(sep/gd<GraphGeom>(config.current).resolution.x);
 			}
 		}
 		else {} /* self */
@@ -168,7 +168,7 @@ void XSolver::doEdgeCost(DynaDAGLayout *subLayout) {
 // restore around changed nodes
 void XSolver::fixLostEdges(DynaDAGLayout *subLayout) {
 	for(DynaDAGLayout::node_iter ni = subLayout->nodes().begin(); ni!=subLayout->nodes().end(); ++ni) {
-	  report(r_xsolver,"fixing multinode %p\n",DDp(*ni));
+	  reports[dgr::xsolver] << "fixing multinode " << DDp(*ni) << endl;
 		DDModel::Node *top = DDp(*ni)->top(),
 			*bottom = DDp(*ni)->bottom();
 		for(DDModel::inedge_iter ini = top->ins().begin(); ini!=top->ins().end(); ++ini)
@@ -189,8 +189,8 @@ void XSolver::restoreEdgeCost(DDChangeQueue &changeQ) {
 void XSolver::stabilizeNodes(DDChangeQueue &changeQ) {
 #ifdef REDO_ALL
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
-        if(gd<NodeGeom>(*ni).pos.valid)  // DDp(*ni)->coordFixed) { assert(gd<NodeGeom>(*ni).pos.valid);
-			cg.Stabilize(gd<DDNode>(DDp(*ni)->top()).getXcon(),ROUND(xScale * gd<NodeGeom>(*ni).pos.x),STABILITY_FACTOR_X);
+        if(gd<NodeGeom>(*ni).pos.valid)  // DDp(*ni)->coordFixed) { dgassert(gd<NodeGeom>(*ni).pos.valid);
+			cg.Stabilize(gd<DDNode>(DDp(*ni)->top()).getXcon(),ROUND(gd<NodeGeom>(*ni).pos.x/gd<GraphGeom>(config.current).resolution.x),STABILITY_FACTOR_X);
     /*
 	DynaDAGLayout *modedges[2] = {&changeQ.insE,&changeQ.modE};
     // it's not necessary to unstabilize nodes that are connected to edges because the cost
@@ -210,7 +210,7 @@ void XSolver::stabilizeNodes(DDChangeQueue &changeQ) {
 	int i;
 	for(i = 0; i < 2; i++)
 		for(DynaDAGLayout::node_iter ni = modnodes[i]->nodes().begin(); ni!=modnodes[i]->nodes().end(); ++ni)
-            if(gd<NodeGeom>(*ni).pos.valid) { // DDp(*ni)->coordFixed) { assert(gd<NodeGeom>(*ni).pos.valid);
+            if(gd<NodeGeom>(*ni).pos.valid) { // DDp(*ni)->coordFixed) { dgassert(gd<NodeGeom>(*ni).pos.valid);
 				double x = gd<NodeGeom>(*ni).pos.x;
 				int ix = ROUND(xScale * x);
 				cg.Stabilize(gd<DDNode>(DDp(*ni)->top()).getXcon(),ix,STABILITY_FACTOR_X);
@@ -227,7 +227,7 @@ void XSolver::readoutCoords() {
 	int anchor_rank = DDNS::NSd(cg.anchor).rank;
 	for(DDModel::node_iter ni = config.model.nodes().begin(); ni!=config.model.nodes().end(); ++ni)
 		if(DDCGraph::Node *cn = gd<DDNode>(*ni).getXcon().n)
-			gd<DDNode>(*ni).cur.x = (DDNS::NSd(cn).rank - anchor_rank) / xScale;
+			gd<DDNode>(*ni).cur.x = (DDNS::NSd(cn).rank - anchor_rank)*gd<GraphGeom>(config.current).resolution.x;
 }
 // DynaDAG callin
 void XSolver::Place(DDChangeQueue &changeQ) {
@@ -253,7 +253,7 @@ void XSolver::Place(DDChangeQueue &changeQ) {
 	restoreNodesep(changeQ);
 	restoreEdgeCost(changeQ);
 #endif
-	//timer.LoopPoint(r_timing,"XConstraints");
+	//timer.LoopPoint(dgr::timing,"XConstraints");
 	config.model.dirty().clear();
 	stabilizeNodes(changeQ);
 	// if(cg.inconsistent || 1)
@@ -265,21 +265,21 @@ void XSolver::Place(DDChangeQueue &changeQ) {
 		}
 		catch(DDNS::CycleException ce) {
 			for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri) {
-				report(r_error,"%d> ",config.ranking.IndexOfIter(ri));
+				reports[dgr::error] << config.ranking.IndexOfIter(ri) << "> ";
 				for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni) {
 					if(gd<DDNode>(*ni).amNodePart()) {
 						bool found = gd<DDNode>(*ni).multi->xcon.n==ce.involving;
-						report(r_error,"n%p%c",thing(*ni),found?'*':' ');
+						reports[dgr::error] << 'n' << thing(*ni) << (found?'*':' ');
 					}
 					else
-						report(r_error,"e%p ",thing(*ni));
+						reports[dgr::error] << 'e' << thing(*ni) << ' ';
 				}
-				report(r_error,"\n");
+				reports[dgr::error] << endl;
 			}
 			throw BadXConstraints();
 		}
 		catch(DDNS::DisconnectedException) {
-			report(r_error,"internal error: disconnected constraint graph!\n");
+			reports[dgr::error] << "internal error: disconnected constraint graph!" << endl;
 			throw BadXConstraints();
 		}
 		readoutCoords();

@@ -75,7 +75,6 @@ StrGraph *ag2str(Agraph_t *g) {
 		}
 		StrGraph::Node *nn = gg->create_node(name);
 		remem[n] = nn;
-		report(-1,"%s has:\n",agnameof(n));
 		for(Agsym_t *sym = agnxtattr(g,AGNODE,0); sym; sym = agnxtattr(g,AGNODE,sym)) {
 			char *val = agxget(n,sym);
 			if(val&&*val)
@@ -130,9 +129,9 @@ Agraph_t *str2ag(StrGraph *gg) {
   for(ni = gg->nodes().begin(); ni!=gg->nodes().end(); ++ni) {
     StrGraph::Node *nn = *ni;
     Agnode_t *n = agnode(g,kc(gd<Name>(nn).c_str()),true);
-    report(-1,"%s has\n",gd<Name>(nn).c_str());
+	reports[dgr::none] << gd<Name>(nn).c_str() << " has" << endl;
     for(StrAttrs::iterator mi = gd<StrAttrs>(nn).begin(); mi!=gd<StrAttrs>(nn).end(); ++mi) {
-      report(-1,"\t%s = %s\n",mi->first.c_str(),mi->second.c_str());
+		reports[dgr::none] << "\t" << mi->first.c_str() << " = " << mi->second.c_str() << endl;
       SetAttr(n,AGNODE,mi->first.c_str(),mi->second.c_str());
     }
   }

@@ -41,7 +41,7 @@ inline std::istream & operator >>(std::istream &is, Coord &read) {
 	char c;
 	is >> c;
 	if(c!=',') {
-		fprintf(stderr,">>Coord: %c %d\n",c,c);
+		reports[dgr::error] << ">>Coord: " << c << ' ' << (int)c << std::endl;
 		GeomParseError xep;
 		xep.val.assign(1,c);
 		throw xep;
@@ -69,7 +69,7 @@ inline std::istream & operator >>(std::istream &is, Rect &read) {
 	char c;
 	is >> c;
 	if(c!=',') {
-		fprintf(stderr,">>Coord: %c %d\n",c,c);
+		reports[dgr::error] << ">>Coord: " << c << ' ' << (int)c << std::endl;
 		GeomParseError xep;
 		xep.val.assign(1,c);
 		throw xep;

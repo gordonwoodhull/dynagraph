@@ -206,7 +206,7 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 			continue;
 		int newTopRank = DDNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
 			newBottomRank = DDNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
-		assert(!rankXlate_.Below(newTopRank,newBottomRank));
+		dgassert(!rankXlate_.Below(newTopRank,newBottomRank));
 		if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 			gd<NSRankerNode>(n).newTopRank = newTopRank;
 			gd<NSRankerNode>(n).newBottomRank = newBottomRank;

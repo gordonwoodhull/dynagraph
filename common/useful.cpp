@@ -23,58 +23,30 @@
 
 #include "Geometry.h"
 #include <vector>
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/null.hpp>
 
 using namespace std;
 
 namespace Dynagraph {
 
-std::vector<FILE*> g_files;
-//std::vector<ostream*> g_streams;
-bool g_shush = false;
-static bool gotIt(int rt) {
-	return ! (rt<0 || unsigned(rt)>=g_files.size() || !g_files[rt]);
-}
-void enableReport(int rt,FILE *f) {
-	if(unsigned(rt)>=g_files.size())
-		g_files.resize(rt+1,0);
-	g_files[rt] = f;
-}
-bool reportEnabled(int rt) {
-	return !g_shush && gotIt(rt);
-}
-FILE *getReportFile(int rt) {
-	return g_files[rt];
-}
-/*
-ostream &getReportStream(int rt) {
-	if(FILE *f = g_files[rt]) {
+dgr reports;
 
-}
-*/
-void vreport(int rt, char *msg,va_list va) {
-	if(!gotIt(rt))
-		return;
-#ifdef REPORT_WIN32DEBUG
-	char buf[1024];
-	vsprintf(buf,msg,va);
-	_RPT0(_CRT_WARN,buf);
-#else
-	FILE *f = g_files[rt];
-	vfprintf(f,msg,va);
-#endif
-}
-void report(int rt, char *msg,...) {
-	va_list va;
-	va_start(va,msg);
-	vreport(rt,msg,va);
-}
-void shush(bool whether) {
-	g_shush = whether;
+std::ostream &dgr::null_stream() {
+	typedef boost::iostreams::basic_null_sink<char> null_sink_t;
+	typedef boost::iostreams::stream<null_sink_t> null_stream_t;
+	static null_sink_t *s_absorb=0;
+	static null_stream_t *s_null_output_stream=0;
+	if(!s_null_output_stream) {
+		s_absorb = new null_sink_t;
+		s_null_output_stream = new null_stream_t(*s_absorb);
+	}
+	return *s_null_output_stream;
 }
 LoopMinder loops;
-void LoopMinder::Start(int rt) {
-	if(reportEnabled(rt)) {
-		FieldSet &f = m_fieldSets[g_files[rt]];
+void LoopMinder::Start(dgr::reportType rt) {
+	if(reports.enabled(rt)) {
+		FieldSet &f = getFieldSet(rt);
 		if(f.state==FieldSet::loop)
 			return; // loop already started
 		if(f.state==FieldSet::start) {
@@ -93,37 +65,37 @@ void LoopMinder::doField(FieldSet &f,char *colname,double val) {
 	else {
 		int i = f.data.size();
 		string &s = f.names[i];
-		assert(s==colname);
+		dgassert(s==colname);
 	}
 #endif
 	f.data.push_back(val);
 }
-void LoopMinder::Field(int rt,char *colname,double val) {
+void LoopMinder::Field(dgr::reportType rt,char *colname,double val) {
 	if(rt==-1)
 		for(FieldSets::iterator fi = m_fieldSets.begin(); fi!=m_fieldSets.end(); ++fi)
 			doField(fi->second,colname,val);
-	else if(reportEnabled(rt))
-		doField(m_fieldSets[g_files[rt]],colname,val);
+	else if(reports.enabled(rt))
+		doField(getFieldSet(rt),colname,val);
 }
-void LoopMinder::Finish(int rt) {
-	if(reportEnabled(rt)) {
-		FieldSet &f = m_fieldSets[g_files[rt]];
+void LoopMinder::Finish(dgr::reportType rt) {
+	if(reports.enabled(rt)) {
+		FieldSet &f = getFieldSet(rt);
 		if(f.state==FieldSet::done)
 			return;
 		if(f.state==FieldSet::first) {
 			vector<string>::iterator si;
 			for(si = f.names.begin(); si!=f.names.end(); ++si)
 				if(si!=f.names.end()-1)
-					report(rt,"\"%s\"%c",si->c_str(),sep);
+					reports[rt] << '"' << si->c_str() << '"' << sep;
 				else
-					report(rt,"\"%s\"\n",si->c_str());
+					reports[rt] << '"' << si->c_str() << '"';
 		}
 		vector<double>::iterator di;
 		for(di = f.data.begin(); di!=f.data.end(); ++di)
 			if(di!=f.data.end()-1)
-				report(rt,"%.4f%c",*di,sep);
+				reports[rt] << *di << sep;
 			else
-				report(rt,"%.4f\n",*di);
+				reports[rt] << *di;
 		f.state = FieldSet::done;
 	}
 }

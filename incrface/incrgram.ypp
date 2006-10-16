@@ -5,7 +5,7 @@
 
 %token <i> T_graph T_node T_edge
 %token <i> T_open T_close T_insert T_delete T_modify 
-%token <i> T_lock T_unlock T_segue T_message T_request T_fulfil
+%token <i> T_pulse T_lock T_unlock T_segue T_message T_request T_fulfil
 %token <str> T_id
 %token <i> T_edgeop T_subgraph
 %type <str> graphid
@@ -27,6 +27,7 @@ commands	:	commands command '\n'
 
 command		:
 			open_graph | close_graph | mod_graph
+			| pulse_graph
 			| lock_graph | unlock_graph
 			| segue
 			| ins_node | ins_edge
@@ -49,6 +50,9 @@ close_graph	:	T_close T_graph graphid		{Dynagraph::incr_close_graph($3);}
 			;
 
 mod_graph	:	T_modify T_graph graphid attrlist {Dynagraph::incr_mod_graph($3);}
+			;
+
+pulse_graph	:	T_pulse T_graph graphid attrlist {Dynagraph::incr_pulse($3);}
 			;
 
 lock_graph : T_lock T_graph graphid {Dynagraph::incr_lock($3);}

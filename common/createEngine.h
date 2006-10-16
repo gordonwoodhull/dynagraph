@@ -18,8 +18,12 @@
 #define createEngine_h
 
 #include "ChangeProcessor.h"
+#include "EnginePair.h"
 #include "common/FindChangeRect.h"
 #include "common/breakList.h"
+
+// this system of engine creation is deprecated in favor of the Configurator model
+// keeping these files intact in case anyone is using createEngine (LMK!)
 
 namespace Dynagraph {
 
@@ -61,18 +65,16 @@ EnginePair<Graph> createEngine(DString engines,ChangingGraph<Graph> *world) {
     FCRBefore<Graph> *fcrbefore = new FCRBefore<Graph>(fcrdata);
     FCRAfter<Graph> *fcrafter = new FCRAfter<Graph>(fcrdata);
 	LinkedChangeProcessor<Graph> *first,*now,*last;
-	first = last = fcrbefore;
-	last->next_ = now = new UpdateCurrentProcessor<Graph>(world);
-	last = now;
+	first = last = now = fcrbefore;
     std::vector<DString> engs;
     breakList(engines,engs);
     for(std::vector<DString>::iterator ei = engs.begin(); ei!=engs.end(); ++ei) {
 		typename EngineCreator<Graph>::create_fn crea = creators<Graph>::getMap()[*ei];
 		if(!crea) {
 			/*
-			std::cout << the_creators.size() << " creators:" << std::endl;
+			reports[dgr::error] << the_creators.size() << " creators:" << std::endl;
 			for(typename creators<Graph>::iterator ci = the_creators.begin(); ci!=the_creators.end(); ++ci)
-				std::cout << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
+				reports[dgr::error] << reinterpret_cast<int>(ci->first.c_str()) << " " << ci->first << " -> " << ci->second << std::endl;
 			*/
 			delete first;
 			throw DGException2("engine name not known or not appropriate for graph type",*ei);

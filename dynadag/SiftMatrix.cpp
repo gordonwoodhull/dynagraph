@@ -34,8 +34,8 @@ void SiftMatrix::recompute() {
 			for(unsigned o2 = 0; o2<wid; ++o2) {
 				CrossCount cr = make_pair(weigh(uvcross(rank->order[o],rank->order[o2],true,false)),
 					weigh(uvcross(rank->order[o],rank->order[o2],false,true)));
-				assert(cr.first>=0);
-				assert(cr.second>=0);
+				dgassert(cr.first>=0);
+				dgassert(cr.second>=0);
 				l[o][o2] = cr;
 			}
 		}
@@ -52,7 +52,7 @@ unsigned SiftMatrix::total() {
 		for(NodeV::iterator ni = r->order.begin(); ni<end; ++ni)
 			for(NodeV::iterator ni2 = ni+1;ni2!=r->order.end(); ++ni2) {
 				unsigned c = getCrossings(*ni,*ni2,false);
-				assert(c>=0);
+				dgassert(c>=0);
 				ret += c;
 			}
 	}
@@ -90,7 +90,7 @@ void SiftMatrix::updateOuts(DDModel::Node *v,DDModel::Node *x) {
 				continue;
 			Crossings c(*uxi,*uvi);
 			unsigned cost = weigh(c);
-			assert(cost>=0);
+			dgassert(cost>=0);
 			if(toLeft) {
 			  setCrossings(uv,ux,false,getCrossings(uv,ux,false) -cost);
 			  setCrossings(ux,uv,false,getCrossings(ux,uv,false)+cost);
@@ -111,7 +111,7 @@ void SiftMatrix::updateIns(DDModel::Node *v,DDModel::Node *x) {
 			if(gd<DDNode>(ux).order==gd<DDNode>(uv).order)
 				continue;
 			unsigned cost = weigh(Crossings(*uxi,*uvi));
-			assert(cost>=0);
+			dgassert(cost>=0);
 			if(toLeft) {
 			  setCrossings(uv,ux,true,getCrossings(uv,ux,true) -cost);
 			  setCrossings(ux,uv,true,getCrossings(ux,uv,true)+cost);
@@ -130,7 +130,7 @@ void SiftMatrix::update(DDModel::Node *v,DDModel::Node *x) {
 // node v will be moved before node w
 void SiftMatrix::move(DDModel::Node *v, DDModel::Node *w) {
 	int r = gd<DDNode>(v).rank;
-	assert(!w||r==gd<DDNode>(w).rank);
+	dgassert(!w||r==gd<DDNode>(w).rank);
 	Rank *rank = config.ranking.GetRank(r);
 	unsigned size = rank->order.size(),
 		vo = gd<DDNode>(v).order,
@@ -188,8 +188,8 @@ void SiftMatrix::checkWithConfig() {
 			for(unsigned o2 = 0; o2<l.size(); ++o2) {
 				DDModel::Node *u = config.ranking.GetRank(li->first)->order[o],
 					*v = config.ranking.GetRank(li->first)->order[o2];
-				assert(getCrossings(u,v,false)==weigh(uvcross(u,v,true,false)));
-				assert(getCrossings(u,v,true)==weigh(uvcross(u,v,false,true)));
+				dgassert(getCrossings(u,v,false)==weigh(uvcross(u,v,true,false)));
+				dgassert(getCrossings(u,v,true)==weigh(uvcross(u,v,false,true)));
 			}
 	}
 }

@@ -32,16 +32,16 @@ bool Config::IsSuppressed(DDModel::Node *n) {
 	if(gd<DDNode>(n).amNodePart())
 		return gd<NodeGeom>(gd<DDNode>(n).multi->layoutN).suppressed;
 	else {
-		DDPath *path = gd<DDEdge>(*n->outs().begin()).path;
-		switch(path->suppression) {
-		case DDPath::suppressed:
+		DynaDAGLayout::Edge *e = gd<DDEdge>(*n->outs().begin()).path->layoutE;
+		switch(gd<Suppression>(e).suppression) {
+		case Suppression::suppressed:
 			return true;
-		case DDPath::tailSuppressed:
-		case DDPath::headSuppressed:
-			return gd<DDNode>(n).rank!=path->suppressRank // the suppressRank is itself never suppressed!
-				&& (path->suppression==DDPath::headSuppressed)
-					^ (path->direction==DDPath::reversed)
-					^ (gd<DDNode>(n).rank<path->suppressRank);
+		case Suppression::tailSuppressed:
+		case Suppression::headSuppressed:
+			return gd<DDNode>(n).rank!=gd<Suppression>(e).suppressRank // the suppressRank is itself never suppressed!
+				&& (gd<Suppression>(e).suppression==Suppression::headSuppressed)
+					^ (getEdgeDirection(e)==reversed)
+					^ (gd<DDNode>(n).rank<gd<Suppression>(e).suppressRank);
 		default:
 			return false;
 		}
@@ -130,7 +130,7 @@ DDModel::Node *Config::RelNode(DDModel::Node *n, int offset) {
 	if(pos < 0)
 		return 0;
 	Rank *rank = ranking.GetRank(gd<DDNode>(n).rank);
-	assert(rank);
+	dgassert(rank);
 	if(pos >= rank->order.size())
 		return 0;
 	return rank->order[pos];
@@ -145,7 +145,7 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	DDModel::Node *right = rank->order.size()?rank->order.back():0;
 	double x = right?gd<DDNode>(right).cur.x + UVSep(right,n):0.0;
-	assert(!right||x>=gd<DDNode>(right).cur.x);
+	dgassert(!right||x>=gd<DDNode>(right).cur.x);
 	rank->order.push_back(n);
 	DDNode &ddn = gd<DDNode>(n);
 	ddn.rank = r;
@@ -158,7 +158,7 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 }
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
-	assert(o<=rank->order.size() && o>=0);
+	dgassert(o<=rank->order.size() && o>=0);
 	NodeV::iterator i = rank->order.begin()+o;
 	i = rank->order.insert(i,n);
 	DDNode &ddn = gd<DDNode>(n);
@@ -178,7 +178,7 @@ void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 }
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
-	assert(o<=rank->order.size() && o>=0);
+	dgassert(o<=rank->order.size() && o>=0);
 	DDModel::Node *L = o>0?rank->order[o-1]:0,
 		*R = o<rank->order.size()?rank->order[o]:0;
 	InstallAtOrder(n,r,o,CoordBetween(L,R));
@@ -199,17 +199,17 @@ void Config::InstallAtPos(DDModel::Node *n, int r, double x) {
 void Config::Exchange(DDModel::Node *u, DDModel::Node *v) {
 	DDNode &ddu = gd<DDNode>(u),
 		&ddv = gd<DDNode>(v);
-	assert(ddu.inConfig);
-	assert(ddv.inConfig);
-	assert(ddu.rank == ddv.rank);
-	report(r_exchange,"exchange %p of %s %p: x %.3f r %d o %d\n\tw/ %p of %s %p: x %.3f r %d o %d\n",
-		u,type(u),thing(u),ddu.cur.x,ddu.rank,ddu.order,
-		v,type(v),thing(v),ddv.cur.x,ddv.rank,ddv.order);
+	dgassert(ddu.inConfig);
+	dgassert(ddv.inConfig);
+	dgassert(ddu.rank == ddv.rank);
+	reports[dgr::exchange] << "exchange " <<
+		u << " of " << type(u) << ' ' << thing(u) << ": x " << ddu.cur.x << " r " << ddu.rank << " o " << ddu.order << endl <<
+		v << " of " << type(v) << ' ' << thing(v) << ": x " << ddv.cur.x << " r " << ddv.rank << " o " << ddv.order << endl;
 
 	Rank *rank = ranking.GetRank(ddu.rank);
 	int upos = ddu.order,
 		vpos = ddv.order;
-	//assert(vpos==upos+1);
+	//dgassert(vpos==upos+1);
 
 	/* delete any LR constraint between these nodes */
 	xconOwner->DeleteLRConstraint(u,v);
@@ -232,7 +232,7 @@ void Config::RemoveNode(DDModel::Node *n) {
 		return;
 	Rank *rank = ranking.GetRank(gd<DDNode>(n).rank);
 	int pos = gd<DDNode>(n).order;
-	assert(rank->order[pos] == n);
+	dgassert(rank->order[pos] == n);
 	NodeV::iterator i = rank->order.begin()+pos;
 	if(i!=rank->order.end())
 		model.dirty().insert(*i); // re-constrain right node
@@ -251,14 +251,17 @@ void Config::Restore(Ranks &backup) {
 	ranking = backup;
 	for(Ranks::iterator ri = ranking.begin(); ri!=ranking.end(); ++ri) {
 		Rank *r = *ri;
+		r->check_backdup_x();
 		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni) {
 			int o = int(ni - r->order.begin());
 			if(gd<DDNode>(*ni).order != o) {
 				InvalidateAdjMVals(*ni);
 				gd<DDNode>(*ni).order = o;
 			}
+			gd<DDNode>(*ni).cur.x = r->x_backup[o];
 		}
 	}
+	checkX();
 }
 
 } // namespace DynaDAG

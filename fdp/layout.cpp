@@ -98,7 +98,7 @@ void FDPServer::doNeighbor(Grid*grid, int i, int j, const node_list &nodes) {
 	if(cell) {
 		/*
 		if(Verbose >= 3)
-			fprintf(stderr, "  doNeighbor(%d,%d) : %d\n", i, j, gLength(cell));
+			reports[dgr::error] <<  "  doNeighbor(" << i << ',' << j << ") : " << gLength(cell) << endl;
 			*/
 		for(node_list::const_iterator pi = nodes.begin(); pi!=nodes.end(); ++pi) {
 			FDPModel::Node *p = *pi;
@@ -121,7 +121,7 @@ int FDPServer::VisitCell(Cell *cell,Grid *grid) {
 
 	/*
 	if(Verbose >= 3)
-		fprintf(stderr, "gridRepulse(%d,%d) : %d\n", i, j, gLength(cell));
+		reports[dgr::error] <<  "gridRepulse(" << i << ',' << j << ") : " << gLength(cell) << endl;
 	*/
 	node_list &nodes = cell->nodes;
 	for(node_list::iterator pi = nodes.begin(); pi!=nodes.end(); ++pi)

@@ -75,8 +75,13 @@ struct DDEdgeT {
 	Path<N,E> *path; // the chain of edges this is part of, if representing a layout edge
 	DDCGraph::Node *cn; // X constraint node
 	DDEdgeT() : path(0),cn(0) {}
+	DDEdgeT(const DDEdgeT &other) : path(other.path),cn(0) {}
+	DDEdgeT &operator=(const DDEdgeT &other) {
+		path = other.path;
+		cn = 0;
+	}
 	~DDEdgeT() {
-		assert(!cn);
+		dgassert(!cn);
 	}
 	bool amNodePart() {
 		return path==0;

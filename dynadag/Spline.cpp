@@ -69,7 +69,7 @@ static DDModel::Node *boundingNode(Config &config,DDModel::Node *inp, LeftRight 
 }
 
 double findBound(Config &config,const Bounds &bb,DDModel::Node *u, LeftRight side) {
-	assert(bb.valid);
+	dgassert(bb.valid);
 	double ret;
 	if(DDModel::Node *w = boundingNode(config,u,side)) {
 		if(side==LEFT)
@@ -101,7 +101,7 @@ private:
 	const Bounds &bb;
 	Line left,right; /* left and right sides of region */
 	Line &getSide(LeftRight side) {
-		assert(sequence(LEFT,side,RIGHT));
+		dgassert(sequence(LEFT,side,RIGHT));
 		if(side==LEFT)
 			return left;
 		else
@@ -112,13 +112,13 @@ void TempRoute::appendPoint(LeftRight side, Coord c) {
 	if(getSide(side).size()) {
 		Coord c0 = getSide(side).back();
 #ifndef DOWN_GREATER
-		assert(c0.y>=c.y);
+		dgassert(c0.y>=c.y);
 #else
-		assert(c0.y<=c.y);
+		dgassert(c0.y<=c.y);
 #endif
 		if(c==c0)
 			return;
-		assert(find(getSide(side).begin(),getSide(side).end(),c)==getSide(side).end());
+		dgassert(find(getSide(side).begin(),getSide(side).end(),c)==getSide(side).end());
 	}
 	getSide(side).push_back(c);
 }
@@ -155,7 +155,7 @@ void TempRoute::appendVNode(DDModel::Node *virt) {
 		bot_y = config.ranking.GetRank(r)->yBelow(0.0),
 		left_x = bound(virt, LEFT),
 		right_x = bound(virt, RIGHT);
-	assert(left_x < right_x);
+	dgassert(left_x < right_x);
 	appendSide(LEFT,left_x,top_y, bot_y);
 	appendSide(RIGHT,right_x,top_y, bot_y);
 }
@@ -237,18 +237,18 @@ void TempRoute::defineBoundaryPoly(Line &out) {
 void Spliner::forwardEdgeRegion(DDModel::Node *tl, DDModel::Node *hd,DDPath *inp, Coord tp, Coord hp, Line &out) {
 	double prev_fract = .3;
 	TempRoute route(config,gd<GraphGeom>(inp->layoutE->g).bounds);
-	assert(tl==inp->first->tail);
+	dgassert(tl==inp->first->tail);
 	route.termRoute(tl,inp->first,tp,prev_fract);
 	int lastR = gd<DDNode>(tl).rank;
 	for(DDPath::node_iter ni = inp->nBegin(); ni!=inp->nEnd(); ++ni) {
-		assert(lastR<gd<DDNode>(*ni).rank);
+		dgassert(lastR<gd<DDNode>(*ni).rank);
 		route.appendBox(config.ranking.Up(gd<DDNode>(*ni).rank),prev_fract,1.0);
 		route.appendVNode(*ni);
 		prev_fract = 0.0;
 	}
 
 	route.appendBox(config.ranking.Up(gd<DDNode>(hd).rank),prev_fract,.7);
-	assert(hd==inp->last->head);
+	dgassert(hd==inp->last->head);
 	route.termRoute(hd,inp->last,hp,.7);
 
 	route.defineBoundaryPoly(out);
@@ -348,11 +348,12 @@ void Spliner::adjustPath(DDPath *path) {
 }
 
 bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
-	assert(path->unclippedPath.Empty());
+	dgassert(path->unclippedPath.Empty());
+	DynaDAGLayout::Edge *e = path->layoutE;
 
-	bool reversed = path->direction==DDPath::reversed;
+	EdgeDirection direction = getEdgeDirection(e);
 	DDModel::Node *tl,*hd;
-	if(path->direction==DDPath::flat) {
+	if(direction==flat) {
 		tl = DDp(path->layoutE->tail)->bottom();
 		hd = DDp(path->layoutE->head)->top();
 	}
@@ -391,7 +392,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	else {
 		Line region;
 		bool adjustVNodes = false;
-		if(path->direction==DDPath::flat)
+		if(direction==flat)
 			flatEdgeRegion(tl,hd,tailpt,headpt,region);
 		else {
 			forwardEdgeRegion(tl,hd,path,tailpt,headpt,region);
@@ -411,7 +412,7 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 					PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
 
 					Segment endSlopes(Coord(0.0,0.0),Coord(0.0,0.0));
-					check(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
+					dgcheck(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 				}
 				else
 					unclipped = polylineRoute;
@@ -424,12 +425,12 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 			break;
 		}
 		default:
-			assert(0);
+			dgassert(0);
 		}
 	}
 	NodeGeom &tg = gd<NodeGeom>(path->layoutE->tail),
 		&hg = gd<NodeGeom>(path->layoutE->head);
-	if(reversed) {
+	if(direction==reversed) {
 		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);
 		reverse(eg.pos.begin(),eg.pos.end());

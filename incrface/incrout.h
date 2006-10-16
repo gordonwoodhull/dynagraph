@@ -13,6 +13,10 @@
 *               This version available from               *
 *                   http://dynagraph.org                  *
 **********************************************************/
+#ifndef incrout_h
+#define incrout_h
+
+#include <sstream>
 
 namespace Dynagraph {
 
@@ -70,3 +74,5 @@ void emitChanges(std::ostream &os,ChangeQueue<NGraph> &Q) {
 }
 
 } // namespace Dynagraph
+
+#endif // incrout_h

@@ -23,10 +23,12 @@
 #include "traversal.h"
 #include "Geometry.h"
 #include "genpoly.h"
-#include "Interruptable.h"
+#include "Interruptible.h"
 
 // wrong
 #include "dynadag/NSRankerAttrs.h"
+#include "dynadag/ExtraRanks.h"
+#include "dynadag/EdgeSuppressionAttrs.h"
 
 namespace Dynagraph {
 
@@ -52,7 +54,9 @@ typedef enum {
 	DG_UPD_SEPARATION = 1<<14, // GraphGeom::
 	DG_UPD_DRAWN = 1<<15, // nodes,graphs,edges: the Drawn lines have changed
 	DG_UPD_POLYDEF = 1<<16, // anything in node's PolyDef
-	DG_UPD_CHANGERECT = 1<<17 // GraphGeom::changerect
+	DG_UPD_CHANGERECT = 1<<17, // GraphGeom::changerect
+	DG_UPD_SUPPRESSION = 1<<18, // NodeGeom::suppressed, DynaDAG::Suppression
+	DG_UPD_TRANSLATION = 1<<19 // layout's Translation
 } UpdateFlags;
 struct Update { // subgraph-specific datum
 	unsigned flags;
@@ -109,9 +113,10 @@ struct GraphGeom {
 		defaultSize; // node size to use if neither width nor height specified
 	double edgeSeparation;
 	float ticks; // time limit, in seconds, 0 - no limit (NYI)
-	bool reportIntermediate; // report intermediate (crude) layouts
+	bool reportIntermediate, // report intermediate (crude) layouts
+		s_edges; // draw all reversed edges as Ss
 	GraphGeom() : splineLevel(DG_SPLINELEVEL_SPLINE),labelGap(0,0),resolution(0.1,0.1),
-		separation(0.5,0.5),defaultSize(1.5,1),edgeSeparation(-1.),ticks(0),reportIntermediate(false) {}
+		separation(0.5,0.5),defaultSize(1.5,1),edgeSeparation(-1.),ticks(0),reportIntermediate(false),s_edges(false) {}
 };
 struct StaticLabel {
 	Rect bounds;
@@ -119,11 +124,8 @@ struct StaticLabel {
 struct StaticLabels {
 	std::vector<StaticLabel> labels;
 };
-// at present dynagraph has no orientation parameter; that is, you can't
-// specify which way is down and thus which way dynadag edges will point.
-// instead, translate your coords to and from dynagraph using e.g. reorient.h
-// and set this parameter so that things that don't want to be translated,
-// like the shape generator and label placer, know how to compensate.
+// used by CoordTranslator; intention is to design this so that full matrix-based translation
+// could be supported in future
 typedef enum {
 	DG_ORIENT_RIGHT,
 	DG_ORIENT_UP,
@@ -223,10 +225,11 @@ struct EdgeGeom {
 		toTop; // default both true: measure from bottom of tail to top of head
 	bool constraint, // whether this edge affects ranking; set false by DynaDAG if last in cycle or if a node is nailed
 		manualRoute, // try to use the line specified in pos
-		backward; // draw as if points from head to tail
+		backward, // do rank constaints backward
+		s_edge; // draw as S if reversed (drawn against flow)
 	EdgeGeom() : tailPort(Coord(0.0,0.0)),headPort(Coord(0.0,0.0)),tailClipped(true),
 		headClipped(true),minLength(1.0),fromBottom(true),toTop(true),constraint(true),
-		manualRoute(false),backward(false) {}
+		manualRoute(false),backward(false),s_edge(false) {}
 };
 struct EdgeLabel {
 	// input
@@ -240,13 +243,13 @@ struct EdgeLabel {
 typedef std::vector<EdgeLabel> EdgeLabels;
 
 // These are the basic layout description attributes
-struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptable {
+struct GraphAttrs : Name,Hit,Drawn,GraphGeom,Translation,StaticLabels,Interruptible,DynaDAG::ExtraRanks {
 	GraphAttrs(Name name) : Name(name) {}
 };
 struct NodeAttrs : Name,Hit,Drawn,NodeGeom,NodeLabels,IfPolyDef, DynaDAG::NSRankerNode {
 	NodeAttrs(Name name) : Name(name) {}
 };
-struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels, DynaDAG::NSRankerEdge {
+struct EdgeAttrs : Name,Hit,Drawn,EdgeGeom,EdgeLabels, DynaDAG::NSRankerEdge,DynaDAG::Suppression {
 	EdgeAttrs(Name name) : Name(name) {}
 };
 

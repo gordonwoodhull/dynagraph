@@ -21,10 +21,8 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct XSolver : XConstraintOwner {
-	XSolver(Config &config, double xRes) :
-		xScale(1.0/xRes),config(config) {}
+	XSolver(Config &config) : config(config) {}
 	virtual ~XSolver() {} 
-	const double xScale;
 	void Place(DDChangeQueue &changeQ);
 	void RemoveEdgeConstraints(DDModel::Edge *e);
 	// XConstraintOwner

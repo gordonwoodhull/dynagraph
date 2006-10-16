@@ -31,12 +31,12 @@ namespace Dynagraph {
 
 struct Coord {
 	double x,y;
-    Coord() : x(-17),y(-17) {}
+	Coord() : x(-17),y(-17) {}
 	Coord(double x, double y) : x(x),y(y){}
-	bool operator ==(const Coord &c) const {
-		return double(x)==double(c.x) && double(y)==double(c.y);
+	bool operator ==(const Coord &c) const { // not recommended because floats are never equal
+		return x==c.x && y==c.y;
 	}
-	bool operator !=(const Coord &c) const {
+	bool operator !=(const Coord &c) const { // not recommended because floats are never equal
 		return !(*this==c);
 	}
 	const Coord operator +(const Coord &c) const {
@@ -91,6 +91,12 @@ struct Coord {
 		return Coord(fabs(x),fabs(y));
 	}
 };
+inline bool is_vclose(const Coord &c1,const Coord &c2) {
+	return is_vclose(c1.x,c2.x) && is_vclose(c1.y,c2.y);
+}
+inline bool isnt_vclose(const Coord &c1,const Coord &c2) {
+	return !is_vclose(c1,c2);
+}
 inline const Coord operator *(double a,const Coord &c) {
 	return c*a;
 }
@@ -115,13 +121,19 @@ struct Position : Coord {
 		valid = false;
 		x = y = -17;
 	}
-	bool operator ==(const Position &p) const {
-		return valid==p.valid && ((Coord)p==*this);
+	bool operator ==(const Position &p) const { // not recommended because floats are never equal
+		return valid?Coord::operator==(p):!p.valid;
 	}
-	bool operator !=(const Position &p) const {
+	bool operator !=(const Position &p) const { // not recommended because floats are never equal
 		return !(*this==p);
 	}
 };
+inline bool is_vclose(const Position &p1,const Position &p2) {
+	return p1.valid?p2.valid&&is_vclose(static_cast<const Coord&>(p1),static_cast<const Coord&>(p2)):!p2.valid;
+}
+inline bool isnt_vclose(const Position &p1,const Position &p2) {
+	return !is_vclose(p1,p2);
+}
 struct Segment {
 	Coord a,b;
 	Segment(Coord a = Coord(),Coord b = Coord()) : a(a), b(b) {}
@@ -131,12 +143,14 @@ struct Rect {
 	Rect() {}
 	Rect(const Rect &r) : l(r.l),t(r.t),r(r.r),b(r.b) {}
 	Rect(double l,double t,double r,double b) : l(l),t(t),r(r),b(b) {}
-	// note this allows implicit conversion from coord to rect
-	Rect(Coord c) : l(c.x),t(c.y),r(c.x),b(c.y) {}
-	bool operator==(const Rect &r) const {
+	explicit Rect(Coord c) : l(c.x),t(c.y),r(c.x),b(c.y) {}
+	void Clear() {
+		l = t = r = b = 0.;
+	}
+	bool operator==(const Rect &r) const { // not recommended because floats are never equal
 		return l==r.l && t==r.t && this->r==r.r && b==r.b;
 	}
-	bool operator!=(const Rect &r) const {
+	bool operator!=(const Rect &r) const { // not recommended because floats are never equal
 		return !(*this==r);
 	}
 	double Width() const {
@@ -185,17 +199,26 @@ struct Rect {
 			&& l<o.r && r>o.l;
 	}
 };
+inline bool is_vclose(const Rect &r1,const Rect &r2) {
+	return is_vclose(r1.l,r2.l) && is_vclose(r1.t,r2.t) && is_vclose(r1.r,r2.r) && is_vclose(r1.b,r2.b);
+}
+inline bool isnt_vclose(const Rect &r1,const Rect &r2) {
+	return !is_vclose(r1,r2);
+}
 
 struct Bounds : Rect {
 	bool valid;
 	Bounds() : valid(false) {}
 	Bounds(Rect r) : Rect(r),valid(true) {}
-	bool operator ==(const Bounds &b) const {
-		if(valid!=b.valid)
-			return false;
-		return !valid || Rect::operator ==(b);
+	Bounds(Position p) : Rect(p),valid(p.valid) {}
+	void Clear() {
+		Rect::Clear();
+		valid = false;
 	}
-	bool operator !=(const Bounds &b) const {
+	bool operator ==(const Bounds &b) const { // not recommended because floats are never equal
+		return valid?Rect::operator ==(b):!b.valid; 
+	}
+	bool operator !=(const Bounds &b) const { // not recommended because floats are never equal
 		return !(*this==b);
 	}
 	Bounds &operator |=(const Rect &r) {
@@ -211,6 +234,12 @@ struct Bounds : Rect {
 		return *this;
 	}
 };
+inline bool is_vclose(const Bounds &b1,const Bounds &b2) {
+	return b1.valid?b2.valid&&is_vclose(static_cast<const Rect&>(b1),static_cast<const Rect&>(b2)):!b2.valid;
+}
+inline bool isnt_vclose(const Bounds &b1,const Bounds &b2) {
+	return !is_vclose(b1,b2);
+}
 struct Region;
 struct Line : std::vector<Coord> {
 	typedef std::vector<Coord>::iterator iterator; // for gcc 3.0; why?
@@ -232,7 +261,7 @@ struct Line : std::vector<Coord> {
 		It b = ci,
 			e = ci+degree+1;
 		if(size()) {
-			assert(back()==*b);
+			dgassert(back()==*b);
 			b++;
 		}
 		insert(end(),b,e);
@@ -242,13 +271,13 @@ struct Line : std::vector<Coord> {
 	Bounds BoundingBox() {
 		Bounds ret;
 		for(iterator ci = begin(); ci!=end(); ++ci)
-			ret |= *ci;
+			ret |= Rect(*ci);
 		return ret;
 	}
 	Line &operator +=(const Line &append) {
-		assert(degree==append.degree);
+		dgassert(degree==append.degree);
 		Coord b = back(),f = append.front();
-		assert(b==f);
+		dgassert(b==f);
 		insert(end(),append.begin()+1,append.end());
 		return *this;
 	}
@@ -286,6 +315,7 @@ struct Region {
 	Line shape;
 	mutable int lastOut; // to make iterative calls quicker
 	Region() : lastOut(0) {}
+	void Clear();
 	void updateBounds(); // from new Line data
 	bool Hit(Coord c) const;
 	bool Overlaps(Coord ofs1,Coord ofs2,const Region &r);
@@ -293,7 +323,7 @@ private:
 	bool sameSide(const Coord &p0, const Coord &p1, int seg) const;
 };
 // check that e.g. YIntersection exists
-inline Coord checkPos(Position p) { check(p.valid); return p; }
+inline Coord checkPos(Position p) { dgassert(p.valid); return p; }
 
 } // namespace Dynagraph
 

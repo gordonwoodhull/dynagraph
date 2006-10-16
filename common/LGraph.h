@@ -215,7 +215,12 @@ struct LGraph {
 				if(!dat) throw NullPointer();
 			}
 		}
-		~Edge() {}
+		~Edge() {
+			const_cast<LGraph*&>(g) = 0;
+			const_cast<ED2*&>(dat) = 0;
+			const_cast<Node*&>(tail) = 0;
+			const_cast<Node*&>(head) = 0;
+		}
 	};
     typedef typename ADTDefs::inedge_order inedge_order;
     typedef typename ADTDefs::outedge_order outedge_order;
@@ -306,7 +311,10 @@ struct LGraph {
 	  Node(LGraph *g,ND2 *dat) : nodeData_(g->m_adtdata),
 	  g(g),
 	  dat(dat) {}
-	  ~Node() {}
+	  ~Node() {
+		const_cast<LGraph*&>(g) = 0;
+		const_cast<ND2*&>(dat) = 0;
+	  }
 
 		typename ADTDefs::node_data nodeData_;
 	public:

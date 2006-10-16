@@ -18,6 +18,7 @@
 #define DuplicateStream_h
 
 #include <boost/thread/thread.hpp>
+#include <boost/thread/xtime.hpp>
 #include <boost/bind.hpp>
 #ifdef WIN32
 #include <io.h>
@@ -27,38 +28,26 @@
 #endif
 #include <fcntl.h>
 
-extern bool g_xeptOut;
+extern bool g_xeptFatal;
+extern int g_maxWait;
+extern bool g_randomizeWait;
 
 namespace Dynagraph {
 
 struct DuplicateIn {
-	FILE *input_,*log_,*toPipe_,*fromPipe_;
-	boost::thread *thread_;
-
-	DuplicateIn(FILE *input, FILE *log) : input_(input), log_(log) {
-		int fd[2];
-		pipe(fd);
-		toPipe_ = fdopen(fd[1],"w");
-		setvbuf(toPipe_,0,_IONBF,0);
-		fromPipe_ = fdopen(fd[0],"r");
-		thread_ = new boost::thread(boost::bind(&DuplicateIn::go,this));
-	}
+	DuplicateIn(FILE *input, std::ostream &log);
 	~DuplicateIn() {
 		delete thread_;
 	}
 	FILE *getNewInput() {
 		return fromPipe_;
 	}
-	void go() {
-		while(!feof(input_)) {
-			char buf[1000];
-			if(fgets(buf,1000,input_)) {
-				fputs(buf,log_);
-				fputs(buf,toPipe_);
-			}
-		}
-		fclose(toPipe_);
-	}
+private:
+	FILE *input_,*toPipe_,*fromPipe_;
+	std::ostream &log_;
+	boost::thread *thread_;
+	const int RAND_MULT;
+	void go();
 };
 /* (unused)
 struct DuplicateOut {

@@ -1,6 +1,9 @@
 #include "common/createEngine.h"
 #include "FDPLayout.h"
 
+// this system of engine creation is deprecated in favor of the Configurator model
+// keeping these files intact in case anyone is using createEngine (LMK!)
+
 namespace Dynagraph {
 
 using FDP::FDPLayout;
