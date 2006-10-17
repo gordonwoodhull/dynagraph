@@ -527,7 +527,8 @@ struct compOldRank {
 void Config::moveOldNodes(DDChangeQueue &changeQ) {
 	LNodeV moveOrder;
 	for(DynaDAGLayout::node_iter vni = changeQ.modN.nodes().begin(); vni!=changeQ.modN.nodes().end(); ++vni)
-		moveOrder.push_back(*vni);
+		if(igd<Dynagraph::Update>(*vni).flags&DG_UPD_MOVE)
+			moveOrder.push_back(*vni);
 	sort(moveOrder.begin(),moveOrder.end(),compOldRank());
 	for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) 
 		moveOldNode(*ni);

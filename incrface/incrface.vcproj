@@ -168,9 +168,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath=".\DinoMachineTranslator.cpp">
-			</File>
-			<File
 				RelativePath="incrcmds.cpp">
 			</File>
 			<File

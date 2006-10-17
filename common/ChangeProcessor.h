@@ -33,6 +33,7 @@ struct ChangeProcessor {
 	virtual void Open() = 0;
 	virtual void Process() = 0;
 	virtual void Close() = 0;
+	virtual void Pulse(const StrAttrs &attrs) = 0;
 	virtual ~ChangeProcessor() {}
 	typedef void (ChangeProcessor::*Function)();
 };
@@ -58,6 +59,10 @@ struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 		if(next_)
 			next_->Close();
 	}
+	void NextPulse(const StrAttrs &attrs) {
+		if(next_)
+			next_->Pulse(attrs);
+	}
 	// default implementations (almost no one cares about Open or Close)
 	void Open() {
 		NextOpen();
@@ -67,6 +72,9 @@ struct LinkedChangeProcessor : ChangeProcessor<Graph> {
 	}
 	void Close() {
 		NextClose();
+	}
+	void Pulse(const StrAttrs &attrs) {
+		NextPulse(attrs);
 	}
 };
 

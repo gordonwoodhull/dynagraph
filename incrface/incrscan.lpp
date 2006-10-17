@@ -76,6 +76,7 @@ ID		({NAME}|{NUMBER})
 "modify"				return(T_modify);
 "open"					return(T_open);
 "close"					return(T_close);
+"pulse"					return(T_pulse);
 "lock"					return(T_lock);
 "unlock"				return(T_unlock);
 "segue"					return(T_segue);

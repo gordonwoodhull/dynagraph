@@ -102,7 +102,7 @@ void IncrCalledBack::incr_cb_create_handler(Name name,StrAttrs &attrs) {
 void IncrCalledBack::incr_cb_destroy_handler(IncrLangEvents *h) {
     delete h;
 }
-// echo all fulfils (prob from another server not client!)
+// echo all fulfils (prob from another server, not client)
 void IncrCalledBack::incr_cb_fulfil_graph(DString name,StrGraph *sg) {
 	LOCK_REPORT(dgr::output);
     reports[dgr::output] << "fulfil graph " << name << endl;

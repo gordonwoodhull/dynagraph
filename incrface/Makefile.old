@@ -10,10 +10,10 @@ INCS =	-I.. -I../.. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = \
-	DinoMachineTranslator.o	incrcmds.o		incrgram.o		incrscan.o
+	incrcmds.o		incrgram.o		incrscan.o
 
 HFILES = \
-	DinoMachine.h           DinoMachineTranslator.h DinoPatternLook.h       DinoSearchLook.h \
+	DinoMachine.h \
 	IncrLangEvents.h        IncrStrGraphHandler.h   IncrViewWatcher.h \
 	LabelToNameTranslator.h MatchNames.h \
 	createStringHandlers.h \

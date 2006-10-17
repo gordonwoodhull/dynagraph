@@ -88,7 +88,6 @@ private:
 	void findDirtyEdges(DDChangeQueue &changeQ,bool force);
 	void redrawEdges(DDChangeQueue &changeQ);
 	void generateIntermediateLayout(DDChangeQueue &changeQ);
-	void makeXConsistent();
 	void rememberOld();
 	void dumpModel();
 };

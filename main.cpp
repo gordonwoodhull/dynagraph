@@ -26,6 +26,8 @@
 
 #include "common/time-o-matic.h"
 #include "DuplicateStream.h"
+#include <boost/iostreams/tee.hpp>
+#include <boost/iostreams/stream.hpp>
 
 #include "dynagraph.version.h"
 
@@ -72,7 +74,7 @@ struct switchval {
 };
 switchval<dgr::reportType> g_reports[] = {
 	{'i',dgr::input,"input"},
-	{'o',dgr::output,"output"},
+	{'o',dgr::output,"(copy of) output"},
 	{'c',dgr::crossopt,"crossing optimization stats"},
 	{'t',dgr::timing,"timing breakdown"},
 	{'d',dgr::dynadag,"dynadag tallies"},
@@ -138,7 +140,6 @@ int main(int argc, char *args[]) {
 	// enable basic dynagraph report streams
 	reports.enable(dgr::error,&cerr);
 	reports.enable(dgr::cmdline);
-	reports.enable(dgr::output);
 	loops.sep = ',';
 	int random_seed = -1;
 	map<dgr::reportType,int> reportDests;
@@ -304,6 +305,16 @@ int main(int argc, char *args[]) {
 	}
 	else
 		incr_yyin = input_file;
+	/*
+	if(reports.enabled(dgr::output)) { // output is being logged; dup to cout
+		typedef boost::iostreams::tee_device<std::ostream,std::ostream> t_dev_t;
+		typedef boost::iostreams::stream<t_dev_t> t_stream_t;
+		t_dev_t *t_dev = new t_dev_t(reports[dgr::output],std::cout);
+		t_stream_t *t_stream = new t_stream_t(*t_dev);
+		reports.enable(dgr::output,t_stream);
+	}
+	else*/
+		reports.enable(dgr::output); // just send to cout
 	if(!g_transform)
 		g_transform = new Transform(Coord(1,1),Coord(1,1));
 	while(1) {

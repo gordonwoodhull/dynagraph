@@ -195,8 +195,7 @@ void DynaDAGServer::findChangedNodes(DDChangeQueue &changeQ) {
 			Position pos = DDp(*ni)->pos();
 			dgassert(pos.valid);
 			Position &p = gd<NodeGeom>(*ni).pos;
-			if(p != pos)
-			{
+			if(!is_vclose(p,pos)) {
 				if(p.valid) {
 					moved += (p-pos).Abs();
 					++nmoves;
@@ -429,21 +428,6 @@ void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		drawEdgeSimply(DDp(*ei));
 }
-void DynaDAGServer::makeXConsistent() {
-	const double EPSILON = 1.0e-5; 
-	// if layout interrupted between untangle and x-position, model's x coordinates may not be ordered.
-	// fix that, so that next update doesn't get upset
-	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri) {
-		Rank *r = *ri;
-		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
-			if(ni!=r->order.begin()) {
-				double &cx = gd<DDNode>(*ni).cur.x,
-					px = gd<DDNode>(*(ni-1)).cur.x;
-				if(cx<px)
-					cx = px + EPSILON;
-			}
-	}
-}
 void DynaDAGServer::rememberOld() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDNode &ddn = gd<DDNode>(*ni);
@@ -469,7 +453,7 @@ void DynaDAGServer::dumpModel() {
 		reports[dgr::modelDump] << "\t\"" << (*ei)->tail << "\"->\"" << (*ei)->head << "\" [label=\"" << *ei << "\\n" << gd<DDEdge>(*ei).path << "\"];" << endl;
 	reports[dgr::modelDump] << "}" << endl;
 }
-void InsDelArePasse(DDChangeQueue &Q) {
+void ClearInsDel(DDChangeQueue &Q) {
 	Q.ExecuteDeletions();
 	// turn inserts into modifies (this belongs within ChangeQueue, except the DG::Update specific part)
 	for(DynaDAGLayout::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end();) {
@@ -484,7 +468,28 @@ void InsDelArePasse(DDChangeQueue &Q) {
 		Q.insE.erase(e);
 		ModifyEdge(Q,we,DG_UPD_MOVE);
 	}
-	Q.insE.clear();
+	Q.insE.clear(); // erase the nodes
+}
+void ClearStrAttrChanges(DDChangeQueue &Q) {
+	igd<StrAttrChanges>(Q.ModGraph()).clear();
+	for(DynaDAGLayout::node_iter ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni) 
+		igd<StrAttrChanges>(*ni).clear();
+	for(DynaDAGLayout::graphedge_iter ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei) 
+		igd<StrAttrChanges>(*ei).clear();
+}
+// again this seems like something any layout engine might want
+bool ChangesAreRelevant(DDChangeQueue &Q) {
+	if(Q.Empty())
+		return igd<Update>(Q.ModGraph()).flags;
+	if(!Q.insN.empty() || !Q.insE.empty() || !Q.delN.empty() || !Q.delE.empty())
+		return true;
+	for(DynaDAGLayout::node_iter ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
+		if(igd<Update>(*ni).flags)
+			return true;
+	for(DynaDAGLayout::graphedge_iter ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
+		if(igd<Update>(*ei).flags)
+			return true;
+	return false;
 }
 void DynaDAGServer::Process() {
 	ChangeQueue<DynaDAGLayout> &Q = this->world_->Q_;
@@ -495,9 +500,9 @@ void DynaDAGServer::Process() {
 	loops.Field(dgr::dynadag,"nodes deleted - input",Q.delN.nodes().size());
 	loops.Field(dgr::dynadag,"edges deleted - input",Q.delE.nodes().size());
 	
-	if(Q.Empty()&&igd<Update>(Q.ModGraph()).flags==0) {
+	if(!ChangesAreRelevant(Q)) {
 		NextProcess();
-		Q.Clear(); // e.g. to clear irrelevant StrChanges
+		Q.Clear(); 
 		return;
 	}
 
@@ -515,11 +520,20 @@ void DynaDAGServer::Process() {
 		NextProcess();
 		// client has heard about inserts so they're now mods, 
 		// and deletes can be blown away (should someone Higher do this?)
-		InsDelArePasse(Q);
+		ClearInsDel(Q);
+		// and don't overreport attr changes
+		ClearStrAttrChanges(Q);
 	}
 
-	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
+	if(gd<Interruptible>(&world_->current_).interrupt 
+			&& gd<GraphGeom>(&world_->current_).reportIntermediate
+			&& gd<Interruptible>(&world_->current_).attrs.look("phase","update")=="update"
+			&& gd<Interruptible>(&world_->current_).attrs.look("step","done")=="done") {
 		rememberOld();
+		StrAttrs pulseAttrs;
+		pulseAttrs["phase"] = "update";
+		pulseAttrs["step"] = "done";
+		NextPulse(pulseAttrs);
 		return;
 	}
 
@@ -527,9 +541,16 @@ void DynaDAGServer::Process() {
 	optimizer->Reorder(Q,world_->current_,world_->current_);
 	timer.LoopPoint(dgr::timing,"crossing optimization");
 
-	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
-		makeXConsistent();
+	if(gd<Interruptible>(&world_->current_).interrupt 
+			&& gd<GraphGeom>(&world_->current_).reportIntermediate
+			&& gd<Interruptible>(&world_->current_).attrs.look("phase","untangle")=="untangle"
+			&& gd<Interruptible>(&world_->current_).attrs.look("step","done")=="done") {
+		//makeXConsistent(); // this horror superceded by horrible x_backup 
 		rememberOld();
+		StrAttrs pulseAttrs;
+		pulseAttrs["phase"] = "untangle";
+		pulseAttrs["step"] = "done";
+		NextPulse(pulseAttrs);
 		return;
 	}
 
@@ -540,8 +561,15 @@ void DynaDAGServer::Process() {
 	config.SetYs();
 	timer.LoopPoint(dgr::timing,"optimize x coordinates");
 
-	if(gd<Interruptible>(&world_->current_).interrupt && gd<GraphGeom>(&world_->current_).reportIntermediate) {
+	if(gd<Interruptible>(&world_->current_).interrupt 
+			&& gd<GraphGeom>(&world_->current_).reportIntermediate
+			&& gd<Interruptible>(&world_->current_).attrs.look("phase","xopt")=="xopt"
+			&& gd<Interruptible>(&world_->current_).attrs.look("step","done")=="done") {
 		rememberOld();
+		StrAttrs pulseAttrs;
+		pulseAttrs["phase"] = "xopt";
+		pulseAttrs["step"] = "done";
+		NextPulse(pulseAttrs);
 		return;
 	}
 

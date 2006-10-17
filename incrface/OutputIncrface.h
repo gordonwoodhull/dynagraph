@@ -39,10 +39,16 @@ struct OutputIncrface : LinkedChangeProcessor<Graph> {
 		}
 		this->NextProcess();
 	}
-	void IncrClose() {
+	void Close() {
 		if(reports.enabled(reportType_)) {
 			LOCK_REPORT(reportType_);
 			reports[reportType_] << "close graph " << gd<Name>(&this->world_->whole_) << std::endl;
+		}
+	}
+	void Pulse(const StrAttrs &attrs) {
+		if(reports.enabled(reportType_)) {
+			LOCK_REPORT(reportType_);
+			reports[reportType_] << "pulse graph " << gd<Name>(&this->world_->whole_) << " " << attrs << std::endl;
 		}
 	}
 };

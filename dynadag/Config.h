@@ -116,6 +116,7 @@ private:
 	// check
 	void checkEdges(bool strict);
 	void checkNodeRanks(DDChangeQueue &changeQ,bool news);
+public: // (not)
 	void checkX();
 };
 

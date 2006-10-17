@@ -65,9 +65,13 @@ struct DynagraphThread {
 	}
 	void interrupt() {
 		dgassert(boost::thread()!=*thread_);
+		dgassert(!gd<Interruptible>(&world_.whole_).interrupt);
 		gd<Interruptible>(&world_.whole_).interrupt = true;
-		thread_->join();
+		wait();
 		gd<Interruptible>(&world_.whole_).interrupt = false;
+	}
+	void wait() {
+		thread_->join();
 	}
 };
 

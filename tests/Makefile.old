@@ -11,6 +11,7 @@ SUF_EFLOW=eflow
 AT_EFLOW=-a emphasizeflow=true
 
 run: *.incr
+	if grep exception *.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
 
 *.incr: always
 	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $*.incrout

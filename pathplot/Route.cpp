@@ -48,14 +48,15 @@ bool Route(const SegmentV &barriers, const Line &input,Segment endSlopes,Line &o
 	/* validate - input region is not self-intersecting */
 	for(i = 0; i < barriers.size() - 1; i++)
 		for(j = i + 1; j < barriers.size(); j++) {
-			/* tell me this isn't BOGUS */
-			if(barriers[i].a==barriers[j].a) continue;
-			if(barriers[i].a==barriers[j].b) continue;
-			if(barriers[i].b==barriers[j].a) continue;
-			if(barriers[i].b==barriers[j].b) continue;
+			/* tell me this isn't BOGUS */ 
+			if(is_vclose(barriers[i].a,barriers[j].a)) continue;
+			if(is_vclose(barriers[i].a,barriers[j].b)) continue;
+			// "it's not bogus"
+			if(is_vclose(barriers[i].b,barriers[j].a)) continue;
+			if(is_vclose(barriers[i].b,barriers[j].b)) continue;
 			if(segsIntersect(barriers[i].a,barriers[i].b,barriers[j].a,barriers[j].b)) {
-				reports[dgr::error] << "input region self-intersection: (" << barriers[i].a << "),(" << barriers[i].b 
-					<< ") X (" << barriers[j].a << "),(" << barriers[j].b << ')' << endl;
+				reports[dgr::error] << "input region self-intersection: " << "B" << i << " (" << barriers[i].a << "),(" << barriers[i].b 
+					<< ") X B" << j << " (" << barriers[j].a << "),(" << barriers[j].b << ')' << endl;
 				return false;
 			}
 		}

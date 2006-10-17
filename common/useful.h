@@ -23,6 +23,7 @@
 #include <map>
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h>
 #include "dgxep.h"
 
 namespace Dynagraph {
@@ -46,6 +47,40 @@ inline bool assign(T &a,const T &b) {
 		return a = b,true;
 	return false;
 }
+// from http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+// which does not recommend it but converting to integers seems overkill
+template<typename F,typename Maxes>
+inline bool is_vclose_howclose(F A, F B) {
+	if (fabs(A - B) < Maxes::Absolute())
+		return true;
+	F relativeError = fabs((A - B) / std::max(A,B));
+	if (relativeError <= Maxes::Relative())
+		return true;
+	return false;
+}
+struct DoubleMaxes {
+	static double Absolute() {
+		return 0.00000000001;
+	}
+	static double Relative() {
+		return 0.0000000000001;
+	}
+};
+inline bool is_vclose(double A,double B) {
+	return is_vclose_howclose<double,DoubleMaxes>(A,B);
+}
+struct FloatMaxes {
+	static float Absolute() {
+		return 0.00001f;
+	}
+	static float Relative() {
+		return 0.000001f;
+	}
+};
+inline bool is_vclose(float A,float B) {
+	return is_vclose_howclose<float,FloatMaxes>(A,B);
+}
+
 // debugging things.  even for internal errors, exceptions are more useful
 // than things based on abort()
 // dgassert compiles to nothing in release builds, whereas dgcheck keeps the statement

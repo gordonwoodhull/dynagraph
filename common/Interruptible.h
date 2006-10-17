@@ -17,10 +17,13 @@
 #ifndef Interruptible_h
 #define Interruptible_h
 
+#include "StrAttr.h"
+
 namespace Dynagraph {
 
 struct Interruptible {
 	bool interrupt;
+	StrAttrs attrs; // specific instructions about when to stop (e.g. from incrface pulse command)
 	Interruptible() : interrupt(false) {}
 };
 
