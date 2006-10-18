@@ -87,6 +87,22 @@ inline bool SetAndMark(GO *go,const StrAttrs &attrs) {
 	return result;
 }
 template<typename GO>
+inline bool SetNoMark(GO *go,DString name,DString val) {
+	DString &cur = gd<StrAttrs>(go)[name];
+	if(cur!=val) {
+		cur = val;
+		return true;
+	}
+	return false;
+}
+template<typename GO>
+inline bool SetNoMark(GO *go,const StrAttrs &attrs) {
+	bool result = false;
+	for(StrAttrs::const_iterator ai = attrs.begin(); ai!=attrs.end(); ++ai)
+		result |= SetNoMark(go,ai->first,ai->second);
+	return result;
+}
+template<typename GO>
 inline StrAttrs getChanges(GO *go) {
 	StrAttrs ret;
 	for(StrAttrChanges::iterator ci = igd<StrAttrChanges>(go).begin(); ci!=igd<StrAttrChanges>(go).end(); ++ci)

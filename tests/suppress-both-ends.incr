@@ -1,0 +1,12 @@
+open graph V
+lock graph V
+insert node V 83 [attribute=value]
+insert node V 60
+insert edge V 84 83 60 [color="-3618616",thickness="1",emphasizeflow=true]
+modify node V 83 [suppressed=false]
+modify node V 60 [suppressed=false]
+unlock graph V
+lock graph V
+modify node V 83 [suppressed=true]
+modify node V 60 [suppressed=true]
+unlock graph V

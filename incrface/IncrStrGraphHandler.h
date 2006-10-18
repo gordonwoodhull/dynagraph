@@ -142,10 +142,24 @@ void IncrStrGraphHandler<NGraph>::incr_ev_shutdown() {
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttrs &attrs) {
 	interrupt_thread(); // there shouldn't be a thread but hey
+	gd<Name>(&world_->whole_) = graph;
+	SetNoMark(world_->Q_.ModGraph(),attrs);
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "open graph " << gd<Name>(&world_->current_);
+		if(!attrs.empty())
+			reports[dgr::input_cooked] << ' ' << attrs;
+		reports[dgr::input_cooked] << std::endl;
+	}
 	maybe_go(&ChangeProcessor<NGraph>::Open);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {
+	interrupt_thread();
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "close graph " << gd<Name>(&world_->current_) << std::endl;
+	}
 	maybe_go(&ChangeProcessor<NGraph>::Close);
 	wait_thread(); // don't allow parent to delete me until i'm finished! (why thread this cmd then? foolish consistency?)
 }
@@ -153,11 +167,16 @@ template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_mod_graph(const StrAttrs &attrs) {
 	interrupt_thread();
 	SetAndMark(world_->Q_.ModGraph(),attrs);
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		if(!attrs.empty())
+			reports[dgr::input_cooked] << "modify graph " << gd<Name>(&world_->current_) << ' ' << attrs << std::endl;
+	}
     maybe_go();
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_pulse(const StrAttrs &attrs) {
-	// WEIRD: received pulse becomes an interrupt which then should generate the same pulse as output!
+	// WEIRD: received pulse becomes an interrupt which then should generate almost the same pulse as output!
 	gd<Interruptible>(&world_->whole_).attrs = attrs; // qualify/restrict the kind of interrupt
     interrupt_thread();
 	gd<Interruptible>(&world_->whole_).attrs.clear(); // unqualify 
@@ -165,12 +184,20 @@ void IncrStrGraphHandler<NGraph>::incr_ev_pulse(const StrAttrs &attrs) {
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_lock() {
     interrupt_thread();
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "lock graph " << gd<Name>(&world_->current_) << std::endl;
+	}
     locks_++;
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_unlock() {
     interrupt_thread();
     --locks_;
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "unlock graph " << gd<Name>(&world_->current_) << std::endl;
+	}
     maybe_go();
 }
 template<typename NGraph>
@@ -180,7 +207,14 @@ DString IncrStrGraphHandler<NGraph>::incr_ev_ins_node(DString name, const StrAtt
         name = randomName('n');
     typename NGraph::Node *n = fetch_node(name,true);
 	typename ChangeQueue<NGraph>::NodeResult result = world_->Q_.InsNode(n);
-	SetAndMark(result.object,attrs);
+	SetNoMark(result.object,attrs);
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "insert node " << gd<Name>(result.object);
+		if(!attrs.empty())
+			reports[dgr::input_cooked] << ' ' << attrs;
+		reports[dgr::input_cooked] << std::endl;
+	}
     maybe_go();
     return name;
 }
@@ -191,7 +225,14 @@ DString IncrStrGraphHandler<NGraph>::incr_ev_ins_edge(DString name, DString tail
         name = randomName('e');
     typename NGraph::Edge *e = fetch_edge(tailname,headname,name,true);
 	typename ChangeQueue<NGraph>::EdgeResult result = world_->Q_.InsEdge(e);
-	SetAndMark(result.object,attrs);
+	SetNoMark(result.object,attrs);
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "insert edge " << gd<Name>(result.object) << ' ' << tailname << ' ' << headname;
+		if(!attrs.empty())
+			reports[dgr::input_cooked] << ' ' << attrs;
+		reports[dgr::input_cooked] << std::endl;
+	}
     maybe_go();
     return name;
 }
@@ -201,6 +242,10 @@ void IncrStrGraphHandler<NGraph>::incr_ev_mod_node(DString name,const StrAttrs &
     typename NGraph::Node *n = fetch_node(name,false);
 	typename ChangeQueue<NGraph>::NodeResult result = world_->Q_.ModNode(n);
 	SetAndMark(result.object,attrs);
+	if(reports.enabled(dgr::input_cooked) && !attrs.empty()) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "modify node " << gd<Name>(result.object) << ' ' << attrs << std::endl;
+	}
     maybe_go();
 }
 template<typename NGraph>
@@ -209,6 +254,10 @@ void IncrStrGraphHandler<NGraph>::incr_ev_mod_edge(DString name,const StrAttrs &
     typename NGraph::Edge *e = fetch_edge(name);
 	typename ChangeQueue<NGraph>::EdgeResult result = world_->Q_.ModEdge(e);
 	SetAndMark(result.object,attrs);
+	if(reports.enabled(dgr::input_cooked) && !attrs.empty()) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "modify edge " << gd<Name>(result.object) << ' ' << attrs << std::endl;
+	}
     maybe_go();
 }
 template<typename NGraph>
@@ -216,6 +265,10 @@ void IncrStrGraphHandler<NGraph>::incr_ev_del_node(DString name) {
     interrupt_thread();
     typename NGraph::Node *n = fetch_node(name,false);
 	world_->Q_.DelNode(n);
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "delete node " << gd<Name>(n)  << std::endl;
+	}
     maybe_go();
 }
 template<typename NGraph>
@@ -223,6 +276,10 @@ void IncrStrGraphHandler<NGraph>::incr_ev_del_edge(DString name) {
     interrupt_thread();
     typename NGraph::Edge *e = fetch_edge(name);
 	world_->Q_.DelEdge(e);
+	if(reports.enabled(dgr::input_cooked)) {
+		LOCK_REPORT(dgr::input_cooked);
+		reports[dgr::input_cooked] << "delete edge " << gd<Name>(e)  << std::endl;
+	}
     maybe_go();
 }
 template<typename NGraph>

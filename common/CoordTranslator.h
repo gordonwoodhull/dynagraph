@@ -83,6 +83,9 @@ struct CoordTranslatorInActions {
 	typedef LayoutToLayoutTranslator<OuterLayout,InnerLayout,CoordTranslatorCopyPolicy> Base;
 	Base base_;
 	typedef OrientationTranslator Trans;
+	void OpenGraph(OuterLayout *ol,InnerLayout *il) {
+		base_.OpenGraph(ol,il);
+	}
 	void ModifyGraph(OuterLayout *ol,InnerLayout *il) {
 		base_.ModifyGraph(ol,il);
 	}
@@ -122,6 +125,9 @@ struct CoordTranslatorOutActions {
 	typedef LayoutToLayoutTranslator<InnerLayout,OuterLayout,CoordTranslatorCopyPolicy> Base;
 	Base base_;
 	typedef OrientationTranslator Trans;
+	void OpenGraph(InnerLayout *il,OuterLayout *ol) {
+		base_.OpenGraph(il,ol);
+	}
 	void ModifyGraph(InnerLayout *il,OuterLayout *ol) {
 		base_.ModifyGraph(il,ol);
 	}

@@ -46,8 +46,8 @@
 
 <BODY>
 <h1>Dynagraph</h1>
-<p>Welcome to the documentation for Dynagraph 1.1.4.*.</p>
-<p>(As Dynagraph is always changing, be sure this matches the version of Dynagraph you are using!)</p>
+<p>Welcome to the documentation for Dynagraph 1.1.5.0.</p>
+<p>(As Dynagraph is... well, dynamic... be sure this matches the version of Dynagraph you are using!)</p>
 <ol type=I>
 	<li><a href="#introduction">Introduction</a></li>
 	<li><a href="#front_ends">The front ends</a>
@@ -179,10 +179,13 @@ The Dynagraph executable can be run in two modes:
 	<table width="100%">
 		<tr>
 			<td>i
-			<td>Dynagraph input
+			<td>Dynagraph input (raw)
+		<tr>
+			<td>k
+			<td>Dynagraph input (cooked: post-interpreter and contains "pulse" timing information to reproduce the timing of input)
 		<tr>
 			<td>o
-			<td>Dynagraph output (not yet implemented)
+			<td>Dynagraph output
 		<tr>
 			<td>c
 			<td>Crossing optimization statistics
@@ -247,7 +250,7 @@ The Dynagraph executable can be run in two modes:
 	<dt><a name="incr_delete_edge"/>delete edge <i>L</i> <i>E</i>
 	<dd>Removes <i>E</i> from the layout.
 	<dt><a name="incr_pulse_graph"/>pulse graph <i>L</i> [<I>attrs</I>]
-	<dd>A pulse is a timing event on the stream of changes itself.  The attributes provide the specifics.  Currently this is used to communicate when Dynagraph has been interrupted or should be interrupted.  DynaDAG uses the attribute "phase" (values "update","untangle", or "xopt") and the attribute "step" (currently always "done" specifying that the phase is over).  On input, the pulse command causes DynaDAG to interrupt (no sooner than) the specified moment.  On output, one can determine from the pulse command when DynaDAG was interrupted.  This function is mostly useful for debugging, in order to reproduce bugs that depend on the timing of input.
+	<dd>A pulse is a timing event on the stream of changes itself.  The attributes provide the specifics.  Currently this is used to communicate when Dynagraph has been interrupted or should be interrupted.  DynaDAG uses the attribute "phase" (values "update","untangle", or "xopt") and the attribute "step" (currently always "done" specifying that the phase is over).  On input, the pulse command causes DynaDAG to interrupt (no sooner than) the specified moment.  On output, one can determine from the pulse command when DynaDAG was interrupted.  At present this function is mostly useful for debugging, in order to reproduce bugs that depend on the timing of input.
 	<dt><a name="incr_lock_graph"/>lock graph <i>L</i>
 	<dd>Increments the lock count on <i>L</i>.  While the count is greater than zero, Dynagraph will not do any layouts and will not output.  On output, Dynagraph uses lock and unlock to mark a group of changes so that the client can respond more efficiently.
 	<dt><a name="incr_unlock_graph"/>unlock graph <i>L</i>
