@@ -210,7 +210,7 @@ DString IncrStrGraphHandler<NGraph>::incr_ev_ins_node(DString name, const StrAtt
 	SetNoMark(result.object,attrs);
 	if(reports.enabled(dgr::input_cooked)) {
 		LOCK_REPORT(dgr::input_cooked);
-		reports[dgr::input_cooked] << "insert node " << gd<Name>(result.object);
+		reports[dgr::input_cooked] << "insert node " << gd<Name>(&world_->current_) << ' ' << gd<Name>(result.object);
 		if(!attrs.empty())
 			reports[dgr::input_cooked] << ' ' << attrs;
 		reports[dgr::input_cooked] << std::endl;
@@ -228,7 +228,7 @@ DString IncrStrGraphHandler<NGraph>::incr_ev_ins_edge(DString name, DString tail
 	SetNoMark(result.object,attrs);
 	if(reports.enabled(dgr::input_cooked)) {
 		LOCK_REPORT(dgr::input_cooked);
-		reports[dgr::input_cooked] << "insert edge " << gd<Name>(result.object) << ' ' << tailname << ' ' << headname;
+		reports[dgr::input_cooked] << "insert edge " << gd<Name>(&world_->current_) << ' ' << gd<Name>(result.object) << ' ' << tailname << ' ' << headname;
 		if(!attrs.empty())
 			reports[dgr::input_cooked] << ' ' << attrs;
 		reports[dgr::input_cooked] << std::endl;
@@ -244,7 +244,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_mod_node(DString name,const StrAttrs &
 	SetAndMark(result.object,attrs);
 	if(reports.enabled(dgr::input_cooked) && !attrs.empty()) {
 		LOCK_REPORT(dgr::input_cooked);
-		reports[dgr::input_cooked] << "modify node " << gd<Name>(result.object) << ' ' << attrs << std::endl;
+		reports[dgr::input_cooked] << "modify node " << gd<Name>(&world_->current_) << ' ' << gd<Name>(result.object) << ' ' << attrs << std::endl;
 	}
     maybe_go();
 }
@@ -256,7 +256,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_mod_edge(DString name,const StrAttrs &
 	SetAndMark(result.object,attrs);
 	if(reports.enabled(dgr::input_cooked) && !attrs.empty()) {
 		LOCK_REPORT(dgr::input_cooked);
-		reports[dgr::input_cooked] << "modify edge " << gd<Name>(result.object) << ' ' << attrs << std::endl;
+		reports[dgr::input_cooked] << "modify edge " << gd<Name>(&world_->current_) << ' ' << gd<Name>(result.object) << ' ' << attrs << std::endl;
 	}
     maybe_go();
 }
@@ -267,7 +267,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_del_node(DString name) {
 	world_->Q_.DelNode(n);
 	if(reports.enabled(dgr::input_cooked)) {
 		LOCK_REPORT(dgr::input_cooked);
-		reports[dgr::input_cooked] << "delete node " << gd<Name>(n)  << std::endl;
+		reports[dgr::input_cooked] << "delete node " << gd<Name>(&world_->current_) << ' ' << gd<Name>(n)  << std::endl;
 	}
     maybe_go();
 }
@@ -278,7 +278,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_del_edge(DString name) {
 	world_->Q_.DelEdge(e);
 	if(reports.enabled(dgr::input_cooked)) {
 		LOCK_REPORT(dgr::input_cooked);
-		reports[dgr::input_cooked] << "delete edge " << gd<Name>(e)  << std::endl;
+		reports[dgr::input_cooked] << "delete edge " << gd<Name>(&world_->current_) << ' ' << gd<Name>(e)  << std::endl;
 	}
     maybe_go();
 }

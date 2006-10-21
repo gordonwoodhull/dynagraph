@@ -333,7 +333,9 @@ void DynaDAGServer::drawStraightEdge(DDPath *path) {
 }
 void DynaDAGServer::drawEdgeSimply(DDPath *path) {
 	DynaDAGLayout::Edge *e = path->layoutE;
-	if(e->tail==e->head)
+	if(gd<Suppression>(e).suppression==Suppression::suppressed)
+		gd<EdgeGeom>(e).pos.Clear();
+	else if(e->tail==e->head)
 		drawSelfEdge(e);
 	else
 		drawStraightEdge(path);
@@ -426,7 +428,8 @@ void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
 		drawEdgeSimply(DDp(*ei));
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		drawEdgeSimply(DDp(*ei));
+		if(igd<Update>(*ei).flags & DG_UPD_MOVE)
+			drawEdgeSimply(DDp(*ei));
 }
 void DynaDAGServer::rememberOld() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {

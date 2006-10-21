@@ -306,7 +306,6 @@ int main(int argc, char *args[]) {
 	}
 	else
 		incr_yyin = input_file;
-	/*
 	if(reports.enabled(dgr::output)) { // output is being logged; dup to cout
 		typedef boost::iostreams::tee_device<std::ostream,std::ostream> t_dev_t;
 		typedef boost::iostreams::stream<t_dev_t> t_stream_t;
@@ -314,7 +313,7 @@ int main(int argc, char *args[]) {
 		t_stream_t *t_stream = new t_stream_t(*t_dev);
 		reports.enable(dgr::output,t_stream);
 	}
-	else*/
+	else
 		reports.enable(dgr::output); // just send to cout
 	if(!g_transform)
 		g_transform = new Transform(Coord(1,1),Coord(1,1));
