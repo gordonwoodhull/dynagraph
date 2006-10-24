@@ -7,9 +7,9 @@ X11INC=/usr/X11/include
 #X11INC=/usr/include/X11
 X11LIB=/usr/X11R6/lib
 X11INC=/usr/X11/include
-BOOST_THREAD_LIB_PATH=/usr/local/bin/boost/libs/thread/build/libboost_thread.a/gcc/release/threading-multi/
-BOOST_THREAD_LIB=boost_thread-gcc-mt-1_33_1
-OTHER_THREAD_LIBS=-pthread
+#BOOST_THREAD_LIB_PATH=/usr/local/bin/boost/libs/thread/build/libboost_thread.a/gcc/release/threading-multi/
+#BOOST_THREAD_LIB=boost_thread-gcc-mt-1_33_1
+THREADLIBS=-lboost_thread -pthread
 
 CC=gcc
 CPP=g++
@@ -35,7 +35,7 @@ AWK=awk
 SORT=sort
 INSTALL=cp
 
-CCFLAGS=-g -DGNU=1 -Wall -Wno-unknown-pragmas #-O3
+CCFLAGS=-g -DGNU=1 -Wall -Wno-unknown-pragmas -O2
 LDFLAGS=-g
 TCLDOTLIBS=-ldl
 LEFTYLIBS = -lXpm -lSM -lICE

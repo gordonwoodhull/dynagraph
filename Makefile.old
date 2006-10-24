@@ -17,8 +17,6 @@ BASELIBS = -Lcommon -ldynagraph \
        -L$(GRAPHVIZ_LIB) \
        -lagraph -lpathplan -lcdt
 
-THREADLIBS = -L$(BOOST_THREAD_LIB_PATH) -l$(BOOST_THREAD_LIB) $(OTHER_THREAD_LIBS)
-
 GLIBS = -Lcommon -ldynagraph \
        -L/usr/local/graphviz/lib \
        -lcdt -lagraph
