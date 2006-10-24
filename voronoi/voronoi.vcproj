@@ -139,8 +139,11 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
+				FavorSizeOrSpeed="1"
 				OmitFramePointers="FALSE"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
 				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"

@@ -24,11 +24,11 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct SiftMatrix {
-	bool m_light;
-	SiftMatrix(Config &config) : m_light(true),config(config) {
+	bool light_;
+	SiftMatrix(Config &config) : light_(true),config(config) {
 	}
 	unsigned weigh(Crossings cc) {
-		return m_light?crosslight(cc):crossweight(cc);
+		return light_?crosslight(cc):crossweight(cc);
 	}
 	std::pair<unsigned,unsigned> &crossings(DDModel::Node *u,DDModel::Node *v) {
 		dgassert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
