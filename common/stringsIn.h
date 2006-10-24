@@ -95,7 +95,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SPLINE;
 		}
 		else if(name=="rankdir") {
-			Orientation ori;
+			Orientation ori = DG_ORIENT_DOWN;
 			if(value=="TB")
 				ori = DG_ORIENT_DOWN;
 			else if(value=="LR")

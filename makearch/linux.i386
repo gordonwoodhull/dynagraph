@@ -35,7 +35,7 @@ AWK=awk
 SORT=sort
 INSTALL=cp
 
-CCFLAGS=-g -DGNU=1 -Wall -Wno-unknown-pragmas
+CCFLAGS=-g -DGNU=1 -Wall -Wno-unknown-pragmas #-O3
 LDFLAGS=-g
 TCLDOTLIBS=-ldl
 LEFTYLIBS = -lXpm -lSM -lICE

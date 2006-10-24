@@ -130,7 +130,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 			break;
 		}
 		case one: {
-			typename Layout2::Edge *e2;
+			typename Layout2::Edge *e2=0;
 			switch(splicedness) {
 			case one:
 				e2 = destQ.whole->fetch_edge(ename);

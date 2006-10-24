@@ -207,9 +207,9 @@ int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
 struct LightPass {
 	Config &config_;
 	SiftMatrix &matrix_;
+	ConstraintMatrixSwitchable switchable_;
 	MedianCompare median_;
 	CrossingCompare crossing_;
-	ConstraintMatrixSwitchable switchable_;
 	LightPass(Config &config,SiftMatrix &matrix,ConstraintMatrixSwitchable &switchable) : 
 		config_(config),
 		matrix_(matrix),
@@ -253,8 +253,8 @@ struct LightPass {
 struct HeavyPass {
 	Config &config_;
 	SiftMatrix &matrix_;
-	CrossingCompare crossing_;
 	ConstraintMatrixSwitchable switchable_;
+	CrossingCompare crossing_;
 	HeavyPass(Config &config,SiftMatrix &matrix,ConstraintMatrixSwitchable &switchable) :
 		config_(config),
 		matrix_(matrix),

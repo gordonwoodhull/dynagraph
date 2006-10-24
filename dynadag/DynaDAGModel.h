@@ -111,13 +111,20 @@ typedef DDModel::MN DDMultiNode;
 typedef DDModel::P DDPath;
 typedef DDModel::DDN DDNode;
 typedef DDModel::DDE DDEdge;
+
+// convolution to work around type-punning warnings
+// (but maybe this is "the truth"?)
+struct DDModelNodePointer {
+	DDMultiNode *model;
+};
+struct DDModelEdgePointer {
+	DDPath *model;
+};
 inline DDMultiNode *&DDp(DynaDAGLayout::Node *n) {
-	DDMultiNode *&ret = *reinterpret_cast<DDMultiNode**>(&gd<ModelPointer>(n).model);
-	return ret;
+	return gd2<DDModelNodePointer,ModelPointer>(n).model;
 }
 inline DDPath *&DDp(DynaDAGLayout::Edge *e) {
-	DDPath *&ret = *reinterpret_cast<DDPath**>(&gd<ModelPointer>(e).model);
-	return ret;
+	return gd2<DDModelEdgePointer,ModelPointer>(e).model;
 }
 typedef std::vector<DDModel::Node*> NodeV;
 typedef std::vector<DDModel::Edge*> EdgeV;
