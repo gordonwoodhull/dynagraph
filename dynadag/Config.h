@@ -74,6 +74,7 @@ struct Config {
 	void InstallAtPos(DDModel::Node *n, Ranks::index r, double x);
 	void RemoveNode(DDModel::Node *n);
 	void Exchange(DDModel::Node *u, DDModel::Node *v);
+	void MoveNodeBefore(DDModel::Node *u,DDModel::Node *v);
 	void Restore(Ranks &backup);
 
 	Ranks ranking;

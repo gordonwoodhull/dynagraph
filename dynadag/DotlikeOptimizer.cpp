@@ -99,12 +99,15 @@ struct CrossingCompare {
 };
 void moveBefore(Config &config,SiftMatrix &matrix,DDModel::Node *n,DDModel::Node *before) {
 	matrix.move(n,before);
+	/*
 	int rank = gd<DDNode>(n).rank;
 	config.RemoveNode(n);
 	if(before)
 		config.InstallAtOrder(n,rank,gd<DDNode>(before).order);
 	else
 		config.InstallAtRight(n,rank);
+		*/
+	config.MoveNodeBefore(n,before);
 }
 template<class Switchable, class Compare>
 void bubblePassR(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
