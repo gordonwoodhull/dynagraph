@@ -156,7 +156,9 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 	ddn.cur.valid = true;
 	ddn.cur.x = x;
 	ddn.cur.y = rank->yBase; // estimate
+#ifndef REDO_ALL_XCONSTRAINTS
 	model.dirty().insert(n);
+#endif
 }
 // contains: one vector insert, one node-edge iteration, one vector iterate-and-set, one graph insertion
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
@@ -177,7 +179,9 @@ void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 		gd<DDNode>(*i).order++;
 		InvalidateAdjMVals(*i);
 	}
+#ifndef REDO_ALL_XCONSTRAINTS
 	model.dirty().insert(n);
+#endif
 }
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
@@ -225,8 +229,10 @@ void Config::Exchange(DDModel::Node *u, DDModel::Node *v) {
 	//swap(gd<DDNode>(u).cur.x,gd<DDNode>(v).cur.x); // keep x order consistent
 	InvalidateAdjMVals(u);
 	InvalidateAdjMVals(v);
+#ifndef REDO_ALL_XCONSTRAINTS
 	model.dirty().insert(u);
 	model.dirty().insert(v);
+#endif
 }
 // contains: one edge delete, one node-edge iteration, one vector iterate-and-set, one vector erase, one graph insertion
 void Config::RemoveNode(DDModel::Node *n) {
@@ -239,8 +245,10 @@ void Config::RemoveNode(DDModel::Node *n) {
 	int pos = gd<DDNode>(n).order;
 	dgassert(rank->order[pos] == n);
 	NodeV::iterator i = rank->order.begin()+pos;
+#ifndef REDO_ALL_XCONSTRAINTS
 	if(i!=rank->order.end())
 		model.dirty().insert(*i); // re-constrain right node
+#endif
 	for(NodeV::iterator j=i;j!=rank->order.end(); ++j)
 		gd<DDNode>(*j).order--;
 	rank->order.erase(i);

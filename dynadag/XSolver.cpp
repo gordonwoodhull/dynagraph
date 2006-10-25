@@ -19,9 +19,6 @@
 
 using namespace std;
 
-// changing incrementally is buggy.  not so expensive to rewrite all constraints.
-#define REDO_ALL
-
 namespace Dynagraph {
 namespace DynaDAG {
 
@@ -140,6 +137,7 @@ void XSolver::doEdgesep(DynaDAGLayout *subLayout) {
 		else {} /* self */
 	}
 }
+#ifndef REDO_ALL_XCONSTRAINTS
 void XSolver::restoreNodesep(DDChangeQueue &changeQ) {
 	doNodesep(&changeQ.insN);
 	doNodesep(&changeQ.modN);
@@ -153,6 +151,7 @@ void XSolver::restoreNodesep(DDChangeQueue &changeQ) {
 	for(DDModel::node_iter ni = config.model.dirty().nodes().begin(); ni!=config.model.dirty().nodes().end(); ++ni)
 		fixSeparation(*ni);
 }
+#endif
 void XSolver::fixEdgeCost(DDModel::Edge *me) {
 	if(!gd<DDEdge>(me).cn) {
 		gd<DDEdge>(me).cn = cg.create_node();
@@ -185,6 +184,7 @@ void XSolver::fixLostEdges(DynaDAGLayout *subLayout) {
 			fixEdgeCost(*outi);
 	}
 }
+#ifndef REDO_ALL_XCONSTRAINTS
 void XSolver::restoreEdgeCost(DDChangeQueue &changeQ) {
 	doEdgeCost(&changeQ.insE);
 	doEdgeCost(&changeQ.modE);
@@ -193,9 +193,9 @@ void XSolver::restoreEdgeCost(DDChangeQueue &changeQ) {
 	fixLostEdges(&changeQ.insE);
 	fixLostEdges(&changeQ.modE);
 }
-
+#endif
 void XSolver::stabilizeNodes(DDChangeQueue &changeQ) {
-#ifdef REDO_ALL
+#ifdef REDO_ALL_XCONSTRAINTS
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
         if(gd<NodeGeom>(*ni).pos.valid)  // DDp(*ni)->coordFixed) { dgassert(gd<NodeGeom>(*ni).pos.valid);
 			cg.Stabilize(gd<DDNode>(DDp(*ni)->top()).getXcon(),ROUND(gd<NodeGeom>(*ni).pos.x/gd<GraphGeom>(config.current).resolution.x),STABILITY_FACTOR_X);
@@ -239,7 +239,7 @@ void XSolver::readoutCoords() {
 }
 // DynaDAG callin
 void XSolver::Place(DDChangeQueue &changeQ) {
-#ifdef REDO_ALL
+#ifdef REDO_ALL_XCONSTRAINTS
 	DDModel::graphedge_iter ei;
 	DDModel::node_iter ni;
 	for(ei = config.model.edges().begin(); ei!=config.model.edges().end(); ++ei)
@@ -260,9 +260,9 @@ void XSolver::Place(DDChangeQueue &changeQ) {
 			InvalidateChainConstraints(DDp(*ni));
 	restoreNodesep(changeQ);
 	restoreEdgeCost(changeQ);
+	config.model.dirty().clear();
 #endif
 	//timer.LoopPoint(dgr::timing,"XConstraints");
-	config.model.dirty().clear();
 	stabilizeNodes(changeQ);
 	// if(cg.inconsistent || 1)
 	{

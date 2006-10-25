@@ -35,11 +35,13 @@ private:
 	void fixSeparation(DDModel::Node *mn);
 	void doNodesep(DynaDAGLayout *subLayout);
 	void doEdgesep(DynaDAGLayout *subLayout);
+#ifndef REDO_ALL_XCONSTRAINTS
 	void restoreNodesep(DDChangeQueue &changeQ);
+	void restoreEdgeCost(DDChangeQueue &changeQ);
+#endif
 	void fixEdgeCost(DDModel::Edge *me);
 	void fixLostEdges(DynaDAGLayout *subLayout);
 	void doEdgeCost(DynaDAGLayout *subLayout);
-	void restoreEdgeCost(DDChangeQueue &changeQ);
 	void stabilizeNodes(DDChangeQueue &changeQ);
 	void readoutCoords();
 	void checkLRConstraints();
