@@ -60,8 +60,7 @@ struct Chain {
 		edge_iter() {}
 	private:
 		edge_iter(Chain *chain,E *i) : chain(chain), i(i) {
-			if(i)
-				dgassert(i->head->g); // make sure valid pointer
+			dgassert(!i || i->head->g); // make sure valid pointer
 		}
 		E *i;
 	};
@@ -210,6 +209,21 @@ struct Path : Chain<N,E> {
 	Line unclippedPath;
 	Path() : layoutE(0) {}
 };
+
+inline DDModel::Node *cutNode(DDPath *path) {
+	Position ret;
+	int suppressRank = gd<Suppression>(path->layoutE).suppressRank;
+	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
+		if(gd<DDNode>(*ni).rank==suppressRank) 
+			return *ni;
+	return 0;
+}
+inline Position cutPos(DDPath *path) {
+	Position ret;
+	if(DDModel::Node *n = cutNode(path))
+		ret = gd<DDNode>(n).cur;
+	return ret;
+}
 
 } // namespace Dynagraph
 } // namespace DynaDAG

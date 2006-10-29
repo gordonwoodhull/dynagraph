@@ -77,7 +77,7 @@ private:
 	void executeDeletions(DDChangeQueue &changeQ);
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
-	void findChangedNodes(DDChangeQueue &changeQ);
+	void moveNodesBasedOnModel(DDChangeQueue &changeQ);
 	//void findFlowSlope(DynaDAGLayout::Node *n);
 	void findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);

@@ -48,7 +48,7 @@ struct EdgeSuppressor : LinkedChangeProcessor<Layout> {
 		}
 		else suppression = Suppression::unsuppressed;
 		bool ret = assign(gd<Suppression>(e).suppression,suppression);
-		if(gd<Suppression>(e).suppression==Suppression::headSuppressed || gd<Suppression>(e).suppression==Suppression::tailSuppressed)
+		if(suppression==Suppression::headSuppressed || suppression==Suppression::tailSuppressed)
 			ret |= assign(gd<Suppression>(e).suppressRank,suppressRank);
 		return ret;
 	}

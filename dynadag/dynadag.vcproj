@@ -226,6 +226,9 @@
 				RelativePath="DynaDAG.cpp">
 			</File>
 			<File
+				RelativePath=".\EdgeDrawing.cpp">
+			</File>
+			<File
 				RelativePath="FlexiSpline.cpp">
 			</File>
 			<File
