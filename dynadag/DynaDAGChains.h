@@ -216,6 +216,12 @@ inline DDModel::Node *cutNode(DDPath *path) {
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
 		if(gd<DDNode>(*ni).rank==suppressRank) 
 			return *ni;
+	/*
+	std::cerr << "no suppressRank " << suppressRank << " in ";
+	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
+		std::cerr << gd<DDNode>(*ni).rank << ' ';
+	std::cerr << std::endl;
+	*/
 	return 0;
 }
 inline Position cutPos(DDPath *path) {

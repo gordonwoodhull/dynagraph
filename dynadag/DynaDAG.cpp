@@ -212,10 +212,12 @@ void DynaDAGServer::moveNodesBasedOnModel(DDChangeQueue &changeQ) {
 void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	moveNodesBasedOnModel(changeQ);
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
-		drawEdgeSimply(DDp(*ei));
-	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		if(igd<Update>(*ei).flags & DG_UPD_MOVE)
+		if(!gd<NSRankerEdge>(*ei).secondOfTwo)
 			drawEdgeSimply(DDp(*ei));
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
+		if(!gd<NSRankerEdge>(*ei).secondOfTwo && igd<Update>(*ei).flags & DG_UPD_MOVE)
+			drawEdgeSimply(DDp(*ei));
+	drawSecondEdges(changeQ);
 }
 void DynaDAGServer::rememberOld() { 
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {

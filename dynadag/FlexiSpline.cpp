@@ -199,9 +199,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			dgassert(ei!=path->eEnd());
 			*/
 			tailpt = checkPos(cutPos(path));
+			/*
 			double ehei = fabs(gd<DDNode>(cutNode(path)).cur.y - gd<DDNode>(path->last->head).cur.y),
 				limhei = gd<GraphGeom>(config.current).separation.y/3;
 			dgassert(ehei <= limhei);
+			*/
 		}
 		else
 			tailpt = (direction==reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
@@ -217,9 +219,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			dgassert(ei!=path->eEnd());
 			*/
 			headpt = checkPos(cutPos(path));
+			/*
 			double ehei = fabs(gd<DDNode>(cutNode(path)).cur.y - gd<DDNode>(path->first->tail).cur.y),
 				limhei = gd<GraphGeom>(config.current).separation.y/3;
 			dgassert(ehei <= limhei);
+			*/
 		}
 		else
 			headpt = (direction==reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();

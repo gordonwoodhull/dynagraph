@@ -79,6 +79,7 @@ switchval<dgr::reportType> g_reports[] = {
 	{'c',dgr::crossopt,"crossing optimization stats"},
 	{'t',dgr::timing,"timing breakdown"},
 	{'d',dgr::dynadag,"dynadag tallies"},
+	{'a',dgr::ranks,"rank debugging"},
 	{'g',dgr::modelDump,"dump graph"},
 	{'q',dgr::dumpQueue,"dump input queue before each cycle"},
 	{'r',dgr::readability,"readability"},
@@ -116,13 +117,14 @@ void print_help() {
 		"   -s filename input .incr file (incrface dynamic layout)" << endl <<
 		"   -oN filename write stream N to filename" << endl <<
 		"   -oL filename output layout steps to filename{step}.dot" << endl <<
-		"   -raN report on a to stream N" << endl <<
-		"	-a attr=value set default graph attribute" << endl <<
-		"	-w[r] N wait [randomly up to] N nanoseconds before processing each line" << endl <<
-		"	-e specify random number seed" << endl <<
+		"   -raN report on a to stream N" << endl;
+	for(int i = 0;i<g_nreports;++i) reports[dgr::cmdline] << 
+		"      " << g_reports[i].c << ' ' << g_reports[i].desc << endl;
+	reports[dgr::cmdline] << 
+		"   -a attr=value set default graph attribute" << endl <<
+		"   -w[r] N wait [randomly up to] N nanoseconds before processing each line" << endl <<
+		"   -e specify random number seed" << endl <<
 		"   -x break on any exception" << endl;
-	for(int i = 0;i<g_nreports;++i)
-		reports[dgr::cmdline] << g_reports[i].c << ' ' << g_reports[i].desc << endl;
 }
 void print_report_syntax() {
 	reports[dgr::error] <<

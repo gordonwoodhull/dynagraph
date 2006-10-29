@@ -85,6 +85,7 @@ private:
 	void drawStraightEdge(DDPath *path); 
 	void drawSelfEdge(DynaDAGLayout::Edge *e); 
 	void drawEdgeSimply(DDPath *path); 
+	void drawSecondEdges(DDChangeQueue &changeQ);
 	void findDirtyEdges(DDChangeQueue &changeQ,bool force);
 	void redrawEdges(DDChangeQueue &changeQ);
 	void generateIntermediateLayout(DDChangeQueue &changeQ);
