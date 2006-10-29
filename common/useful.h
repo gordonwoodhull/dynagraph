@@ -81,6 +81,13 @@ inline bool is_vclose(float A,float B) {
 	return is_vclose_howclose<float,FloatMaxes>(A,B);
 }
 
+template<typename T>
+inline bool assign_unclose(T &a,const T &b) {
+	if(!is_vclose(a,b))
+		return a = b, true;
+	return false;
+}
+
 // debugging things.  even for internal errors, exceptions are more useful
 // than things based on abort()
 // dgassert compiles to nothing in release builds, whereas dgcheck keeps the statement

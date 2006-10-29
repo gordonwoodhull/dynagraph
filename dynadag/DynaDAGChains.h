@@ -115,9 +115,8 @@ struct MultiNode : Chain<N,E> {
 	N *node;
 	DynaDAGLayout::Node *layoutN;
 	NodeConstraints xcon;
-	Coord flowSlope; // for flow nodes, the slope at which edges should enter/exit
 	//	coordFixed; // whether a good place in X has been found
-	MultiNode() : node(0),layoutN(0),flowSlope(0,0) /*,coordFixed(false)*/ {}
+	MultiNode() : node(0),layoutN(0) /*,coordFixed(false)*/ {}
 	struct node_iter {
 		N *operator *() {
 			switch(state) {

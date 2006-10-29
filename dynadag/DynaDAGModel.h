@@ -29,8 +29,8 @@ struct MultiNode;
 template<typename N,typename E>
 struct Path;
 
-typedef enum _UpDown {UP,DOWN} UpDown;
-typedef enum _LeftRight {LEFT=-1,RIGHT=1} LeftRight;
+typedef enum UpDown_ {UP,DOWN} UpDown;
+typedef enum LeftRight_ {LEFT=-1,RIGHT=1} LeftRight;
 struct Median {
 	double val; // value
 	bool exists, // if defined

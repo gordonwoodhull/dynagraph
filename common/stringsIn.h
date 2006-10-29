@@ -49,7 +49,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			Coord res;
 			s >> res;
-			if(assign(gd<GraphGeom>(l).resolution,res))
+			if(assign_unclose(gd<GraphGeom>(l).resolution,res))
 				ret |= DG_UPD_RESOLUTION;
 		}
 		else if(name=="separation") {
@@ -58,14 +58,14 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			Coord sep;
 			s >> sep;
-			if(assign(gd<GraphGeom>(l).separation,sep))
+			if(assign_unclose(gd<GraphGeom>(l).separation,sep))
 				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="edgeseparation") {
 			istringstream s(value);
 			double esep;
 			s >> esep;
-			if(assign(gd<GraphGeom>(l).edgeSeparation,esep))
+			if(assign_unclose(gd<GraphGeom>(l).edgeSeparation,esep))
 				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="defaultsize") {

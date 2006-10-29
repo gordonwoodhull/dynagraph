@@ -46,7 +46,7 @@ struct ChangeQueue {
 		modE = copy.modE;
 		delE = copy.delE;
 	}
-	typedef enum {inserted,modified,deleted,nothing} Action;
+	typedef enum Action_ {inserted,modified,deleted,nothing} Action;
 	template<typename GO>
 	struct Result {
 		Action action;

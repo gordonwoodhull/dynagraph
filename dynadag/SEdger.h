@@ -31,7 +31,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 		: ChangeTranslator<Layout1,Layout2>(world1,world2)
 	{}
 	typedef FlexiRankXlator<Layout2> RankXlator;
-	typedef enum {spliced,one,none} SpliceState;
+	typedef enum SpliceState_ {spliced,one,none} SpliceState;
 	SpliceState getCurrentSpliceState(typename Layout1::Edge *e1) {
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		if(destQ.whole->fetch_edge(gd<Name>(e1)))

@@ -183,7 +183,7 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 		bb.r = grb;
 		bb.b = config.ranking.back()->yBelow(0);
 	}
-	if(assign(gd<GraphGeom>(&world_->current_).bounds,bb))
+	if(assign_unclose(gd<GraphGeom>(&world_->current_).bounds,bb))
 		ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
 }
 void DynaDAGServer::moveNodesBasedOnModel(DDChangeQueue &changeQ) {
@@ -213,10 +213,10 @@ void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	moveNodesBasedOnModel(changeQ);
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
 		if(!gd<NSRankerEdge>(*ei).secondOfTwo)
-			drawEdgeSimply(DDp(*ei));
+			drawEdgeSimply(*ei);
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
 		if(!gd<NSRankerEdge>(*ei).secondOfTwo && igd<Update>(*ei).flags & DG_UPD_MOVE)
-			drawEdgeSimply(DDp(*ei));
+			drawEdgeSimply(*ei);
 	drawSecondEdges(changeQ);
 }
 void DynaDAGServer::rememberOld() { 
@@ -332,9 +332,8 @@ void DynaDAGServer::Process() {
 
 	// find node & edge moves
 	moveNodesBasedOnModel(Q);
-	findDirtyEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
 	findFlowSlopes(Q);
-	redrawEdges(Q);
+	redrawEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
 
 	timer.LoopPoint(dgr::timing,"draw splines");
 

@@ -38,7 +38,7 @@ namespace Dynagraph {
 	(this update flag is a poor use for instance-specific data, because the data
 	is unused in the other subgraphs)
 */
-typedef enum {
+typedef enum UpdateFlags_ {
 	DG_UPD_MOVE = 1<<0, // NodeGeom:: or EdgeGeom:: pos attribute
 	DG_UPD_REGION = 1<<1, // NodeGeom::region
 	DG_UPD_NAIL = 1<<2, // NodeGeom::nail
@@ -56,7 +56,8 @@ typedef enum {
 	DG_UPD_POLYDEF = 1<<16, // anything in node's PolyDef
 	DG_UPD_CHANGERECT = 1<<17, // GraphGeom::changerect
 	DG_UPD_SUPPRESSION = 1<<18, // NodeGeom::suppressed, DynaDAG::Suppression
-	DG_UPD_TRANSLATION = 1<<19 // layout's Translation
+	DG_UPD_TRANSLATION = 1<<19, // layout's Translation
+	DG_UPD_FLOWTANGENT = 1<<20 // NodeGeom::
 } UpdateFlags;
 struct Update { // subgraph-specific datum
 	unsigned flags;
@@ -97,7 +98,7 @@ struct Drawn : Lines {};
 /*
 	GRAPH attributes
 */
-typedef enum {
+typedef enum SpliningLevel_ {
 	DG_SPLINELEVEL_VNODE,
 	DG_SPLINELEVEL_BOUNDS,
 	DG_SPLINELEVEL_SHORTEST,
@@ -126,7 +127,7 @@ struct StaticLabels {
 };
 // used by CoordTranslator; intention is to design this so that full matrix-based translation
 // could be supported in future
-typedef enum {
+typedef enum Orientation_ {
 	DG_ORIENT_RIGHT,
 	DG_ORIENT_UP,
 	DG_ORIENT_LEFT,
@@ -145,7 +146,7 @@ struct Translation {
 /*
 	NODE attributes
 */
-typedef enum {
+typedef enum NailType_ {
 	DG_NONAIL = 0,
 	DG_NAIL_X = 1,
 	DG_NAIL_Y = 2,
@@ -156,10 +157,11 @@ struct NodeGeom {
 	Region region;
 	NailType nail;
 	double flow;
+	Coord flowTan; // for flow nodes, the slope at which edges should enter/exit
 	bool suppressed,
 		freezeTailFanning,
 		freezeHeadFanning;
-	NodeGeom() : nail(DG_NONAIL),flow(0.0),suppressed(false),freezeTailFanning(false),freezeHeadFanning(false) {}
+	NodeGeom() : nail(DG_NONAIL),flow(0.0),flowTan(.0,0.),suppressed(false),freezeTailFanning(false),freezeHeadFanning(false) {}
 	Bounds BoundingBox() {
 		if(!pos.valid)
 			return Bounds();
@@ -172,7 +174,7 @@ struct NodeGeom {
 		return region.Overlaps(pos,o.pos,o.region);
 	}
 };
-typedef enum {
+typedef enum NodeLabelAlignment_ {
 	DG_NODELABEL_CENTER,
 	DG_NODELABEL_RIGHT,
 	DG_NODELABEL_TOP,
