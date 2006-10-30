@@ -73,6 +73,7 @@ struct OrientationTranslator {
 			d = fn(l,isCanvas,Coord(src.r,src.b));
 			dest.r = d.x;
 			dest.b = d.y;
+			dest.valid = true;
 		}
 		else
 			dest.valid = false;
@@ -153,13 +154,13 @@ struct CoordTranslatorOutActions {
 	typedef OrientationTranslator Trans;
 	void OpenGraph(InnerLayout *il,OuterLayout *ol) {
 		base_.OpenGraph(il,ol);
-		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).bounds,gd<GraphGeom>(il).bounds);
-		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).changerect,gd<GraphGeom>(il).changerect);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(il).bounds,gd<GraphGeom>(ol).bounds);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(il).changerect,gd<GraphGeom>(ol).changerect);
 	}
 	void ModifyGraph(InnerLayout *il,OuterLayout *ol) {
 		base_.ModifyGraph(il,ol);
-		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).bounds,gd<GraphGeom>(il).bounds);
-		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).changerect,gd<GraphGeom>(il).changerect);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(il).bounds,gd<GraphGeom>(ol).bounds);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(il).changerect,gd<GraphGeom>(ol).changerect);
 	}
 	void InsertNode(typename InnerLayout::Node *in,typename OuterLayout::Node *on) {
 		base_.InsertNode(in,on);

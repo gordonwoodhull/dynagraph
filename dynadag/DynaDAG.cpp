@@ -284,6 +284,7 @@ void DynaDAGServer::Process() {
 
 	if(gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		generateIntermediateLayout(Q);
+		updateBounds(Q);
 		NextProcess();
 		// client has heard about inserts so they're now mods, 
 		// and deletes can be blown away (should someone Higher do this?)
