@@ -183,7 +183,7 @@ int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
 	int pass = 0;
 	while((best>AbsoluteMustScore && pass<AbsoluteMaxPasses) || pass<MaxPasses && best>GoodEnough) {
 		int tired = 0;
-		unsigned score;
+		unsigned score=0;
 		while((best>AbsoluteMustScore && pass<AbsoluteMaxPasses) || pass<MaxPasses && best>GoodEnough && tired<Tire) {
 			score = toDo.Pass(pass);
 			if(score<best) {
@@ -273,7 +273,7 @@ struct HeavyPass {
 	int Pass(int pass) {
 		LeftRight way = (pass%2) ? RIGHT : LEFT;
 		UpDown dir = (pass&2) ? UP : DOWN;
-		crossing_.allowEqual_ = true;
+		crossing_.allowEqual_ = pass%3;
 		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
 		return Score();
 	}
