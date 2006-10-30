@@ -167,7 +167,7 @@ void bubblePass(Config &config,SiftMatrix &matrix,UpDown dir,LeftRight way,const
 		}
 	//matrix.check();
 }
-template<int Passes,int Tire,int GoodEnough,typename ToDo>
+template<int MaxPasses,int Tire,int GoodEnough,int AbsoluteMustScore,int AbsoluteMaxPasses,typename ToDo>
 int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
 	SiftMatrix backupM(config);
 	Config::Ranks backupC(config.current);
@@ -181,10 +181,10 @@ int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
 
 	unsigned best = toDo.Score();
 	int pass = 0;
-	while(pass<Passes && best>GoodEnough) {
+	while((best>AbsoluteMustScore && pass<AbsoluteMaxPasses) || pass<MaxPasses && best>GoodEnough) {
 		int tired = 0;
 		unsigned score;
-		while(pass<Passes && best>GoodEnough && tired<Tire) {
+		while((best>AbsoluteMustScore && pass<AbsoluteMaxPasses) || pass<MaxPasses && best>GoodEnough && tired<Tire) {
 			score = toDo.Pass(pass);
 			if(score<best) {
 				best = score;
@@ -273,7 +273,7 @@ struct HeavyPass {
 	int Pass(int pass) {
 		LeftRight way = (pass%2) ? RIGHT : LEFT;
 		UpDown dir = (pass&2) ? UP : DOWN;
-		crossing_.allowEqual_ = pass%3!=0;
+		crossing_.allowEqual_ = true;
 		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
 		return Score();
 	}
@@ -366,7 +366,7 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
 	}
 	SiftMatrix matrix(config);
 	LightPass lightPass(config,matrix,switchable);
-	borableRun<32,6,0>(config,matrix,lightPass);
+	borableRun<32,6,0,INT_MAX,32>(config,matrix,lightPass);
 
 	HeavyPass heavyPass(config,matrix,switchable);
 	int score = heavyPass.Score();
@@ -374,7 +374,7 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
 		loops.Field(dgr::crossopt,"weighted crossings after heavy pass",-1);
 		return;
 	}
-	score = borableRun<32,5,NODECROSS_PENALTY-1>(config,matrix,heavyPass);
+	score = borableRun<32,5,NODECROSS_PENALTY-1,NODECROSS_PENALTY*NODECROSS_PENALTY,100>(config,matrix,heavyPass);
 
 	loops.Field(dgr::crossopt,"weighted crossings after heavy pass",score);
 	// absolutely must not leave here with nodes crossing nodes!!

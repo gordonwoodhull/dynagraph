@@ -64,6 +64,27 @@ struct OrientationTranslator {
 	static void xlateOut(Layout *l,bool isCanvas,const Line &src,Line &dest) {
 		xlateLine(xlateOut<Layout>,l,isCanvas,src,dest);
 	}
+	template<typename Layout>
+	static void xlateBounds(Coord (*fn)(Layout *,bool,const Coord&),Layout *l,bool isCanvas,const Bounds &src,Bounds &dest) {
+		if(src.valid) {
+			Coord d = fn(l,isCanvas,Coord(src.l,src.t));
+			dest.l = d.x;
+			dest.t = d.y;
+			d = fn(l,isCanvas,Coord(src.r,src.b));
+			dest.r = d.x;
+			dest.b = d.y;
+		}
+		else
+			dest.valid = false;
+	}
+	template<typename Layout>
+	static void xlateIn(Layout *l,bool isCanvas,const Bounds &src,Bounds &dest) {
+		xlateBounds(xlateIn<Layout>,l,isCanvas,src,dest);
+	}
+	template<typename Layout>
+	static void xlateOut(Layout *l,bool isCanvas,const Bounds &src,Bounds &dest) {
+		xlateBounds(xlateOut<Layout>,l,isCanvas,src,dest);
+	}
 
 };
 // coord translators take responsibility for some attributes away from LayoutToLayoutTranslator
@@ -72,7 +93,8 @@ struct CoordTranslatorCopyPolicy : LayoutToLayoutCopyAllPolicy {
 		CopyDrawn = false,
 		CopyNodePos = false,
 		CopyEdgePos = false,
-		CopyNodeRegion = false
+		CopyNodeRegion = false,
+		CopyBounds = false,
 	};
 };
 // the implementation is based on the NamedToNamedChangeTranslator, with LayoutToLayoutTranslator actions
@@ -85,9 +107,13 @@ struct CoordTranslatorInActions {
 	typedef OrientationTranslator Trans;
 	void OpenGraph(OuterLayout *ol,InnerLayout *il) {
 		base_.OpenGraph(ol,il);
+		Trans::xlateIn(ol,true,gd<GraphGeom>(ol).bounds,gd<GraphGeom>(il).bounds);
+		Trans::xlateIn(ol,true,gd<GraphGeom>(ol).changerect,gd<GraphGeom>(il).changerect);
 	}
 	void ModifyGraph(OuterLayout *ol,InnerLayout *il) {
 		base_.ModifyGraph(ol,il);
+		Trans::xlateIn(ol,true,gd<GraphGeom>(ol).bounds,gd<GraphGeom>(il).bounds);
+		Trans::xlateIn(ol,true,gd<GraphGeom>(ol).changerect,gd<GraphGeom>(il).changerect);
 	}
 	void InsertNode(typename OuterLayout::Node *on,typename InnerLayout::Node *in) {
 		base_.InsertNode(on,in);
@@ -127,9 +153,13 @@ struct CoordTranslatorOutActions {
 	typedef OrientationTranslator Trans;
 	void OpenGraph(InnerLayout *il,OuterLayout *ol) {
 		base_.OpenGraph(il,ol);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).bounds,gd<GraphGeom>(il).bounds);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).changerect,gd<GraphGeom>(il).changerect);
 	}
 	void ModifyGraph(InnerLayout *il,OuterLayout *ol) {
 		base_.ModifyGraph(il,ol);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).bounds,gd<GraphGeom>(il).bounds);
+		Trans::xlateOut(ol,true,gd<GraphGeom>(ol).changerect,gd<GraphGeom>(il).changerect);
 	}
 	void InsertNode(typename InnerLayout::Node *in,typename OuterLayout::Node *on) {
 		base_.InsertNode(in,on);

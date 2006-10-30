@@ -125,7 +125,7 @@ void DynaDAGServer::drawSecondEdges(DDChangeQueue &changeQ) {
 
 void findFlowSlope(DDChangeQueue &Q,DynaDAGLayout::Node *cn) {
 	DDMultiNode *mn = DDp(cn);
-	if(!gd<NodeGeom>(cn).flow) {
+	if(is_vclose(0.,gd<NodeGeom>(cn).flow)) {
 		if(assign_unclose(gd<NodeGeom>(cn).flowTan,Coord(0,0)))
 			ModifyNode(Q,cn,DG_UPD_FLOWTANGENT);
 		return;
@@ -170,7 +170,7 @@ void DynaDAGServer::findFlowSlopes(DDChangeQueue &changeQ) {
 bool DynaDAGServer::edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &changeQ) {
 	DDPath *path = DDp(e);
 	dgassert(!changeQ.delE.find(e));
-	if(path->unclippedPath.Empty()) // unclippedPath is the internal marker
+	if(path->unclippedPath.Empty())
 		return true;
 	if(gd<EdgeGeom>(e).pos.Empty()) 
 		return true;

@@ -26,6 +26,7 @@ struct LayoutToLayoutCopyAllPolicy {
 		CopyNodePos = true,
 		CopyNodeRegion = true,
 		CopyEdgePos = true,
+		CopyBounds = true,
 	};
 };
 template<typename Layout1,typename Layout2,typename CopyPolicy = LayoutToLayoutCopyAllPolicy>
@@ -69,7 +70,20 @@ struct LayoutToLayoutTranslator {
 	}
 	void ModifyGraph(Layout1 *l1,Layout2 *l2) {
 		gd<Drawn>(l2) = gd<Drawn>(l1);
-		gd<GraphGeom>(l2) = gd<GraphGeom>(l1);
+		// this is starting to suck.
+		if(CopyPolicy::CopyBounds) {
+			gd<GraphGeom>(l2).bounds = gd<GraphGeom>(l1).bounds;
+			gd<GraphGeom>(l2).changerect = gd<GraphGeom>(l1).changerect;
+		}
+		gd<GraphGeom>(l2).splineLevel,
+		gd<GraphGeom>(l2).labelGap = gd<GraphGeom>(l1).labelGap;
+		gd<GraphGeom>(l2).resolution = gd<GraphGeom>(l1).resolution;
+		gd<GraphGeom>(l2).separation = gd<GraphGeom>(l1).separation;
+		gd<GraphGeom>(l2).defaultSize = gd<GraphGeom>(l1).defaultSize;
+		gd<GraphGeom>(l2).edgeSeparation = gd<GraphGeom>(l1).edgeSeparation;
+		gd<GraphGeom>(l2).ticks = gd<GraphGeom>(l1).ticks;
+		gd<GraphGeom>(l2).reportIntermediate = gd<GraphGeom>(l1).reportIntermediate;
+		gd<GraphGeom>(l2).s_edges = gd<GraphGeom>(l1).s_edges;
 		gd<Translation>(l2) = gd<Translation>(l1);
 		gd<StaticLabels>(l2) = gd<StaticLabels>(l1);
 		gd<Interruptible>(l2) = gd<Interruptible>(l1);

@@ -48,14 +48,6 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 		else
 			return one;
 	}
-
-	void updateTailFlowRank(typename Layout2::Node *n2tf,typename Layout1::Edge *e1,int ofs) {
-		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
-
-	}
-	void updateHeadFlowRank(typename Layout2::Node *n2hf,typename Layout1::Edge *e1,int ofs) {
-		gd<NSRankerNode>(n2hf).newTopRank = gd<NSRankerNode>(n2hf).newBottomRank = gd<NSRankerNode>(e1->head).newTopRank - ofs;
-	}
 	void eraseSplice(typename Layout1::Edge *e1) {
 		Name ename = gd<Name>(e1);
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;

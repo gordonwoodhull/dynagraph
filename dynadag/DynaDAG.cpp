@@ -163,13 +163,23 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 	bool got = false;
 	double glb=0.0,grb=0.0;  
+	Rank *top=0,*bottom=0;
 	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
 		if((*ri)->order.size()) {
-			DDModel::Node *left = (*ri)->order.front();
+			DDModel::Node *left = 0, *right = 0;
+			for(NodeV::iterator ni = (*ri)->order.begin(); ni!=(*ri)->order.end(); ++ni)
+				if(!config.IsSuppressed(*ni)) {
+					if(!left) left = *ni;
+					right = *ni;
+				}
+			if(!left)
+				continue;
+			if(!top)
+				top = *ri;
+			bottom = *ri;
 			double lb = gd<DDNode>(left).cur.x - config.LeftExtent(left);
 			if(!got || glb > lb)
 				glb = lb;
-			DDModel::Node *right = (*ri)->order.back();
 			double rb = gd<DDNode>(right).cur.x + config.RightExtent(right);
 			if(!got || grb < rb)
 				grb = rb;
@@ -179,9 +189,9 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 	if(got) {
 		bb.valid = true;
 		bb.l = glb;
-		bb.t = config.ranking.front()->yAbove(0);
+		bb.t = top->yAbove(0);
 		bb.r = grb;
-		bb.b = config.ranking.back()->yBelow(0);
+		bb.b = bottom->yBelow(0);
 	}
 	if(assign_unclose(gd<GraphGeom>(&world_->current_).bounds,bb))
 		ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
