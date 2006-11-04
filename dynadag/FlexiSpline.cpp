@@ -289,7 +289,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 	}
 	if(direction==reversed)
-		reverse(eg.pos.begin(),eg.pos.end());
+		reverse(unclipped.begin(),unclipped.end());
 	clipEdge(e);
 	return true;
 }

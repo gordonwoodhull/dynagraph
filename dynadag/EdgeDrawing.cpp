@@ -50,7 +50,7 @@ void DynaDAGServer::sketchEdge(DynaDAGLayout::Edge *e) {
 		uncl.push_back(gd<DDNode>(path->last->head).cur+eg.headPort.pos);
 	}
 	if(isReversed)
-		reverse(eg.pos.begin(),eg.pos.end());
+		reverse(uncl.begin(),uncl.end());
 	clipEdge(e);
 }
 void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
