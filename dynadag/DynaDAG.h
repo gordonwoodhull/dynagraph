@@ -83,12 +83,14 @@ private:
 	void drawStraightEdge(DynaDAGLayout::Edge *e); 
 	void drawSelfEdge(DynaDAGLayout::Edge *e); 
 	void drawEdgeSimply(DynaDAGLayout::Edge *e); 
+	void rescaleEdge(DynaDAGLayout::Edge *e);
 
 	void findFlowSlopes(DDChangeQueue &changeQ);
 	bool edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &changeQ);
-	void redrawEdges(DDChangeQueue &changeQ,bool force);
+	void drawFinalEdges(DDChangeQueue &changeQ,bool force);
+	void drawIntermediateEdges(DDChangeQueue &changeQ);
 	void drawSecondEdges(DDChangeQueue &changeQ);
-	void generateIntermediateLayout(DDChangeQueue &changeQ);
+
 	void rememberOld();
 	void dumpModel();
 };

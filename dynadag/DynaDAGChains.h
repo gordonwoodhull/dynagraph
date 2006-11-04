@@ -209,6 +209,15 @@ struct Path : Chain<N,E> {
 	Path() : layoutE(0) {}
 };
 
+inline void clipEdge(DynaDAGLayout::Edge *e) {
+	DDPath *path = DDp(e);
+	EdgeGeom &eg = gd<EdgeGeom>(e);
+	NodeGeom &tg = gd<NodeGeom>(e->tail),
+		&hg = gd<NodeGeom>(e->head);
+	eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
+		hg.pos,eg.headClipped?&hg.region:0);
+}
+
 inline DDModel::Node *cutNode(DDPath *path) {
 	Position ret;
 	int suppressRank = gd<Suppression>(path->layoutE).suppressRank;

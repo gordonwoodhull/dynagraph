@@ -219,16 +219,6 @@ void DynaDAGServer::moveNodesBasedOnModel(DDChangeQueue &changeQ) {
 	loops.Field(dgr::stability,"node x movement",moved.x);
 	loops.Field(dgr::stability,"node y movement",moved.y);
 }
-void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
-	moveNodesBasedOnModel(changeQ);
-	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
-		if(!gd<NSRankerEdge>(*ei).secondOfTwo)
-			drawEdgeSimply(*ei);
-	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		if(!gd<NSRankerEdge>(*ei).secondOfTwo && igd<Update>(*ei).flags & DG_UPD_MOVE)
-			drawEdgeSimply(*ei);
-	drawSecondEdges(changeQ);
-}
 void DynaDAGServer::rememberOld() { 
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDNode &ddn = gd<DDNode>(*ni);
@@ -283,7 +273,8 @@ void DynaDAGServer::Process() {
 	timer.LoopPoint(dgr::timing,"update model graph");
 
 	if(gd<GraphGeom>(&world_->current_).reportIntermediate) {
-		generateIntermediateLayout(Q);
+		moveNodesBasedOnModel(Q);
+		drawIntermediateEdges(Q);
 		updateBounds(Q);
 		NextProcess();
 		// client has heard about inserts so they're now mods, 
@@ -344,7 +335,7 @@ void DynaDAGServer::Process() {
 	// find node & edge moves
 	moveNodesBasedOnModel(Q);
 	findFlowSlopes(Q);
-	redrawEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
+	drawFinalEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
 
 	timer.LoopPoint(dgr::timing,"draw splines");
 

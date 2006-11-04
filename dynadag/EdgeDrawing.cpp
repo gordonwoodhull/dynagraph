@@ -30,7 +30,7 @@ void DynaDAGServer::sketchEdge(DynaDAGLayout::Edge *e) {
 	uncl.degree = 1;
 	DynaDAGLayout::Node *head = e->head,
 		*tail=e->tail;
-	dgassert(head!=tail); // self-edges handled in redrawEdges
+	dgassert(head!=tail); // self-edges handled in drawFinalEdges
 	// if a backedge (head is lower rank than tail), path->first->tail is head
 	// so we have to clip accordingly and then reverse the result (for arrowheads etc.)
 	bool isReversed = getEdgeDirection(e)==reversed; //gd<DDNode>(DDp(head)->top()).rank<gd<DDNode>(DDp(tail)->bottom()).rank;
@@ -38,8 +38,8 @@ void DynaDAGServer::sketchEdge(DynaDAGLayout::Edge *e) {
 		swap(head,tail);
 	if(!path->first) {
 		// there are three possible reasons why there's no path.
-		// redrawEdges handles self-edges and second edges of 2-cycles
-		// so we assume it's
+		// draw{Final|Temporary}Edges handle self-edges and second edges of 2-cycles
+		// so we assume it's flat
 		uncl.push_back(DDp(tail)->pos()+eg.tailPort.pos);
 		uncl.push_back(DDp(head)->pos()+eg.headPort.pos);
 	}
@@ -49,17 +49,12 @@ void DynaDAGServer::sketchEdge(DynaDAGLayout::Edge *e) {
 			uncl.push_back(gd<DDNode>(*ni).cur);
 		uncl.push_back(gd<DDNode>(path->last->head).cur+eg.headPort.pos);
 	}
-	bool clipFirst = eg.headClipped,
-		clipLast = eg.tailClipped;
-	if(isReversed)
-		swap(clipFirst,clipLast);
-	eg.pos.ClipEndpoints(uncl,
-		gd<NodeGeom>(tail).pos,clipFirst?&gd<NodeGeom>(tail).region:0,
-		gd<NodeGeom>(head).pos,clipLast?&gd<NodeGeom>(head).region:0);
 	if(isReversed)
 		reverse(eg.pos.begin(),eg.pos.end());
+	clipEdge(e);
 }
 void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
+	dgassert(e->tail==e->head);
 	EdgeGeom &eg = gd<EdgeGeom>(e);
 	const NodeGeom &tg = gd<NodeGeom>(e->tail),
 		&hg = gd<NodeGeom>(e->head);
@@ -83,8 +78,7 @@ void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
 	unclipped.push_back(right-dy);
 	unclipped.push_back(left-dy);
 	unclipped.push_back(left);
-	eg.pos.ClipEndpoints(unclipped,tg.pos,eg.tailClipped?&tg.region:0,
-		hg.pos,eg.headClipped?&hg.region:0);
+	clipEdge(e);
 }
 void DynaDAGServer::drawStraightEdge(DynaDAGLayout::Edge *e) {
 	DDPath *path = DDp(e);
@@ -93,7 +87,6 @@ void DynaDAGServer::drawStraightEdge(DynaDAGLayout::Edge *e) {
 	uncl.Clear();
 	const NodeGeom &tg = gd<NodeGeom>(e->tail),
 		&hg = gd<NodeGeom>(e->head);
-	bool clipTail = eg.tailClipped, clipHead = eg.headClipped;
 	uncl.degree = 3;
 	Coord tp = checkPos(gd<Suppression>(e).suppression==Suppression::tailSuppressed ? cutPos(path) : tg.pos),
 		hp = checkPos(gd<Suppression>(e).suppression==Suppression::headSuppressed ? cutPos(path) : hg.pos);
@@ -101,7 +94,7 @@ void DynaDAGServer::drawStraightEdge(DynaDAGLayout::Edge *e) {
 	uncl.push_back((2.*tp+hp)/3.);
 	uncl.push_back((tp+2.*hp)/3.);
 	uncl.push_back(hg.pos);
-	eg.pos.ClipEndpoints(uncl,tp,clipTail?&tg.region:0,hp,clipHead?&hg.region:0);
+	clipEdge(e);
 }
 void DynaDAGServer::drawEdgeSimply(DynaDAGLayout::Edge *e) {
 	if(gd<Suppression>(e).suppression==Suppression::suppressed)
@@ -111,18 +104,10 @@ void DynaDAGServer::drawEdgeSimply(DynaDAGLayout::Edge *e) {
 	else
 		drawStraightEdge(e);
 }
-void DynaDAGServer::drawSecondEdges(DDChangeQueue &changeQ) {
-	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei)
-		if(gd<NSRankerEdge>(*ei).secondOfTwo) {
-			Line before = gd<EdgeGeom>(*ei).pos;
-			Line &otherSide = gd<EdgeGeom>(world_->current_.find_edge((*ei)->head,(*ei)->tail)).pos;
-			gd<EdgeGeom>(*ei).pos.assign(otherSide.rbegin(),otherSide.rend());
-			gd<EdgeGeom>(*ei).pos.degree = otherSide.degree;
-			if(before!=gd<EdgeGeom>(*ei).pos)
-				ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-		}
+void DynaDAGServer::rescaleEdge(DynaDAGLayout::Edge *e) {
+	DDPath *path = DDp(e);
+	dgassert(path && path->unclippedPath.size());
 }
-
 void findFlowSlope(DDChangeQueue &Q,DynaDAGLayout::Node *cn) {
 	DDMultiNode *mn = DDp(cn);
 	if(is_vclose(0.,gd<NodeGeom>(cn).flow)) {
@@ -213,7 +198,7 @@ bool DynaDAGServer::edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &change
 	}
 	return false;
 }
-void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
+void DynaDAGServer::drawFinalEdges(DDChangeQueue &changeQ,bool force) {
 	//ObstacleAvoiderSpliner<DynaDAGLayout> obav(&world_->current_);
 	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei) {
 		DynaDAGLayout::Edge *e = *ei;
@@ -233,6 +218,26 @@ void DynaDAGServer::redrawEdges(DDChangeQueue &changeQ,bool force) {
 		}
 	}
 	drawSecondEdges(changeQ);
+}
+void DynaDAGServer::drawIntermediateEdges(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
+		if(!gd<NSRankerEdge>(*ei).secondOfTwo)
+			drawEdgeSimply(*ei);
+	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
+		if(!gd<NSRankerEdge>(*ei).secondOfTwo && igd<Update>(*ei).flags & DG_UPD_MOVE)
+			drawEdgeSimply(*ei);
+	drawSecondEdges(changeQ);
+}
+void DynaDAGServer::drawSecondEdges(DDChangeQueue &changeQ) {
+	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei)
+		if(gd<NSRankerEdge>(*ei).secondOfTwo) {
+			Line before = gd<EdgeGeom>(*ei).pos;
+			Line &otherSide = gd<EdgeGeom>(world_->current_.find_edge((*ei)->head,(*ei)->tail)).pos;
+			gd<EdgeGeom>(*ei).pos.assign(otherSide.rbegin(),otherSide.rend());
+			gd<EdgeGeom>(*ei).pos.degree = otherSide.degree;
+			if(before!=gd<EdgeGeom>(*ei).pos)
+				ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
+		}
 }
 
 } // namespace DynaDAG

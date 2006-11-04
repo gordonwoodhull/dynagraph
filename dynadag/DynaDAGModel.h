@@ -135,8 +135,9 @@ typedef std::vector<DDModel::Node*> NodeV;
 typedef std::vector<DDModel::Edge*> EdgeV;
 typedef std::set<DynaDAGLayout::Node*> NodeSet;
 
-} // namespace Dynagraph
+
 } // namespace DynaDAG
+} // namespace Dynagraph
 
 // specialize LGraph's gd for model nodes & edges
 template<>

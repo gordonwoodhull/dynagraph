@@ -189,15 +189,6 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			headpt;
 		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed&&direction==forward
 			|| gd<Suppression>(e).suppression==Suppression::headSuppressed&&direction==reversed) {
-			/*
-			DDPath::edge_iter ei;
-			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
-				if(!config.IsSuppressed(*ei)) {
-					tailpt = gd<DDNode>((*ei)->tail).cur;
-					break;
-				}
-			dgassert(ei!=path->eEnd());
-			*/
 			tailpt = checkPos(cutPos(path));
 			/*
 			double ehei = fabs(gd<DDNode>(cutNode(path)).cur.y - gd<DDNode>(path->last->head).cur.y),
@@ -209,15 +200,6 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			tailpt = (direction==reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
 		if(gd<Suppression>(e).suppression==Suppression::headSuppressed&&direction==forward
 			|| gd<Suppression>(e).suppression==Suppression::tailSuppressed&&direction==reversed) {
-			/*
-			DDPath::edge_iter ei;
-			for(ei = path->eBegin(); ei!=path->eEnd(); ++ei)
-				if(config.IsSuppressed(*ei)) {
-					headpt = gd<DDNode>((*ei)->tail).cur;
-					break;
-				}
-			dgassert(ei!=path->eEnd());
-			*/
 			headpt = checkPos(cutPos(path));
 			/*
 			double ehei = fabs(gd<DDNode>(cutNode(path)).cur.y - gd<DDNode>(path->first->tail).cur.y),
@@ -282,16 +264,6 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 							endSlopes.b = -endSlopes.a;
 							endSlopes.a = -t;
 						}
-						/*
-						if(direction==reversed) {
-							endSlopes.a = -endSlopes.a;
-							endSlopes.b = -endSlopes.b;
-						}
-						if(gd<EdgeGeom>(e).backward) {
-							endSlopes.a = -endSlopes.a;
-							endSlopes.b = -endSlopes.b;
-						}
-						*/
 						dgcheck(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 					}
 					else
@@ -316,16 +288,9 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			}
 		}
 	}
-	NodeGeom &tg = gd<NodeGeom>(e->tail),
-		&hg = gd<NodeGeom>(e->head);
-	if(direction==reversed) 
-		eg.pos.ClipEndpoints(unclipped,hg.pos,eg.headClipped?&hg.region:0,
-			tg.pos,eg.tailClipped?&tg.region:0);
-	else
-		eg.pos.ClipEndpoints(unclipped,tg.pos,eg.tailClipped?&tg.region:0,
-			hg.pos,eg.headClipped?&hg.region:0);
-	if((direction==reversed))
+	if(direction==reversed)
 		reverse(eg.pos.begin(),eg.pos.end());
+	clipEdge(e);
 	return true;
 }
 
