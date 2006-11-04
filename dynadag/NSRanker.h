@@ -35,7 +35,7 @@ private:
 	ConstraintGraph::Node *top_; // to pull loose nodes upward
 	typedef FlexiRankXlator<Layout> RankXlator;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
-	void removePathConstraints(typename Layout::Edge *e);
+	void removeEdgeConstraints(typename Layout::Edge *e);
 	void doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI);
 	void makeStrongConstraint(typename Layout::Edge *e);
 	void makeWeakConstraint(typename Layout::Edge *e);
@@ -50,7 +50,7 @@ private:
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
 	for(typename Layout::graphedge_iter i = this->world_->current_.edges().begin();i!=this->world_->current_.edges().end();++i)
-		removePathConstraints(*i);
+		removeEdgeConstraints(*i);
 	for(typename Layout::node_iter j = this->world_->current_.nodes().begin(); j!=this->world_->current_.nodes().end(); ++j)
 		removeLayoutNodeConstraints(*j);
 }
@@ -60,7 +60,7 @@ void NSRanker<Layout>::removeLayoutNodeConstraints(typename Layout::Node *n) {
 	cg_.RemoveNodeConstraints(gd<NSRankerNode>(n).bottomC);
 }
 template<typename Layout>
-void NSRanker<Layout>::removePathConstraints(typename Layout::Edge *e) {
+void NSRanker<Layout>::removeEdgeConstraints(typename Layout::Edge *e) {
 	if(gd<NSRankerEdge>(e).weak) {
 		cg_.erase_node(gd<NSRankerEdge>(e).weak);
 		gd<NSRankerEdge>(e).weak = 0;
@@ -73,13 +73,8 @@ void NSRanker<Layout>::removePathConstraints(typename Layout::Edge *e) {
 }
 template<typename Layout>
 void NSRanker<Layout>::doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI) {
-	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei) {
-		removePathConstraints(*ei);
-		typename Layout::Edge *e = *ei;
-		if(typename Layout::Edge *e2 = this->world_->current_.find_edge(e->head,e->tail))
-			if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false)) 
-				extraI.insert(e2);
-	}
+	for(typename Layout::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
+		removeEdgeConstraints(*ei);
 	for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni) 
 		removeLayoutNodeConstraints(*ni);
 }
@@ -134,11 +129,11 @@ void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
 	for(typename Layout::nodeedge_iter ei = cn->alledges().begin(); ei!=cn->alledges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
 		if(gd<NSRankerEdge>(e).strong && fix) {
-			removePathConstraints(e);
+			removeEdgeConstraints(e);
 			makeWeakConstraint(e);
 		}
 		else if(gd<NSRankerEdge>(e).weak && !fix) {
-			removePathConstraints(e);
+			removeEdgeConstraints(e);
 			makeStrongConstraint(e);
 		}
 	}
@@ -247,16 +242,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 			*curhead = this->world_->current_.find(e->head);
 		dgassert(curtail&&curhead); // if this fails, probably lack of UpdateCurrentProcessor
 		bool weak = false;
-		if(typename Layout::Edge *e1 = this->world_->current_.find_edge(e->head,e->tail)) {
-			// mark & ignore second leg of 2-cycle for all modeling purposes
-			// DynaDAGServer will draw it by reversing the other
-			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
-			if(gd<NSRankerEdge>(e1).weak || gd<NSRankerEdge>(e1).strong) {
-				gd<NSRankerEdge>(e).secondOfTwo = true;
-				continue;
-			}
-		}
-		else if(pathExists<Layout>(curhead,curtail))
+		if(pathExists<Layout>(curhead,curtail))
 			weak = true;
 		if(gd<NSRankerNode>(e->tail).rankFixed || gd<NSRankerNode>(e->head).rankFixed)
 			weak = true;

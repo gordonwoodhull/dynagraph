@@ -34,8 +34,7 @@ struct LayoutToNSRankerModelTranslator : ChangeTranslator<Layout,NSRankerModel> 
 		// insert these in destQ (which doesn't return) and mod them in srcQ
         for(typename Layout::graphedge_iter ei = source_->Q.delE.edges().begin(); ei!=source_->Q.delE.edges().end();++ei)
             if(typename Layout::Edge *e2 = source_->current_.find_edge((*ei)->head,(*ei)->tail))
-                if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false))
-                    extraI.insert(e2);
+				extraI.insert(e2);
 
         for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);

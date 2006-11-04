@@ -61,7 +61,7 @@ struct Path {
 };
 struct NamedState : PatternState,Name {};
 struct NamedTransition : Path,Name {};
-struct Pattern : LGraph<ADTisCDT,Nothing,NamedState,NamedTransition> {
+struct Pattern : LGraph<ADTisCDT,false,Nothing,NamedState,NamedTransition> {
 	std::map<DString,Node*> dict;
 	Pattern(const Pattern &copy) : Graph(copy) {
 		for(node_iter ni = nodes().begin(); ni!=nodes().end(); ++ni)

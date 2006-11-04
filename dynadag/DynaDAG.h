@@ -89,7 +89,6 @@ private:
 	bool edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &changeQ);
 	void drawFinalEdges(DDChangeQueue &changeQ,bool force);
 	void drawIntermediateEdges(DDChangeQueue &changeQ);
-	void drawSecondEdges(DDChangeQueue &changeQ);
 
 	void rememberOld();
 	void dumpModel();

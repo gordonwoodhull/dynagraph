@@ -1,0 +1,11 @@
+open graph V []
+insert node V a
+insert node V b
+insert edge V e a b
+insert edge V f b a
+insert node V c
+insert edge V g a c
+insert edge V h c b
+
+delete node V c
+

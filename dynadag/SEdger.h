@@ -118,7 +118,6 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 				ModifyNode(destQ,n2tf,DG_UPD_SUPPRESSION);
 			if(assign(gd<NodeGeom>(n2hf).suppressed,gd<NodeGeom>(n2h).suppressed))
 				ModifyNode(destQ,n2hf,DG_UPD_SUPPRESSION);
-			gd<NSRankerEdge>(e2ts).secondOfTwo = gd<NSRankerEdge>(e2bs).secondOfTwo = gd<NSRankerEdge>(e2hs).secondOfTwo = false;
 			break;
 		}
 		case one: {
@@ -134,11 +133,6 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 				e2 = destQ.whole->fetch_edge(n2t,n2h,ename,true).first;
 				actions_.InsertEdge(e1,destQ.InsEdge(e2).object);
 				break;
-			}
-			if(gd<NSRankerEdge>(e1).secondOfTwo) {
-				ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
-				typename Layout1::Edge *be1 = srcQ.whole->find_edge(e1->head,e1->tail);
-				gd<NSRankerEdge>(e2).secondOfTwo = getDesiredSplicedness(be1)==one;
 			}
 			break;
 		}

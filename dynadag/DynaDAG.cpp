@@ -60,7 +60,7 @@ pair<DDPath*,DDModel::Edge*> DynaDAGServer::OpenModelEdge(DDModel::Node *u, DDMo
 	DDPath *p = 0;
 	DDModel::Edge *me = 0;
 	if(u&&v)
-		me = model.create_edge(u,v).first;
+		me = model.create_edge(u,v);
 	if(layoutE) { // part of path: attach path to model & view edges
 		dgassert(layoutE->g==&world_->whole_); // don't store the wrong subedge
 		p = DDp(layoutE); // see if view edge's already been modeled

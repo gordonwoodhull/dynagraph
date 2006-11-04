@@ -64,7 +64,7 @@ struct EdgeSuppressor : LinkedChangeProcessor<Layout> {
 			if(findEdgeSuppression(*ei,thirrank))
 				ModifyEdge(this->world_->Q_,*ei,DG_UPD_SUPPRESSION);
 			if(gd<Suppression>(*ei).suppression==Suppression::tailSuppressed || gd<Suppression>(*ei).suppression==Suppression::headSuppressed)
-				gd<ExtraRanks>(&this->world_->whole_).extraRanks.push_back(gd<Suppression>(*ei).suppressRank);
+				gd<ExtraRanks>(&this->world_->whole_).extraRanks.insert(gd<Suppression>(*ei).suppressRank);
 		}
 		this->NextProcess();
 	}

@@ -22,7 +22,7 @@
 #include "dt.h"
 
 struct ADTisCDT {
-	template<typename Edge,typename Node,typename EdgeCompare,typename HeadCompare,typename NodeCompare>
+	template<typename Edge,typename Node,typename EdgeCompare,typename HeadCompare,typename NodeCompare,bool AllowParallel>
 	struct defs {
 		struct inseqlink : cdt::seqlink {};
 		struct outseqlink : cdt::seqlink {};
@@ -64,10 +64,10 @@ struct ADTisCDT {
 
 		struct graph_adtdata {
 			graph_adtdata() :
-				m_inedgetreedict(m_inedgetreedisc),
-				m_outedgetreedict(m_outedgetreedisc),
-				m_headtreedict(m_headdisc),
-				m_nodetreedict(m_nodetreedisc),
+				m_inedgetreedict(m_inedgetreedisc,Dtoset),
+				m_outedgetreedict(m_outedgetreedisc,Dtoset),
+				m_headtreedict(m_headdisc,AllowParallel?Dtobag:Dtoset),
+				m_nodetreedict(m_nodetreedisc,Dtoset),
 				m_nodes(m_nodetreedisc,m_nodetreedict)
 			{}
 

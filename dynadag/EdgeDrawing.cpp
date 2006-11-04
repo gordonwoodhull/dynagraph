@@ -203,8 +203,6 @@ void DynaDAGServer::drawFinalEdges(DDChangeQueue &changeQ,bool force) {
 	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei) {
 		DynaDAGLayout::Edge *e = *ei;
 		Line before = gd<EdgeGeom>(e).pos;
-		if(gd<NSRankerEdge>(e).secondOfTwo)
-			continue; // handled below
 		dgassert(!changeQ.delE.find(e));
 		if(force || edgeNeedsRedraw(e,changeQ)) {
 			if(e->tail==e->head)  // self-edge
@@ -217,27 +215,13 @@ void DynaDAGServer::drawFinalEdges(DDChangeQueue &changeQ,bool force) {
 				ModifyEdge(changeQ,e,DG_UPD_MOVE);
 		}
 	}
-	drawSecondEdges(changeQ);
 }
 void DynaDAGServer::drawIntermediateEdges(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
-		if(!gd<NSRankerEdge>(*ei).secondOfTwo)
-			drawEdgeSimply(*ei);
+		drawEdgeSimply(*ei);
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		if(!gd<NSRankerEdge>(*ei).secondOfTwo && igd<Update>(*ei).flags & DG_UPD_MOVE)
+		if(igd<Update>(*ei).flags & DG_UPD_MOVE)
 			drawEdgeSimply(*ei);
-	drawSecondEdges(changeQ);
-}
-void DynaDAGServer::drawSecondEdges(DDChangeQueue &changeQ) {
-	for(DynaDAGLayout::graphedge_iter ei = world_->current_.edges().begin(); ei!=world_->current_.edges().end(); ++ei)
-		if(gd<NSRankerEdge>(*ei).secondOfTwo) {
-			Line before = gd<EdgeGeom>(*ei).pos;
-			Line &otherSide = gd<EdgeGeom>(world_->current_.find_edge((*ei)->head,(*ei)->tail)).pos;
-			gd<EdgeGeom>(*ei).pos.assign(otherSide.rbegin(),otherSide.rend());
-			gd<EdgeGeom>(*ei).pos.degree = otherSide.degree;
-			if(before!=gd<EdgeGeom>(*ei).pos)
-				ModifyEdge(changeQ,*ei,DG_UPD_MOVE);
-		}
 }
 
 } // namespace DynaDAG

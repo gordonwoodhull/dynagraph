@@ -27,7 +27,7 @@ struct ConstraintType {
 	enum {unknown,anchor,stab,node,rankWeak,orderEdgeStraighten} why;
 };
 struct DDCNodeData : NS::NSNode<void*,void*>, ConstraintType {};
-typedef LGraph<ADTisCDT,NS::NSData<void*,void*>,DDCNodeData,NS::NSEdge<void*,void*> > DDCGraph;
+typedef LGraph<ADTisCDT,false,NS::NSData<void*,void*>,DDCNodeData,NS::NSEdge<void*,void*> > DDCGraph;
 typedef NS::NS<DDCGraph,NS::AccessNoAttr<DDCGraph> > DDNS;
 
 struct NodeConstraints {

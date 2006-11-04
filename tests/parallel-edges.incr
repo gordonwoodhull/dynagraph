@@ -1,0 +1,12 @@
+open graph V []
+lock graph V
+insert node V a
+insert node V b
+insert edge V e a b
+unlock graph V
+pulse graph V [phase=fish]
+insert edge V f a b
+insert edge V g a b
+insert edge V h a b
+insert edge V i a b
+

@@ -54,7 +54,7 @@ struct NSRankerModelGraph {
 struct NSRankerModelNodeData : Name,NSRankerModelNode {};
 struct NSRankerModelEdgeData : Name,NSRankerModelEdge {};
 
-typedef LGraph<ADTisCDT,NSRankerModelGraph,NSRankerModelNodeData,NSRankerModelEdgeData> NSRankerModel;
+typedef LGraph<ADTisCDT,false,NSRankerModelGraph,NSRankerModelNodeData,NSRankerModelEdgeData> NSRankerModel;
 
 } // namespace DynaDAG
 } // namespace Dynagraph

@@ -15,6 +15,7 @@
 
 #include "LayoutChooserConfigurator.h"
 #include "dynadag/EdgeSuppressorConfigurator.h"
+#include "dynadag/EnsureParallelEdgeRanksConfigurator.h"
 #include "dynadag/ClearExtraRanksConfigurator.h"
 #include "dynadag/EmphasizeFlowConfigurator.h"
 #include "dynadag/RankerConfigurator.h"
@@ -38,6 +39,7 @@ namespace Dynagraph {
 typedef mpl::list<
 	LayoutChooserConfigurator,
 	DynaDAG::EdgeSuppressorConfigurator,
+	DynaDAG::EnsureParallelEdgeRanksConfigurator,
 	DynaDAG::ClearExtraRanksConfigurator,
 	DynaDAG::EmphasizeFlowConfigurator,
 	DynaDAG::RankerConfigurator,

@@ -25,8 +25,8 @@ namespace DynaDAG {
 // once a translation of dag/order.c
 
 void Config::makeRankList(DDChangeQueue &changeQ) {
-	Ranks::IndexV &newRanks = ranking.newRanks,
-		&extraRanks = gd<ExtraRanks>(changeQ.whole).extraRanks;
+	Ranks::IndexV &newRanks = ranking.newRanks;
+	std::set<int> &extraRanks = gd<ExtraRanks>(changeQ.whole).extraRanks;
 	newRanks.clear();
 	for(DynaDAGLayout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni)
 		if(!changeQ.delN.find(*ni)) {
@@ -304,21 +304,10 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 				DDPath *path = DDp(ve);
 				cerr << "it's an edge with" << endl;
 				cerr << "tail " << gd<Name>(ve->tail) << " head " << gd<Name>(ve->head) << endl;
-				cerr << "secondOfTwo " << gd<NSRankerEdge>(ve).secondOfTwo << endl;
 				if(path) cerr << "first " << path->first << " last " << path->last << endl;
 				else cerr << "no path" << endl;
 				cerr << "direction " << getEdgeDirection(ve) << endl;
 				cerr << "suppression " << gd<Suppression>(ve).suppression << endl;
-				if(DynaDAGLayout::Edge *other = whole->find_edge(ve->head,ve->tail)) {
-					DDPath *path = DDp(other);
-					cerr << "it has a twin with" << endl;
-					cerr << "tail " << gd<Name>(other->tail) << " head " << gd<Name>(other->head) << endl;
-					cerr << "secondOfTwo " << gd<NSRankerEdge>(other).secondOfTwo << endl;
-					if(path) cerr << "first " << path->first << " last " << path->last << endl;
-					else cerr << "no path" << endl;
-					cerr << "direction " << getEdgeDirection(other) << endl;
-					cerr << "suppression " << gd<Suppression>(other).suppression << endl;
-				}
 			}
 			else if(vn)
 				cerr << "it's a node" << endl;
@@ -367,9 +356,7 @@ void unbindEndpoints(DynaDAGLayout::Edge *ve) {
 */
 void Config::insertEdge(DynaDAGLayout::Edge *ve) {
 	DDPath *path = dynaDAG->OpenModelEdge(0,0,ve).first;
-	if(ve->head==ve->tail || gd<NSRankerEdge>(ve).secondOfTwo)
-		dynaDAG->CloseChain(path,false); // do not model self-edges or 2-cycle second
-	else if(userDefinedMove(ve))
+	if(userDefinedMove(ve))
 		userRouteEdge(path);
 	else
 		autoRouteEdge(path);
@@ -539,8 +526,6 @@ void Config::moveOldEdges(DDChangeQueue &changeQ) {
 			DynaDAGLayout::Edge *ve = whole->find(*ei);
 			if((*ei)->head==(*ei)->tail)
 				; // ignore self-edges
-			else if(gd<NSRankerEdge>(*ei).secondOfTwo)
-				; // ignore one edge of 2-cycle
 			else if(userDefinedMove(*ei))
 				userRouteEdge(DDp(ve));
 			else

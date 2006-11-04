@@ -32,7 +32,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
-            removePathConstraints(*ei);
+            removeEdgeConstraints(*ei);
 
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
@@ -43,7 +43,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
         cg.RemoveNodeConstraints(rn.topC);
         cg.RemoveNodeConstraints(rn.bottomC);
     }
-    void removePathConstraints(NSRankerModel::Edge *e) {
+    void removeEdgeConstraints(NSRankerModel::Edge *e) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
         if(re.weak) {

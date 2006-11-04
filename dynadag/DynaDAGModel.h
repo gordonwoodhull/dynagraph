@@ -95,8 +95,8 @@ struct DDEdgeT {
 // changing incrementally is buggy.  not so expensive to rewrite all constraints.
 #define REDO_ALL_XCONSTRAINTS
 
-struct DDModel : LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > {
-	typedef LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > G;
+struct DDModel : LGraph<ADTisCDT,true,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > {
+	typedef LGraph<ADTisCDT,true,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > G;
 	// the real types, hampered by circular typing problems
 	typedef Chain<Node,Edge> C;
 	typedef MultiNode<Node,Edge> MN;

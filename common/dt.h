@@ -190,8 +190,8 @@ struct sequence {
 template<typename Disc>
 struct tree_dict {
 	Dt_t *m_dict;
-	tree_dict(Disc &disc) {
-		m_dict = dtopen(&disc,Dtoset);
+	tree_dict(Disc &disc,Dtmethod_t *method) {
+		m_dict = dtopen(&disc,method);
 	}
 	operator Dt_t *() {
 		return m_dict;

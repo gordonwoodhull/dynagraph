@@ -31,7 +31,7 @@ const int SearchSize = 20;
 
 
 // minimum data for this alg:
-// typedef LGraph<ADTisCDT,NSData<void*,void*>,NSNode<void*,void*>,NSEdge<void*,void*> > NSGraph;
+// typedef LGraph<ADTisCDT,false,NSData<void*,void*>,NSNode<void*,void*>,NSEdge<void*,void*> > NSGraph;
 // minimal NS algorithm
 // typedef NS<NSGraph,AccessNoAttr<NSGraph> > NSAlg;
 
