@@ -209,9 +209,6 @@
 				RelativePath="Config.cpp">
 			</File>
 			<File
-				RelativePath="ConstraintGraph.cpp">
-			</File>
-			<File
 				RelativePath="DotlikeOptimizer.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">

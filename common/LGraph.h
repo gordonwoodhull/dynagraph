@@ -722,6 +722,11 @@ public:
 	Edge *first_edge(Node *tail,Node *head) {
 		return FindEdgeResult<AllowParallel>::first(find_edge(tail,head));
 	}
+	Edge *fiat_edge(Node *tail,Node *head) {
+		if(Edge *e = first_edge(tail,head))
+			return e;
+		return CreateEdgeResult<AllowParallel>::get_edge(create_edge(tail,head));
+	}
 	Node *find_nodeimage(Node *n) {
 		node_iter i = nodes().find(n);
 		if(i==nodes().end())

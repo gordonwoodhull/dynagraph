@@ -31,8 +31,8 @@ struct NSRanker : LinkedChangeProcessor<Layout> {
 	~NSRanker();
 	void Process();
 private:
-	ConstraintGraph cg_;
-	ConstraintGraph::Node *top_; // to pull loose nodes upward
+	LlelConstraintGraph cg_;
+	LlelConstraintGraph::Node *top_; // to pull loose nodes upward
 	typedef FlexiRankXlator<Layout> RankXlator;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
 	void removeEdgeConstraints(typename Layout::Edge *e);
@@ -83,7 +83,7 @@ void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
 	dgassert(!gd<NSRankerEdge>(e).strong);
 	gd<EdgeGeom>(e).constraint = true;
 
-	DDCGraph::Node *tvar,*hvar;
+	LlelConstraintGraph::Node *tvar,*hvar;
 	if(gd<EdgeGeom>(e).backward) {
 		tvar = cg_.GetVar(gd<NSRankerNode>(e->head).bottomC);
 		hvar = cg_.GetVar(gd<NSRankerNode>(e->tail).topC);
@@ -93,9 +93,9 @@ void NSRanker<Layout>::makeStrongConstraint(typename Layout::Edge *e) {
 		hvar = cg_.GetVar(gd<NSRankerNode>(e->head).topC);
 	}
 
-	DDCGraph::Edge *constr = cg_.create_edge(tvar,hvar).first;
+	LlelConstraintGraph::Edge *constr = cg_.fiat_edge(tvar,hvar);
 	gd<NSRankerEdge>(e).strong = constr;
-	DDNS::NSE &nse = DDNS::NSd(constr);
+	LlelNS::NSE &nse = LlelNS::NSd(constr);
 	double length = std::max(0.,gd<EdgeGeom>(e).minLength);
 	nse.minlen = RankXlator::HeightToDRank(&this->world_->whole_,length*gd<GraphGeom>(e->g).separation.y);
 	nse.weight = EDGELENGTH_WEIGHT;
@@ -105,7 +105,7 @@ void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
 	dgassert(!gd<NSRankerEdge>(e).weak);
 	gd<EdgeGeom>(e).constraint = false;
 
-	DDCGraph::Node *tvar,*hvar;
+	LlelConstraintGraph::Node *tvar,*hvar;
 	if(gd<EdgeGeom>(e).backward) {
 		tvar = cg_.GetVar(gd<NSRankerNode>(e->head).bottomC);
 		hvar = cg_.GetVar(gd<NSRankerNode>(e->tail).topC);
@@ -116,11 +116,11 @@ void NSRanker<Layout>::makeWeakConstraint(typename Layout::Edge *e) {
 	}
 	gd<NSRankerEdge>(e).weak = cg_.create_node();
 	gd<ConstraintType>(gd<NSRankerEdge>(e).weak).why = ConstraintType::rankWeak;
-	NSEdgePair ep(gd<NSRankerEdge>(e).weak,tvar,hvar);
-	DDNS::NSd(ep.e[0]).minlen = 0;
-	DDNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
+	LlelConstraintGraph::NSEdgePair ep(gd<NSRankerEdge>(e).weak,tvar,hvar);
+	LlelNS::NSd(ep.e[0]).minlen = 0;
+	LlelNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
 	double length = std::max(0.,gd<EdgeGeom>(e).minLength);
-	DDNS::NSd(ep.e[1]).minlen = RankXlator::HeightToDRank(&this->world_->whole_,length*gd<GraphGeom>(e->g).separation.y);
+	LlelNS::NSd(ep.e[1]).minlen = RankXlator::HeightToDRank(&this->world_->whole_,length*gd<GraphGeom>(e->g).separation.y);
 }
 // change edge strengths around a node
 template<typename Layout>
@@ -141,13 +141,13 @@ void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
 }
 template<typename Layout>
 void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
-	DDCGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
+	LlelConstraintGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
 		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
-	DDCGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
+	LlelConstraintGraph::Edge *heightC = cg_.fiat_edge(tv,bv);
 	 // one-node chains cause trouble; make sure there's one edge
 	//std::max(1,
-	DDNS::NSd(heightC).minlen = RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height()));
-	DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
+	LlelNS::NSd(heightC).minlen = RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height()));
+	LlelNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
 template<typename Layout>
 void NSRanker<Layout>::moveOldNodes(ChangeQueue<Layout> &changeQ) {
@@ -174,9 +174,10 @@ void NSRanker<Layout>::insertNewNodes(ChangeQueue<Layout> &changeQ) {
         typename Layout::Node *n = *ni;
 
 		// pull loose nodes upward
-		ConstraintGraph::Edge *pull = cg_.create_edge(top_,cg_.GetVar(gd<NSRankerNode>(n).topC)).first;
-		DDNS::NSd(pull).minlen = 0;
-		DDNS::NSd(pull).weight = UPWARD_TENDENCY;
+		dgassert(!cg_.has_edge(top_,cg_.GetVar(gd<NSRankerNode>(n).topC)));
+		LlelConstraintGraph::Edge *pull = cg_.create_edge(top_,cg_.GetVar(gd<NSRankerNode>(n).topC));
+		LlelNS::NSd(pull).minlen = 0;
+		LlelNS::NSd(pull).weight = UPWARD_TENDENCY;
 
 		doNodeHeight(n);
 	}
@@ -258,14 +259,14 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 }
 template<typename Layout>
 void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
- 	DDNS().Solve(&cg_,NS::NORMALIZE|NS::RECHECK|NS::VALIDATE|NS::ATTACHATTRS);
-	int anchorRank = DDNS::NSd(cg_.anchor).rank;
+ 	LlelNS().Solve(&cg_,NS::NORMALIZE|NS::RECHECK|NS::VALIDATE|NS::ATTACHATTRS);
+	int anchorRank = LlelNS::NSd(cg_.anchor).rank;
 	for(typename Layout::node_iter ni = changeQ.current->nodes().begin(); ni!=changeQ.current->nodes().end(); ++ni) {
 		typename Layout::Node *n = *ni;
 		if(changeQ.delN.find(n))
 			continue;
-		int newTopRank = DDNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
-			newBottomRank = DDNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
+		int newTopRank = LlelNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
+			newBottomRank = LlelNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
 		dgassert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
 		if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 			gd<NSRankerNode>(n).newTopRank = newTopRank;
@@ -281,8 +282,8 @@ template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
-	ConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
-	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;
+	LlelConstraintGraph::Edge *c = cg_.fiat_edge(top_,cg_.anchor);
+	LlelNS::NSd(c).minlen = LlelNS::NSd(c).weight = 0;
 
 	moveOldNodes(Q);
 	Layout extraI(Q.whole);

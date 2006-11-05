@@ -114,7 +114,7 @@ struct MultiNode : Chain<N,E> {
 	// multi-node: first,last!=0, node==0
 	N *node;
 	DynaDAGLayout::Node *layoutN;
-	NodeConstraints xcon;
+	UniqConstraintGraph::NodeConstraints xcon;
 	//	coordFixed; // whether a good place in X has been found
 	MultiNode() : node(0),layoutN(0) /*,coordFixed(false)*/ {}
 	struct node_iter {

@@ -17,7 +17,7 @@
 #ifndef DynaDAGModel_h
 #define DynaDAGModel_h
 
-#include "Constraints.h"
+#include "ConstraintGraph.h"
 
 namespace Dynagraph {
 namespace DynaDAG {
@@ -41,8 +41,8 @@ template<typename N,typename E>
 struct DDNodeT {
 	// general
 	MultiNode<N,E> *multi; // the chain of nodes this is part of, if representing layout node
-	NodeConstraints xcon; // constraints for x Coord
-	NodeConstraints &getXcon() { // defer to multi's if any
+	UniqConstraintGraph::NodeConstraints xcon; // constraints for x Coord
+	UniqConstraintGraph::NodeConstraints &getXcon() { // defer to multi's if any
 		if(multi)
 			return multi->xcon;
 		else
@@ -74,7 +74,7 @@ struct DDNodeT {
 template<typename N,typename E>
 struct DDEdgeT {
 	Path<N,E> *path; // the chain of edges this is part of, if representing a layout edge
-	DDCGraph::Node *cn; // X constraint node
+	UniqConstraintGraph::Node *cn; // X constraint node
 	DDEdgeT() : path(0),cn(0) {}
 	DDEdgeT(const DDEdgeT &other) : path(other.path),cn(0) {}
 	DDEdgeT &operator=(const DDEdgeT &other) {

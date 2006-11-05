@@ -212,7 +212,7 @@ template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
-	ConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
+	LlelConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
 	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;
 
 	moveOldNodes(Q);

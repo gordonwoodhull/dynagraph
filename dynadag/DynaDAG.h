@@ -30,7 +30,6 @@
 #include "DynaDAGDefs.h"
 #include "Config.h"
 #include "SiftMatrix.h"
-#include "ConstraintGraph.h"
 #include "DotlikeOptimizer.h"
 #include "XSolver.h"
 #include "FlexiSpliner.h"

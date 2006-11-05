@@ -10,3 +10,6 @@ insert edge V g a b
 insert edge V h a b
 insert edge V i a b
 
+insert node V d
+insert edge V l a d
+insert edge V m d b
