@@ -17,7 +17,7 @@
 #ifndef TextWatcherOutput_h
 #define TextWatcherOutput_h
 
-#include "IncrStrGraphHandler.h"
+#include "IncrViewWatcher.h"
 #include "common/emitGraph.h"
 
 namespace Dynagraph {

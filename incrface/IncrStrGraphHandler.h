@@ -41,21 +41,22 @@ template<typename NGraph>
 struct IncrStrGraphHandler : IncrLangEvents {
 	std::auto_ptr<ChangingGraph<NGraph> > world_;
 	IncrViewWatcher<NGraph> *watcher_;
-	ChangeProcessor<NGraph> *next_;
+	ChangeProcessor<NGraph> *engine_;
 #ifdef STRHANDLER_DO_THREADS
 	DynagraphThread<NGraph> *layoutThread_;
 #endif
     int locks_;
 
-    IncrStrGraphHandler(ChangingGraph<NGraph> *world) : world_(world),watcher_(0),next_(0),
+    IncrStrGraphHandler(ChangingGraph<NGraph> *world) : world_(world),watcher_(0),engine_(0),
 #ifdef STRHANDLER_DO_THREADS
 		layoutThread_(0),
 #endif
 		locks_(0) {}
 	~IncrStrGraphHandler() {
-		// don't delete watcher because it's probably in engine chain
-		if(next_)
-			delete next_;
+		if(engine_)
+			delete engine_;
+		if(watcher_)
+			delete watcher_;
 	}
 
 	bool maybe_go(typename ChangeProcessor<NGraph>::Function purpose = &ChangeProcessor<NGraph>::Process);
@@ -105,12 +106,12 @@ template<typename NGraph>
 bool IncrStrGraphHandler<NGraph>::maybe_go(typename ChangeProcessor<NGraph>::Function purpose) {
 	if(locks_>0)
 		return false;
-	if(next_) {
+	if(engine_) {
 #ifdef STRHANDLER_DO_THREADS
 		dgassert(!layoutThread_); // must either interrupt or wait_thread between runs
-		layoutThread_ = new DynagraphThread<NGraph>(*world_,next_,purpose);
+		layoutThread_ = new DynagraphThread<NGraph>(*world_,engine_,purpose);
 #else
-		(next_->*purpose)();
+		(engine_->*purpose)();
 #endif
 	}
 	return true;

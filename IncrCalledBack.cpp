@@ -20,15 +20,7 @@
 #include "common/useful.h"
 #include "common/emitGraph.h"
 
-#ifdef USE_OLD_GROSS_CONFIGURATOR
-// this system of engine creation is deprecated in favor of the Configurator model
-// keeping these files intact in case anyone is using createEngine (LMK!)
-#include "common/GeneralLayout.h"
-#include "incrface/createStringHandlers.h"
-#include "dynadag/DynaDAGTranslatorTraits.h"
-#else
 #include "createConfiguration.h"
-#endif
 
 using namespace std;
 
