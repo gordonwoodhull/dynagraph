@@ -40,8 +40,8 @@ struct LayoutToLayoutTranslator {
 		gd<NodeGeom>(ln2).nail = gd<NodeGeom>(ln1).nail;
 		gd<NodeGeom>(ln2).flow = gd<NodeGeom>(ln1).flow;
 		gd<NodeGeom>(ln2).suppressed = gd<NodeGeom>(ln1).suppressed;
-		gd<NodeGeom>(ln2).freezeTailFanning = gd<NodeGeom>(ln1).freezeTailFanning;
-		gd<NodeGeom>(ln2).freezeHeadFanning = gd<NodeGeom>(ln1).freezeHeadFanning;
+		gd<NodeGeom>(ln2).freezeOutOrder = gd<NodeGeom>(ln1).freezeOutOrder;
+		gd<NodeGeom>(ln2).freezeInOrder = gd<NodeGeom>(ln1).freezeInOrder;
 		gd<NodeLabels>(ln2) = gd<NodeLabels>(ln1);
 		gd<IfPolyDef>(ln2) = gd<IfPolyDef>(ln1);
 		gd<DynaDAG::NSRankerNode>(ln2) = gd<DynaDAG::NSRankerNode>(ln1);

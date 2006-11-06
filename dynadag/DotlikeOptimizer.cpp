@@ -331,7 +331,7 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
 	}
 	NodeV fanVec;
 	for(DynaDAGLayout::node_iter ni = config.current->nodes().begin(); ni!=config.current->nodes().end(); ++ni) {
-		if(gd<NodeGeom>(*ni).freezeHeadFanning) {
+		if(gd<NodeGeom>(*ni).freezeInOrder) {
 			// klunky but efficient?
 			DDModel::Node *top = DDp(*ni)->top();
 			fanVec.resize(0);
@@ -347,7 +347,7 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
 				if(ni!=fanVec.begin())
 					switchable.set(*(ni-1),*ni,false);
 		}
-		if(gd<NodeGeom>(*ni).freezeTailFanning) {
+		if(gd<NodeGeom>(*ni).freezeOutOrder) {
 			// klunky but efficient?
 			DDModel::Node *bottom = DDp(*ni)->bottom();
 			fanVec.resize(0);

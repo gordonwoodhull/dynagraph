@@ -6,7 +6,7 @@ insert node V c
 insert edge V e1 n a
 insert edge V e2 n b
 insert edge V e3 n c
-modify node V n [freezetailfanning=true]
+modify node V n [freezeoutorder=true]
 
 insert edge V e4 b c
 insert node V d

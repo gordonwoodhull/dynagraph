@@ -32,8 +32,11 @@ OBJS = IncrCalledBack.o DuplicateStream.o createConfiguration.o
 
 MANS = 
 
-dynagraph : main.o $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
-	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph
+dynagraph-whole : main.o $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
+	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-whole
+
+dynagraph: dynagraph-whole
+	strip dynagraph-whole -o dynagraph
 
 *.o: *.h common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
 
