@@ -190,10 +190,10 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 			if(assign(ng.suppressed,ai->second=="true"))
 				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE|DG_UPD_SUPPRESSION;
 		}
-		else if(ai->first=="freezetailfanning") 
-			ng.freezeTailFanning = ai->second=="true";
-		else if(ai->first=="freezeheadfanning") 
-			ng.freezeHeadFanning = ai->second=="true";
+		else if(ai->first=="freezeoutorder") 
+			ng.freezeOutOrder = ai->second=="true";
+		else if(ai->first=="freezeinorder") 
+			ng.freezeInOrder = ai->second=="true";
 		else if(ai->first.compare(0,9,"labelsize")==0) {
 			int i=ds2int(ai->first.substr(9));
 			if(i>=0) {

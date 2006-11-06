@@ -159,9 +159,9 @@ struct NodeGeom {
 	double flow;
 	Coord flowTan; // for flow nodes, the slope at which edges should enter/exit
 	bool suppressed,
-		freezeTailFanning,
-		freezeHeadFanning;
-	NodeGeom() : nail(DG_NONAIL),flow(0.0),flowTan(.0,0.),suppressed(false),freezeTailFanning(false),freezeHeadFanning(false) {}
+		freezeOutOrder,
+		freezeInOrder;
+	NodeGeom() : nail(DG_NONAIL),flow(0.0),flowTan(.0,0.),suppressed(false),freezeOutOrder(false),freezeInOrder(false) {}
 	Bounds BoundingBox() {
 		if(!pos.valid)
 			return Bounds();
