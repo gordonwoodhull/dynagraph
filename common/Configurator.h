@@ -31,7 +31,7 @@ namespace Dynagraph {
 
 /*
 	Configurators are semi-autonomous builders of Engines and Worlds
-	The configuration gets built from the inside out.
+	The Configurators gets built from the inside out.
 	Each Configurator (so far) either pre/appends Engines to the chain,
 	or boxes up a chain and world into an InternalWorld, 
 	and creates a new world in which it's an Engine.
@@ -48,30 +48,32 @@ namespace Dynagraph {
 */
 
 struct PopConfigurator {
-	template<typename Configurators,typename Layout>
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+	template<typename Configurators,typename Layout,typename SourceLayout>
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines,SourceLayout *source) {
 		typedef typename boost::mpl::front<Configurators>::type FirstConfigurator;
 		typedef typename boost::mpl::pop_front<Configurators>::type Rest;
-		FirstConfigurator::template config<Rest>(name,attrs,world,engines);
+		return FirstConfigurator::template config<Rest>(name,attrs,world,engines,source);
 	}
 };
 struct DoNothingConfigurator {
-	template<typename Configurators,typename Layout>
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {}
+	template<typename Configurators,typename Layout,typename SourceLayout>
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines,SourceLayout *source) {
+		return false;
+	}
 };
-template<typename Configurators,typename Layout>
-void configureLayout(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-	boost::mpl::if_<boost::mpl::empty<Configurators>,DoNothingConfigurator,PopConfigurator>::type
-		::template config<Configurators>(name,attrs,world,engines);
+template<typename Configurators,typename Layout,typename SourceLayout>
+bool configureLayout(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines,SourceLayout *source) {
+	return boost::mpl::if_<boost::mpl::empty<Configurators>,DoNothingConfigurator,PopConfigurator>::type
+		::template config<Configurators>(name,attrs,world,engines,source);
 }
-template<typename Configurators>
-void configureLayout(DString name,const StrAttrs &attrs) {
-	configureLayout<Configurators,void>(name,attrs,0,EnginePair<void>());
+template<typename Configurators,typename SourceLayout>
+bool configureLayout(DString name,const StrAttrs &attrs,SourceLayout *source) {
+	return configureLayout<Configurators,void>(name,attrs,0,EnginePair<void>(),source);
 }
 struct PassConfigurator {
-	template<typename Configurators,typename Layout>
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		configureLayout<Configurators>(name,attrs,world,engines);
+	template<typename Configurators,typename Layout,typename SourceLayout>
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines,SourceLayout *source) {
+		return configureLayout<Configurators>(name,attrs,world,engines,source);
 	}
 };
 

@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include "incrface/incrxep.h"
+#include "incrxep.h"
 
 extern FILE *incr_yyin;
 int incr_yyparse(void);

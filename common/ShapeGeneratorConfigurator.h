@@ -22,11 +22,11 @@
 namespace Dynagraph {
 
 struct ShapeGeneratorConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+	template<typename Configurators,typename Layout,typename SourceLayout> 
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
 		if(attrs.look("shapegen","true")=="true") 
 			engines.Prepend(new ShapeGenerator<Layout>(world));
-		configureLayout<Configurators>(name,attrs,world,engines);
+		return configureLayout<Configurators>(name,attrs,world,engines,source);
 	}
 };
 

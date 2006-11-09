@@ -22,11 +22,11 @@
 namespace Dynagraph {
 
 struct ColorByAgeConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+	template<typename Configurators,typename Layout,typename SourceLayout> 
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
 		if(attrs.look("colorbyage")||attrs.look("agecolors"))
 			engines.Append(new ColorByAge<Layout>(world));
-		configureLayout<Configurators>(name,attrs,world,engines);
+		return configureLayout<Configurators>(name,attrs,world,engines,source);
 	}
 };
 

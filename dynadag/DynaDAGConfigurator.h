@@ -24,13 +24,13 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct DynaDAGConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>) {
+	template<typename Configurators,typename Layout,typename SourceLayout> 
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>, SourceLayout *source) {
 		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
 		ChangingGraph<DynaDAG::DynaDAGLayout> *world = new ChangingGraph<DynaDAG::DynaDAGLayout>;
 		EnginePair<DynaDAG::DynaDAGLayout> engines;
 		engines.Append(new DynaDAG::DynaDAGServer(world));
-		configureLayout<Configurators>(name,attrs,world,engines);
+		return configureLayout<Configurators>(name,attrs,world,engines,source);
 	}
 };
 

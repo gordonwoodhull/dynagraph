@@ -24,17 +24,17 @@ namespace DynaDAG {
 
 struct EdgeSuppressorConfigurator {
 	struct EdgeSuppressorConfiguratorImpl {
-		template<typename Configurators> 
-		static void config(DString name,const StrAttrs &attrs,ChangingGraph<DynaDAGLayout> *world,EnginePair<DynaDAGLayout> engines) {
+		template<typename Configurators,typename SourceLayout> 
+		static bool config(DString name,const StrAttrs &attrs,ChangingGraph<DynaDAGLayout> *world,EnginePair<DynaDAGLayout> engines, SourceLayout *source) {
 			if(attrs.look("nodesuppression","true")=="true")
 				engines.Prepend(new EdgeSuppressor<DynaDAGLayout>(world));
-			configureLayout<Configurators>(name,attrs,world,engines);
+			return configureLayout<Configurators>(name,attrs,world,engines,source);
 		}
 	};
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		boost::mpl::if_<boost::is_same<Layout,DynaDAGLayout>,EdgeSuppressorConfiguratorImpl,PassConfigurator>::type
-			::template config<Configurators>(name,attrs,world,engines);
+	template<typename Configurators,typename Layout,typename SourceLayout> 
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
+		typedef boost::mpl::if_<boost::is_same<Layout,DynaDAGLayout>,EdgeSuppressorConfiguratorImpl,PassConfigurator>::type Choice;
+		return Choice::template config<Configurators>(name,attrs,world,engines,source);
 	}
 };
 

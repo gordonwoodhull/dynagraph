@@ -23,15 +23,23 @@
 
 namespace Dynagraph {
 
+struct UnknownLayoutType : DGException2 {
+	UnknownLayoutType(DString name) : DGException2("Unknown layout type",name) {}
+};
+
 struct LayoutChooserConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+	template<typename Configurators,typename Layout,typename SourceLayout> 
+	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
 		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this Configurator must go first
 		DString layout = attrs.look("layout","dynadag");
 		if(layout=="dynadag") 
-			DynaDAG::DynaDAGConfigurator::config<Configurators>(name,attrs,world,engines);
+			return DynaDAG::DynaDAGConfigurator::config<Configurators>(name,attrs,world,engines,source);
 		else if(layout=="fdp")
-			FDP::FDPConfigurator::config<Configurators>(name,attrs,world,engines);
+			return FDP::FDPConfigurator::config<Configurators>(name,attrs,world,engines,source);
+		else {
+			throw UnknownLayoutType(layout);
+			return false;
+		}
 	}
 };
 
