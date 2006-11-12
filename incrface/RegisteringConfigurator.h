@@ -23,9 +23,9 @@
 
 namespace Dynagraph {
 
-struct RegisteringConfigurator {
-	template<typename Configurators,typename Layout,typename SourceLayout> 
-	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
+struct RegisteringConfigurator : Configurator {
+	template<typename Configurators,typename SourceConfiguration,typename DestConfiguration> 
+	static bool config(DString name,const StrAttrs &attrs,SourceConfiguration source,DestConfiguration dest) {
 		// handler for parser
 		IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
 		// its handler (request command deferred)
