@@ -73,7 +73,8 @@ struct switchval {
 	char *desc;
 };
 switchval<dgr::reportType> g_reports[] = {
-	{'i',dgr::input,"input"},
+	{'i',dgr::input_raw,"(raw) input"},
+	{'k',dgr::input_cooked,"(cooked) input"},
 	{'o',dgr::output,"(copy of) output"},
 	{'c',dgr::crossopt,"crossing optimization stats"},
 	{'t',dgr::timing,"timing breakdown"},
@@ -299,13 +300,12 @@ int main(int argc, char *args[]) {
 		}
 		reports.enable(ri->first,f);
 	}
-	if(reports.enabled(dgr::input) || g_maxWait>=0) {
-		DuplicateIn *din = new DuplicateIn(input_file,reports[dgr::input]);
+	if(reports.enabled(dgr::input_raw) || g_maxWait>=0) {
+		DuplicateIn *din = new DuplicateIn(input_file,reports[dgr::input_raw]);
 		incr_yyin = din->getNewInput();
 	}
 	else
 		incr_yyin = input_file;
-	/*
 	if(reports.enabled(dgr::output)) { // output is being logged; dup to cout
 		typedef boost::iostreams::tee_device<std::ostream,std::ostream> t_dev_t;
 		typedef boost::iostreams::stream<t_dev_t> t_stream_t;
@@ -313,7 +313,7 @@ int main(int argc, char *args[]) {
 		t_stream_t *t_stream = new t_stream_t(*t_dev);
 		reports.enable(dgr::output,t_stream);
 	}
-	else*/
+	else
 		reports.enable(dgr::output); // just send to cout
 	if(!g_transform)
 		g_transform = new Transform(Coord(1,1),Coord(1,1));

@@ -1,0 +1,59 @@
+open graph GRAPH1 [intermediate=true]
+lock graph GRAPH1
+insert node GRAPH1 0 [shape=box,width=0.3333333333333333,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+modify node GRAPH1 0 [suppressed=false]
+insert node GRAPH1 1 [flow=0.1,shape=none,suppressed=true]
+insert edge GRAPH1 2 1 0 [color="-3618616",thickness="1",emphasizeflow=true]
+insert node GRAPH1 3 [shape=box,width=0.8472222222222222,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+insert edge GRAPH1 4 3 1 [color="-3618616",thickness="1",emphasizeflow=true]
+modify node GRAPH1 3 [suppressed=false]
+modify node GRAPH1 1 [suppressed=false]
+insert node GRAPH1 5 [shape=box,width=0.875,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+insert edge GRAPH1 6 5 1 [color="-3618616",thickness="1",emphasizeflow=true]
+insert node GRAPH1 7 [flow=0.1,shape=none,suppressed=true]
+insert edge GRAPH1 8 7 3 [color="-3618616",thickness="1",emphasizeflow=true]
+modify node GRAPH1 5 [suppressed=false]
+insert node GRAPH1 9 [shape=box,width=1.0416666666666667,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+insert edge GRAPH1 10 9 7 [color="-3618616",thickness="1",emphasizeflow=true]
+modify node GRAPH1 9 [suppressed=false]
+modify node GRAPH1 7 [suppressed=false]
+insert node GRAPH1 11 [shape=box,width=0.7083333333333334,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+insert edge GRAPH1 12 11 7 [color="-3618616",thickness="1",emphasizeflow=true]
+insert node GRAPH1 13 [flow=0.1,shape=none,suppressed=true]
+insert edge GRAPH1 14 13 9 [color="-3618616",thickness="1",emphasizeflow=true]
+insert node GRAPH1 15 [flow=0.1,shape=none,suppressed=true]
+insert edge GRAPH1 16 15 9 [color="-3618616",thickness="1",emphasizeflow=true]
+unlock graph GRAPH1
+lock graph GRAPH1
+modify node GRAPH1 11 [suppressed=false]
+insert node GRAPH1 17 [shape=box,width=1.4166666666666667,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+insert edge GRAPH1 18 17 13 [color="-3618616",thickness="1",emphasizeflow=true]
+modify node GRAPH1 17 [suppressed=false]
+modify node GRAPH1 13 [suppressed=false]
+insert node GRAPH1 19 [shape=box,width=1.1527777777777777,height=0.4444444444444444,suppressed=true,color="-3604536",stroke_clr="-3604536",thickness="0"]
+insert edge GRAPH1 20 19 13 [color="-3618616",thickness="1",emphasizeflow=true]
+insert node GRAPH1 21 [flow=0.1,shape=none,suppressed=true]
+insert edge GRAPH1 22 21 17 [color="-3618616",thickness="1",emphasizeflow=true]
+modify node GRAPH1 19 [suppressed=false]
+insert node GRAPH1 23 [flow=0.1,shape=none,suppressed=true]
+insert edge GRAPH1 24 23 19 [color="-3618616",thickness="1",emphasizeflow=true]
+unlock graph GRAPH1
+lock graph GRAPH1
+modify node GRAPH1 19 [suppressed=true]
+delete edge GRAPH1 24
+delete node GRAPH1 23
+modify node GRAPH1 17 [suppressed=true]
+modify node GRAPH1 13 [suppressed=true]
+delete edge GRAPH1 22
+delete node GRAPH1 21
+modify node GRAPH1 11 [suppressed=true]
+modify node GRAPH1 9 [suppressed=true]
+modify node GRAPH1 7 [suppressed=true]
+delete edge GRAPH1 14
+delete edge GRAPH1 18
+delete edge GRAPH1 20
+delete node GRAPH1 13
+delete edge GRAPH1 16
+delete node GRAPH1 15
+unlock graph GRAPH1
+

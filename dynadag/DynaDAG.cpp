@@ -113,7 +113,7 @@ void DynaDAGServer::closeLayoutNode(DynaDAGLayout::Node *n) {
 }
 void DynaDAGServer::closeLayoutEdge(DynaDAGLayout::Edge *e) {
 	DDPath *p = DDp(e);
-	reports[dgr::bug] << "e " << e << " p " << p << endl;
+	//reports[dgr::bug] << "e " << e << " p " << p << endl;
 	dgassert(p);
 	if(p->first) {
 		InvalidateMVal(p->first->tail,DOWN);
@@ -333,7 +333,9 @@ void DynaDAGServer::drawStraightEdge(DDPath *path) {
 }
 void DynaDAGServer::drawEdgeSimply(DDPath *path) {
 	DynaDAGLayout::Edge *e = path->layoutE;
-	if(e->tail==e->head)
+	if(gd<Suppression>(e).suppression==Suppression::suppressed)
+		gd<EdgeGeom>(e).pos.Clear();
+	else if(e->tail==e->head)
 		drawSelfEdge(e);
 	else
 		drawStraightEdge(path);
@@ -426,7 +428,8 @@ void DynaDAGServer::generateIntermediateLayout(DDChangeQueue &changeQ) {
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.insE.edges().begin(); ei!=changeQ.insE.edges().end(); ++ei)
 		drawEdgeSimply(DDp(*ei));
 	for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-		drawEdgeSimply(DDp(*ei));
+		if(igd<Update>(*ei).flags & DG_UPD_MOVE)
+			drawEdgeSimply(DDp(*ei));
 }
 void DynaDAGServer::rememberOld() { // dd_postprocess
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
@@ -491,6 +494,58 @@ bool ChangesAreRelevant(DDChangeQueue &Q) {
 			return true;
 	return false;
 }
+// something to compare pulse times to see if a limit passed
+struct PhaseMinder {
+	typedef vector<DString> PhaseList;
+	PhaseList phases_;
+	PhaseMinder(const char *phases[],int nphases) {
+		phases_.reserve(nphases);
+		for(int i=0; i<nphases; ++i)
+			phases_.push_back(phases[i]);
+	}
+	bool Check2(const StrAttrs &pulseAttrs,DString currPhase,DString currStep) {
+		DString pulsePhase = pulseAttrs.look("phase");
+		// if pulse/interrupt does not specify a phase, time limit has always passed
+		if(!pulsePhase)
+			return true;
+		PhaseList::iterator pi = find(phases_.begin(),phases_.end(),pulsePhase),
+			ci = find(phases_.begin(),phases_.end(),currPhase);
+		// if either pulse or current phase is not in list, then limit has passed 
+		if(pi==phases_.end() || ci==phases_.end())
+			return true;
+		// if pulse is earlier in list than current, then limit has passed
+		if(pi<ci)
+			return true;
+		// however, if current is earlier, then limit has NOT passed
+		if(pi>ci)
+			return false;
+		// ...phase is same...
+		DString pulseStep = pulseAttrs.look("step");
+		// if pulse does not specify step, then limit has passed
+		if(!pulseStep)
+			return true;
+		// if step is same then limit has passed
+		if(pulseStep==currStep)
+			return true;
+		// step is either "done" or an integer
+		if(currStep=="done")
+			return true;
+		if(pulseStep=="done")
+			return false;
+		return atoi(pulseStep.c_str()) >= atoi(currStep.c_str());
+	}
+	bool Check(const StrAttrs &pulseAttrs,DString currPhase,DString currStep) {
+		DString pulsePhase = pulseAttrs.look("phase");
+		reports[dgr::bug] << "pulse phase " << (pulsePhase?pulsePhase:"(none)") << " curr phase " << currPhase;
+		bool res = Check2(pulseAttrs,currPhase,currStep);
+		reports[dgr::bug] << " result " << (res?"true":"false") << endl;
+		return res;
+	}
+};
+const char *g_dynadagPhases[] = {"update","untangle","xopt","finish"};
+const int g_nDynadagPhases = sizeof(g_dynadagPhases)/sizeof(const char*);
+PhaseMinder g_dynadagPhaseMinder(g_dynadagPhases,g_nDynadagPhases);
+
 void DynaDAGServer::Process() {
 	ChangeQueue<DynaDAGLayout> &Q = this->world_->Q_;
 	loops.Field(dgr::dynadag,"nodes inserted - input",Q.insN.nodes().size());
@@ -532,8 +587,7 @@ void DynaDAGServer::Process() {
 
 	if(gd<Interruptible>(&world_->current_).interrupt 
 			&& gd<GraphGeom>(&world_->current_).reportIntermediate
-			&& gd<Interruptible>(&world_->current_).attrs.look("phase","update")=="update"
-			&& gd<Interruptible>(&world_->current_).attrs.look("step","done")=="done") {
+			&& g_dynadagPhaseMinder.Check(gd<Interruptible>(&world_->current_).attrs,"update","done")) {
 		rememberOld();
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "update";
@@ -548,8 +602,7 @@ void DynaDAGServer::Process() {
 
 	if(gd<Interruptible>(&world_->current_).interrupt 
 			&& gd<GraphGeom>(&world_->current_).reportIntermediate
-			&& gd<Interruptible>(&world_->current_).attrs.look("phase","untangle")=="untangle"
-			&& gd<Interruptible>(&world_->current_).attrs.look("step","done")=="done") {
+			&& g_dynadagPhaseMinder.Check(gd<Interruptible>(&world_->current_).attrs,"untangle","done")) {
 		//makeXConsistent(); // this horror superceded by horrible x_backup 
 		rememberOld();
 		StrAttrs pulseAttrs;
@@ -568,8 +621,7 @@ void DynaDAGServer::Process() {
 
 	if(gd<Interruptible>(&world_->current_).interrupt 
 			&& gd<GraphGeom>(&world_->current_).reportIntermediate
-			&& gd<Interruptible>(&world_->current_).attrs.look("phase","xopt")=="xopt"
-			&& gd<Interruptible>(&world_->current_).attrs.look("step","done")=="done") {
+			&& g_dynadagPhaseMinder.Check(gd<Interruptible>(&world_->current_).attrs,"xopt","done")) {
 		rememberOld();
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "xopt";
@@ -613,6 +665,13 @@ void DynaDAGServer::Process() {
 		loops.Field(dgr::readability,"average edge y-length",avg.y);
 	}
 	NextProcess();
+	{
+		// this is weird but helpful..?
+		StrAttrs pulseAttrs;
+		pulseAttrs["phase"] = "finish";
+		pulseAttrs["step"] = "done";
+		NextPulse(pulseAttrs);
+	}
 	// we are good with all changes now
 	Q.ExecuteDeletions();
 	Q.Clear();

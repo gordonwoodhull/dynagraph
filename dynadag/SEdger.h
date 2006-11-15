@@ -166,6 +166,11 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 			break;
 		}
 	}
+	void Open() {
+		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
+		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
+		actions_.OpenGraph(srcQ.current,destQ.current);
+	}
 	void Process() {
 		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;

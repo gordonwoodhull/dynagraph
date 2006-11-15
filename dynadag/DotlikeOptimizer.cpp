@@ -237,8 +237,8 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 				tired = 0;
 			}
 			else
-				tired++;
-			pass++;
+				++tired;
+			++pass;
 		}
 		if(score>best || tired==TIRE) {
 			config.Restore(backupC);
@@ -275,13 +275,16 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 	pass = 0;
 	passes = 4;
 	crossing.m_allowEqual = true;
+	/*
 	// sifting out upward or downward may be better - try both.
 	bool improved;
 	do {
 		improved = false;
+		config.ranking.backup_x();
 		backupC = config.ranking;
 		bubblePass(config,matrix,affectedRanks,DOWN,RIGHT,switchable,crossing);
 		unsigned down = matrix.sumCrossings();
+		config.ranking.backup_x();
 		Config::Ranks backup2 = config.ranking;
 		config.Restore(backupC);
 		matrix.recompute();
@@ -297,8 +300,31 @@ void DotlikeOptimizer::Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges) {
 			score = up;
 			improved = true;
 		}
+		++pass;
 	}
 	while(improved);
+	*/
+	int boredom = 0;
+	do {
+		config.ranking.backup_x();
+		backupC = config.ranking;
+		backupM = matrix;
+		LeftRight way = (pass%2) ? RIGHT : LEFT;
+		UpDown dir = ((pass/2)%2) ? UP : DOWN;
+		bubblePass(config,matrix,affectedRanks,dir,way,switchable,crossing);
+		unsigned score2 = matrix.sumCrossings();
+		if(score2<score) {
+			score = score2;
+			boredom = 0;
+		}
+		else {
+			config.Restore(backupC);
+			matrix = backupM;
+			++boredom;
+		}
+		++pass;
+	}
+	while(score>NODECROSS_PENALTY && boredom<TIRE);
 	loops.Field(dgr::crossopt,"weighted crossings after heavy pass",score);
 	// absolutely must not leave here with nodes crossing nodes!!
 	dgassert(score<NODECROSS_PENALTY*NODECROSS_PENALTY);

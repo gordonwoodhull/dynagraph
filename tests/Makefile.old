@@ -9,9 +9,13 @@ SUF_INTER=imed
 AT_INTER=-a intermediate=true
 SUF_EFLOW=eflow
 AT_EFLOW=-a emphasizeflow=true
+SUF_DOTCO=dotco
+OPT_DOTCO=-d
 
-run: *.incr
-	if grep exception *.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
+run: *.incr showem
+
+showem:
+	@if grep exception *.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
 
 *.incr: always
 	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $*.incrout
@@ -22,6 +26,14 @@ run: *.incr
 	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_EFLOW).incrout
 	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).incrout
 	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) < $@ > $*.dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) < $@ > $*.$(SUF_ROTAT).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) < $@ > $*.$(SUF_INTER).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_EFLOW).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
 
 always: 
 

@@ -50,6 +50,10 @@ struct OutputIncrface : LinkedChangeProcessor<Graph> {
 			LOCK_REPORT(reportType_);
 			reports[reportType_] << "pulse graph " << gd<Name>(&this->world_->whole_) << " " << attrs << std::endl;
 		}
+		if(reports.enabled(dgr::input_cooked)) {
+			LOCK_REPORT(dgr::input_cooked);
+			reports[dgr::input_cooked] << "pulse graph " << gd<Name>(&this->world_->current_) << ' ' << attrs << std::endl;
+		}
 	}
 };
 

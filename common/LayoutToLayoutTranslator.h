@@ -62,6 +62,9 @@ struct LayoutToLayoutTranslator {
 	
 		igd<Update>(le2) = igd<Update>(le1);
 	}
+	void OpenGraph(Layout1 *l1,Layout2 *l2) {
+		ModifyGraph(l1,l2);
+	}
 	void ModifyGraph(Layout1 *l1,Layout2 *l2) {
 		gd<Drawn>(l2) = gd<Drawn>(l1);
 		gd<GraphGeom>(l2) = gd<GraphGeom>(l1);
