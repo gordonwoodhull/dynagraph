@@ -26,10 +26,11 @@ namespace DynaDAG {
 struct DynaDAGConfigurator {
 	template<typename Configurators,typename Source,typename Dest> 
 	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
-		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
-		ChangingGraph<DynaDAG::DynaDAGLayout> *world = new ChangingGraph<DynaDAG::DynaDAGLayout>;
-		EnginePair<DynaDAG::DynaDAGLayout> engines;
-		engines.Append(new DynaDAG::DynaDAGServer(world));
+		BOOST_MPL_ASSERT((boost::mpl::empty<Dest>)); // this is a starterator (prob called by LayoutChooserConfigurator)
+		typedef boost::mpl::vector<Level<DynaDAGLayout,DynaDAGConfigurator> > NewDest;
+		Data<NewDest>::type dest;
+		dest.world = new ChangingGraph<DynaDAG::DynaDAGLayout>;
+		dest.engines.Append(new DynaDAG::DynaDAGServer(world));
 		return createConfiguration<Configurators>(name,attrs,source,dest);
 	}
 };

@@ -92,7 +92,7 @@ struct Engine {
 template<typename Layout,typename Tag>
 struct Level {
 	auto_ptr<ChangingGraph<Layout> > world;
-	EnginePair<Layout> engines; // owned by 
+	EnginePair<Layout> engines; // owned by others
 };
 
 
