@@ -25,14 +25,14 @@ namespace Dynagraph {
 namespace FDP {
 
 struct FDPConfigurator {
-	template<typename Configurators,typename Layout,typename SourceLayout> 
-	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>, SourceLayout *source) {
+	template<typename Configurators,typename Source,typename Dest> 
+	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
 		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
 		ChangingGraph<FDPLayout> *world = new ChangingGraph<FDPLayout>;
 		EnginePair<FDPLayout> engines;
 		engines.Prepend(new FDPServer(world));
 		engines.Prepend(new OkayEngine<FDPLayout>(world));
-		return configureLayout<Configurators>(name,attrs,world,engines,source);
+		return createConfiguration<Configurators>(name,attrs,source,dest);
 	}
 };
 

@@ -57,7 +57,7 @@ template<typename FinalConfigurator,typename SourceLayout>
 bool createConfiguration(Name name,StrAttrs &attrs,SourceLayout *source) {
 	BOOST_MPL_ASSERT((boost::mpl::has_push_back<TheConfigurators>));
 	typedef typename boost::mpl::push_back<TheConfigurators,FinalConfigurator>::type PlusFinalizer;
-	return configureLayout<PlusFinalizer>(name,attrs,source);
+	return createConfiguration<PlusFinalizer>(name,attrs,source);
 }
 bool createConfiguration(Name name,StrAttrs &attrs) {
 	return createConfiguration<PassConfigurator>(name,attrs,(void*)0);

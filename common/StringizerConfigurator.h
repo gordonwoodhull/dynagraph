@@ -28,8 +28,8 @@ extern bool g_useDotDefaults;
 
 
 struct StringizerConfigurator {
-	template<typename Configurators,typename Layout,typename SourceLayout> 
-	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
+	template<typename Configurators,typename Source,typename Dest> 
+	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
 		// engine to translate strings to binary attrs
 		typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
 		StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(g_transform,g_useDotDefaults));
@@ -39,7 +39,7 @@ struct StringizerConfigurator {
 		typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
 		StringsOutEngine *xlateOut = new StringsOutEngine(engines.first->world_,g_transform);
 		engines.Append(xlateOut);
-		return configureLayout<Configurators>(name,attrs,world,engines,source);
+		return createConfiguration<Configurators>(name,attrs,source,dest);
 	}
 };
 

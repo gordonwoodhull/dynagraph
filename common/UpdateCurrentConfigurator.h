@@ -22,10 +22,10 @@
 namespace Dynagraph {
 
 struct UpdateCurrentConfigurator {
-	template<typename Configurators,typename Layout,typename SourceLayout> 
-	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
+	template<typename Configurators,typename Source,typename Dest> 
+	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
 		engines.Prepend(new UpdateCurrentProcessor<Layout>(world));
-		return configureLayout<Configurators>(name,attrs,world,engines,source);
+		return createConfiguration<Configurators>(name,attrs,source,dest);
 	}
 };
 

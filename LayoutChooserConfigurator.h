@@ -28,14 +28,14 @@ struct UnknownLayoutType : DGException2 {
 };
 
 struct LayoutChooserConfigurator {
-	template<typename Configurators,typename Layout,typename SourceLayout> 
-	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
+	template<typename Configurators,typename Source,typename Dest> 
+	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
 		BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this Configurator must go first
 		DString layout = attrs.look("layout","dynadag");
 		if(layout=="dynadag") 
-			return DynaDAG::DynaDAGConfigurator::config<Configurators>(name,attrs,world,engines,source);
+			return DynaDAG::DynaDAGConfigurator::config<Configurators>(name,attrs,source,dest);
 		else if(layout=="fdp")
-			return FDP::FDPConfigurator::config<Configurators>(name,attrs,world,engines,source);
+			return FDP::FDPConfigurator::config<Configurators>(name,attrs,source,dest);
 		else {
 			throw UnknownLayoutType(layout);
 			return false;

@@ -27,7 +27,7 @@ namespace DynaDAG {
 
 struct EmphasizeFlowConfigurator {
 	struct EmphasizeFlowConfiguratorImpl {
-		template<typename Configurators,typename SourceLayout> 
+		template<typename Configurators,typename Source,typename Dest> 
 		static bool config(DString name,const StrAttrs &attrs,ChangingGraph<DynaDAGLayout> *innerWorld,EnginePair<DynaDAGLayout> innerEngines, SourceLayout *source) {
 			if(attrs.look("emphasizeflow","false")=="true"||attrs.look("flowemphasizable","false")=="true") {
 				typedef SEdger<GeneralLayout,DynaDAGLayout> InTranslator;
@@ -44,16 +44,16 @@ struct EmphasizeFlowConfigurator {
 				EnginePair<GeneralLayout> outerEngines;
 				outerEngines.Append(inWorld);
 				outerEngines.Append(new OkayEngine<GeneralLayout>(outerWorld));
-				return configureLayout<Configurators>(name,attrs,outerWorld,outerEngines,source);
+				return createConfiguration<Configurators>(name,attrs,outerWorld,outerEngines,source);
 			}
 			else
-				return configureLayout<Configurators>(name,attrs,innerWorld,innerEngines,source);
+				return createConfiguration<Configurators>(name,attrs,innerWorld,innerEngines,source);
 		}
 	};
-	template<typename Configurators,typename Layout,typename SourceLayout> 
-	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines, SourceLayout *source) {
+	template<typename Configurators,typename Source,typename Dest> 
+	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
 		typedef boost::mpl::if_<boost::is_same<Layout,DynaDAGLayout>,EmphasizeFlowConfiguratorImpl,PassConfigurator>::type Choice;
-		return Choice::template config<Configurators>(name,attrs,world,engines,source);
+		return Choice::template config<Configurators>(name,attrs,source,dest);
 	}
 };
 

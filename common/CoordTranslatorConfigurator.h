@@ -25,7 +25,7 @@
 namespace Dynagraph {
 
 struct CoordTranslatorConfigurator {
-	template<typename Configurators,typename Layout,typename SourceLayout> 
+	template<typename Configurators,typename Source,typename Dest> 
 	static bool config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *innerWorld,EnginePair<Layout> innerEngines, SourceLayout *source) {
 		if(attrs.look("coordtranslation","false")=="true"||attrs.look("rankdir")) {
 			typedef NamedToNamedChangeTranslator<GeneralLayout,Layout,CoordTranslatorInActions<GeneralLayout,Layout>,true> InNaTranslator;
@@ -46,10 +46,10 @@ struct CoordTranslatorConfigurator {
 			EnginePair<GeneralLayout> outerEngines;
 			outerEngines.Append(inWorld);
 			outerEngines.Append(new OkayEngine<GeneralLayout>(outerWorld)); // and this, belong in some general internalizer configurator, no? but how?
-			return configureLayout<Configurators>(name,attrs,outerWorld,outerEngines,source);
+			return createConfiguration<Configurators>(name,attrs,outerWorld,outerEngines,source);
 		}
 		else
-			return configureLayout<Configurators>(name,attrs,innerWorld,innerEngines,source);
+			return createConfiguration<Configurators>(name,attrs,innerWorld,innerEngines,source);
 	}
 };
 
