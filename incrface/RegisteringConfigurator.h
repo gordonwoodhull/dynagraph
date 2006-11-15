@@ -23,9 +23,10 @@
 
 namespace Dynagraph {
 
-struct RegisteringConfigurator : Configurator {
-	template<typename Configurators,typename Source,typename Dest> 
-	static bool config(DString name,const StrAttrs &attrs,Source source,Dest dest) {
+struct RegisteringConfigurator {
+	template<typename Configurators,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		BOOST_MPL_ASSERT((boost::mpl::empty<Configurators>)); // must be end of line
 		// handler for parser
 		IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
 		// its handler (request command deferred)
@@ -36,7 +37,6 @@ struct RegisteringConfigurator : Configurator {
 		handler->engine_ = engines.first;
 		// and we're go!
 		incr_set_handler(name,handler);
-		return createConfiguration<Configurators>(name,attrs,source,dest);
 	}
 };
 

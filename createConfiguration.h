@@ -16,51 +16,19 @@
 #ifndef createConfiguration_h
 #define createConfiguration_h
 
-#include "LayoutChooserConfigurator.h"
-#include "dynadag/EdgeSuppressorConfigurator.h"
-#include "dynadag/ClearExtraRanksConfigurator.h"
-#include "dynadag/EmphasizeFlowConfigurator.h"
-#include "dynadag/RankerConfigurator.h"
-#include "common/CoordTranslatorConfigurator.h"
-#include "common/ShapeGeneratorConfigurator.h"
-#include "common/ColorByAgeConfigurator.h"
-#include "common/FindChangeRectsConfigurator.h"
-#include "common/UpdateCurrentConfigurator.h"
-#include "common/StringizerConfigurator.h"
-#include "incrface/RegisteringConfigurator.h"
-
-#include <boost/mpl/vector.hpp>
-#include <boost/mpl/push_back.hpp>
-
+#include "common/ChangingGraph.h"
 
 namespace Dynagraph {
 
-// the order of TheConfigurators is "magic" 
-// a more clever (perhaps too clever) way to do this might be to specify 
-// dependencies and order constraints on TheConfigurators(?)
-typedef boost::mpl::vector<
-	LayoutChooserConfigurator,
-	DynaDAG::EdgeSuppressorConfigurator,
-	DynaDAG::ClearExtraRanksConfigurator,
-	DynaDAG::EmphasizeFlowConfigurator,
-	DynaDAG::RankerConfigurator,
-	CoordTranslatorConfigurator,
-	ShapeGeneratorConfigurator,
-	ColorByAgeConfigurator,
-	FindChangeRectsConfigurator,
-	UpdateCurrentConfigurator,
-	StringizerConfigurator,
-	RegisteringConfigurator
-> TheConfigurators;
-
-template<typename FinalConfigurator,typename SourceLayout>
-bool createConfiguration(Name name,StrAttrs &attrs,SourceLayout *source) {
-	BOOST_MPL_ASSERT((boost::mpl::has_push_back<TheConfigurators>));
-	typedef typename boost::mpl::push_back<TheConfigurators,FinalConfigurator>::type PlusFinalizer;
-	return createConfiguration<PlusFinalizer>(name,attrs,source);
-}
-bool createConfiguration(Name name,StrAttrs &attrs) {
-	return createConfiguration<PassConfigurator>(name,attrs,(void*)0);
+void createConfiguration(Name name,StrAttrs &attrs);
+template<typename SourceLayout>
+bool changeConfiguration(ChangingGraph<SourceLayout> *source,StrAttrs &attrs) {
+	if(attrs.look("layout")) {
+		createConfiguration(gd<Name>(&source->whole_),attrs);
+		//for(typename SourceLayout::node_iter ni = source->whole_.nodes().begin(); ni!=source->whole_.nodes().end(); ++ni)
+		return true;
+	}
+	return false
 }
 
 } // namespace Dynagraph

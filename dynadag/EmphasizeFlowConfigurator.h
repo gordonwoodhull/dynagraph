@@ -27,8 +27,8 @@ namespace DynaDAG {
 
 struct EmphasizeFlowConfigurator {
 	struct EmphasizeFlowConfiguratorImpl {
-		template<typename Configurators,typename Source,typename Dest> 
-		static bool config(DString name,const StrAttrs &attrs,ChangingGraph<DynaDAGLayout> *innerWorld,EnginePair<DynaDAGLayout> innerEngines, SourceLayout *source) {
+		template<typename Configurators> 
+		static void config(DString name,const StrAttrs &attrs,ChangingGraph<DynaDAGLayout> *innerWorld,EnginePair<DynaDAGLayout> innerEngines) {
 			if(attrs.look("emphasizeflow","false")=="true"||attrs.look("flowemphasizable","false")=="true") {
 				typedef SEdger<GeneralLayout,DynaDAGLayout> InTranslator;
 				typedef EdgeSplicer<DynaDAGLayout,GeneralLayout> OutTranslator;
@@ -44,16 +44,16 @@ struct EmphasizeFlowConfigurator {
 				EnginePair<GeneralLayout> outerEngines;
 				outerEngines.Append(inWorld);
 				outerEngines.Append(new OkayEngine<GeneralLayout>(outerWorld));
-				return createConfiguration<Configurators>(name,attrs,outerWorld,outerEngines,source);
+				configureLayout<Configurators>(name,attrs,outerWorld,outerEngines);
 			}
 			else
-				return createConfiguration<Configurators>(name,attrs,innerWorld,innerEngines,source);
+				configureLayout<Configurators>(name,attrs,innerWorld,innerEngines);
 		}
 	};
-	template<typename Configurators,typename Source,typename Dest> 
-	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
-		typedef boost::mpl::if_<boost::is_same<Layout,DynaDAGLayout>,EmphasizeFlowConfiguratorImpl,PassConfigurator>::type Choice;
-		return Choice::template config<Configurators>(name,attrs,source,dest);
+	template<typename Configurators,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+		boost::mpl::if_<boost::is_same<Layout,DynaDAGLayout>,EmphasizeFlowConfiguratorImpl,PassConfigurator>::type
+			::template config<Configurators>(name,attrs,world,engines);
 	}
 };
 
