@@ -77,17 +77,20 @@ private:
 	void executeDeletions(DDChangeQueue &changeQ);
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
 	void updateBounds(DDChangeQueue &changeQ);
-	void findChangedNodes(DDChangeQueue &changeQ);
-	//void findFlowSlope(DynaDAGLayout::Node *n);
-	void findFlowSlopes(DDChangeQueue &changeQ);
-	bool edgeNeedsRedraw(DDPath *path,DDChangeQueue &changeQ);
-	void sketchEdge(DDPath *path); // draw polyline, for debug
-	void drawStraightEdge(DDPath *path); 
+	void moveNodesBasedOnModel(DDChangeQueue &changeQ);
+
+	void sketchEdge(DynaDAGLayout::Edge *e); 
+	void drawStraightEdge(DynaDAGLayout::Edge *e); 
 	void drawSelfEdge(DynaDAGLayout::Edge *e); 
-	void drawEdgeSimply(DDPath *path); 
-	void findDirtyEdges(DDChangeQueue &changeQ,bool force);
-	void redrawEdges(DDChangeQueue &changeQ);
-	void generateIntermediateLayout(DDChangeQueue &changeQ);
+	void drawEdgeSimply(DynaDAGLayout::Edge *e); 
+	void rescaleEdge(DynaDAGLayout::Edge *e);
+
+	void findFlowSlopes(DDChangeQueue &changeQ);
+	bool edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &changeQ);
+	void drawFinalEdges(DDChangeQueue &changeQ,bool force);
+	void drawIntermediateEdges(DDChangeQueue &changeQ);
+	void drawSecondEdges(DDChangeQueue &changeQ);
+
 	void rememberOld();
 	void dumpModel();
 };

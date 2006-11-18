@@ -39,14 +39,18 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
 		InternalWorld *me_;
 		InnerCatcher(InternalWorld *me) : LinkedChangeProcessor<InnerLayout>(me->innerWorld_),me_(me) {}
 		void Open() {
-			me_->innerOpenComplete();
+			me_->innerOpenOut();
 		}
 		void Process() {
-			me_->innerProcessComplete();
+			me_->innerProcessOut();
 		}
 		void Close() {
-			me_->innerCloseComplete();
+			me_->innerCloseOut();
 		}
+		void Pulse(const StrAttrs &attrs) {
+			me_->innerPulseOut(attrs);
+		}
+
 	};
 	InternalWorld(ChangingGraph<OuterLayout> *outerWorld,ChangingGraph<InnerLayout> *innerWorld)
 		: LinkedChangeProcessor<OuterLayout>(outerWorld),innerWorld_(innerWorld) {
@@ -74,17 +78,25 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
 		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Close));
 		innerEngines_.first->Close();
 	}
-	void innerOpenComplete() {
+	void Pulse(const StrAttrs &attrs) {
+		//std::for_each(inTranslators_.begin(),inTranslators_.end(),boost::bind(&OutTranslator::Pulse,_1,attrs));
+		innerEngines_.first->Pulse(attrs);
+	}
+	void innerOpenOut() {
 		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Open));
 		this->NextOpen();
 	}
-	void innerProcessComplete() {
+	void innerProcessOut() {
 		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Process));
 		this->NextProcess();
 	}
-	void innerCloseComplete() {
+	void innerCloseOut() {
 		std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Close));
 		this->NextClose();
+	}
+	void innerPulseOut(const StrAttrs &attrs) {
+		//std::for_each(outTranslators_.begin(),outTranslators_.end(),boost::bind(&OutTranslator::Pulse,_1,attrs));
+		this->NextPulse(attrs);
 	}
 };
 

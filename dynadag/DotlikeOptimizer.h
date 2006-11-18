@@ -22,7 +22,7 @@ namespace DynaDAG {
 
 struct DotlikeOptimizer : Optimizer {
 	DotlikeOptimizer(Config &config) : config(config) {}
-	void Reorder(DynaDAGLayout &nodes,DynaDAGLayout &edges);
+	void Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayout &edges);
 	double Reopt(DDModel::Node *n,UpDown dir);
 private:
 	Config &config;

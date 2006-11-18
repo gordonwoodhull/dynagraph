@@ -38,7 +38,7 @@ inline T absol(T n) {
 }
 /*  don't use "round(..)" as it collides with a system definition */
 inline int ROUND(double f) {
-	return f>=0.0?int(f + .5):int(f - .5);
+	return int(f + ((f>=0.)?.5:-.5));
 }
 // silly little
 template<typename T>
@@ -79,6 +79,13 @@ struct FloatMaxes {
 };
 inline bool is_vclose(float A,float B) {
 	return is_vclose_howclose<float,FloatMaxes>(A,B);
+}
+
+template<typename T>
+inline bool assign_unclose(T &a,const T &b) {
+	if(!is_vclose(a,b))
+		return a = b, true;
+	return false;
 }
 
 // debugging things.  even for internal errors, exceptions are more useful

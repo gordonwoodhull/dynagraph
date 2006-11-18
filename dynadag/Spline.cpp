@@ -348,7 +348,8 @@ void Spliner::adjustPath(DDPath *path) {
 }
 
 bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,ObstacleAvoiderSpliner<DynaDAGLayout> &obav) {
-	dgassert(path->unclippedPath.Empty());
+	Line &unclipped = path->unclippedPath;
+	unclipped.Clear();
 	DynaDAGLayout::Edge *e = path->layoutE;
 
 	EdgeDirection direction = getEdgeDirection(e);
@@ -365,7 +366,6 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	Coord tailpt = eg.tailPort.pos + gd<DDNode>(tl).multi->pos(),
 		headpt = eg.headPort.pos + gd<DDNode>(hd).multi->pos();
 
-	Line &unclipped = path->unclippedPath;
 	if(path->layoutE->tail==path->layoutE->head) {	/* self arc */
 		Coord sep = gd<GraphGeom>(config.whole).separation;
 		unclipped.degree = 3;
@@ -431,12 +431,12 @@ bool Spliner::MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel) { //,Obstac
 	NodeGeom &tg = gd<NodeGeom>(path->layoutE->tail),
 		&hg = gd<NodeGeom>(path->layoutE->head);
 	if(direction==reversed) {
-		eg.pos.ClipEndpoints(path->unclippedPath,hg.pos,eg.headClipped?&hg.region:0,
+		eg.pos.ClipEndpoints(unclipped,hg.pos,eg.headClipped?&hg.region:0,
 			tg.pos,eg.tailClipped?&tg.region:0);
 		reverse(eg.pos.begin(),eg.pos.end());
 	}
 	else
-		eg.pos.ClipEndpoints(path->unclippedPath,tg.pos,eg.tailClipped?&tg.region:0,
+		eg.pos.ClipEndpoints(unclipped,tg.pos,eg.tailClipped?&tg.region:0,
 			hg.pos,eg.headClipped?&hg.region:0);
 	return true;
 }

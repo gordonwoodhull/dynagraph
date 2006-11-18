@@ -29,8 +29,8 @@ struct MultiNode;
 template<typename N,typename E>
 struct Path;
 
-typedef enum _UpDown {UP,DOWN} UpDown;
-typedef enum _LeftRight {LEFT=-1,RIGHT=1} LeftRight;
+typedef enum UpDown_ {UP,DOWN} UpDown;
+typedef enum LeftRight_ {LEFT=-1,RIGHT=1} LeftRight;
 struct Median {
 	double val; // value
 	bool exists, // if defined
@@ -51,12 +51,13 @@ struct DDNodeT {
 	// config
 	Median med[2]; // UpDown
 	int rank,
-		order;
+		order,
+		preorder; // for optimizer to have consistent indices
 	bool inConfig;
+	// old way of excluding nodes from crossopt
+	//int orderConstraint;
 	// geometry
 	Position cur, prev;
-	// mincross order w/in rank constraint
-	int orderConstraint;
 	// only used in path vnodes:
 	double actualX;	// spline intercept
 	bool actualXValid;
@@ -91,6 +92,9 @@ struct DDEdgeT {
 	}
 };
 
+// changing incrementally is buggy.  not so expensive to rewrite all constraints.
+#define REDO_ALL_XCONSTRAINTS
+
 struct DDModel : LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > {
 	typedef LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,Nothing,Nothing > G;
 	// the real types, hampered by circular typing problems
@@ -99,31 +103,41 @@ struct DDModel : LGraph<ADTisCDT,Nothing,DDNodeT<void,void>,DDEdgeT<void,void>,N
 	typedef Path<Node,Edge> P;
 	typedef DDNodeT<Node,Edge> DDN;
 	typedef DDEdgeT<Node,Edge> DDE;
+#ifndef REDO_ALL_XCONSTRAINTS
 	DDModel() { dirty_ = new G(this); }
 	~DDModel() { delete dirty_; }
 	G &dirty() { return *dirty_; }
 private:
 	G *dirty_;
+#endif
 };
 typedef DDModel::C DDChain;
 typedef DDModel::MN DDMultiNode;
 typedef DDModel::P DDPath;
 typedef DDModel::DDN DDNode;
 typedef DDModel::DDE DDEdge;
+
+// convolution to work around type-punning warnings
+// (but maybe this is "the truth"?)
+struct DDModelNodePointer {
+	DDMultiNode *model;
+};
+struct DDModelEdgePointer {
+	DDPath *model;
+};
 inline DDMultiNode *&DDp(DynaDAGLayout::Node *n) {
-	DDMultiNode *&ret = *reinterpret_cast<DDMultiNode**>(&gd<ModelPointer>(n).model);
-	return ret;
+	return gd2<DDModelNodePointer,ModelPointer>(n).model;
 }
 inline DDPath *&DDp(DynaDAGLayout::Edge *e) {
-	DDPath *&ret = *reinterpret_cast<DDPath**>(&gd<ModelPointer>(e).model);
-	return ret;
+	return gd2<DDModelEdgePointer,ModelPointer>(e).model;
 }
 typedef std::vector<DDModel::Node*> NodeV;
 typedef std::vector<DDModel::Edge*> EdgeV;
 typedef std::set<DynaDAGLayout::Node*> NodeSet;
 
-} // namespace Dynagraph
+
 } // namespace DynaDAG
+} // namespace Dynagraph
 
 // specialize LGraph's gd for model nodes & edges
 template<>

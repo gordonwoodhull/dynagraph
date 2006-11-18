@@ -51,7 +51,7 @@ struct FCRAfter : LinkedChangeProcessor<Layout> {
 			changerect |= gd<NodeGeom>(*ni).BoundingBox();
 		for(typename Layout::graphedge_iter ei = data->changeE.edges().begin(); ei!=data->changeE.edges().end(); ++ei)
 			changerect |= gd<EdgeGeom>(*ei).pos.BoundingBox();
-		if(assign(gd<GraphGeom>(this->world_->Q_.ModGraph()).changerect,changerect))
+		if(assign_unclose(gd<GraphGeom>(this->world_->Q_.ModGraph()).changerect,changerect))
 			ModifyFlags(this->world_->Q_) |= DG_UPD_CHANGERECT;
 		this->NextProcess();
 	}

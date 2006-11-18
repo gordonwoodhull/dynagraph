@@ -15,6 +15,7 @@ OPT_DOTCO=-d
 run: *.incr showem
 
 showem:
+	@echo Searching output for exceptions...
 	@if grep exception *.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
 
 *.incr: always

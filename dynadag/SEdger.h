@@ -31,7 +31,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 		: ChangeTranslator<Layout1,Layout2>(world1,world2)
 	{}
 	typedef FlexiRankXlator<Layout2> RankXlator;
-	typedef enum {spliced,one,none} SpliceState;
+	typedef enum SpliceState_ {spliced,one,none} SpliceState;
 	SpliceState getCurrentSpliceState(typename Layout1::Edge *e1) {
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		if(destQ.whole->fetch_edge(gd<Name>(e1)))
@@ -47,14 +47,6 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 			return spliced;
 		else
 			return one;
-	}
-
-	void updateTailFlowRank(typename Layout2::Node *n2tf,typename Layout1::Edge *e1,int ofs) {
-		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
-
-	}
-	void updateHeadFlowRank(typename Layout2::Node *n2hf,typename Layout1::Edge *e1,int ofs) {
-		gd<NSRankerNode>(n2hf).newTopRank = gd<NSRankerNode>(n2hf).newBottomRank = gd<NSRankerNode>(e1->head).newTopRank - ofs;
 	}
 	void eraseSplice(typename Layout1::Edge *e1) {
 		Name ename = gd<Name>(e1);
@@ -130,7 +122,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 			break;
 		}
 		case one: {
-			typename Layout2::Edge *e2;
+			typename Layout2::Edge *e2=0;
 			switch(splicedness) {
 			case one:
 				e2 = destQ.whole->fetch_edge(ename);

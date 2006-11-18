@@ -1,0 +1,18 @@
+open graph V
+insert node V n
+insert node V a
+insert node V b
+insert node V c
+insert edge V e1 n a
+insert edge V e2 n b
+insert edge V e3 n c
+modify node V n [freezeoutorder=true]
+
+insert edge V e4 b c
+insert node V d
+insert node V e
+insert edge V e5 n d
+insert edge V e6 n e
+insert edge V e7 c d
+insert edge V e8 d e
+insert edge V e9 b e

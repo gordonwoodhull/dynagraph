@@ -43,11 +43,19 @@ struct FDPNode {
 
 typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
 
+// convolution to work around type-punning warnings
+// (but it's true in a way, and contains the badness in gd2)
+struct FDPModelNodePointer {
+	FDPModel::Node *model;
+};
+struct FDPModelEdgePointer {
+	FDPModel::Edge *model;
+};
 inline FDPModel::Node *&modelP(FDPLayout::Node *n) {
-	return reinterpret_cast<FDPModel::Node*&>(gd<ModelPointer>(n).model);
+	return gd2<FDPModelNodePointer,ModelPointer>(n).model;
 }
 inline FDPModel::Edge *&modelP(FDPLayout::Edge *e) {
-	return reinterpret_cast<FDPModel::Edge*&>(gd<ModelPointer>(e).model);
+	return gd2<FDPModelEdgePointer,ModelPointer>(e).model;
 }
 
 } // namespace FDP

@@ -141,6 +141,8 @@ DDModel::Node *Config::Right(DDModel::Node *n) {
 DDModel::Node *Config::Left(DDModel::Node *n) {
 	return RelNode(n,-1);
 }
+// "monster atoms"
+// contains: one vector append, one graph insertion
 void Config::InstallAtRight(DDModel::Node *n, int r) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	DDModel::Node *right = rank->order.size()?rank->order.back():0;
@@ -154,8 +156,11 @@ void Config::InstallAtRight(DDModel::Node *n, int r) {
 	ddn.cur.valid = true;
 	ddn.cur.x = x;
 	ddn.cur.y = rank->yBase; // estimate
+#ifndef REDO_ALL_XCONSTRAINTS
 	model.dirty().insert(n);
+#endif
 }
+// contains: one vector insert, one node-edge iteration, one vector iterate-and-set, one graph insertion
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
 	dgassert(o<=rank->order.size() && o>=0);
@@ -174,7 +179,9 @@ void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o, double x) {
 		gd<DDNode>(*i).order++;
 		InvalidateAdjMVals(*i);
 	}
+#ifndef REDO_ALL_XCONSTRAINTS
 	model.dirty().insert(n);
+#endif
 }
 void Config::InstallAtOrder(DDModel::Node *n, int r, unsigned o) {
 	Rank *rank = *ranking.EnsureRank(r,gd<GraphGeom>(current).separation.y);
@@ -196,34 +203,84 @@ void Config::InstallAtPos(DDModel::Node *n, int r, double x) {
 		*R = i==rank->order.end()?0:*i;
 	InstallAtOrder(n,r,R?gd<DDNode>(R).order:L?gd<DDNode>(L).order+1:0,x);
 }
+// cheap atom; unused: two node-edge iterations, two graph insertions
 void Config::Exchange(DDModel::Node *u, DDModel::Node *v) {
 	DDNode &ddu = gd<DDNode>(u),
 		&ddv = gd<DDNode>(v);
 	dgassert(ddu.inConfig);
 	dgassert(ddv.inConfig);
 	dgassert(ddu.rank == ddv.rank);
-	reports[dgr::exchange] << "exchange " <<
-		u << " of " << type(u) << ' ' << thing(u) << ": x " << ddu.cur.x << " r " << ddu.rank << " o " << ddu.order << endl <<
-		v << " of " << type(v) << ' ' << thing(v) << ": x " << ddv.cur.x << " r " << ddv.rank << " o " << ddv.order << endl;
+	//reports[dgr::exchange] << "exchange " <<
+	//	u << " of " << type(u) << ' ' << thing(u) << ": x " << ddu.cur.x << " r " << ddu.rank << " o " << ddu.order << endl <<
+	//	v << " of " << type(v) << ' ' << thing(v) << ": x " << ddv.cur.x << " r " << ddv.rank << " o " << ddv.order << endl;
 
 	Rank *rank = ranking.GetRank(ddu.rank);
-	int upos = ddu.order,
-		vpos = ddv.order;
+	//int upos = ddu.order,
+	//	vpos = ddv.order;
 	//dgassert(vpos==upos+1);
 
-	/* delete any LR constraint between these nodes */
-	xconOwner->DeleteLRConstraint(u,v);
 	/*xconOwner->RemoveNodeConstraints(u);
 	xconOwner->RemoveNodeConstraints(v);*/
 
-	rank->order[vpos] = u; gd<DDNode>(u).order = vpos;
-	rank->order[upos] = v; gd<DDNode>(v).order = upos;
-	//swap(gd<DDNode>(u).cur.x,gd<DDNode>(v).cur.x); // keep x order consistent
+	//rank->order[vpos] = u; gd<DDNode>(u).order = vpos;
+	//rank->order[upos] = v; gd<DDNode>(v).order = upos;
+	swap(rank->order[ddu.order],rank->order[ddv.order]);
+	swap(ddu.order,ddv.order);
+	swap(gd<DDNode>(u).cur.x,gd<DDNode>(v).cur.x); // keep x order consistent
 	InvalidateAdjMVals(u);
 	InvalidateAdjMVals(v);
+#ifndef REDO_ALL_XCONSTRAINTS
+	/* delete any LR constraint between these nodes */
+	xconOwner->DeleteLRConstraint(u,v);
 	model.dirty().insert(u);
 	model.dirty().insert(v);
+#endif
 }
+void Config::MoveNodeBefore(DDModel::Node *u,DDModel::Node *v) {
+	DDNode &ddu = gd<DDNode>(u);
+	dgassert(ddu.inConfig);
+	unsigned upos = ddu.order, vpos;
+	Rank *rank = ranking.GetRank(ddu.rank);
+	NodeV &order = rank->order;
+	if(v) {
+		dgassert(gd<DDNode>(v).inConfig);
+		dgassert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
+		vpos = gd<DDNode>(v).order;
+	}
+	else 
+		vpos = order.size();
+	if(upos+1==vpos)
+		return; 
+	if(upos+2==vpos) {
+		Exchange(u,Right(u));
+		return;
+	}
+	NodeV::iterator ui = order.begin()+upos,
+		vi = order.begin()+vpos;
+	if(upos<vpos) {
+		for(NodeV::iterator xi = ui; xi<vi-1; ++xi) {
+			*xi = *(xi+1);
+			DDModel::Node *x = *xi;
+			--gd<DDNode>(x).order;
+			InvalidateAdjMVals(x);
+		}
+		*(vi-1) = u;
+		ddu.order = vpos-1;
+	}
+	else {
+		for(NodeV::iterator xi = ui; xi>vi; --xi) {
+			*xi = *(xi-1);
+			DDModel::Node *x = *xi;
+			++gd<DDNode>(x).order;
+			InvalidateAdjMVals(x);
+		}
+		*vi = u;
+		ddu.order = vpos;
+	}
+	ddu.cur.x = CoordBetween(Left(u),Right(u));
+	InvalidateAdjMVals(u);
+}
+// contains: one edge delete, one node-edge iteration, one vector iterate-and-set, one vector erase, one graph insertion
 void Config::RemoveNode(DDModel::Node *n) {
 	xconOwner->RemoveNodeConstraints(n);
 	InvalidateAdjMVals(n);
@@ -234,8 +291,10 @@ void Config::RemoveNode(DDModel::Node *n) {
 	int pos = gd<DDNode>(n).order;
 	dgassert(rank->order[pos] == n);
 	NodeV::iterator i = rank->order.begin()+pos;
+#ifndef REDO_ALL_XCONSTRAINTS
 	if(i!=rank->order.end())
 		model.dirty().insert(*i); // re-constrain right node
+#endif
 	for(NodeV::iterator j=i;j!=rank->order.end(); ++j)
 		gd<DDNode>(*j).order--;
 	rank->order.erase(i);

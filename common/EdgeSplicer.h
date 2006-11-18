@@ -129,7 +129,7 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 			if(eg1.pos.size()) {
 				Line::iterator begin = eg1.pos.begin();
 				if(eg2.pos.size()) {
-					if(eg2.pos.back()!=*begin)
+					if(!is_vclose(eg2.pos.back(),*begin))
 						throw EdgeSplicerEndsDontMatch();
 					++begin;
 				}

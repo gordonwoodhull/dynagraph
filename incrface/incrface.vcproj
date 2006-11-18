@@ -118,8 +118,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
+				FavorSizeOrSpeed="1"
 				OmitFramePointers="FALSE"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"

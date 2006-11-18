@@ -49,7 +49,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			Coord res;
 			s >> res;
-			if(assign(gd<GraphGeom>(l).resolution,res))
+			if(assign_unclose(gd<GraphGeom>(l).resolution,res))
 				ret |= DG_UPD_RESOLUTION;
 		}
 		else if(name=="separation") {
@@ -58,14 +58,14 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 			istringstream s(value);
 			Coord sep;
 			s >> sep;
-			if(assign(gd<GraphGeom>(l).separation,sep))
+			if(assign_unclose(gd<GraphGeom>(l).separation,sep))
 				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="edgeseparation") {
 			istringstream s(value);
 			double esep;
 			s >> esep;
-			if(assign(gd<GraphGeom>(l).edgeSeparation,esep))
+			if(assign_unclose(gd<GraphGeom>(l).edgeSeparation,esep))
 				ret |= DG_UPD_SEPARATION;
 		}
 		else if(name=="defaultsize") {
@@ -95,7 +95,7 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
 				gd<GraphGeom>(l).splineLevel = DG_SPLINELEVEL_SPLINE;
 		}
 		else if(name=="rankdir") {
-			Orientation ori;
+			Orientation ori = DG_ORIENT_DOWN;
 			if(value=="TB")
 				ori = DG_ORIENT_DOWN;
 			else if(value=="LR")
@@ -190,6 +190,10 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
 			if(assign(ng.suppressed,ai->second=="true"))
 				ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE|DG_UPD_SUPPRESSION;
 		}
+		else if(ai->first=="freezeoutorder") 
+			ng.freezeOutOrder = ai->second=="true";
+		else if(ai->first=="freezeinorder") 
+			ng.freezeInOrder = ai->second=="true";
 		else if(ai->first.compare(0,9,"labelsize")==0) {
 			int i=ds2int(ai->first.substr(9));
 			if(i>=0) {

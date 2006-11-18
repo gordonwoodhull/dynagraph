@@ -140,8 +140,12 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
+				FavorSizeOrSpeed="1"
 				OmitFramePointers="FALSE"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
@@ -222,10 +226,13 @@
 				RelativePath="DynaDAG.cpp">
 			</File>
 			<File
+				RelativePath=".\EdgeDrawing.cpp">
+			</File>
+			<File
 				RelativePath="FlexiSpline.cpp">
 			</File>
 			<File
-				RelativePath="getCrossoptModelNodes.cpp">
+				RelativePath=".\getCrossoptModelNodes.cpp">
 			</File>
 			<File
 				RelativePath="Measurements.cpp">

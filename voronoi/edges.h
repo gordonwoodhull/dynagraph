@@ -31,7 +31,7 @@ struct Edge {
     int        edgenbr;
 };
 
-typedef enum _EdgeEnds {le = 0, re = 1} EdgeEnd;
+typedef enum EdgeEnds_ {le = 0, re = 1} EdgeEnd;
 inline EdgeEnd opp(EdgeEnd e) {
 	if(e==le)
 		return re;
