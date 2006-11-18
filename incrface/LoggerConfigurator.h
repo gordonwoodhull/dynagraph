@@ -26,7 +26,7 @@ extern Transform *g_transform;
 
 struct LoggerConfigurator {
 	template<typename Configurators,typename Source,typename Dest> 
-	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
+	static bool config(DString name,const StrAttrs &attrs,Source source,Dest dest) {
 		typedef InternalTranslator2<InnerLayout,LayoutToStringTranslator<InnerLayout,InnerLayout> > MakeStrings;
 		if(reports.enabled(dgr::inner_input)) {
 			OutputIncrface<InnerLayout> *logIn = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_input);

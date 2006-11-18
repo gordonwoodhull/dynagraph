@@ -17,6 +17,7 @@
 #define createConfiguration_h
 
 #include "LayoutChooserConfigurator.h"
+/*
 #include "dynadag/EdgeSuppressorConfigurator.h"
 #include "dynadag/ClearExtraRanksConfigurator.h"
 #include "dynadag/EmphasizeFlowConfigurator.h"
@@ -24,12 +25,14 @@
 #include "common/CoordTranslatorConfigurator.h"
 #include "common/ShapeGeneratorConfigurator.h"
 #include "common/ColorByAgeConfigurator.h"
+*/
 #include "common/FindChangeRectsConfigurator.h"
+/*
 #include "common/UpdateCurrentConfigurator.h"
 #include "common/StringizerConfigurator.h"
 #include "incrface/RegisteringConfigurator.h"
+*/
 
-#include <boost/mpl/vector.hpp>
 #include <boost/mpl/push_back.hpp>
 
 
@@ -40,6 +43,7 @@ namespace Dynagraph {
 // dependencies and order constraints on TheConfigurators(?)
 typedef boost::mpl::vector<
 	LayoutChooserConfigurator,
+	/*
 	DynaDAG::EdgeSuppressorConfigurator,
 	DynaDAG::ClearExtraRanksConfigurator,
 	DynaDAG::EmphasizeFlowConfigurator,
@@ -47,20 +51,24 @@ typedef boost::mpl::vector<
 	CoordTranslatorConfigurator,
 	ShapeGeneratorConfigurator,
 	ColorByAgeConfigurator,
-	FindChangeRectsConfigurator,
+	*/
+	FindChangeRectsConfigurator
+	/*
 	UpdateCurrentConfigurator,
 	StringizerConfigurator,
 	RegisteringConfigurator
+	*/
 > TheConfigurators;
 
-template<typename FinalConfigurator,typename SourceLayout>
-bool createConfiguration(Name name,StrAttrs &attrs,SourceLayout *source) {
+template<typename Source>
+bool createConfiguration(Name name,StrAttrs &attrs,typename Configurator::Data<Source>::type &source) {
 	BOOST_MPL_ASSERT((boost::mpl::has_push_back<TheConfigurators>));
-	typedef typename boost::mpl::push_back<TheConfigurators,FinalConfigurator>::type PlusFinalizer;
-	return createConfiguration<PlusFinalizer>(name,attrs,source);
+	Configurator::Data<Configurator::EmptyConfig> emptyDest;
+	return Configurator::Create<TheConfigurators>(name,attrs,source,emptyDest);
 }
 bool createConfiguration(Name name,StrAttrs &attrs) {
-	return createConfiguration<PassConfigurator>(name,attrs,(void*)0);
+	Configurator::Data<Configurator::EmptyConfig> emptySource;
+	return createConfiguration<Configurator::EmptyConfig>(name,attrs,emptySource);
 }
 
 } // namespace Dynagraph

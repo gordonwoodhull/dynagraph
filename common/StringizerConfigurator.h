@@ -29,7 +29,7 @@ extern bool g_useDotDefaults;
 
 struct StringizerConfigurator {
 	template<typename Configurators,typename Source,typename Dest> 
-	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
+	static bool config(DString name,const StrAttrs &attrs,Source source,Dest dest) {
 		// engine to translate strings to binary attrs
 		typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
 		StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(g_transform,g_useDotDefaults));

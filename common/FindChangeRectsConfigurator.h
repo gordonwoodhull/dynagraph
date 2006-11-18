@@ -22,16 +22,23 @@
 namespace Dynagraph {
 
 struct FindChangeRectsConfigurator {
+	template<typename LevelTag,typename Layout>
+	static void make_it(Configurator::Level<Layout,LevelTag> &level) {
+		FCRData<Layout> *fcrdata = new FCRData<Layout>(level.world.get());
+		FCRBefore<Layout> *fcrbefore = new FCRBefore<Layout>(fcrdata);
+		FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(fcrdata);
+		level.engines.Prepend(fcrbefore);
+		level.engines.Append(fcrafter);
+	}
 	template<typename Configurators,typename Source,typename Dest> 
-	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
+	static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) {
 		if(attrs.look("findchangerects","false")=="true") {
-			FCRData<Layout> *fcrdata = new FCRData<Layout>(world);
-			FCRBefore<Layout> *fcrbefore = new FCRBefore<Layout>(fcrdata);
-			FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(fcrdata);
-			engines.Prepend(fcrbefore);
-			engines.Append(fcrafter);
+			typedef Configurator::Data<Configurator::Configuration<typename Dest::CurrLevel,boost::mpl::push_back<typename Dest::DataList>::type> > NewDest;
+			NewDest newDest = dest;
+			make_it<typename Dest::CurrLevel>(newDest,newDest);
+			return Configurator::Create<Configurators>(name,attrs,source,newDest);
 		}
-		return createConfiguration<Configurators>(name,attrs,source,dest);
+		return Configurator::Create<Configurators>(name,attrs,source,dest);
 	}
 };
 

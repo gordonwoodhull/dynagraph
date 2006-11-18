@@ -23,7 +23,7 @@ namespace Dynagraph {
 
 struct ColorByAgeConfigurator {
 	template<typename Configurators,typename Source,typename Dest> 
-	static bool Create(DString name,const StrAttrs &attrs,typename Data<Source>::type &source,typename Data<Dest>::type dest) {
+	static bool config(DString name,const StrAttrs &attrs,Source source,Dest dest) {
 		if(attrs.look("colorbyage")||attrs.look("agecolors"))
 			engines.Append(new ColorByAge<Layout>(world));
 		return createConfiguration<Configurators>(name,attrs,source,dest);
