@@ -34,7 +34,7 @@ struct RegisteringConfigurator {
 		// incrface output at end of chain
 		engines.Append(new OutputIncrface<Layout>(world,dgr::output));
 		// start chain
-		handler->next_ = engines.first;
+		handler->engine_ = engines.first;
 		// and we're go!
 		incr_set_handler(name,handler);
 	}
