@@ -1,0 +1,11 @@
+open graph V
+segue graph V
+digraph g {
+  a -> b [name=e]
+  a -> b [name=f]
+  a -> b [name=g]
+  a -> b [name=h]
+  a -> c
+  c -> d
+  d -> b
+}
