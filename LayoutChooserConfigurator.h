@@ -30,7 +30,7 @@ struct UnknownLayoutType : DGException2 {
 struct LayoutChooserConfigurator {
 	template<typename Configurators,typename Source,typename Dest> 
 	static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) {
-		BOOST_MPL_ASSERT((boost::mpl::empty<Configurator::DataList<typename Dest::Configuration>::type >)); // this Configurator must go first
+		BOOST_MPL_ASSERT((boost::mpl::empty<typename Configurator::DataList<typename Dest::Configuration>::type >)); // this Configurator must go first
 		DString layout = attrs.look("layout","dynadag");
 		if(layout=="dynadag") 
 			return DynaDAG::DynaDAGConfigurator::Create<Configurators>(name,attrs,source,dest);

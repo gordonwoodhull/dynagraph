@@ -28,11 +28,11 @@ OTHERLIBS = -Lincrface -lincrface \
 	-Lshortspline -lshortspline \
 	-Lvoronoi -lvoronoi
 
-OBJS = IncrCalledBack.o DuplicateStream.o createConfiguration.o
+OBJS = main.o IncrCalledBack.o DuplicateStream.o
 
 MANS = 
 
-dynagraph-whole : main.o $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
+dynagraph-whole : $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-whole
 
 dynagraph: dynagraph-whole

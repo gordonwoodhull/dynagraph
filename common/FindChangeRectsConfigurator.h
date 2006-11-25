@@ -22,22 +22,25 @@
 namespace Dynagraph {
 
 struct FindChangeRectsConfigurator {
-	template<typename LevelTag,typename Layout>
-	static void make_it(Configurator::Level<Layout,LevelTag> &level) {
-		FCRData<Layout> *fcrdata = new FCRData<Layout>(level.world.get());
-		FCRBefore<Layout> *fcrbefore = new FCRBefore<Layout>(fcrdata);
-		FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(fcrdata);
+	template<typename Configurators,typename Source,typename Dest,typename CurrLayout>
+	static bool Create2(DString name,const StrAttrs &attrs,Source &source,Dest dest,
+            Configurator::Level<CurrLayout,typename Dest::CurrLevel> &level) {
+        typedef typename Dest::CurrLevel CurrLevel;
+        typedef Configurator::Engine<CurrLayout,FindChangeRectsConfigurator> ThisEngine;
+		typedef Configurator::Configuration<CurrLevel,typename boost::mpl::push_back<typename Dest::DataList,ThisEngine>::type> NewDest;
+		Configurator::Data<NewDest> newDest = dest;
+		FCRData<CurrLayout> *fcrdata = new FCRData<CurrLayout>(level.world.get());
+		FCRBefore<CurrLayout> *fcrbefore = new FCRBefore<CurrLayout>(fcrdata);
+		FCRAfter<CurrLayout> *fcrafter = new FCRAfter<CurrLayout>(fcrdata);
 		level.engines.Prepend(fcrbefore);
 		level.engines.Append(fcrafter);
+        ((ThisEngine&)newDest).engine.reset(fcrbefore);
+		return Configurator::Create<Configurators>(name,attrs,source,newDest);
 	}
 	template<typename Configurators,typename Source,typename Dest> 
 	static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) {
-		if(attrs.look("findchangerects","false")=="true") {
-			typedef Configurator::Data<Configurator::Configuration<typename Dest::CurrLevel,boost::mpl::push_back<typename Dest::DataList>::type> > NewDest;
-			NewDest newDest = dest;
-			make_it<typename Dest::CurrLevel>(newDest,newDest);
-			return Configurator::Create<Configurators>(name,attrs,source,newDest);
-		}
+		if(attrs.look("findchangerects","false")=="true") 
+            return Create2<Configurators>(name,attrs,source,dest,dest);
 		return Configurator::Create<Configurators>(name,attrs,source,dest);
 	}
 };

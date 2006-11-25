@@ -29,6 +29,7 @@
 #include <boost/mpl/pair.hpp>
 #include <boost/mpl/clear.hpp>
 #include <boost/mpl/vector.hpp>
+#include <boost/mpl/for_each.hpp>
 #include "common/generate_hierarchy.hpp"
 #include <memory>
 
@@ -86,19 +87,12 @@ struct Data : boost::generate_spine<typename DataList<Configuration0>::type> {
 		}
 	};
 	template<typename Data2>
-	Data(Data &data2) {
-		boost::mpl::for_each<typename Data2::DataList>(Copier(this,&data2));
+	Data(Data2 &data2) {
+		//boost::mpl::for_each<typename Data2::DataList>(Copier(this,&data2));
 	}
 	Data() {}
 };
 
-// default implementation of the Configurator concept: just forward
-struct ConfigConcept {
-	template<typename Configurators,typename Source,typename Dest> 
-	static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) {
-		Configurator::Create<Configurators>(name,attrs,source,dest);
-	}
-};
 struct Pop {
 	template<typename Configurators,typename Source,typename Dest> 
 	static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) {
@@ -118,7 +112,13 @@ static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) 
 	return boost::mpl::if_<boost::mpl::empty<Configurators>,DoNothing,Pop>::type
 		::template Create<Configurators>(name,attrs,source,dest);
 }
-
+// default implementation of the Configurator concept: just forward
+struct ConfigConcept {
+	template<typename Configurators,typename Source,typename Dest> 
+	static bool Create(DString name,const StrAttrs &attrs,Source &source,Dest dest) {
+		return Configurator::Create<Configurators>(name,attrs,source,dest);
+	}
+};
 // some common Configuratons
 template<typename Layout,typename Tag>
 struct Engine {
