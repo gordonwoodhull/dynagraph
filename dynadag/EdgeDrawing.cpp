@@ -56,14 +56,12 @@ void DynaDAGServer::sketchEdge(DynaDAGLayout::Edge *e) {
 void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
 	dgassert(e->tail==e->head);
 	EdgeGeom &eg = gd<EdgeGeom>(e);
-	const NodeGeom &tg = gd<NodeGeom>(e->tail),
-		&hg = gd<NodeGeom>(e->head);
 	Line &unclipped = DDp(e)->unclippedPath;
 	unclipped.Clear();
 	Coord sep = gd<GraphGeom>(e->g).separation;
 	unclipped.degree = 3;
 	DDModel::Node *tl = DDp(e->tail)->bottom();
-	Coord tailpt = gd<EdgeGeom>(e).tailPort.pos + gd<DDNode>(tl).multi->pos();
+	Coord tailpt = eg.tailPort.pos + gd<DDNode>(tl).multi->pos();
 	Coord right = Coord(tailpt.x+config.RightExtent(tl),tailpt.y),
 		left = right - Coord(1.5*sep.x,0.0);
 #ifndef DOWN_GREATER
@@ -82,7 +80,6 @@ void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
 }
 void DynaDAGServer::drawStraightEdge(DynaDAGLayout::Edge *e) {
 	DDPath *path = DDp(e);
-	EdgeGeom &eg = gd<EdgeGeom>(e);
 	Line &uncl = path->unclippedPath;
 	uncl.Clear();
 	const NodeGeom &tg = gd<NodeGeom>(e->tail),

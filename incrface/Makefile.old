@@ -15,8 +15,6 @@ OBJS = \
 HFILES = \
 	DinoMachine.h \
 	IncrLangEvents.h        IncrStrGraphHandler.h   IncrViewWatcher.h \
-	LabelToNameTranslator.h MatchNames.h \
-	createStringHandlers.h \
 	incrcmds.h              incrgram.h		incrout.h               incrparse.h \
 	incrxep.h		two_way_map.h \
 	../common/*.h		../fdp/*.h		../dynadag/*.h 		../voronoi/*.h \

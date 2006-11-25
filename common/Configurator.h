@@ -81,14 +81,15 @@ struct Data : boost::generate_spine<typename DataList<Configuration0>::type> {
 		Data *data;
 		Data2 *data2;
 		Copier(Data *data,Data2 *data2) : data(data),data2(data2) {}
+        Copier(const Copier &other) : data(other.data),data2(other.data2) {}
 		template<typename T>
-		void apply(T) {
+		void operator()(T) {
 			*static_cast<T*>(data) = *static_cast<T*>(data2);
 		}
 	};
 	template<typename Data2>
 	Data(Data2 &data2) {
-		//boost::mpl::for_each<typename Data2::DataList>(Copier(this,&data2));
+		boost::mpl::for_each<typename Data2::DataList>(Copier<Data2>(this,&data2));
 	}
 	Data() {}
 };

@@ -28,7 +28,7 @@ struct FindChangeRectsConfigurator {
         typedef typename Dest::CurrLevel CurrLevel;
         typedef Configurator::Engine<CurrLayout,FindChangeRectsConfigurator> ThisEngine;
 		typedef Configurator::Configuration<CurrLevel,typename boost::mpl::push_back<typename Dest::DataList,ThisEngine>::type> NewDest;
-		Configurator::Data<NewDest> newDest = dest;
+		Configurator::Data<NewDest> newDest(dest);
 		FCRData<CurrLayout> *fcrdata = new FCRData<CurrLayout>(level.world.get());
 		FCRBefore<CurrLayout> *fcrbefore = new FCRBefore<CurrLayout>(fcrdata);
 		FCRAfter<CurrLayout> *fcrafter = new FCRAfter<CurrLayout>(fcrdata);
