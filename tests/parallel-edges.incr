@@ -13,3 +13,7 @@ insert edge V i a b
 insert node V d
 insert edge V l a d
 insert edge V m d b
+
+insert node V c
+insert edge V o c b
+insert edge V p d c
