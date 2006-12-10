@@ -1,199 +1,266 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="dynadag"
 	ProjectGUID="{A444C0F2-C8D4-48B9-805B-66731F7F0577}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="release\dynadag"
 			IntermediateDirectory="release\dynadag"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="."
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
-				ImproveFloatingPointConsistency="FALSE"
-				OmitFramePointers="FALSE"
+				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
 				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="release\dynadag/dynadag.pch"
 				AssemblerListingLocation="release\dynadag/"
 				ObjectFile="release\dynadag/"
 				ProgramDataBaseFileName="release\dynadag/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="release\dynadag\dynadag.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName="$(InputName).tlb"
-				OutputDirectory="."
-				HeaderFileName="$(InputName).h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="$(InputName)_i.c"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="release\dynadag\dynadag.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="debug\dynadag"
 			IntermediateDirectory="debug\dynadag"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName=".\$(ProjectName).tlb"
+				HeaderFileName=".\$(InputName).h"
+				InterfaceIdentifierFileName=".\$(InputName)_i.c"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				ImproveFloatingPointConsistency="FALSE"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS"
-				MinimalRebuild="TRUE"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
-				DisableLanguageExtensions="FALSE"
-				UsePrecompiledHeader="2"
+				DisableLanguageExtensions="false"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="debug\dynadag/dynadag.pch"
 				AssemblerListingLocation="debug\dynadag/"
 				ObjectFile="debug\dynadag/"
 				ProgramDataBaseFileName="debug\dynadag/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="debug\dynadag\dynadag.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ProjectName).tlb"
-				HeaderFileName=".\$(InputName).h"
-				InterfaceIdentifierFileName=".\$(InputName)_i.c"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="debug\dynadag\dynadag.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Static|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="TRUE"
-				ImproveFloatingPointConsistency="FALSE"
-				FavorSizeOrSpeed="1"
-				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
-				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
-				StringPooling="TRUE"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="static\dynadag/dynadag.pch"
-				AssemblerListingLocation="static\dynadag/"
-				ObjectFile="static\dynadag/"
-				ProgramDataBaseFileName="static\dynadag/"
-				BrowseInformation="1"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="static\dynadag\dynadag.lib"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="."
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="$(InputName)_i.c"/>
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="false"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,_LIB,__IMPORT__=extern,WIN32"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile="static\dynadag/dynadag.pch"
+				AssemblerListingLocation="static\dynadag/"
+				ObjectFile="static\dynadag/"
+				ProgramDataBaseFileName="static\dynadag/"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CompileAs="0"
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="static\dynadag\dynadag.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -201,186 +268,246 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath="Check.cpp">
+				RelativePath="Check.cpp"
+				>
 			</File>
 			<File
-				RelativePath="Config.cpp">
+				RelativePath="Config.cpp"
+				>
 			</File>
 			<File
-				RelativePath="DotlikeOptimizer.cpp">
+				RelativePath="DotlikeOptimizer.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						InlineFunctionExpansion="0"
-						BasicRuntimeChecks="0"/>
+						BasicRuntimeChecks="0"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DynaDAG.cpp">
+				RelativePath="DynaDAG.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\EdgeDrawing.cpp">
+				RelativePath=".\EdgeDrawing.cpp"
+				>
 			</File>
 			<File
-				RelativePath="FlexiSpline.cpp">
+				RelativePath="FlexiSpline.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\getCrossoptModelNodes.cpp">
+				RelativePath=".\getCrossoptModelNodes.cpp"
+				>
 			</File>
 			<File
-				RelativePath="Measurements.cpp">
+				RelativePath="Measurements.cpp"
+				>
 			</File>
 			<File
-				RelativePath="Medians.cpp">
+				RelativePath="Medians.cpp"
+				>
 			</File>
 			<File
-				RelativePath="SetYs.cpp">
+				RelativePath="SetYs.cpp"
+				>
 			</File>
 			<File
-				RelativePath="SiftMatrix.cpp">
+				RelativePath="SiftMatrix.cpp"
+				>
 			</File>
 			<File
-				RelativePath="Spline.cpp">
+				RelativePath="Spline.cpp"
+				>
 			</File>
 			<File
-				RelativePath="Update.cpp">
+				RelativePath="Update.cpp"
+				>
 			</File>
 			<File
-				RelativePath="UVCross.cpp">
+				RelativePath="UVCross.cpp"
+				>
 			</File>
 			<File
-				RelativePath="XSolver.cpp">
+				RelativePath="XSolver.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath=".\breakup NSRanker.h">
+				RelativePath=".\breakup NSRanker.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ClearExtraRanksEngine.h">
+				RelativePath=".\ClearExtraRanksEngine.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Config.h">
+				RelativePath=".\Config.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ConseqRanks.h">
+				RelativePath=".\ConseqRanks.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ConstraintGraph.h">
+				RelativePath=".\ConstraintGraph.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Constraints.h">
+				RelativePath=".\Constraints.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Crossings.h">
+				RelativePath=".\Crossings.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DotlikeOptimizer.h">
+				RelativePath=".\DotlikeOptimizer.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAG.h">
+				RelativePath=".\DynaDAG.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAGChains.h">
+				RelativePath=".\DynaDAGChains.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAGDefs.h">
+				RelativePath=".\DynaDAGDefs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAGLayout.h">
+				RelativePath=".\DynaDAGLayout.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAGModel.h">
+				RelativePath=".\DynaDAGModel.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAGServices.h">
+				RelativePath=".\DynaDAGServices.h"
+				>
 			</File>
 			<File
-				RelativePath=".\DynaDAGTranslatorTraits.h">
+				RelativePath=".\DynaDAGTranslatorTraits.h"
+				>
 			</File>
 			<File
-				RelativePath=".\EdgeSplicer.h">
+				RelativePath=".\EdgeSplicer.h"
+				>
 			</File>
 			<File
-				RelativePath=".\EdgeSuppressionAttrs.h">
+				RelativePath=".\EdgeSuppressionAttrs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\EdgeSuppressor.h">
+				RelativePath=".\EdgeSuppressor.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ExtraRanks.h">
+				RelativePath=".\ExtraRanks.h"
+				>
 			</File>
 			<File
-				RelativePath=".\FlexiRanks.h">
+				RelativePath=".\FlexiRanks.h"
+				>
 			</File>
 			<File
-				RelativePath=".\FlexiRankXlator.h">
+				RelativePath=".\FlexiRankXlator.h"
+				>
 			</File>
 			<File
-				RelativePath=".\FlexiSpliner.h">
+				RelativePath=".\FlexiSpliner.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Measurements.h">
+				RelativePath=".\Measurements.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Medians.h">
+				RelativePath=".\Medians.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ns.h">
+				RelativePath=".\ns.h"
+				>
 			</File>
 			<File
-				RelativePath=".\nsdat.h">
+				RelativePath=".\nsdat.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NSRanker.h">
+				RelativePath=".\NSRanker.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NSRankerAttrs.h">
+				RelativePath=".\NSRankerAttrs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NSRankerModel.h">
+				RelativePath=".\NSRankerModel.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NSRankerModelConstraintTranslator.h">
+				RelativePath=".\NSRankerModelConstraintTranslator.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NSRankerModelTranslator.h">
+				RelativePath=".\NSRankerModelTranslator.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NSRankerSimpleCycleBreaker.h">
+				RelativePath=".\NSRankerSimpleCycleBreaker.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Optimizer.h">
+				RelativePath=".\Optimizer.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Rank.h">
+				RelativePath=".\Rank.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Ranker.h">
+				RelativePath=".\Ranker.h"
+				>
 			</File>
 			<File
-				RelativePath=".\SEdger.h">
+				RelativePath=".\SEdger.h"
+				>
 			</File>
 			<File
-				RelativePath=".\SiftMatrix.h">
+				RelativePath=".\SiftMatrix.h"
+				>
 			</File>
 			<File
-				RelativePath=".\SpanningEdgeLayoutTranslator.h">
+				RelativePath=".\SpanningEdgeLayoutTranslator.h"
+				>
 			</File>
 			<File
-				RelativePath=".\SpliceParts.h">
+				RelativePath=".\SpliceParts.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Spliner.h">
+				RelativePath=".\Spliner.h"
+				>
 			</File>
 			<File
-				RelativePath=".\XSolver.h">
+				RelativePath=".\XSolver.h"
+				>
 			</File>
 		</Filter>
 	</Files>
