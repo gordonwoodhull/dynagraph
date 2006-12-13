@@ -20,13 +20,17 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/xtime.hpp>
 #include <boost/bind.hpp>
+#include <fcntl.h>
 #ifdef WIN32
 #include <io.h>
-#define pipe(fds) _pipe(fds,1000,_O_BINARY)
+inline void pipe(int fd[2]) {
+	const int pipe_buffer_size=20000;
+	_pipe(fd,pipe_buffer_size,_O_TEXT);
+}
+#define fdopen _fdopen //?
 #else
 #include <unistd.h>
 #endif
-#include <fcntl.h>
 
 extern bool g_xeptFatal;
 extern int g_maxWait;
