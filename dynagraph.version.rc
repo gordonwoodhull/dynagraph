@@ -24,12 +24,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "dynagraph.org"
             VALUE "FileDescription", "Dynagraph graph layout server"
-            VALUE "FileVersion", DGW_VERSION_DOTS_QUOTED
+            VALUE "FileVersion", DYNAGRAPH_VERSION_DOTS_QUOTED
             VALUE "InternalName", "dynagraph"
             VALUE "LegalCopyright", "Copyright © 2005 Various Folks"
             VALUE "OriginalFilename", "dynagraph.exe"
             VALUE "ProductName", "Dynagraph"
-            VALUE "ProductVersion", DGW_VERSION_DOTS_QUOTED
+            VALUE "ProductVersion", DYNAGRAPH_VERSION_DOTS_QUOTED
         END
     END
     BLOCK "VarFileInfo"
