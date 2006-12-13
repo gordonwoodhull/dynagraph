@@ -1,4 +1,4 @@
-#include "dynagraph.version.rc.h"
+#include "dynagraph.version.h"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -6,8 +6,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION DGW_VERSION
- PRODUCTVERSION DGW_VERSION
+ FILEVERSION DYNAGRAPH_VERSION_COMMAS
+ PRODUCTVERSION DYNAGRAPH_VERSION_COMMAS
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -24,12 +24,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "dynagraph.org"
             VALUE "FileDescription", "Dynagraph graph layout server"
-            VALUE "FileVersion", DGW_VERSION_STR
+            VALUE "FileVersion", DGW_VERSION_DOTS_QUOTED
             VALUE "InternalName", "dynagraph"
             VALUE "LegalCopyright", "Copyright © 2005 Various Folks"
             VALUE "OriginalFilename", "dynagraph.exe"
             VALUE "ProductName", "Dynagraph"
-            VALUE "ProductVersion", DGW_VERSION_STR
+            VALUE "ProductVersion", DGW_VERSION_DOTS_QUOTED
         END
     END
     BLOCK "VarFileInfo"
