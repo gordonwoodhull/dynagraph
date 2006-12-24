@@ -30,7 +30,6 @@
 #include "DynaDAGDefs.h"
 #include "Config.h"
 #include "SiftMatrix.h"
-#include "ConstraintGraph.h"
 #include "DotlikeOptimizer.h"
 #include "XSolver.h"
 #include "FlexiSpliner.h"
@@ -89,7 +88,6 @@ private:
 	bool edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &changeQ);
 	void drawFinalEdges(DDChangeQueue &changeQ,bool force);
 	void drawIntermediateEdges(DDChangeQueue &changeQ);
-	void drawSecondEdges(DDChangeQueue &changeQ);
 
 	void rememberOld();
 	void dumpModel();

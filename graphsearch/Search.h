@@ -46,7 +46,7 @@ struct NamedStage : Name,SearchStage {
 	NamedStage(StrGraph *parent,DString name) : Name(name),SearchStage(parent) {}
 };
 typedef std::map<DString,StrGraph*> Inputs;
-struct Search : LGraph<ADTisCDT,Nothing,NamedStage,Name> {
+struct Search : LGraph<ADTisCDT,false,Nothing,NamedStage,Name> {
 	StrGraph &source;
 	std::map<DString,Node*> dict;
 	Search(const Search &copy) : Graph(copy),source(copy.source) { // don't let them copy dict!

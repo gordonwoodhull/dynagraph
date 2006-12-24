@@ -348,7 +348,7 @@ int main(int argc, char *args[]) {
 			exit(23);
 		}
 	}
-	incr_shutdown();
 	reports[dgr::output] << "message \"dynagraph closing\"" << endl;
+	incr_shutdown();
 	return 0;
 }

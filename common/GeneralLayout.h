@@ -21,7 +21,7 @@
 
 namespace Dynagraph {
 
-typedef NamedGraph<ADTisCDT,GeneralGraphAttrs,GeneralNodeAttrs,GeneralEdgeAttrs,LayoutUpdates,LayoutUpdates,LayoutUpdates> GeneralLayout;
+typedef NamedGraph<ADTisCDT,true,GeneralGraphAttrs,GeneralNodeAttrs,GeneralEdgeAttrs,LayoutUpdates,LayoutUpdates,LayoutUpdates> GeneralLayout;
 
 } // namespace Dynagraph
 

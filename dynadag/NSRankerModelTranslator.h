@@ -34,8 +34,7 @@ struct LayoutToNSRankerModelTranslator : ChangeTranslator<Layout,NSRankerModel> 
 		// insert these in destQ (which doesn't return) and mod them in srcQ
         for(typename Layout::graphedge_iter ei = source_->Q.delE.edges().begin(); ei!=source_->Q.delE.edges().end();++ei)
             if(typename Layout::Edge *e2 = source_->current_.find_edge((*ei)->head,(*ei)->tail))
-                if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false))
-                    extraI.insert(e2);
+				extraI.insert(e2);
 
         for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
@@ -52,15 +51,15 @@ struct NSRankerModelToLayoutTranslator : ChangeTranslator<NSRankerModel,Layout> 
 
 		// Since NS is not yet incremental, Q is blank.
 		// Just read whole graph and find changes.
-		int anchorRank = DDNS::NSd(gd<NSRankerModelGraph>(Q.current_).cg.anchor).rank;
+		int anchorRank = LlelNS::NSd(gd<NSRankerModelGraph>(Q.current_).cg.anchor).rank;
 		for(NSRankerModel::node_iter ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni) {
 			NSRankerModel::Node *mn = *ni;
 			typename Layout::Node *n = destQ.current->fetch_node(gd<Name>(mn),false);
 			dgassert(n);
 			if(destQ.delN.find(n))
 				continue;
-			int newTopRank = DDNS::NSd(gd<NSRankerModelNode>(mn).topC.n).rank - anchorRank,
-				newBottomRank = DDNS::NSd(gd<NSRankerModelNode>(mn).bottomC.n).rank - anchorRank;
+			int newTopRank = LlelNS::NSd(gd<NSRankerModelNode>(mn).topC.n).rank - anchorRank,
+				newBottomRank = LlelNS::NSd(gd<NSRankerModelNode>(mn).bottomC.n).rank - anchorRank;
 			dgassert(!rankXlate_.Below(newTopRank,newBottomRank));
 			if(newTopRank != gd<NSRankerNode>(n).oldTopRank || newBottomRank != gd<NSRankerNode>(n).oldBottomRank) {
 				gd<NSRankerNode>(n).newTopRank = newTopRank;

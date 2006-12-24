@@ -68,7 +68,7 @@ double Config::RightExtent(DDModel::Node *n) {
 	if(getRegion(n).boundary.valid)
 		r = getRegion(n).boundary.r;
 	DynaDAGLayout::Node *ln = gd<DDNode>(n).multi->layoutN;
-	if(current->find_edge(ln,ln))
+	if(current->has_edge(ln,ln))
 		r += gd<GraphGeom>(whole).separation.x;
 	return max(r,EPSILON);
 }

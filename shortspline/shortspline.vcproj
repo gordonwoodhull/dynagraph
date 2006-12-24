@@ -1,197 +1,264 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="shortspline"
 	ProjectGUID="{C70C8D5B-A390-40E5-94B8-EAD0ED4C9C39}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="debug\shortspline"
 			IntermediateDirectory="debug\shortspline"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName=".\$(ProjectName).tlb"
+				HeaderFileName=".\$(InputName).h"
+				InterfaceIdentifierFileName=".\$(InputName)_i.c"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				ImproveFloatingPointConsistency="FALSE"
 				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
-				MinimalRebuild="TRUE"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
-				DisableLanguageExtensions="FALSE"
-				UsePrecompiledHeader="2"
+				DisableLanguageExtensions="false"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="debug\shortspline/shortspline.pch"
 				AssemblerListingLocation="debug\shortspline/"
 				ObjectFile="debug\shortspline/"
 				ProgramDataBaseFileName="debug\shortspline/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="debug\shortspline\shortspline.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ProjectName).tlb"
-				HeaderFileName=".\$(InputName).h"
-				InterfaceIdentifierFileName=".\$(InputName)_i.c"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="debug\shortspline\shortspline.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="release\shortspline"
 			IntermediateDirectory="release\shortspline"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				InlineFunctionExpansion="2"
-				ImproveFloatingPointConsistency="FALSE"
-				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="release\shortspline/shortspline.pch"
-				AssemblerListingLocation="release\shortspline/"
-				ObjectFile="release\shortspline/"
-				ProgramDataBaseFileName="release\shortspline/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="release\shortspline\shortspline.lib"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="."
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="$(InputName)_i.c"/>
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="2"
+				OmitFramePointers="false"
+				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
+				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile="release\shortspline/shortspline.pch"
+				AssemblerListingLocation="release\shortspline/"
+				ObjectFile="release\shortspline/"
+				ProgramDataBaseFileName="release\shortspline/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CompileAs="0"
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="release\shortspline\shortspline.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Static|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="TRUE"
-				ImproveFloatingPointConsistency="FALSE"
-				FavorSizeOrSpeed="1"
-				OmitFramePointers="FALSE"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
-				StringPooling="TRUE"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile="static\shortspline/shortspline.pch"
-				AssemblerListingLocation="static\shortspline/"
-				ObjectFile="static\shortspline/"
-				ProgramDataBaseFileName="static\shortspline/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="static\shortspline\shortspline.lib"
-				SuppressStartupBanner="TRUE"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="."
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="$(InputName)_i.c"/>
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="false"
+				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,WIN32,NDEBUG,_LIB"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile="static\shortspline/shortspline.pch"
+				AssemblerListingLocation="static\shortspline/"
+				ObjectFile="static\shortspline/"
+				ProgramDataBaseFileName="static\shortspline/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CompileAs="0"
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="static\shortspline\shortspline.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -199,22 +266,28 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath="legal_arrangement.c">
+				RelativePath="legal_arrangement.c"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath=".\ObAvSplinerEngine.h">
+				RelativePath=".\ObAvSplinerEngine.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ObstacleAvoiderSpliner.h">
+				RelativePath=".\ObstacleAvoiderSpliner.h"
+				>
 			</File>
 			<File
-				RelativePath=".\simple.h">
+				RelativePath=".\simple.h"
+				>
 			</File>
 		</Filter>
 	</Files>

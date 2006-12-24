@@ -38,8 +38,8 @@ void emitGraph(std::ostream &os,G *g) {
   os << "}\n";
 }
 
-template<class GD,class ND,class ED,class GID,class NID,class EID>
-inline std::ostream &operator <<(std::ostream &os,LGraph<ADTisCDT,GD,ND,ED,GID,NID,EID> &g) {
+template<class ADT,bool AP,class GD,class ND,class ED,class GID,class NID,class EID>
+inline std::ostream &operator <<(std::ostream &os,LGraph<ADT,AP,GD,ND,ED,GID,NID,EID> &g) {
     emitGraph(os,&g);
     return os;
 }

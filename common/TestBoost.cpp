@@ -30,7 +30,7 @@ struct EData {
 	int weight;
 	EData() : weight(2) {}
 };
-typedef LGraph<ADTisCDT,Nothing,NData<void>,EData> DijGraph;
+typedef LGraph<ADTisCDT,false,Nothing,NData<void>,EData> DijGraph;
 
 typedef NData<DijGraph::Node> DijData;
 template<>

@@ -114,22 +114,22 @@ void XSolver::checkLRConstraints() {
 		Rank *r = *ri;
 		for(NodeV::iterator ni = r->order.begin(); ni!=r->order.end(); ++ni)
 			if(DDModel::Node *left = config.Left(*ni)) {
-				DDCGraph::Node *l = gd<DDNode>(left).getXcon().n,
+				UniqConstraintGraph::Node *l = gd<DDNode>(left).getXcon().n,
 					*n = gd<DDNode>(*ni).getXcon().n;
 				dgassert(l&&n);
-				DDCGraph::Edge *e = cg.find_edge(l,n);
+				UniqConstraintGraph::Edge *e = cg.find_edge(l,n);
 				if(!e) {
 					reports[dgr::error] << 
 						left << " (" << type(left) << ' ' << thing(left) << ") and " << *ni << " (" << type(*ni) << ' ' << thing(*ni) << ')' << endl;
 					missing = true;
 				}
 				else
-					dgassert(DDNS::NSd(e).minlen >= ROUND(config.UVSep(left,*ni)/gd<GraphGeom>(config.current).resolution.x));
+					dgassert(UniqNS::NSd(e).minlen >= ROUND(config.UVSep(left,*ni)/gd<GraphGeom>(config.current).resolution.x));
 				/*
 				// (hopeless)
 				// don't allow extraneous constraints: only edge,stab, and L-R are good
-				for(DDCGraph::edge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei) {
-					DDCGraph::Edge *e2 = *ei;
+				for(UniqConstraintGraph::edge_iter ei = n->ins().begin(); ei!=n->ins().end(); ++ei) {
+					UniqConstraintGraph::Edge *e2 = *ei;
 					dgassert(e2==e ||
 						e2->tail == gd<DDNode>(*ni).getXcon().stab ||
 						gd<ConstraintType>(e2->tail).why==ConstraintType::orderEdgeStraighten);
@@ -142,7 +142,7 @@ void XSolver::checkLRConstraints() {
 void XSolver::checkEdgeConstraints() {
 	for(DDModel::graphedge_iter ei = config.model.edges().begin(); ei!=config.model.edges().end(); ++ei)
 		if(gd<DDEdge>(*ei).amEdgePart()) {
-			DDCGraph::Node *cn = gd<DDEdge>(*ei).cn;
+			UniqConstraintGraph::Node *cn = gd<DDEdge>(*ei).cn;
 			dgassert(cn);
 			dgassert(cn->ins().size()==0);
 			if(cn->outs().size()!=2) {

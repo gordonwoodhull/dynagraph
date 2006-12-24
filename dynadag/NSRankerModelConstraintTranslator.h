@@ -24,27 +24,27 @@ namespace DynaDAG {
 // Fit it in the framework anyway: NSRankerModel changes are applied incrementally,
 // but the return is handled exclusively by NSRankerModelToLayoutTranslator
 
-struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,ConstraintGraph> {
-	typedef GoingQueueTransition<NSRankerModel,ConstraintGraph> Transition;
-	NSRankerModelToConstraintTranslator(ConstraintGraph *whole,ConstraintGraph *current)
+struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,LlelConstraintGraph> {
+	typedef GoingQueueTransition<NSRankerModel,LlelConstraintGraph> Transition;
+	NSRankerModelToConstraintTranslator(LlelConstraintGraph *whole,LlelConstraintGraph *current)
 		: transition_(whole,current) {}
 	void Process() {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
-            removePathConstraints(*ei);
+            removeEdgeConstraints(*ei);
 
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
 	}
     void removeLayoutNodeConstraints(NSRankerModel::Node *n) {
-        ConstraintGraph &cg = gd<NSRankerModelGraph>(n->g);
+        LlelConstraintGraph &cg = gd<NSRankerModelGraph>(n->g);
         NSRankerModelNode &rn = gd<NSRankerModelNode>(n);
         cg.RemoveNodeConstraints(rn.topC);
         cg.RemoveNodeConstraints(rn.bottomC);
     }
-    void removePathConstraints(NSRankerModel::Edge *e) {
-        ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
+    void removeEdgeConstraints(NSRankerModel::Edge *e) {
+        LlelConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
         if(re.weak) {
             cg.erase_node(re.weak);
@@ -57,51 +57,51 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
         gd<EdgeGeom>(e).constraint = false;
     }
     void makeStrongConstraint(NSRankerModel::Edge *e) {
-        ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
+        LlelConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
         dgassert(!re.strong);
 
-        DDCGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
+        LlelConstraintGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
             *hvar = cg.GetVar(gd<NSRankerNode>(e->head).topC);
 
-        DDCGraph::Edge *constr = cg.create_edge(tvar,hvar).first;
+        LlelConstraintGraph::Edge *constr = cg.create_edge(tvar,hvar).first;
         re.strong = constr;
-        DDNS::NSE &nse = DDNS::NSd(constr);
+        LlelNS::NSE &nse = LlelNS::NSd(constr);
         double length = std::max(0.,gd<EdgeGeom>(e).minLength);
         nse.minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
         nse.weight = EDGELENGTH_WEIGHT;
     }
     void makeWeakConstraint(NSRankerModel::Edge *e) {
-        ConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
+        LlelConstraintGraph &cg = gd<NSRankerModelGraph>(e->g);
         NSRankerModelEdge &re = gd<NSRankerModelEdge>(e);
         dgassert(!re.weak);
 
-        DDCGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
+        LlelConstraintGraph::Node *tvar = cg.GetVar(gd<NSRankerNode>(e->tail).bottomC),
             *hvar = cg.GetVar(gd<NSRankerNode>(e->head).topC);
         re.weak = cg.create_node();
         gd<ConstraintType>(re.weak).why = ConstraintType::rankWeak;
         NSEdgePair ep(re.weak,tvar,hvar);
-        DDNS::NSd(ep.e[0]).minlen = 0;
-        DDNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
+        LlelNS::NSd(ep.e[0]).minlen = 0;
+        LlelNS::NSd(ep.e[0]).weight = BACKEDGE_PENALTY;
         double length = std::max(0.,gd<EdgeGeom>(e).minLength);
-        DDNS::NSd(ep.e[1]).minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
+        LlelNS::NSd(ep.e[1]).minlen = rankXlate_.HeightToDRank(length*gd<GraphGeom>(e->g).separation.y);
     }
     void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
-        DDCGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
+        LlelConstraintGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
             *bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
-        DDCGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
+        LlelConstraintGraph::Edge *heightC = cg_.create_edge(tv,bv).first;
          // one-node chains cause trouble; make sure there's one edge
-        DDNS::NSd(heightC).minlen = std::max(1,rankXlate_.HeightToDRank(ROUND(gd<NodeGeom>(n).region.boundary.Height())));
-        DDNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
+        LlelNS::NSd(heightC).minlen = std::max(1,rankXlate_.HeightToDRank(ROUND(gd<NodeGeom>(n).region.boundary.Height())));
+        LlelNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
     }
     void NSRanker<Layout>::insertNewNodes(ChangeQueue<Layout> &changeQ) {
         for(typename Layout::node_iter ni = changeQ.insN.nodes().begin(); ni!=changeQ.insN.nodes().end(); ++ni) {
             typename Layout::Node *n = *ni;
 
             // pull loose nodes upward
-            ConstraintGraph::Edge *pull = cg_.create_edge(top_,cg_.GetVar(gd<NSRankerNode>(n).topC)).first;
-            DDNS::NSd(pull).minlen = 0;
-            DDNS::NSd(pull).weight = UPWARD_TENDENCY;
+            LlelConstraintGraph::Edge *pull = cg_.create_edge(top_,cg_.GetVar(gd<NSRankerNode>(n).topC)).first;
+            LlelNS::NSd(pull).minlen = 0;
+            LlelNS::NSd(pull).weight = UPWARD_TENDENCY;
 
             doNodeHeight(n);
         }
@@ -110,8 +110,8 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 };
 
 // currently this is just to keep the processor chain alive
-struct ConstraintToNSRankerModelTranslator : ChangeTranslator<ConstraintGraph,NSRankerModel> {
-	typedef ReturningQueueTransition<ConstraintGraph,NSRankerModel> Transition;
+struct ConstraintToNSRankerModelTranslator : ChangeTranslator<LlelConstraintGraph,NSRankerModel> {
+	typedef ReturningQueueTransition<LlelConstraintGraph,NSRankerModel> Transition;
 	void Process() {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;

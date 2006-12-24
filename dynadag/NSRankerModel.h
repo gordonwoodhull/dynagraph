@@ -17,13 +17,13 @@
 #ifndef NSRankerModel_h
 #define NSRankerModel_h
 
-#include "Constraints.h"
+#include "ConstraintGraph.h"
 
 namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerModelNode {
-	NodeConstraints topC,bottomC;
+	LlelConstraintGraph::NodeConstraints topC,bottomC;
 	bool hit, // for rank dfs
 		rankFixed; // whether nailed in Y
 
@@ -41,20 +41,20 @@ struct NSRankerModelNode {
 struct NSRankerModelEdge {
 	int weight,backweight;
 	double length,backlength;
-	DDCGraph::Node *weak;
-	DDCGraph::Edge *strong;
+	LlelConstraintGraph::Node *weak;
+	LlelConstraintGraph::Edge *strong;
 	NSRankerModelEdge() : weight(1),backweight(1),length(0.),backlength(.0),weak(0),strong(0) {}
 };
 struct NSRankerModelGraph {
-	ConstraintGraph cg;
-	ConstraintGraph::Node *top_; // to pull loose nodes upward
+	LlelConstraintGraph cg;
+	LlelConstraintGraph::Node *top_; // to pull loose nodes upward
 	NSRankerModelGraph() : top_(cg_.create_node()) {}
 };
 
 struct NSRankerModelNodeData : Name,NSRankerModelNode {};
 struct NSRankerModelEdgeData : Name,NSRankerModelEdge {};
 
-typedef LGraph<ADTisCDT,NSRankerModelGraph,NSRankerModelNodeData,NSRankerModelEdgeData> NSRankerModel;
+typedef LGraph<ADTisCDT,false,NSRankerModelGraph,NSRankerModelNodeData,NSRankerModelEdgeData> NSRankerModel;
 
 } // namespace DynaDAG
 } // namespace Dynagraph

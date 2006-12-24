@@ -111,7 +111,7 @@ struct DinoMachEdge : NamedAttrs {
             delete handler;
     }
 };
-struct DinoMachine : NamedGraph<ADTisCDT,NamedAttrs,DinoMachNode,DinoMachEdge> {
+struct DinoMachine : NamedGraph<ADTisCDT,false,NamedAttrs,DinoMachNode,DinoMachEdge> {
 	// eventually this will be a real data flow model
 	// for now, it's a mess of cascading events
 	// the only check is: it won't return to the starting node

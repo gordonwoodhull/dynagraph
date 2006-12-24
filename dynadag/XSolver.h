@@ -31,7 +31,7 @@ struct XSolver : XConstraintOwner {
 	void DeleteLRConstraint(DDModel::Node *u, DDModel::Node *v);
 private:
 	Config &config;
-	ConstraintGraph cg;
+	UniqConstraintGraph cg;
 	void fixSeparation(DDModel::Node *mn);
 	void doNodesep(DynaDAGLayout *subLayout);
 	void doEdgesep(DynaDAGLayout *subLayout);

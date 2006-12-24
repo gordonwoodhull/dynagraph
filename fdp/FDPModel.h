@@ -41,7 +41,7 @@ struct FDPNode {
 	}
 };
 
-typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
+typedef LGraph<ADTisCDT,false,Nothing,FDPNode,FDPEdge> FDPModel;
 
 // convolution to work around type-punning warnings
 // (but it's true in a way, and contains the badness in gd2)

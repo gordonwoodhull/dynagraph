@@ -17,13 +17,13 @@
 #ifndef NSRankerAttrs_h
 #define NSRankerAttrs_h
 
-#include "Constraints.h"
+#include "ConstraintGraph.h"
 
 namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerNode {
-	NodeConstraints topC,bottomC;
+	LlelConstraintGraph::NodeConstraints topC,bottomC;
 	bool hit; // for rank dfs
 	int newTopRank,	// destination rank assignment
 		newBottomRank,
@@ -49,17 +49,14 @@ struct NSRankerNode {
 };
 
 struct NSRankerEdge {
-	DDCGraph::Node *weak;
-	DDCGraph::Edge *strong;
+	LlelConstraintGraph::Node *weak;
+	LlelConstraintGraph::Edge *strong;
 	// the second edge of 2-cycle should be ignored, mostly
-	bool secondOfTwo;
 	
-	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false) {}
+	NSRankerEdge() : weak(0),strong(0) {}
 	// do not copy constraints
-	NSRankerEdge(const NSRankerEdge &other) : weak(0),strong(0),
-		secondOfTwo(other.secondOfTwo) {}
+	NSRankerEdge(const NSRankerEdge &other) : weak(0),strong(0) {}
 	NSRankerEdge &operator=(NSRankerEdge &other) {
-		secondOfTwo = other.secondOfTwo;
 		return *this;
 	}
 };

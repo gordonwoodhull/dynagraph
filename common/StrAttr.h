@@ -135,9 +135,9 @@ struct NamedAttrs : StrAttrs,Name,Hit {
 	NamedAttrs(DString name = DString()) : Name(name) {}
 	NamedAttrs(const StrAttrs &at,DString name=DString()) : StrAttrs(at),Name(name) {}
 };
-template<class ADTPolicy,class GData,class NData,class EData,class GIData=Nothing,class NIData=Nothing,class EIData=Nothing>
-struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
-	typedef LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> Graph;
+template<class ADTPolicy,bool AllowParallel,class GData,class NData,class EData,class GIData=Nothing,class NIData=Nothing,class EIData=Nothing>
+struct NamedGraph : LGraph<ADTPolicy,AllowParallel,GData,NData,EData,GIData,NIData,EIData> {
+	typedef LGraph<ADTPolicy,AllowParallel,GData,NData,EData,GIData,NIData,EIData> Graph;
 	typedef typename Graph::Node Node;
 	typedef typename Graph::Edge Edge;
 	typedef std::map<DString,Node*> NDict;
@@ -179,20 +179,23 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
-	std::pair<Edge *,bool> create_edge(Node *tail,Node *head,DString name) {// non virtual
+	typename CreateEdgeResult<AllowParallel>::return_t create_edge(Node *tail,Node *head,DString name) {// non virtual
 		dgassert(ndict.size()==this->nodes().size());
         EData ed(name);
-		std::pair<Edge*,bool> ret = create_edge(tail,head,ed);
+		typename CreateEdgeResult<AllowParallel>::return_t ret = create_edge(tail,head,ed);
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
-	std::pair<Edge *,bool> create_edge(Node *tail,Node *head,EData &ed) {
+	void checkCreateEdgeResult(typename CreateEdgeResult<false>::return_t r,Name name) {
+		if(!r.second)
+			throw DGParallelEdgesNotSupported(name);
+	}
+	void checkCreateEdgeResult(typename CreateEdgeResult<true>::return_t r,Name name) {}
+	typename CreateEdgeResult<AllowParallel>::return_t create_edge(Node *tail,Node *head,EData &ed) {
 		dgassert(ndict.size()==this->nodes().size());
-		std::pair<Edge *,bool> ret = Graph::create_edge(tail,head,ed);
-		if(!ret.second)
-			throw DGParallelEdgesNotSupported(ed);
-		else
-			enter(ed,ret.first);
+		typename CreateEdgeResult<AllowParallel>::return_t ret = Graph::create_edge(tail,head,ed);
+		checkCreateEdgeResult(ret,ed);
+		enter(ed,CreateEdgeResult<AllowParallel>::get_edge(ret));
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
@@ -252,13 +255,13 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 		}
 		if(!create)
 			return std::make_pair((Edge*)0,false);
-		Node *t = fetch_node(tail,false).first,
-			*h = fetch_node(head,false).first;
+		Node *t = fetch_node(tail),
+			*h = fetch_node(head);
 		if(!t)
 			throw DGEdgeTailDoesNotExist(tail);
 		if(!h)
 			throw DGEdgeHeadDoesNotExist(head);
-        return create_edge(t,h,name);
+		return std::make_pair(CreateEdgeResult<AllowParallel>::get_edge(create_edge(t,h,name)),true);
 	}
 	std::pair<Edge *,bool> fetch_edge(Node *tail,Node *head,DString name,bool create) {
 		dgassert(ndict.size()==this->nodes().size());
@@ -269,7 +272,17 @@ struct NamedGraph : LGraph<ADTPolicy,GData,NData,EData,GIData,NIData,EIData> {
 		}
 		if(!create)
 			return std::make_pair((Edge*)0,false);
-        return create_edge(tail,head,name);
+		return std::make_pair(CreateEdgeResult<AllowParallel>::get_edge(create_edge(tail,head,name)),true);
+	}
+	Edge *fetch_edge(DString tail, DString head) {
+		Node *t = fetch_node(tail),
+			*h = fetch_node(head);
+		if(!t || !h)
+			return 0;
+		return first_edge(t,h);
+	}
+	Edge *fetch_edge(Node *tail,Node *head,DString name) {
+		return fetch_edge(tail,head,name,false).first;
 	}
 	Edge *fetch_edge(DString name) {
 		dgassert(ndict.size()==this->nodes().size());
@@ -336,8 +349,8 @@ protected:
 	}
 };
 
-typedef NamedGraph<ADTisCDT,NamedAttrs,NamedAttrs,NamedAttrs> StrGraph;
-typedef NamedGraph<ADTisCDT,NamedAttrs,NamedAttrs,NamedAttrs,StrAttrChanges,StrAttrChanges,StrAttrChanges> StrChGraph;
+typedef NamedGraph<ADTisCDT,false,NamedAttrs,NamedAttrs,NamedAttrs> StrGraph;
+typedef NamedGraph<ADTisCDT,false,NamedAttrs,NamedAttrs,NamedAttrs,StrAttrChanges,StrAttrChanges,StrAttrChanges> StrChGraph;
 
 } // namespace Dynagraph
 

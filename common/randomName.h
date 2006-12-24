@@ -34,6 +34,17 @@ inline DString randomName(char prefix) {
 	buf[8] = 0;
 	return buf;
 }
+inline bool isRandomName(DString name,char prefix) {
+	const char *s = name.c_str();
+	if(s[0]!=prefix)
+		return false;
+	if(s[1]!='_')
+		return false;
+	for(int i=2;s[i];++i)
+		if(!isalnum(s[i]))
+			return false;
+	return true;
+}
 // to detect those bad names that agraph is generating
 inline bool poorEdgeName(const char *name) {
 	if(!name[0])

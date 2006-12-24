@@ -20,7 +20,7 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct ExtraRanks {
-	std::vector<int> extraRanks;
+	std::set<int> extraRanks;
 };
 
 } // namespace DynaDAG

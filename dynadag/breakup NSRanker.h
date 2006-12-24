@@ -35,7 +35,7 @@ private:
 	FlexiRankXlator rankXlate_;
 	Layout *current_;
 	void removeLayoutNodeConstraints(typename Layout::Node *m);
-	void removePathConstraints(typename Layout::Edge *e);
+	void removeEdgeConstraints(typename Layout::Edge *e);
 	void removeOldConstraints(ChangeQueue<Layout> &changeQ,Layout &extraI);
 	void makeStrongConstraint(typename Layout::Edge *e);
 	void makeWeakConstraint(typename Layout::Edge *e);
@@ -56,7 +56,7 @@ private:
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
 	for(typename Layout::graphedge_iter i = current_->edges().begin();i!=current_->edges().end();++i)
-		removePathConstraints(*i);
+		removeEdgeConstraints(*i);
 	for(typename Layout::node_iter j = current_->nodes().begin(); j!=current_->nodes().end(); ++j)
 		removeLayoutNodeConstraints(*j);
 }
@@ -68,11 +68,11 @@ void NSRanker<Layout>::fixNode(typename Layout::Node *n,bool fix) {
 	for(typename Layout::nodeedge_iter ei = n->alledges().begin(); ei!=n->alledges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
 		if(gd<NSRankerEdge>(e).strong && fix) {
-			removePathConstraints(e);
+			removeEdgeConstraints(e);
 			makeWeakConstraint(e);
 		}
 		else if(gd<NSRankerEdge>(e).weak && !fix) {
-			removePathConstraints(e);
+			removeEdgeConstraints(e);
 			makeStrongConstraint(e);
 		}
 	}
@@ -167,16 +167,7 @@ void NSRanker<Layout>::insertNewEdges(Layout &insE) {
 		if(e->head == e->tail)
 			continue;
 		bool weak = false;
-		if(typename Layout::Edge *e1 = current_->find_edge(e->head,e->tail)) {
-			// mark & ignore second leg of 2-cycle for all modeling purposes
-			// DynaDAGServer will draw it by reversing the other
-			// if both get inserted at once, mark the second processed here (should be 2nd inserted)
-			if(gd<NSRankerEdge>(e1).weak || gd<NSRankerEdge>(e1).strong) {
-				gd<NSRankerEdge>(e).secondOfTwo = true;
-				continue;
-			}
-		}
-		else if(pathExists<Layout>(current_->find(e->head),current_->find(e->tail)))
+		if(pathExists<Layout>(current_->find(e->head),current_->find(e->tail)))
 			weak = true;
 		if(gd<NSRankerNode>(e->tail).rankFixed || gd<NSRankerNode>(e->head).rankFixed)
 			weak = true;
@@ -221,7 +212,7 @@ template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
-	ConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
+	LlelConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;
 	DDNS::NSd(c).minlen = DDNS::NSd(c).weight = 0;
 
 	moveOldNodes(Q);

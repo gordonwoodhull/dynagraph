@@ -1,34 +1,55 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="dynagraph"
 	ProjectGUID="{08770A00-374D-484A-B4E4-9168297EBA07}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="debug"
 			IntermediateDirectory="debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName=".\$(ProjectName).tlb"
+				HeaderFileName=".\$(InputName).h"
+				InterfaceIdentifierFileName=".\$(InputName)_i.c"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				ImproveFloatingPointConsistency="FALSE"
 				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_CONSOLE"
-				MinimalRebuild="TRUE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
-				DisableLanguageExtensions="FALSE"
+				DisableLanguageExtensions="false"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="debug/dynagraph.pch"
 				AssemblerListingLocation="debug/"
@@ -36,65 +57,96 @@
 				ProgramDataBaseFileName="debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile="debug\dynagraph.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
-				SubSystem="1"/>
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ProjectName).tlb"
-				HeaderFileName=".\$(InputName).h"
-				InterfaceIdentifierFileName=".\$(InputName)_i.c"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="release"
 			IntermediateDirectory="release"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="."
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
-				ImproveFloatingPointConsistency="FALSE"
-				OmitFramePointers="FALSE"
+				OmitFramePointers="false"
 				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
 				PreprocessorDefinitions="NDEBUG,_CONSOLE,__IMPORT__=extern,WIN32"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="release/dynagraph.pch"
 				AssemblerListingLocation="release/"
@@ -102,71 +154,99 @@
 				ProgramDataBaseFileName="release/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile="release\dynagraph.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="FALSE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="false"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
-				SubSystem="1"/>
+				SubSystem="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName="$(InputName).tlb"
-				OutputDirectory="."
-				HeaderFileName="$(InputName).h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="$(InputName)_i.c"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Static|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="."
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="TRUE"
-				ImproveFloatingPointConsistency="FALSE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				OmitFramePointers="FALSE"
+				OmitFramePointers="false"
 				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
-				PreprocessorDefinitions="NDEBUG,_CONSOLE,__IMPORT__=extern,WIN32"
-				StringPooling="TRUE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,NDEBUG,_CONSOLE,__IMPORT__=extern,WIN32"
+				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="static/dynagraph.pch"
 				AssemblerListingLocation="static/"
@@ -174,49 +254,57 @@
 				ProgramDataBaseFileName="static/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CompileAs="0"
-				DisableSpecificWarnings="4068;"/>
+				DisableSpecificWarnings="4068;"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile="static\dynagraph.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="FALSE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="false"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
-				SubSystem="1"/>
+				SubSystem="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName="$(InputName).tlb"
-				OutputDirectory="."
-				HeaderFileName="$(InputName).h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="$(InputName)_i.c"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -224,78 +312,102 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath=".\DuplicateStream.cpp">
+				RelativePath=".\DuplicateStream.cpp"
+				>
 			</File>
 			<File
-				RelativePath="dynagraph.rc">
+				RelativePath="dynagraph.rc"
+				>
 			</File>
 			<File
-				RelativePath="example_no_incrface.cpp">
+				RelativePath="example_no_incrface.cpp"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Static|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="example_with_incrface.cpp">
+				RelativePath="example_with_incrface.cpp"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Static|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\IncrCalledBack.cpp">
+				RelativePath=".\IncrCalledBack.cpp"
+				>
 			</File>
 			<File
-				RelativePath="main.cpp">
+				RelativePath="main.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath=".\dynagraph.version.h">
+				RelativePath=".\dynagraph.version.h"
+				>
 			</File>
 			<File
-				RelativePath=".\dynagraph.version.rc.h">
+				RelativePath=".\dynagraph.version.rc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\TestTraversals.h">
+				RelativePath=".\TestTraversals.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>

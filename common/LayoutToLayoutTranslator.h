@@ -21,7 +21,6 @@ namespace Dynagraph {
 
 struct LayoutToLayoutCopyAllPolicy {
 	enum {
-		CopySecondOfTwo = true,
 		CopyDrawn = true,
 		CopyNodePos = true,
 		CopyNodeRegion = true,
@@ -59,8 +58,6 @@ struct LayoutToLayoutTranslator {
 		gd<EdgeGeom>(le2).headClipped = gd<EdgeGeom>(le1).headClipped;
 		gd<EdgeGeom>(le2).tailClipped = gd<EdgeGeom>(le1).tailClipped;
 		gd<EdgeLabels>(le2) = gd<EdgeLabels>(le1);
-		if(CopyPolicy::CopySecondOfTwo)
-			gd<DynaDAG::NSRankerEdge>(le2).secondOfTwo = gd<DynaDAG::NSRankerEdge>(le1).secondOfTwo;
 		gd<DynaDAG::Suppression>(le2) = gd<DynaDAG::Suppression>(le1);
 	
 		igd<Update>(le2) = igd<Update>(le1);
