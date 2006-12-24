@@ -1,5 +1,6 @@
 open graph V
 segue graph V
+
 digraph g {
   u -> b
   t -> b
