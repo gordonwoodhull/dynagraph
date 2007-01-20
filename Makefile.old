@@ -28,15 +28,20 @@ OTHERLIBS = -Lincrface -lincrface \
 	-Lshortspline -lshortspline \
 	-Lvoronoi -lvoronoi
 
-OBJS = IncrCalledBack.o DuplicateStream.o createConfiguration.o
+OBJS = main.o IncrCalledBack.o DuplicateStream.o createConfiguration.o
 
 MANS = 
 
-dynagraph-whole : main.o $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
-	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-whole
+GET_VERSION = `./dynagraph -v | sed -e 's/Dynagraph version \(.*\)/\1/'`
+
+dynagraph-whole : $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
+	$(CPPSLD) $(LDFLAGS) $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-whole
 
 dynagraph: dynagraph-whole
 	strip dynagraph-whole -o dynagraph
+
+release: dynagraph
+	bzip2 -kc dynagraph > dynagraph-$(ARCH)-$(GET_VERSION).bz2
 
 #*.o: *.h common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
 
