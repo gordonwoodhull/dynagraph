@@ -24,6 +24,7 @@ CCFLAGS=-O -fpic -DNDEBUG
 #CCFLAGS=-O -woff 1110,1155,1185,1515
 LDFLAGS=
 
-.c.o:
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
+CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.cpp -o $@
 
