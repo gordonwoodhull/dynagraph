@@ -39,7 +39,7 @@ libdynagraph.a : $(OBJS)
 	$(AR) cr libdynagraph.a $(OBJS)
 	$(RANLIB) libdynagraph.a
 
-$(OBJS) : $(HFILES)
+#$(OBJS) : $(HFILES)
 
 install: libdynagraph.a
 	$(MKPATH) $(LIBDIR)
@@ -50,3 +50,5 @@ clean:
 
 distclean: clean
 	$(RM) *.a lib*.so.*
+
+-include $(OBJS:%.o=$(DEPDIR)/%.P)
