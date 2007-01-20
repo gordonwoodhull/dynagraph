@@ -236,7 +236,7 @@ namespace detail {
 			return false;
 		}
 		typename create_edge_result<true,Node,Edge>::return_t result() {
-			return create_edge_result<true,Node,Edge>::return_t();
+			return typename create_edge_result<true,Node,Edge>::return_t();
 		}
 	};
 }

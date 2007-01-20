@@ -28,7 +28,7 @@ bool changeConfiguration(ChangingGraph<SourceLayout> *source,StrAttrs &attrs) {
 		//for(typename SourceLayout::node_iter ni = source->whole_.nodes().begin(); ni!=source->whole_.nodes().end(); ++ni)
 		return true;
 	}
-	return false
+	return false;
 }
 
 } // namespace Dynagraph
