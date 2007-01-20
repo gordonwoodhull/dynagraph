@@ -31,10 +31,7 @@ LDFLAGS=-g
 
 .SUFFIXES: .cpp
 
-.c.o:
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c
-
-.cpp.o:
-	$(CPP) -c $(CPPFLAGS) $(DEFINES) $(INCS) $*.cpp
-
+MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
+CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.cpp
 

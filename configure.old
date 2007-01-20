@@ -1,11 +1,12 @@
 #!/bin/zsh
 
 echo "This script has generated Makefiles for a traditional make process."
-echo "If you are using GNU tools, please use './configure' instead."
+echo "If you are using automake/autoconf, please use './configure' instead."
 
-# We could do other configuration things in this script, but the 
-# basic need is to generate Makefiles. We can't leave Makefiles
+# The basic need is to generate Makefiles. We can't leave Makefiles
 # in CVS because they would be overwritten by the Makefiles generated
 # by GNU automake/autoconf.
 for i in `find . -name Makefile.old`; do cp $i ${i%%.old}; done
 
+# Create dependency-holding directories
+for i in `find . -type d`; do mkdir -p $i/.deps; done

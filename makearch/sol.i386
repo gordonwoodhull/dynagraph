@@ -24,6 +24,7 @@ CCFLAGS=-DSYSV -O -KPIC -DNDEBUG
 LDFLAGS=
 LEFTYLIBS=-R/usr/openwin/lib/X11 -L/usr/openwin/lib/X11 -lsocket -lnsl 
 
-.c.o:
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c
+MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
+CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.cpp
 

@@ -22,6 +22,7 @@ CFLAGS+=-fPIC
 CCFLAGS+=-DHAVE_TERMIOS_H -DNDEBUG
 LDFLAGS=
 
-.c.o:
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
+CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.cpp -o $@
 
