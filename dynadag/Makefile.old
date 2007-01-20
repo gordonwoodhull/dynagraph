@@ -13,23 +13,11 @@ OBJS = Check.o Config.o \
     DotlikeOptimizer.o DynaDAG.o EdgeDrawing.o \
     FlexiSpline.o getCrossoptModelNodes.o Measurements.o Medians.o \
     SetYs.o SiftMatrix.o Spline.o Update.o UVCross.o XSolver.o
-
-HFILES = Config.h	ConseqRanks.h		ConstraintGraph.h \
-    Constraints.h	Crossings.h		DotlikeOptimizer.h \
-    DynaDAG.h		DynaDAGChains.h		DynaDAGDefs.h \
-    DynaDAGLayout.h	DynaDAGModel.h		DynaDAGServices.h \
-    FlexiRanks.h	FlexiSpliner.h		Measurements.h \
-    Medians.h		NSRanker.h		NSRankerAttrs.h \
-    Optimizer.h		Rank.h			SiftMatrix.h \
-    Spliner.h		XSolver.h		ns.h \
-    nsdat.h \
-    ../common/*.h ../pathplot/*.h ../shortspline/*.h
+-include $(OBJS:%.o=$(DEPDIR)/%.P)
 
 libdynadag.a : $(OBJS)
 	$(AR) cr libdynadag.a $(OBJS)
 	$(RANLIB) libdynadag.a
-
-$(OBJS) : $(HFILES)
 
 install: libdynadag.a
 #	$(MKPATH) $(LIBDIR)

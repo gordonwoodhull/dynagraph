@@ -38,7 +38,7 @@ dynagraph-whole : $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.
 dynagraph: dynagraph-whole
 	strip dynagraph-whole -o dynagraph
 
-*.o: *.h common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
+#*.o: *.h common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
 
 gengraph : gengraph.o libdynagraph.a
 	$(CPPSLD) $(LDFLAGS) gengraph.o $(GLIBS) $(THREADLIBS) -o gengraph
@@ -79,3 +79,5 @@ distclean clean:
 	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)     
 	(cd tests; make clean)  
 	$(RM) *.o core dynagraph gengraph
+
+-include $(OBJS:%.o=$(DEPDIR)/%.P)

@@ -6,12 +6,33 @@ ARCH=linux.i386
 # specify root directory for installation
 INSTALLROOT=/usr/local/dynagraph
 
-#specify where to find graphviz 
+# specify where to find graphviz 
 GRAPHVIZ_INC = /usr/local/graphviz/include
 GRAPHVIZ_LIB = /usr/local/graphviz/lib
 
-#specify where to find boost
+# specify where to find boost
 BOOST_INC = /usr/local/include
+
+
+# automatic dependencies
+DEPDIR = .deps
+df = $(DEPDIR)/$(*F)
+.c.o:
+	@$(MAKEDEPEND); \
+	cp $(df).d $(df).P; \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	  -e '/^$$/ d' -e 's/$$/ :/' < $(df).d >> $(df).P; \
+	rm -f $(df).d
+	$(CCCOMMAND)
+
+.cpp.o:
+	@$(MAKEDEPEND); \
+	cp $(df).d $(df).P; \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	  -e '/^$$/ d' -e 's/$$/ :/' < $(df).d >> $(df).P; \
+	rm -f $(df).d
+	$(CPPCOMMAND)
+
 
 ###################################################
 #  Typically, nothing below should be changed.    #

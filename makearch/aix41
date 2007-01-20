@@ -25,6 +25,7 @@ CCFLAGS=-DSYSV -O -fPIC -DNDEBUG
 LDFLAGS=
 LEFTYLIBS=-L/usr/lib/X11
 
-.c.o:
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
+CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.cpp -o $@
 

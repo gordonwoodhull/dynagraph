@@ -55,7 +55,6 @@ void DynaDAGServer::sketchEdge(DynaDAGLayout::Edge *e) {
 }
 void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
 	dgassert(e->tail==e->head);
-	EdgeGeom &eg = gd<EdgeGeom>(e);
 	Line &unclipped = DDp(e)->unclippedPath;
 	unclipped.Clear();
 	Coord sep = gd<GraphGeom>(e->g).separation;
