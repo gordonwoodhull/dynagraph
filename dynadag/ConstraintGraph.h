@@ -69,7 +69,8 @@ struct ConstraintGraph : DDCGraph<AllowParallel>::Graph {
 		}
 	};
 
-	ConstraintGraph() : anchor(this->create_node()) {
+	ConstraintGraph() : anchor(0) {
+		anchor = this->create_node();
 		gd<ConstraintType>(anchor).why = ConstraintType::anchor;
 	}
 	typename ConstraintGraph::Node *GetVar(NodeConstraints &nc) {

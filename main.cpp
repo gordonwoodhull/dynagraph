@@ -87,7 +87,8 @@ switchval<dgr::reportType> g_reports[] = {
 	{'p',dgr::progress,"progress"},
 	{'b',dgr::bug,"bug of the day"},
 	{'n',dgr::inner_input,"inner engine input"},
-	{'u',dgr::inner_output,"inner engine output"}
+	{'u',dgr::inner_output,"inner engine output"},
+	{'v',dgr::svg_bug,"SVG vector dump of geometry bugs"}
 };
 int g_nreports = sizeof(g_reports)/sizeof(switchval<dgr::reportType>);
 template<typename V>
