@@ -17,6 +17,7 @@
 
 #include "DynaDAG.h"
 #include "pathplot/PathPlot.h"
+#include "common/SVG.h"
 
 using namespace std;
 
@@ -70,10 +71,10 @@ void RouteBounds::poly(Line &out) {
 	out.Clear();
 	out.degree = 1;
 	for(Line::iterator pi = left.begin(); pi!=left.end(); ++pi)
-		if(out.empty() || out.back()!=*pi)
+		if(out.empty() || isnt_vclose(out.back(),*pi))
 			out.push_back(*pi);
 	for(Line::reverse_iterator pri = right.rbegin(); pri!=right.rend(); ++pri)
-		if(out.empty() || out.back()!=*pri)
+		if(out.empty() || isnt_vclose(out.back(),*pri))
 			out.push_back(*pri);
 }
 double RouteBounds::side(DDModel::Node *n,int s) {
@@ -249,7 +250,15 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			case DG_SPLINELEVEL_SPLINE: {
 				try {
 					Line polylineRoute;
-					PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
+					try {
+						PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
+					}
+					catch(PathPlot::InvalidBoundary) {
+						SVG::header(reports[dgr::svg_bug]);
+						SVG::line(reports[dgr::svg_bug],region,tailpt);
+						SVG::footer(reports[dgr::svg_bug]);
+						throw;
+					}
 					if(level==DG_SPLINELEVEL_SPLINE) {
 						PathPlot::SegmentV barriers;
 						PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);

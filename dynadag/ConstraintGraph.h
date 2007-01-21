@@ -69,19 +69,20 @@ struct ConstraintGraph : DDCGraph<AllowParallel>::Graph {
 		}
 	};
 
-	ConstraintGraph() : anchor(create_node()) {
+	ConstraintGraph() : anchor(0) {
+		anchor = this->create_node();
 		gd<ConstraintType>(anchor).why = ConstraintType::anchor;
 	}
 	typename ConstraintGraph::Node *GetVar(NodeConstraints &nc) {
 		if(!nc.n)
-			gd<ConstraintType>(nc.n = create_node()).why = ConstraintType::node;
+			gd<ConstraintType>(nc.n = this->create_node()).why = ConstraintType::node;
 		return nc.n;
 	}
 	void Stabilize(NodeConstraints &nc, int newrank, int weight) {
 		if(!nc.stab)
-			gd<ConstraintType>(nc.stab = create_node()).why = ConstraintType::stab;
+			gd<ConstraintType>(nc.stab = this->create_node()).why = ConstraintType::stab;
 	//	dgassert(newrank>-1000000 && newrank<1000000);
-		ConstraintGraph::Node *var = GetVar(nc);
+		typename ConstraintGraph::Node *var = GetVar(nc);
 		int len0,len1;
 		if (newrank >= 0) {
 			len0 = 0;

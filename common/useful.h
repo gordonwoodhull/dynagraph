@@ -113,7 +113,7 @@ struct dgr {
 	enum reportType {none,input_raw,input_cooked,output,inner_input,inner_output,dynadag,cmdline,crossopt,wander,stats,error,
 		splineRoute,shortestPath,grChange,timing,exchange,nsdump,
 		ranks,xsolver,modelDump,ranker,dumpQueue,stability,readability,progress,
-		bug
+		bug,svg_bug
 	};
 	std::ostream &operator [](reportType rt) {
 		if(gotIt(rt))

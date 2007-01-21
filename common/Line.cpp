@@ -16,6 +16,7 @@
 
 
 #include "Geometry.h"
+#include "SVG.h"
 
 using namespace std;
 
@@ -118,24 +119,6 @@ Position Line::Intersection(int seg,Segment other) {
 		return Position();
 	}
 }
-
-void showshape(const Line &shape,Coord ul,Coord ofs = Coord(0,0)) {
-	if(shape.size()) {
-		reports[dgr::bug] << "<path d=\"M" << shape[0].x+ofs.x-ul.x << ' ' << ul.y-(shape[0].y+ofs.y) << ' ';
-		switch(shape.degree) {
-		case 1: reports[dgr::bug] << "L";
-			break;
-		case 3:	reports[dgr::bug] << "C";
-			break;
-		default:
-			dgassert(0);
-		}
-		for(Line::const_iterator ci = shape.begin()+1;ci!=shape.end(); ++ci)
-			reports[dgr::bug] << ci->x+ofs.x-ul.x << ' ' << ul.y-(ci->y+ofs.y);
-		reports[dgr::bug] << '"' << endl <<
-			"style=\"fill:none;stroke:rgb(0,0,0);stroke-width:1\"/>" << endl;
-	}
-}
 void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
 									const Coord offsetHead, const Region *hd) {
 	if(!tl&&!hd) {
@@ -163,21 +146,14 @@ void Line::ClipEndpoints(Line &source,const Coord offsetTail,const Region *tl,
 	}
 	else
 		lastI = source.size() - degree - 1;
-	/*
 	if(firstI>lastI) {
-		reports[dgr::bug] << "<?xml version=\"1.0\" standalone=\"no\"?>" << endl <<
-			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"" << endl <<
-			"\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">" << endl;
-		reports[dgr::bug] << "<svg width=\"100%%\" height=\"100%%\">" << endl;
-		const PolylineRegion *pr = static_cast<const PolylineRegion*>(tl);
+		SVG::header(reports[dgr::bug]);
 		Coord ul = offsetTail; // (offsetTail.x - pr->boundary.Width()/2,offsetTail.y + pr->boundary.Height()/2);
-		showshape(pr->shape,ul,offsetTail);
-		pr = static_cast<const PolylineRegion*>(hd);
-		showshape(pr->shape,ul,offsetHead);
-		showshape(source,ul);
-		reports[dgr::bug] << "</svg>" << endl;
+		SVG::line(reports[dgr::bug],tl->shape,ul,offsetTail);
+		SVG::line(reports[dgr::bug],hd->shape,ul,offsetHead);
+		SVG::line(reports[dgr::bug],source,ul);
+		SVG::footer(reports[dgr::bug]);
 	}
-	*/
 	Coord temp[4];
 	for(int i = firstI; i <= lastI; i += degree) {
 		Coord *section = &source[i];

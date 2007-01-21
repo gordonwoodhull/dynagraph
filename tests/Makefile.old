@@ -12,29 +12,34 @@ AT_EFLOW=-a emphasizeflow=true
 SUF_DOTCO=dotco
 OPT_DOTCO=-d
 
+OUTDIR=results
+
 run: *.incr showem
 
 showem:
 	@echo Searching output for exceptions...
-	@if grep exception *.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
+	@if grep exception $(OUTDIR)/*.incrout; then echo "Tasty bugs."; else echo "Everything seems fine."; fi
+	
+$(OUTDIR):
+	mkdir -p $(OUTDIR)
 
-*.incr: always
-	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $*.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) < $@ > $*.$(SUF_ROTAT).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) < $@ > $*.$(SUF_INTER).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) < $@ > $*.dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) < $@ > $*.$(SUF_ROTAT).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) < $@ > $*.$(SUF_INTER).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_EFLOW) < $@ > $*.$(SUF_EFLOW).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_EFLOW).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
+*.incr: always $(OUTDIR)
+	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $(OUTDIR)/$*.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) < $@ > $(OUTDIR)/$*.dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_INTER).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_EFLOW).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_EFLOW).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
+	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
 
 always: 
 
