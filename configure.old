@@ -9,4 +9,4 @@ echo "If you are using automake/autoconf, please use './configure' instead."
 for i in `find . -name Makefile.old`; do cp $i ${i%%.old}; done
 
 # Create dependency-holding directories
-for i in `find . -type d`; do mkdir -p $i/.deps; done
+for i in . common dynadag fdp graphsearch incrface pathplot shortspline voronoi; do mkdir -p $i/.deps; done
