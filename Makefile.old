@@ -32,7 +32,7 @@ OBJS = main.o IncrCalledBack.o DuplicateStream.o
 
 MANS = 
 
-GET_VERSION = `./dynagraph -v | sed -e 's/Dynagraph version \(.*\)/\1/'`
+GET_VERSION = `./dynagraph --v3rs10n`
 
 dynagraph-whole : $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
 	$(CPPSLD) $(LDFLAGS) $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-whole
