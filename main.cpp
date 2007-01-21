@@ -107,6 +107,25 @@ pair<bool,char*> findDescription(switchval<V> *array,int n,V v) {
 void print_version() {
 	reports[dgr::cmdline] << "Dynagraph version " << DYNAGRAPH_VERSION_DOTS_QUOTED << endl;
 }
+template<int i>
+struct char1z3 {
+	BOOST_MPL_ASSERT_RELATION(i,>=,0);
+	BOOST_MPL_ASSERT_RELATION(i,<,10+26+26);
+	enum {result = i<10 ? i+'0' : i<36 ? i-10+'A' : i-10-26+'a'};
+};
+char *DYNAGRAPH_V3RS10N() {
+	static char buf[8];
+	buf[0] = char1z3<Dg_MAJOR>::result;
+	buf[2] = char1z3<Dg_MINOR>::result;
+	buf[4] = char1z3<Dg_MINIC>::result;
+	buf[6] = char1z3<Dg_MNEST>::result;
+	buf[1] = buf[3] = buf[5] = '.';
+	buf[7] = 0;
+	return buf;
+}
+void print_v3rs10n() {
+	reports[dgr::cmdline] << DYNAGRAPH_V3RS10N() << endl;
+}
 void print_help() {
 	reports[dgr::cmdline] << 
 		"dynagraph arguments:" << endl << 
@@ -266,6 +285,10 @@ int main(int argc, char *args[]) {
 		case '-':
 			if(!strcmp(args[i]+2,"version")) {
 				print_version();
+				return 0;
+			}
+			if(!strcmp(args[i]+2,"v3rs10n")) {
+				print_v3rs10n();
 				return 0;
 			}
 			else if(!strcmp(args[i]+2,"help")) {
