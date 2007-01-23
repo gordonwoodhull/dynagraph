@@ -79,11 +79,12 @@ struct MedianCompare {
 		return lm > rm || lm==rm && allowEqual_;
 	}
 };
+template<typename Matrix>
 struct CrossingCompare {
 	Config &config;
-	SiftMatrix &matrix;
+	Matrix &matrix;
 	bool allowEqual_;
-	CrossingCompare(Config &config,SiftMatrix &matrix,bool allowEqual) : config(config),matrix(matrix),allowEqual_(allowEqual) {}
+	CrossingCompare(Config &config,Matrix &matrix,bool allowEqual) : config(config),matrix(matrix),allowEqual_(allowEqual) {}
 	bool comparable(DDModel::Node *n) {
 		return true;
 	}
@@ -97,7 +98,8 @@ struct CrossingCompare {
 		return numcross<0 || numcross==0&&allowEqual_;
 	}
 };
-void moveBefore(Config &config,SiftMatrix &matrix,DDModel::Node *n,DDModel::Node *before) {
+template<typename Matrix>
+void moveBefore(Config &config,Matrix &matrix,DDModel::Node *n,DDModel::Node *before) {
 	matrix.move(n,before);
 	/*
 	int rank = gd<DDNode>(n).rank;
@@ -109,8 +111,8 @@ void moveBefore(Config &config,SiftMatrix &matrix,DDModel::Node *n,DDModel::Node
 		*/
 	config.MoveNodeBefore(n,before);
 }
-template<class Switchable, class Compare>
-void bubblePassR(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
+template<class Switchable, class Compare,class Matrix>
+void bubblePassR(Config &config,Matrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
 	NodeV::iterator li;
 	for(li = r->order.begin(); li<r->order.end()-1; ++li) {
 		if(!compare.comparable(*li))
@@ -129,8 +131,8 @@ void bubblePassR(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &swi
 			}
 	}
 }
-template<class Switchable, class Compare>
-void bubblePassL(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
+template<class Switchable, class Compare,class Matrix>
+void bubblePassL(Config &config,Matrix &matrix,Rank *r,const Switchable &switchable,Compare &compare) {
 	NodeV::reverse_iterator ri;
 	for(ri = r->order.rbegin(); ri<r->order.rend()-1; ++ri) {
 		if(!compare.comparable(*ri))
@@ -147,8 +149,8 @@ void bubblePassL(Config &config,SiftMatrix &matrix,Rank *r,const Switchable &swi
 			}
 	}
 }
-template<class Switchable, class Compare>
-void bubblePass(Config &config,SiftMatrix &matrix,UpDown dir,LeftRight way,const Switchable &switchable,Compare &compare) {
+template<class Switchable, class Compare,class Matrix>
+void bubblePass(Config &config,Matrix &matrix,UpDown dir,LeftRight way,const Switchable &switchable,Compare &compare) {
 	if(dir==DOWN)
 		for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri) {
 			Rank *r = *ri;
@@ -168,16 +170,16 @@ void bubblePass(Config &config,SiftMatrix &matrix,UpDown dir,LeftRight way,const
 	//matrix.check();
 }
 template<int MaxPasses,int Tire,int GoodEnough,int AbsoluteMustScore,int AbsoluteMaxPasses,typename ToDo>
-int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
-	SiftMatrix backupM(config);
+int borableRun(Config &config,ToDo &toDo) {
+	typename ToDo::Matrix backupM(config);
 	Config::Ranks backupC(config.current);
 
 	config.checkX();
 	config.ranking.backup_x();
 	backupC = config.ranking;
 
-	matrix.recompute();
-	backupM = matrix;
+	toDo.GetMatrix().recompute();
+	backupM = toDo.GetMatrix();
 
 	unsigned best = toDo.Score();
 	int pass = 0;
@@ -191,7 +193,7 @@ int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
 				config.checkX();
 				config.ranking.backup_x();
 				backupC = config.ranking;
-				backupM = matrix;
+				backupM = toDo.GetMatrix();
 				tired = 0;
 			}
 			else
@@ -200,29 +202,30 @@ int borableRun(Config &config,SiftMatrix &matrix,ToDo &toDo) {
 		}
 		if(score>best || tired==Tire) {
 			config.Restore(backupC);
-			matrix = backupM;
+			toDo.GetMatrix() = backupM;
 			tired = 0;
 		}
 	}
 	return best;
 };
-
-struct LightPass {
+template<typename CrossCount>
+struct MedianPass {
 	Config &config_;
-	SiftMatrix &matrix_;
+	typedef SiftMatrix<CrossCount> Matrix;
+	Matrix matrix_;
 	ConstraintMatrixSwitchable switchable_;
 	MedianCompare median_;
-	CrossingCompare crossing_;
-	LightPass(Config &config,SiftMatrix &matrix,ConstraintMatrixSwitchable &switchable) : 
+	CrossingCompare<Matrix> crossing_;
+	MedianPass(Config &config,ConstraintMatrixSwitchable &switchable) : 
 		config_(config),
-		matrix_(matrix),
+		matrix_(config),
 		switchable_(switchable),
 		median_(DOWN,false),
 		crossing_(config_,matrix_,false) 
 	{
-		matrix_.light_ = true;
 		matrix_.recompute();
 	}
+	Matrix &GetMatrix() { return matrix_; }
 	int Score() {
 		return matrix_.sumCrossings();
 	}
@@ -253,20 +256,22 @@ struct LightPass {
 		return score2;
 	}
 };
-struct HeavyPass {
+template<typename CrossCount>
+struct CrossPass {
 	Config &config_;
-	SiftMatrix &matrix_;
+	typedef SiftMatrix<CrossCount> Matrix;
+	Matrix matrix_;
 	ConstraintMatrixSwitchable switchable_;
-	CrossingCompare crossing_;
-	HeavyPass(Config &config,SiftMatrix &matrix,ConstraintMatrixSwitchable &switchable) :
+	CrossingCompare<Matrix> crossing_;
+	CrossPass(Config &config,ConstraintMatrixSwitchable &switchable) :
 		config_(config),
-		matrix_(matrix),
+		matrix_(config),
 		switchable_(switchable),
 		crossing_(config_,matrix_,false) 
 	{
-		matrix_.light_ = false;
 		matrix_.recompute();
 	}
+	Matrix &GetMatrix() { return matrix_; }
 	int Score() {
 		return matrix_.sumCrossings();
 	}
@@ -278,6 +283,25 @@ struct HeavyPass {
 		return Score();
 	}
 };
+struct LightCross {
+	unsigned operator()(Crossings cc) {
+		return cc.edgeEdgeCross + cc.nodeEdgeCross + cc.nodeNodeCross;
+	}
+};
+struct HeavyCross {
+	unsigned operator()(Crossings cc) {
+	  return cc.edgeEdgeCross + NODECROSS_PENALTY*cc.nodeEdgeCross +
+		  NODECROSS_PENALTY*NODECROSS_PENALTY*cc.nodeNodeCross;
+	}
+};
+struct NoNodesCross {
+	unsigned operator()(Crossings cc) {
+	  return cc.nodeNodeCross;
+	}
+};
+typedef MedianPass<LightCross> LightPass;
+typedef MedianPass<NoNodesCross> NoNodesPass;
+typedef CrossPass<HeavyCross> HeavyPass;
 struct OrderLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
 		return gd<DDNode>(u).order < gd<DDNode>(v).order;
@@ -364,17 +388,23 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
 					switchable.set(*(ni-1),*ni,false);
 		}
 	}
-	SiftMatrix matrix(config);
-	LightPass lightPass(config,matrix,switchable);
-	borableRun<32,6,0,INT_MAX,32>(config,matrix,lightPass);
 
-	HeavyPass heavyPass(config,matrix,switchable);
+	// borableRun has too many template parameters!
+	// template<int MaxPasses,int Tire,int GoodEnough,int AbsoluteMustScore,int AbsoluteMaxPasses,typename ToDo>
+	LightPass lightPass(config,switchable);
+	borableRun<32,6,0,INT_MAX,32>(config,lightPass);
+
+	NoNodesPass noNodesPass(config,switchable);
+	borableRun<100,5,0,0,100>(config,noNodesPass);
+	dgassert(noNodesPass.Score()==0);
+
+	HeavyPass heavyPass(config,switchable);
 	int score = heavyPass.Score();
 	if(score<NODECROSS_PENALTY) {
 		loops.Field(dgr::crossopt,"weighted crossings after heavy pass",-1);
 		return;
 	}
-	score = borableRun<32,5,NODECROSS_PENALTY-1,NODECROSS_PENALTY*NODECROSS_PENALTY,100>(config,matrix,heavyPass);
+	score = borableRun<32,5,NODECROSS_PENALTY-1,NODECROSS_PENALTY*NODECROSS_PENALTY,100>(config,heavyPass);
 
 	loops.Field(dgr::crossopt,"weighted crossings after heavy pass",score);
 	// absolutely must not leave here with nodes crossing nodes!!

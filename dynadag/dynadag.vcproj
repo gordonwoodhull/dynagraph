@@ -321,10 +321,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SiftMatrix.cpp"
-				>
-			</File>
-			<File
 				RelativePath="Spline.cpp"
 				>
 			</File>

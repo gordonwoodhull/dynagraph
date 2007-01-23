@@ -47,13 +47,6 @@ struct Crossings {
 	}
 };
 Crossings uvcross(DDModel::Node *v, DDModel::Node *w, bool use_in, bool use_out);
-inline unsigned crossweight(Crossings cc) {
-  return cc.edgeEdgeCross + NODECROSS_PENALTY*cc.nodeEdgeCross +
-	  NODECROSS_PENALTY*NODECROSS_PENALTY*cc.nodeNodeCross;
-}
-inline unsigned crosslight(Crossings cc) {
-	return cc.edgeEdgeCross + cc.nodeEdgeCross + cc.nodeNodeCross;
-}
 
 } // namespace DynaDAG
 } // namespace Dynagraph
