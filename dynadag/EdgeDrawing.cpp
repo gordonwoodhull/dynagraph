@@ -60,6 +60,7 @@ void DynaDAGServer::drawSelfEdge(DynaDAGLayout::Edge *e) {
 	Coord sep = gd<GraphGeom>(e->g).separation;
 	unclipped.degree = 3;
 	DDModel::Node *tl = DDp(e->tail)->bottom();
+	EdgeGeom &eg = gd<EdgeGeom>(e);
 	Coord tailpt = eg.tailPort.pos + gd<DDNode>(tl).multi->pos();
 	Coord right = Coord(tailpt.x+config.RightExtent(tl),tailpt.y),
 		left = right - Coord(1.5*sep.x,0.0);
