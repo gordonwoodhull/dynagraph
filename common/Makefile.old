@@ -13,7 +13,7 @@ OBJS = \
 	Colors.o	Line.o			LineTricks.o	Region.o \
 	Solvers.o	StringDict.o		Transform.o \
 	ag2str.o	ellipse2bezier.o	genpoly.o	parsestr.o \
-	stringsIn.o	stringsOut.o		time-o-matic.o	useful.o \
+	stringsIn.o	stringsOut.o		SVG.o   time-o-matic.o	useful.o \
 	xlines.o
 
 HFILES = \
