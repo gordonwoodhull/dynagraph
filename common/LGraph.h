@@ -131,20 +131,115 @@ struct WrongGraph : LGraphException {};
 // attempted to use edge with node it's not connected to
 struct WrongNode : LGraphException {};
 
-template<class T>
-class pseudo_seq {
-	T m_begin,m_end;
-public:
-    typedef T iterator;
-	pseudo_seq(T begin,T end) : m_begin(begin),m_end(end) {}
-	T begin() { return m_begin; }
-	T end() { return m_end; }
-	int size() {
-		int ret=0;
-		for(T i = m_begin; i!=m_end; ++i) ++ret;
-		return ret;
-	}
-};
+namespace detail {
+	template<class T>
+	class pseudo_seq {
+		T m_begin,m_end;
+	public:
+		typedef T iterator;
+		pseudo_seq(T begin,T end) : m_begin(begin),m_end(end) {}
+		T begin() { return m_begin; }
+		T end() { return m_end; }
+		int size() {
+			int ret=0;
+			for(T i = m_begin; i!=m_end; ++i) ++ret;
+			return ret;
+		}
+	};
+	template<bool AllowParallel,typename Node,typename Edge>
+	struct create_edge_result;
+	template<typename Node,typename Edge>
+	struct create_edge_result<false,Node,Edge> {
+		typedef std::pair<Edge*,bool> return_t;
+		static return_t do_ret(Edge *e,bool b) {
+			return std::make_pair(e,b);
+		}
+		static Edge *get_edge(return_t r) {
+			return r.first;
+		}
+	};
+	template<typename Node,typename Edge>
+	struct create_edge_result<true,Node,Edge> {
+		typedef Edge *return_t;
+		static return_t do_ret(Edge *e,bool b) {
+			return e;
+		}
+		static Edge *get_edge(return_t r) {
+			return r;
+		}
+	};
+	template<bool AllowParallel,typename Node,typename Edge>
+	struct find_edge_result;
+	template<typename Node,typename Edge>
+	struct find_edge_result<false,Node,Edge> {
+		typedef Edge *return_t;
+		static return_t find_em(Node *tail,Edge *key) {
+			typename Node::headedge_iter i = tail->outFinder().find(key);
+			if(i==tail->outFinder().end())
+				return 0;
+			else
+				return *i;
+		}
+		static return_t none(Node *) {
+			return 0;
+		}
+		static Edge *first(return_t r) {
+			return r;
+		}
+		static bool empty(return_t r) {
+			return !r;
+		}
+	};
+	template<typename Node,typename Edge>
+	struct find_edge_result<true,Node,Edge> {
+		typedef std::pair<typename Node::headedge_iter,typename Node::headedge_iter> headedge_iter_pair;
+		typedef headedge_iter_pair return_t;
+		static return_t find_em(Node *tail,Edge *key) {
+			typename Node::headedge_iter start = tail->outFinder().find(key), end;
+			if(start==tail->outFinder().end())
+				return std::make_pair(start,start);
+			else {
+				for(end = start; end!=tail->outFinder().end() && *end==key; ++end);
+				return std::make_pair(start,end);
+			}
+		}
+		static return_t none(Node *tail) {
+			return std::make_pair(tail->outFinder().end(),tail->outFinder().end());
+		}
+		static Edge *first(return_t r) {
+			if(empty(r))
+				return 0;
+			else
+				return *r.first;
+		}
+		static bool empty(return_t r) {
+			return r.first==r.second;
+		}
+	};
+	template<bool AllowParallel,typename Node,typename Edge>
+	struct find_already;
+	template<typename Node,typename Edge>
+	struct find_already<false,Node,Edge> {
+		typename find_edge_result<false,Node,Edge>::return_t found_;
+		find_already(typename find_edge_result<false,Node,Edge>::return_t found) : found_(found) {}
+		bool was_found() {
+			return found_!=0;
+		}
+		typename create_edge_result<false,Node,Edge>::return_t result() {
+			return std::make_pair(found_,false);
+		}
+	};
+	template<typename Node,typename Edge>
+	struct find_already<true,Node,Edge> {
+		find_already(typename find_edge_result<true,Node,Edge>::return_t) {}
+		bool was_found() {
+			return false;
+		}
+		typename create_edge_result<true,Node,Edge>::return_t result() {
+			return typename create_edge_result<true,Node,Edge>::return_t();
+		}
+	};
+}
 template<class ADTPolicy,bool AllowParallel,typename GraphDatum,typename NodeDatum, typename EdgeDatum, // same data in every image
 	// different data in different images; gets copied on insert
 	typename GraphIDat = Nothing, typename NodeIDat = Nothing, typename EdgeIDat = Nothing>
@@ -340,11 +435,14 @@ struct LGraph {
 		outedge_order &outs() {
 			return nodeData_.m_outs;
 		}
+		typedef typename LGraph::edge_by_head_order edge_by_head_order;
+		typedef typename edge_by_head_order::iterator headedge_iter;
 		edge_by_head_order &outFinder() {
 			return nodeData_.m_outFinder;
 		}
-		pseudo_seq<nodeedge_iter> alledges() {
-			return pseudo_seq<nodeedge_iter>(ne_iter(&nodeData_.m_ins,&nodeData_.m_outs),ne_iter(0,0));
+		typedef detail::pseudo_seq<nodeedge_iter> nodeedge_seq;
+		nodeedge_seq alledges() {
+			return nodeedge_seq(ne_iter(&nodeData_.m_ins,&nodeData_.m_outs),ne_iter(0,0));
 		};
 
 		size_t degree() {
@@ -477,8 +575,9 @@ public:
 		typename outedge_order::iterator ei;
 		const LGraph *g;
 	};
-	pseudo_seq<graphedge_iter> edges() const {
-		return pseudo_seq<graphedge_iter>(graphedge_iter(this),graphedge_iter(0));
+	typedef detail::pseudo_seq<graphedge_iter> graphedge_seq;
+	graphedge_seq edges() const {
+		return graphedge_seq(graphedge_iter(this),graphedge_iter(0));
 	}
 	// methods available only on main graphs
 	virtual Node *create_node(const NodeDatum &d = NodeDatum()) {
@@ -495,102 +594,15 @@ public:
 		nodes().insert(ret);
 		return ret;
 	}
-	template<bool AllowParallel>
-	struct CreateEdgeResult {
-		typedef std::pair<Edge*,bool> return_t;
-		static return_t do_ret(Edge *e,bool b) {
-			return std::make_pair(e,b);
-		}
-		static Edge *get_edge(return_t r) {
-			return r.first;
-		}
-	};
-	template<>
-	struct CreateEdgeResult<true> {
-		typedef Edge *return_t;
-		static return_t do_ret(Edge *e,bool b) {
-			return e;
-		}
-		static Edge *get_edge(return_t r) {
-			return r;
-		}
-	};
-	template<bool AllowParallel>
-	struct FindEdgeResult {
-		typedef Edge *return_t;
-		static return_t find_em(Node *tail,Edge *key) {
-			typename edge_by_head_order::iterator i = tail->outFinder().find(key);
-			if(i==tail->outFinder().end())
-				return 0;
-			else
-				return *i;
-		}
-		static return_t none(Node *) {
-			return 0;
-		}
-		static Edge *first(return_t r) {
-			return r;
-		}
-		static bool empty(return_t r) {
-			return !r;
-		}
-	};
-	typedef std::pair<headedge_iter,headedge_iter> headedge_iter_pair;
-	template<>
-	struct FindEdgeResult<true> {
-		typedef headedge_iter_pair return_t;
-		static return_t find_em(Node *tail,Edge *key) {
-			headedge_iter start = tail->outFinder().find(key), end;
-			if(start==tail->outFinder().end())
-				return std::make_pair(start,start);
-			else {
-				for(end = start; end!=tail->outFinder().end() && *end==key; ++end);
-				return std::make_pair(start,end);
-			}
-		}
-		static return_t none(Node *tail) {
-			return std::make_pair(tail->outFinder().end(),tail->outFinder().end());
-		}
-		static Edge *first(return_t r) {
-			if(empty(r))
-				return 0;
-			else
-				return *r.first;
-		}
-		static bool empty(return_t r) {
-			return r.first==r.second;
-		}
-	};
-	template<bool AllowParallel>
-	struct FindAlready {
-		typename FindEdgeResult<AllowParallel>::return_t found_;
-		FindAlready(typename FindEdgeResult<AllowParallel>::return_t found) : found_(found) {}
-		bool was_found() {
-			return found_!=0;
-		}
-		typename CreateEdgeResult<false>::return_t result() {
-			return std::make_pair(found_,false);
-		}
-	};
-	template<>
-	struct FindAlready<true> {
-		FindAlready(typename FindEdgeResult<AllowParallel>::return_t) {}
-		bool was_found() {
-			return false;
-		}
-		typename CreateEdgeResult<true>::return_t result() {
-			return CreateEdgeResult<true>::return_t();
-		}
-	};
-	virtual typename CreateEdgeResult<AllowParallel>::return_t create_edge(Node *tail, Node *head,const EdgeDatum &d = EdgeDatum()) {
+	virtual typename detail::create_edge_result<AllowParallel,Node,Edge>::return_t create_edge(Node *tail, Node *head,const EdgeDatum &d = EdgeDatum()) {
 		if(parent)
-			return CreateEdgeResult<AllowParallel>::do_ret((Edge*)0,false);
+			return detail::create_edge_result<AllowParallel,Node,Edge>::do_ret((Edge*)0,false);
 		if(!tail) throw NullPointer();
 		if(tail->g!=this) throw WrongGraph();
 		if(!head) throw NullPointer();
 		if(head->g!=this) throw WrongGraph();
 		if(!AllowParallel) {
-			FindAlready<AllowParallel> already_check(find_edge(tail,head));
+			detail::find_already<AllowParallel,Node,Edge> already_check(find_edge(tail,head));
 			if(already_check.was_found())
 				return already_check.result();
 		}
@@ -605,7 +617,7 @@ public:
 		tail->outs().insert(ret);
 		tail->outFinder().insert(ret);
 		head->ins().insert(ret);
-		return CreateEdgeResult<AllowParallel>::do_ret(ret,true);
+		return detail::create_edge_result<AllowParallel,Node,Edge>::do_ret(ret,true);
 	}
 	// methods available only on subgraphs
 	// the shorter, overloaded methods insert,erase,find are intended to
@@ -706,26 +718,27 @@ public:
 	bool erase(Edge *e) {
 		return erase_edge(e);
 	}
-	typename FindEdgeResult<AllowParallel>::return_t find_edge(Node *tail, Node *head) {
+	typedef std::pair<typename Node::headedge_iter,typename Node::headedge_iter> headedge_iter_pair;
+	typename detail::find_edge_result<AllowParallel,Node,Edge>::return_t find_edge(Node *tail, Node *head) {
 		if(tail->g!=this)
 			if(!(tail = find_nodeimage(tail)))
-				return FindEdgeResult<AllowParallel>::none(tail);
+				return detail::find_edge_result<AllowParallel,Node,Edge>::none(tail);
 		if(head->g!=this)
 			if(!(head = find_nodeimage(head)))
-				return FindEdgeResult<AllowParallel>::none(tail);
+				return detail::find_edge_result<AllowParallel,Node,Edge>::none(tail);
 		Edge key(0,0,head,0);
-		return FindEdgeResult<AllowParallel>::find_em(tail,&key);
+		return detail::find_edge_result<AllowParallel,Node,Edge>::find_em(tail,&key);
 	}
 	bool has_edge(Node *tail,Node *head) {
-		return !FindEdgeResult<AllowParallel>::empty(find_edge(tail,head));
+		return !detail::find_edge_result<AllowParallel,Node,Edge>::empty(find_edge(tail,head));
 	}
 	Edge *first_edge(Node *tail,Node *head) {
-		return FindEdgeResult<AllowParallel>::first(find_edge(tail,head));
+		return detail::find_edge_result<AllowParallel,Node,Edge>::first(find_edge(tail,head));
 	}
 	Edge *fiat_edge(Node *tail,Node *head) {
 		if(Edge *e = first_edge(tail,head))
 			return e;
-		return CreateEdgeResult<AllowParallel>::get_edge(create_edge(tail,head));
+		return detail::create_edge_result<AllowParallel,Node,Edge>::get_edge(create_edge(tail,head));
 	}
 	Node *find_nodeimage(Node *n) {
 		node_iter i = nodes().find(n);
@@ -771,7 +784,7 @@ public:
 		if(parent) {
 			// if a subgraph, we're inserting everything
 			check_common_parent(g);
-			for(node_iter ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni) 
+			for(node_iter ni = g.nodes().begin(); ni!=g.nodes().end(); ++ni)
 				insert(*ni).first->idat = (*ni)->idat;
 			for(graphedge_iter ei(&g); ei!=graphedge_iter(); ++ei)
 				insert(*ei).first->idat = (*ei)->idat;
@@ -791,7 +804,7 @@ public:
 				for(outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end(); ++ei) {
 					Node *t = remember[(*ei)->tail],
 						*h = remember[(*ei)->head];
-					Edge *e = CreateEdgeResult<AllowParallel>::get_edge(create_edge(t,h,*(*ei)->dat));
+					Edge *e = detail::create_edge_result<AllowParallel,Node,Edge>::get_edge(create_edge(t,h,*(*ei)->dat));
 					e->idat = (*ei)->idat;
 				}
 		}

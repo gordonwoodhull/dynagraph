@@ -38,6 +38,7 @@ struct EnsureParallelEdgeRanks : LinkedChangeProcessor<Layout> {
 						break;
 					case flat:
 						continue;
+					case forward: ;
 				}
 				int tb = gd<NSRankerNode>(t).newBottomRank,
 					ht = gd<NSRankerNode>(h).newTopRank,

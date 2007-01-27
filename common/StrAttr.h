@@ -179,23 +179,23 @@ struct NamedGraph : LGraph<ADTPolicy,AllowParallel,GData,NData,EData,GIData,NIDa
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
-	typename CreateEdgeResult<AllowParallel>::return_t create_edge(Node *tail,Node *head,DString name) {// non virtual
+	typename detail::create_edge_result<AllowParallel,Node,Edge>::return_t create_edge(Node *tail,Node *head,DString name) {// non virtual
 		dgassert(ndict.size()==this->nodes().size());
         EData ed(name);
-		typename CreateEdgeResult<AllowParallel>::return_t ret = create_edge(tail,head,ed);
+		typename detail::create_edge_result<AllowParallel,Node,Edge>::return_t ret = create_edge(tail,head,ed);
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
-	void checkCreateEdgeResult(typename CreateEdgeResult<false>::return_t r,Name name) {
+	void checkCreateEdgeResult(typename detail::create_edge_result<false,Node,Edge>::return_t r,Name name) {
 		if(!r.second)
 			throw DGParallelEdgesNotSupported(name);
 	}
-	void checkCreateEdgeResult(typename CreateEdgeResult<true>::return_t r,Name name) {}
-	typename CreateEdgeResult<AllowParallel>::return_t create_edge(Node *tail,Node *head,EData &ed) {
+	void checkCreateEdgeResult(typename detail::create_edge_result<true,Node,Edge>::return_t r,Name name) {}
+	typename detail::create_edge_result<AllowParallel,Node,Edge>::return_t create_edge(Node *tail,Node *head,EData &ed) {
 		dgassert(ndict.size()==this->nodes().size());
-		typename CreateEdgeResult<AllowParallel>::return_t ret = Graph::create_edge(tail,head,ed);
+		typename detail::create_edge_result<AllowParallel,Node,Edge>::return_t ret = Graph::create_edge(tail,head,ed);
 		checkCreateEdgeResult(ret,ed);
-		enter(ed,CreateEdgeResult<AllowParallel>::get_edge(ret));
+		enter(ed,detail::create_edge_result<AllowParallel,Node,Edge>::get_edge(ret));
 		dgassert(ndict.size()==this->nodes().size());
 		return ret;
 	}
@@ -261,7 +261,7 @@ struct NamedGraph : LGraph<ADTPolicy,AllowParallel,GData,NData,EData,GIData,NIDa
 			throw DGEdgeTailDoesNotExist(tail);
 		if(!h)
 			throw DGEdgeHeadDoesNotExist(head);
-		return std::make_pair(CreateEdgeResult<AllowParallel>::get_edge(create_edge(t,h,name)),true);
+		return std::make_pair(detail::create_edge_result<AllowParallel,Node,Edge>::get_edge(create_edge(t,h,name)),true);
 	}
 	std::pair<Edge *,bool> fetch_edge(Node *tail,Node *head,DString name,bool create) {
 		dgassert(ndict.size()==this->nodes().size());
@@ -272,7 +272,7 @@ struct NamedGraph : LGraph<ADTPolicy,AllowParallel,GData,NData,EData,GIData,NIDa
 		}
 		if(!create)
 			return std::make_pair((Edge*)0,false);
-		return std::make_pair(CreateEdgeResult<AllowParallel>::get_edge(create_edge(tail,head,name)),true);
+		return std::make_pair(detail::create_edge_result<AllowParallel,Node,Edge>::get_edge(create_edge(tail,head,name)),true);
 	}
 	Edge *fetch_edge(DString tail, DString head) {
 		Node *t = fetch_node(tail),
