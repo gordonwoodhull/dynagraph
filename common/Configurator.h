@@ -67,10 +67,9 @@ struct Configuration :
 {};
 typedef Configuration<void,boost::mpl::clear<boost::mpl::vector<void> >::type > EmptyConfig;
 
-
 // An instantiation of the Configuration glues items of DataList using MI
 template<typename Configuration0>
-struct Data : boost::generate_spine<typename DataList<Configuration0>::type> {
+struct Data : boost::generate_spine<typename DataList<Configuration0>::type>::type {
 	// make original types easily accessible
 	typedef Configuration0 Configuration;
 	typedef typename CurrLevel<Configuration>::type CurrLevel;
