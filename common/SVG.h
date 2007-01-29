@@ -1,3 +1,6 @@
+#ifndef SVG_h
+#define SVG_h
+
 #include "Geometry.h"
 #include <iostream>
 
@@ -13,3 +16,4 @@ void footer(std::ostream &out);
 
 } // namespace SVG
 } // namespace Dynagraph
+#endif // SVG_h

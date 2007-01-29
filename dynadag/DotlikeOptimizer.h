@@ -28,6 +28,10 @@ private:
 	Config &config;
 };
 
+struct CouldntResolveNodeCrossings : DGException {
+	CouldntResolveNodeCrossings() : DGException("couldn't resolve node-node crossings",true) {}
+};
+
 } // namespace DynaDAG
 } // namespace Dynagraph
 

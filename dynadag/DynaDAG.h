@@ -33,6 +33,7 @@
 #include "DotlikeOptimizer.h"
 #include "XSolver.h"
 #include "FlexiSpliner.h"
+#include "Dump.h"
 
 namespace Dynagraph {
 namespace DynaDAG {

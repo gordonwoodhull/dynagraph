@@ -167,7 +167,8 @@ int main(int argc, char *args[]) {
 	int random_seed = -1;
 	map<dgr::reportType,int> reportDests;
 	char *dotfile = 0;
-	ostream *outfile[10];
+	fstream *outfile[10];
+	string filenames[10];
 	FILE *input_file = stdin;
 	for(int i = 0;i<10;++i) outfile[i] = 0;
 	for(int i = 1; i<argc; ++i) {
@@ -229,6 +230,7 @@ int main(int argc, char *args[]) {
 			} else {
 				int n = args[i][2]-'0';
 				outfile[n] = new fstream(args[++i],fstream::out);
+				filenames[n] = args[i];
 				if(outfile[n]->fail()) {
 					reports[dgr::error] << "-o error: couldn't open file " << args[i] << " for writing" << endl;
 					return 1;
@@ -374,5 +376,11 @@ int main(int argc, char *args[]) {
 	}
 	reports[dgr::output] << "message \"dynagraph closing\"" << endl;
 	incr_shutdown();
+	// remove any log files that weren't actually used
+	for(int i=0;i<10;++i) 
+		if(outfile[i] && 0==outfile[i]->tellp()) {
+			outfile[i]->close();
+			remove(filenames[i].c_str());
+		}
 	return 0;
 }

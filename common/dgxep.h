@@ -22,12 +22,13 @@
 
 namespace Dynagraph {
 
-// a base for all exceptions so we can report the basics
+// a base exception with a string so one can at least report the basic cause
 struct DGException {
     DString exceptype;
     bool fatal;
     DGException(DString exceptype,bool fatal = false) : exceptype(exceptype),fatal(fatal) {}
 };
+// exception with string and specifying parameter
 struct DGException2 : DGException {
     DString param;
     DGException2(DString exceptype,DString param,bool fatal = false) : DGException(exceptype,fatal),param(param) {}

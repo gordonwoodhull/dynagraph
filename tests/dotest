@@ -1,0 +1,22 @@
+#!/bin/sh
+exts=
+opts=-x
+for i in $4 $5 $6 $7 $8 $9
+do 
+	if test $i = dotco
+	then opts="$opts -d"
+	fi
+	if test $i = rotat
+	then opts="$opts -a rankdir=LR"
+	fi
+	if test $i = imed
+	then opts="$opts -a intermediate=true"
+	fi
+	if test $i = eflow
+	then opts="$opts -a emphasizeflow=true"
+	fi
+	exts=$exts.$i
+done
+opts="$opts -rv9 -o9 $3/$2$exts.svg"
+echo "$1 $opts < $2.incr > $3/$2$exts.incrout"
+$1 $opts < $2.incr > $3/$2$exts.incrout

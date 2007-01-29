@@ -24,24 +24,24 @@ $(OUTDIR):
 	mkdir -p $(OUTDIR)
 
 *.incr: always $(OUTDIR)
-	-$(DYNAGRAPH) $(DY_OPTS) < $@ > $(OUTDIR)/$*.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_INTER).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_INTER).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) < $@ > $(OUTDIR)/$*.dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_INTER).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_EFLOW).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_EFLOW).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
-	-$(DYNAGRAPH) $(DY_OPTS) $(OPT_DOTCO) $(AT_ROTAT) $(AT_INTER) $(AT_EFLOW) < $@ > $(OUTDIR)/$*.$(SUF_ROTAT).$(SUF_INTER).$(SUF_EFLOW).dotco.incrout
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR)
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat eflow 
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR)
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat eflow 
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed eflow
 
 always: 
 
 clean:
-	rm -f *.incrout
+	rm -f results/*.incrout results/*.svg

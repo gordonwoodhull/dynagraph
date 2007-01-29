@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 echo "This script has generated Makefiles for a traditional make process."
 echo "If you are using automake/autoconf, please use './configure' instead."

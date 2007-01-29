@@ -395,8 +395,11 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
 	borableRun<32,6,0,INT_MAX,32>(config,lightPass);
 
 	NoNodesPass noNodesPass(config,switchable);
-	borableRun<100,5,0,0,100>(config,noNodesPass);
-	dgassert(noNodesPass.Score()==0);
+	borableRun<100,11,0,0,100>(config,noNodesPass);
+	if(noNodesPass.Score()) {
+		dumpModel(reports[dgr::svg_bug],config.model,true,false);
+		throw CouldntResolveNodeCrossings();
+	}
 
 	HeavyPass heavyPass(config,switchable);
 	int score = heavyPass.Score();
