@@ -5,15 +5,13 @@ for i in $4 $5 $6 $7 $8 $9
 do 
 	if test $i = dotco
 	then opts="$opts -d"
-	fi
-	if test $i = rotat
+	elif test $i = rotat
 	then opts="$opts -a rankdir=LR"
-	fi
-	if test $i = imed
+	elif test $i = imed
 	then opts="$opts -a intermediate=true"
-	fi
-	if test $i = eflow
+	elif test $i = eflow
 	then opts="$opts -a emphasizeflow=true"
+	else echo dotest: option $i unknown; exit 9
 	fi
 	exts=$exts.$i
 done

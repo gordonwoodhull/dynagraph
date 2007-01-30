@@ -32,14 +32,14 @@ $(OUTDIR):
 	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat eflow 
 	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed eflow
 	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed eflow
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR)
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) eflow
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat eflow 
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) imed eflow
-	-./dotest $(DYNAGRAPH) $* $(OUTDIR) rotat imed eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco rotat
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco imed
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco rotat imed
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco rotat eflow 
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco imed eflow
+	-./dotest $(DYNAGRAPH) $* $(OUTDIR) dotco rotat imed eflow
 
 always: 
 
