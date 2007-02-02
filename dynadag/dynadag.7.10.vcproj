@@ -220,6 +220,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Dump.cpp">
+			</File>
+			<File
 				RelativePath="DynaDAG.cpp">
 			</File>
 			<File

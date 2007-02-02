@@ -84,7 +84,9 @@ struct CrossingCompare {
 	Config &config;
 	Matrix &matrix;
 	bool allowEqual_;
-	CrossingCompare(Config &config,Matrix &matrix,bool allowEqual) : config(config),matrix(matrix),allowEqual_(allowEqual) {}
+	typename Matrix::ways_t ways_;
+	CrossingCompare(Config &config,Matrix &matrix,bool allowEqual,typename Matrix::ways_t ways) 
+		: config(config),matrix(matrix),allowEqual_(allowEqual),ways_(ways) {}
 	bool comparable(DDModel::Node *n) {
 		return true;
 	}
@@ -94,8 +96,15 @@ struct CrossingCompare {
 		Rank *rank = config.ranking.GetRank(gd<DDNode>(l).rank);
 		int numcross=0;
 		for(int o = gd<DDNode>(l).order; o<=gd<DDNode>(r).order; ++o)
-			numcross += matrix.allCrossings(rank->order[o],l) - matrix.allCrossings(l,rank->order[o]);
+			numcross += matrix.getCrossings(rank->order[o],l,ways_) - matrix.getCrossings(l,rank->order[o],ways_);
 		return numcross<0 || numcross==0&&allowEqual_;
+	}
+};
+template<typename Matrix>
+struct CrossingCompareNodes : CrossingCompare<Matrix> {
+	CrossingCompareNodes(Config &config,Matrix &matrix,bool allowEqual,typename Matrix::ways_t ways) : CrossingCompare<Matrix>(config,matrix,allowEqual,ways)  {}
+	bool comparable(DDModel::Node *n) {
+		return gd<DDNode>(n).amNodePart();
 	}
 };
 template<typename Matrix>
@@ -221,7 +230,7 @@ struct MedianPass {
 		matrix_(config),
 		switchable_(switchable),
 		median_(DOWN,false),
-		crossing_(config_,matrix_,false) 
+		crossing_(config_,matrix_,false,Matrix::all) 
 	{
 		matrix_.recompute();
 	}
@@ -256,18 +265,18 @@ struct MedianPass {
 		return score2;
 	}
 };
-template<typename CrossCount>
+template<typename CrossCount,template <typename Matrix> class Compare>
 struct CrossPass {
 	Config &config_;
 	typedef SiftMatrix<CrossCount> Matrix;
 	Matrix matrix_;
 	ConstraintMatrixSwitchable switchable_;
-	CrossingCompare<Matrix> crossing_;
+	Compare<Matrix> crossing_;
 	CrossPass(Config &config,ConstraintMatrixSwitchable &switchable) :
 		config_(config),
 		matrix_(config),
 		switchable_(switchable),
-		crossing_(config_,matrix_,false) 
+		crossing_(config_,matrix_,false,Matrix::all) 
 	{
 		matrix_.recompute();
 	}
@@ -279,6 +288,18 @@ struct CrossPass {
 		LeftRight way = (pass%2) ? RIGHT : LEFT;
 		UpDown dir = (pass&2) ? UP : DOWN;
 		crossing_.allowEqual_ = pass%3;
+		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
+		return Score();
+	}
+};
+template<typename CrossCount,template<typename Matrix> class Compare>
+struct CrossPassSames : CrossPass<CrossCount,Compare> {
+	CrossPassSames(Config &config,ConstraintMatrixSwitchable &switchable) : CrossPass<CrossCount,Compare>(config,switchable) {
+	}
+	int Pass(int pass) {
+		LeftRight way = ((pass/4)%2) ? RIGHT : LEFT;
+		UpDown dir = ((pass/4)&2) ? UP : DOWN;
+		crossing_.ways_ = dir==UP?Matrix::ins:Matrix::outs;
 		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
 		return Score();
 	}
@@ -300,8 +321,8 @@ struct NoNodesCross {
 	}
 };
 typedef MedianPass<LightCross> LightPass;
-typedef MedianPass<NoNodesCross> NoNodesPass;
-typedef CrossPass<HeavyCross> HeavyPass;
+typedef CrossPassSames<NoNodesCross,CrossingCompareNodes> NoNodesPass;
+typedef CrossPass<HeavyCross,CrossingCompare> HeavyPass;
 struct OrderLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
 		return gd<DDNode>(u).order < gd<DDNode>(v).order;

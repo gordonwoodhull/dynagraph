@@ -31,13 +31,16 @@ struct SiftMatrix {
 		dgassert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
 		return data[gd<DDNode>(u).rank][gd<DDNode>(u).order][gd<DDNode>(v).order];
 	}
-	unsigned getCrossings(DDModel::Node *u, DDModel::Node *v,bool outs) {
+	typedef enum {ins,outs,all} ways_t;
+	unsigned getCrossings(DDModel::Node *u, DDModel::Node *v,ways_t ways) {
 		std::pair<unsigned,unsigned> &p = crossings(u,v);
 		dgassert(p.first>=0 && p.second>=0);
-		if(outs)
-			return p.second;
-		else
-			return p.first;
+		unsigned ret=0;
+		if(ways==ins || ways==all)
+			ret += p.first;
+		if(ways==outs || ways==all)
+			ret += p.second;
+		return ret;
 	}
 	void setCrossings(DDModel::Node *u, DDModel::Node *v,bool outs,unsigned val) {
 		dgassert(val>=0);
@@ -47,9 +50,6 @@ struct SiftMatrix {
 			p.second = val;
 		else
 			p.first = val;
-	}
-	unsigned allCrossings(DDModel::Node *u, DDModel::Node *v) {
-		return getCrossings(u,v,true) + getCrossings(u,v,false);
 	}
 	SiftMatrix &operator =(SiftMatrix &other) {
 		data = other.data;
@@ -65,7 +65,7 @@ struct SiftMatrix {
 			NodeV::iterator end = r->order.end()-1;
 			for(NodeV::iterator ni = r->order.begin(); ni<end; ++ni)
 				for(NodeV::iterator ni2 = ni+1;ni2!=r->order.end(); ++ni2) {
-					unsigned c = getCrossings(*ni,*ni2,false);
+					unsigned c = getCrossings(*ni,*ni2,ins);
 					dgassert(c>=0);
 					ret += c;
 				}
@@ -147,12 +147,12 @@ void SiftMatrix<WeighFun>::updateOuts(DDModel::Node *v,DDModel::Node *x) {
 			unsigned cost = weigh_(c);
 			dgassert(cost>=0);
 			if(toLeft) {
-			  setCrossings(uv,ux,false,getCrossings(uv,ux,false)-cost);
-			  setCrossings(ux,uv,false,getCrossings(ux,uv,false)+cost);
+			  setCrossings(uv,ux,false,getCrossings(uv,ux,ins)-cost);
+			  setCrossings(ux,uv,false,getCrossings(ux,uv,ins)+cost);
 			}
 			else {
-			  setCrossings(ux,uv,false,getCrossings(ux,uv,false)-cost);
-			  setCrossings(uv,ux,false,getCrossings(uv,ux,false)+cost);
+			  setCrossings(ux,uv,false,getCrossings(ux,uv,ins)-cost);
+			  setCrossings(uv,ux,false,getCrossings(uv,ux,ins)+cost);
 			}
 		}
 	}
@@ -169,12 +169,12 @@ void SiftMatrix<WeighFun>::updateIns(DDModel::Node *v,DDModel::Node *x) {
 			unsigned cost = weigh_(Crossings(*uxi,*uvi));
 			dgassert(cost>=0);
 			if(toLeft) {
-			  setCrossings(uv,ux,true,getCrossings(uv,ux,true) -cost);
-			  setCrossings(ux,uv,true,getCrossings(ux,uv,true)+cost);
+			  setCrossings(uv,ux,true,getCrossings(uv,ux,outs) -cost);
+			  setCrossings(ux,uv,true,getCrossings(ux,uv,outs)+cost);
 			}
 			else {
-			  setCrossings(ux,uv,true,getCrossings(ux,uv,true)-cost);
-			  setCrossings(uv,ux,true,getCrossings(uv,ux,true)+cost);
+			  setCrossings(ux,uv,true,getCrossings(ux,uv,outs)-cost);
+			  setCrossings(uv,ux,true,getCrossings(uv,ux,outs)+cost);
 			}
 		}
 	}
@@ -247,8 +247,8 @@ void SiftMatrix<WeighFun>::checkWithConfig() {
 			for(unsigned o2 = 0; o2<l.size(); ++o2) {
 				DDModel::Node *u = config.ranking.GetRank(li->first)->order[o],
 					*v = config.ranking.GetRank(li->first)->order[o2];
-				dgassert(getCrossings(u,v,false)==weigh_(uvcross(u,v,true,false)));
-				dgassert(getCrossings(u,v,true)==weigh_(uvcross(u,v,false,true)));
+				dgassert(getCrossings(u,v,ins)==weigh_(uvcross(u,v,true,false)));
+				dgassert(getCrossings(u,v,outs)==weigh_(uvcross(u,v,false,true)));
 			}
 	}
 }

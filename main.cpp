@@ -28,6 +28,7 @@
 #include "DuplicateStream.h"
 #include <boost/iostreams/tee.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/mpl/assert.hpp>
 
 #include "dynagraph.version.h"
 
