@@ -292,14 +292,14 @@ struct CrossPass {
 		return Score();
 	}
 };
-template<typename CrossCount,template<typename Matrix> class Compare>
+template<typename CrossCount,template<typename Matrix> class Compare,int Repeat>
 struct CrossPassSames : CrossPass<CrossCount,Compare> {
 	CrossPassSames(Config &config,ConstraintMatrixSwitchable &switchable) : CrossPass<CrossCount,Compare>(config,switchable) {
 	}
 	int Pass(int pass) {
-		LeftRight way = ((pass/4)%2) ? RIGHT : LEFT;
-		UpDown dir = ((pass/4)&2) ? UP : DOWN;
-		crossing_.ways_ = dir==UP?Matrix::ins:Matrix::outs;
+		LeftRight way = ((pass/Repeat)%2) ? RIGHT : LEFT;
+		UpDown dir = ((pass/Repeat)&2) ? UP : DOWN;
+		crossing_.ways_ = dir==DOWN?Matrix::ins:Matrix::outs;
 		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
 		return Score();
 	}
@@ -321,7 +321,7 @@ struct NoNodesCross {
 	}
 };
 typedef MedianPass<LightCross> LightPass;
-typedef CrossPassSames<NoNodesCross,CrossingCompareNodes> NoNodesPass;
+typedef CrossPassSames<NoNodesCross,CrossingCompareNodes,3> NoNodesPass;
 typedef CrossPass<HeavyCross,CrossingCompare> HeavyPass;
 struct OrderLess {
 	bool operator()(DDModel::Node *u,DDModel::Node *v) {
