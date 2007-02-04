@@ -294,14 +294,15 @@ struct CrossPass {
 };
 template<typename CrossCount,template<typename Matrix> class Compare,int Repeat>
 struct CrossPassSames : CrossPass<CrossCount,Compare> {
+    typedef typename CrossPass<CrossCount,Compare>::Matrix Matrix;
 	CrossPassSames(Config &config,ConstraintMatrixSwitchable &switchable) : CrossPass<CrossCount,Compare>(config,switchable) {
 	}
 	int Pass(int pass) {
 		LeftRight way = ((pass/Repeat)%2) ? RIGHT : LEFT;
 		UpDown dir = ((pass/Repeat)&2) ? UP : DOWN;
-		crossing_.ways_ = dir==DOWN?Matrix::ins:Matrix::outs;
-		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
-		return Score();
+		this->crossing_.ways_ = dir==DOWN?Matrix::ins:Matrix::outs;
+		bubblePass(this->config_,this->matrix_,dir,way,this->switchable_,this->crossing_);
+		return this->Score();
 	}
 };
 struct LightCross {
