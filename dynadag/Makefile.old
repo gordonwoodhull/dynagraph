@@ -10,7 +10,7 @@ INCS =	-I.. -I../.. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = Check.o Config.o \
-    DotlikeOptimizer.o DynaDAG.o EdgeDrawing.o \
+    DotlikeOptimizer.o Dump.o DynaDAG.o EdgeDrawing.o \
     FlexiSpline.o getCrossoptModelNodes.o Measurements.o Medians.o \
     SetYs.o SiftMatrix.o Spline.o Update.o UVCross.o XSolver.o
 -include $(OBJS:%.o=$(DEPDIR)/%.P)

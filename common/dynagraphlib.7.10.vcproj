@@ -248,6 +248,9 @@
 				RelativePath="stringsOut.cpp">
 			</File>
 			<File
+				RelativePath=".\SVG.cpp">
+			</File>
+			<File
 				RelativePath="time-o-matic.cpp">
 			</File>
 			<File
