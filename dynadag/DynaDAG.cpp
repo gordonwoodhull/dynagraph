@@ -258,7 +258,7 @@ void DynaDAGServer::Process(ChangeProcessing *next) {
 	loops.Field(dgr::dynadag,"edges deleted - input",Q.delE.nodes().size());
 	
 	if(!ChangesAreRelevant(Q)) {
-		NextProcess();
+		next->Process(0);
 		Q.Clear(); 
 		return;
 	}
@@ -276,7 +276,7 @@ void DynaDAGServer::Process(ChangeProcessing *next) {
 		moveNodesBasedOnModel(Q);
 		drawIntermediateEdges(Q);
 		updateBounds(Q);
-		NextProcess();
+		next->Process(0);
 		// client has heard about inserts so they're now mods, 
 		// and deletes can be blown away (should someone Higher do this?)
 		ClearInsDel(Q);
@@ -291,7 +291,7 @@ void DynaDAGServer::Process(ChangeProcessing *next) {
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "update";
 		pulseAttrs["step"] = "done";
-		NextPulse(pulseAttrs);
+		next->Pulse(0,pulseAttrs);
 		return;
 	}
 
@@ -307,7 +307,7 @@ void DynaDAGServer::Process(ChangeProcessing *next) {
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "untangle";
 		pulseAttrs["step"] = "done";
-		NextPulse(pulseAttrs);
+		next->Pulse(0,pulseAttrs);
 		return;
 	}
 
@@ -325,7 +325,7 @@ void DynaDAGServer::Process(ChangeProcessing *next) {
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "xopt";
 		pulseAttrs["step"] = "done";
-		NextPulse(pulseAttrs);
+		next->Pulse(0,pulseAttrs);
 		return;
 	}
 
@@ -361,13 +361,13 @@ void DynaDAGServer::Process(ChangeProcessing *next) {
 		loops.Field(dgr::readability,"average edge x-length",avg.x);
 		loops.Field(dgr::readability,"average edge y-length",avg.y);
 	}
-	NextProcess();
+	next->Process(0);
 	{
 		// this is weird but helpful..?
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "finish";
 		pulseAttrs["step"] = "done";
-		NextPulse(pulseAttrs);
+		next->Pulse(0,pulseAttrs);
 	}
 	// we are good with all changes now
 	Q.ExecuteDeletions();

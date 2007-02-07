@@ -25,7 +25,7 @@ namespace DynaDAG {
 struct NSRankerSimpleCycleBreaker : ChangeProcessor<NSRankerModel> {
 	void Process(ChangeProcessing *next) {
 
-		NextProcess();
+		next->Process(0);
 	}
 };
 

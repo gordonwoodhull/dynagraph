@@ -47,7 +47,7 @@ struct EnsureParallelEdgeRanks : ChangeProcessor<Layout> {
 				gd<ExtraRanks>(&this->world_->current_).extraRanks.insert(mid);
 			}
 		}
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 

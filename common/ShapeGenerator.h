@@ -54,7 +54,7 @@ struct ShapeGenerator : ChangeProcessor<Layout> {
 					ModifyNode(this->world_->Q_,n,DG_UPD_REGION|DG_UPD_DRAWN);
 				}
 			}
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 

@@ -26,11 +26,11 @@ template<typename Graph>
 struct OkayEngine : ChangeProcessor<Graph> {
 	OkayEngine(ChangingGraph<Graph> *world) : ChangeProcessor<Graph>(world) {}
 	void Open(ChangeProcessing *next) {
-		this->NextOpen();
+		next->Open(0);
 		this->world_->Q_.Clear();
 	}
 	void Process(ChangeProcessing *next) {
-		this->NextProcess();
+		next->Process(0);
 		this->world_->Q_.ExecuteDeletions();
 		this->world_->Q_.Clear();
 	}
@@ -44,7 +44,7 @@ struct UpdateCurrentProcessor : ChangeProcessor<Graph> {
 		: ChangeProcessor<Graph>(world) {}
 	void Process(ChangeProcessing *next) {
 		this->world_->Q_.UpdateCurrent();
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 

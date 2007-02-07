@@ -30,14 +30,14 @@ struct OutputIncrface : ChangeProcessor<Graph> {
 			LOCK_REPORT(reportType_);
 			reports[reportType_] << "open graph " << gd<Name>(&this->world_->whole_) << " " << gd<StrAttrs>(&this->world_->whole_) << std::endl;
 		}
-		this->NextOpen();
+		next->Open(0);
 	}
 	void Process(ChangeProcessing *next) {
 		if(reports.enabled(reportType_)) {
 			LOCK_REPORT(reportType_);
 			emitChanges(reports[reportType_],this->world_->Q_);
 		}
-		this->NextProcess();
+		next->Process(0);
 	}
 	void Close(ChangeProcessing *next) {
 		if(reports.enabled(reportType_)) {

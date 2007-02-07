@@ -139,7 +139,7 @@ void FDPServer::Process(ChangeProcessing *next) {
 	for(ei = Q.this->world_->current_.edges().begin(); ei!=Q.this->world_->current_.edges().end(); ++ei)
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	*/
-	NextProcess();
+	next->Process(0);
 }
 
 } // namespace FDP

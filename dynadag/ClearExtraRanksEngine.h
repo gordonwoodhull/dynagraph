@@ -24,7 +24,7 @@ struct ClearExtraRanksEngine : ChangeProcessor<Layout> {
 	ClearExtraRanksEngine(ChangingGraph<Layout> *world) : ChangeProcessor<Layout>(world) {}
 	void Process(ChangeProcessing *next) {
 		gd<ExtraRanks>(&this->world_->whole_).extraRanks.clear();
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 

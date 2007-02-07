@@ -60,7 +60,7 @@ struct DynaDAGServer : ChangeProcessor<DynaDAGLayout>,DynaDAGServices {
 	~DynaDAGServer();
 	// ChangeProcessor
 	void Open(ChangeProcessing *next) {
-		NextOpen();
+		next->Open(0);
 		this->world_->Q_.Clear();
 	}
 	void Process(ChangeProcessing *next);

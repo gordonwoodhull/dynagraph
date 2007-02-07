@@ -413,7 +413,7 @@ void VoronoiServer::Process(ChangeProcessing *next) {
 #ifdef VORLINES
 	Q.GraphUpdateFlags() |= DG_UPD_LINES;
 #endif
-	NextProcess();
+	next->Process(0);
 }
 
 } // namespace Voronoi

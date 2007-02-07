@@ -295,7 +295,7 @@ void NSRanker<Layout>::Process(ChangeProcessing *next) {
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(Q);
 	recomputeRanks(Q);
-	this->NextProcess();
+	next->Process(0);
 }
 
 } // namespace DynaDAG

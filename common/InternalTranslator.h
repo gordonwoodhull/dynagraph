@@ -28,7 +28,7 @@ struct InternalTranslator : ChangeProcessor<Graph> {
 	virtual void Open(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.OpenGraph(Q.ModGraph(),Q.ModGraph());
-		this->NextOpen();
+		next->Open(0);
 	}
 	virtual void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
@@ -45,7 +45,7 @@ struct InternalTranslator : ChangeProcessor<Graph> {
 			actions_.DeleteNode(*ni);
 		for(typename Graph::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			actions_.DeleteEdge(*ei);
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 template<typename Graph,typename ChangeActions>
@@ -56,7 +56,7 @@ struct InternalTranslator2 : ChangeProcessor<Graph> {
 	virtual void Open(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.OpenGraph(Q.ModGraph(),Q.ModGraph());
-		this->NextOpen();
+		next->Open(0);
 	}
 	virtual void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
@@ -73,7 +73,7 @@ struct InternalTranslator2 : ChangeProcessor<Graph> {
 			actions_.DeleteNode(*ni,*ni);
 		for(typename Graph::graphedge_iter ei = Q.delE.edges().begin(); ei!=Q.delE.edges().end(); ++ei)
 			actions_.DeleteEdge(*ei,*ei);
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 

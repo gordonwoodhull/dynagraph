@@ -66,7 +66,7 @@ struct EdgeSuppressor : ChangeProcessor<Layout> {
 			if(gd<Suppression>(*ei).suppression==Suppression::tailSuppressed || gd<Suppression>(*ei).suppression==Suppression::headSuppressed)
 				gd<ExtraRanks>(&this->world_->whole_).extraRanks.insert(gd<Suppression>(*ei).suppressRank);
 		}
-		this->NextProcess();
+		next->Process(0);
 	}
 };
 
