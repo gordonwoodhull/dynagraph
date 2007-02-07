@@ -34,7 +34,7 @@ struct StillHasEdges : DGException {
   StillHasEdges() : DGException("node was deleted without all of its edges being deleted (impossible!)",true) {}
 };
 
-struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
+struct FDPServer : ChangeProcessor<FDPLayout>,Grid::Visitor {
 	int numIters;
 	bool useComp,
 		useGrid;
@@ -50,7 +50,7 @@ struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
 		Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node
 
 	FDPServer(ChangingGraph<FDPLayout> *world) 
-		: LinkedChangeProcessor<FDPLayout>(world),
+		: ChangeProcessor<FDPLayout>(world),
 		numIters(40),
 		useComp(false),
 		useGrid(true),
@@ -65,7 +65,7 @@ struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
 		Radius2(0.0) {}
 	~FDPServer() {}
 	// ChangeProcessor
-	void Process();
+	void Process(ChangeProcessing *next);
 	// Grid::Visitor
 	int VisitCell(Cell *cell,Grid *grid);
 private:

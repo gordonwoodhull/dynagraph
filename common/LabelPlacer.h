@@ -20,9 +20,9 @@
 namespace Dynagraph {
 
 template<typename Layout>
-struct LabelPlacer : LinkedChangeProcessor<Layout> {
-	LabelPlacer(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
-	void Process();
+struct LabelPlacer : ChangeProcessor<Layout> {
+	LabelPlacer(ChangingGraph<Layout> *world) : ChangeProcessor<Layout>(world) {}
+	void Process(ChangeProcessing *next);
 };
 template<typename Layout>
 void placeLabels(typename Layout::Edge *e) {
@@ -131,7 +131,7 @@ void placeLabels(typename Layout::Node *n) {
 }
 
 template<typename Layout>
-void LabelPlacer<Layout>::Process() {
+void LabelPlacer<Layout>::Process(ChangeProcessing *next) {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	typename Layout::graphedge_iter ei = Q.insE.edges().begin();
 	for(; ei!=Q.insE.edges().end(); ++ei)

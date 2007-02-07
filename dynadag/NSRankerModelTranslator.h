@@ -27,7 +27,7 @@ namespace DynaDAG {
 template<typename Layout>
 struct LayoutToNSRankerModelTranslator : ChangeTranslator<Layout,NSRankerModel> {
 	typedef GoingQueueTransition<Layout,NSRankerModel> Transition;
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
 

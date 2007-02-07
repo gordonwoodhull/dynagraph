@@ -19,16 +19,16 @@
 namespace Dynagraph {
 
 template<typename Graph>
-struct EnginePair : std::pair<LinkedChangeProcessor<Graph>*,LinkedChangeProcessor<Graph>*> {
+struct EnginePair : std::pair<ChangeProcessor<Graph>*,ChangeProcessor<Graph>*> {
 	EnginePair() {
 		this->first = this->second = 0;
 	}
-	EnginePair(LinkedChangeProcessor<Graph> *first,LinkedChangeProcessor<Graph> *second) {
+	EnginePair(ChangeProcessor<Graph> *first,ChangeProcessor<Graph> *second) {
 		dgassert((first!=0)==(second!=0)); // both or neither folks
 		this->first = first;
 		this->second = second;
 	}
-	void Prepend(LinkedChangeProcessor<Graph> *eng) {
+	void Prepend(ChangeProcessing *eng) {
 		dgassert(eng);
 		eng->next_ = this->first;
 		this->first = eng;
@@ -44,7 +44,7 @@ struct EnginePair : std::pair<LinkedChangeProcessor<Graph>*,LinkedChangeProcesso
 		if(!this->second)
 			this->second = other.second;
 	}
-	void Append(LinkedChangeProcessor<Graph> *eng) {
+	void Append(ChangeProcessor<Graph> *eng) {
 		dgassert(eng);
 		if(this->second)
 			this->second->next_ = eng;

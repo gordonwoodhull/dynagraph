@@ -23,8 +23,8 @@ Transform *g_transform = new Transform(Coord(1,1),Coord(1,1));
 bool g_useDotDefaults = false;
 
 template<typename Layout>
-struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
-	void Process() {
+struct ExampleResponse : ChangeProcessor<Layout>,IncrViewWatcher<Layout> {
+	void Process(ChangeProcessing *next) {
 		// often this method will need to map Layout nodes & edges to application objects
 		// sorry, there is no better way than to use a map<>
 		for(Layout::node_iter ni = this->world_->Q_.insN.nodes().begin(); ni!=this->world_->Q_.insN.nodes().end(); ++ni)

@@ -25,7 +25,7 @@
 namespace Dynagraph {
 
 template<typename OuterLayout,typename InnerLayout>
-struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
+struct InternalWorld : ChangeProcessor<OuterLayout> {
 	ChangingGraph<InnerLayout> *innerWorld_;
 	EnginePair<InnerLayout> innerEngines_;
 	typedef ChangeTranslator<OuterLayout,InnerLayout> InTranslator;
@@ -35,25 +35,25 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
 	InTranslatorList inTranslators_;
 	OutTranslatorList outTranslators_;
 
-	struct InnerCatcher : LinkedChangeProcessor<InnerLayout> {
+	struct InnerCatcher : ChangeProcessor<InnerLayout> {
 		InternalWorld *me_;
-		InnerCatcher(InternalWorld *me) : LinkedChangeProcessor<InnerLayout>(me->innerWorld_),me_(me) {}
-		void Open() {
+		InnerCatcher(InternalWorld *me) : ChangeProcessor<InnerLayout>(me->innerWorld_),me_(me) {}
+		void Open(ChangeProcessing *next) {
 			me_->innerOpenOut();
 		}
-		void Process() {
+		void Process(ChangeProcessing *next) {
 			me_->innerProcessOut();
 		}
-		void Close() {
+		void Close(ChangeProcessing *next) {
 			me_->innerCloseOut();
 		}
-		void Pulse(const StrAttrs &attrs) {
+		void Pulse(ChangeProcessing *next,const StrAttrs &attrs) {
 			me_->innerPulseOut(attrs);
 		}
 
 	};
 	InternalWorld(ChangingGraph<OuterLayout> *outerWorld,ChangingGraph<InnerLayout> *innerWorld)
-		: LinkedChangeProcessor<OuterLayout>(outerWorld),innerWorld_(innerWorld) {
+		: ChangeProcessor<OuterLayout>(outerWorld),innerWorld_(innerWorld) {
 	}
 	~InternalWorld() {
 		for(typename InTranslatorList::iterator ti = inTranslators_.begin(); ti!=inTranslators_.end(); ++ti)
@@ -66,19 +66,19 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
 	void CompleteConfiguration() {
 		innerEngines_.Append(new InnerCatcher(this));
 	}
-	void Open() {
+	void Open(ChangeTranslating *next) {
 		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Open));
-		innerEngines_.first->Open();
+		innerEngines_.first->Open(ChangeProcessor<> *next);
 	}
-	void Process() {
+	void Process(ChangeTranslating *next) {
 		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Process));
-		innerEngines_.first->Process();
+		innerEngines_.first->Process(ChangeProcessor<> *next);
 	}
-	void Close() {
+	void Close(ChangeTranslating *next) {
 		std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Close));
-		innerEngines_.first->Close();
+		innerEngines_.first->Close(ChangeProcessor<> *next);
 	}
-	void Pulse(const StrAttrs &attrs) {
+	void Pulse(ChangeTranslating *next,const StrAttrs &attrs) {
 		//std::for_each(inTranslators_.begin(),inTranslators_.end(),boost::bind(&OutTranslator::Pulse,_1,attrs));
 		innerEngines_.first->Pulse(attrs);
 	}

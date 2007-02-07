@@ -16,7 +16,7 @@
 #ifndef ChangeTranslator_h
 #define ChangeTranslator_h
 
-#include "ChangeProcessor.h"
+#include "ChangeTranslator.h"
 
 namespace Dynagraph {
 
@@ -28,16 +28,33 @@ namespace Dynagraph {
   it does make InternalWorld slightly easier to implement, but not so much so.
   we'll see.
 */
+struct ChangeTranslating {
+	virtual ~ChangeTranslating() = 0; // look! a virtual destructor that actually gets used!
+	virtual void Open(ChangeTranslating *next) = 0;
+	virtual void Process(ChangeTranslating *next) = 0;
+	virtual void Close(ChangeTranslating *next) = 0;
+	virtual void Pulse(ChangeTranslating *next,const StrAttrs &attrs) = 0;
+};
 template<typename SourceGraph,typename DestGraph>
-struct ChangeTranslator {
+struct ChangeTranslator : ChangeTranslating {
 	ChangingGraph<SourceGraph> *sourceWorld_;
 	ChangingGraph<DestGraph> *destWorld_;
 	ChangeTranslator(ChangingGraph<SourceGraph> *sourceWorld,ChangingGraph<DestGraph> *destWorld)
 		: sourceWorld_(sourceWorld),destWorld_(destWorld) {}
     virtual ~ChangeTranslator() {}
-	virtual void Open() {}
-	virtual void Process() {}
-	virtual void Close() {}
+
+	virtual void Open(ChangeTranslating *next) {
+		next->Open(0);
+	}
+	virtual void Process(ChangeTranslating *next) {
+		next->Process(0);
+	}
+	virtual void Close(ChangeTranslating *next) {
+		next->Close(0);
+	}
+	virtual void Pulse(ChangeTranslating *next,const StrAttrs &attrs) {
+		next->Pulse(0,attrs);
+	}
 };
 
 } // namespace Dynagraph

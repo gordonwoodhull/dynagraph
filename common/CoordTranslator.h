@@ -196,7 +196,7 @@ struct CoordTranslatorIn : ChangeTranslator<OuterLayout,InnerLayout> {
 	// but when the translation itself has changed, ALL inner nodes' shapes need to be rerotated
 	// we intentionally do not change positions here, because it would be nice if internal layout can keep its worldview mosty intact
 	// instead, CoordTranslatorOut will catch DG_UPD_TRANSLATION too, and translate everything anew
-	void Process() {
+	void Process(ChangeTranslating *next) {
 		ChangeQueue<OuterLayout> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<InnerLayout> &destQ = this->destWorld_->Q_;
 		if(igd<Update>(srcQ.ModGraph()).flags&DG_UPD_TRANSLATION)
@@ -216,7 +216,7 @@ struct CoordTranslatorOut : ChangeTranslator<InnerLayout,OuterLayout> {
 		: ChangeTranslator<InnerLayout,OuterLayout>(world1,world2) {}
 	// again, translation is mostly mundane, but if translation itself changes,
 	// we've now got to update ALL outer positions
-	void Process() {
+	void Process(ChangeTranslating *next) {
 		ChangeQueue<InnerLayout> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<OuterLayout> &destQ = this->destWorld_->Q_;
 		if(igd<Update>(srcQ.ModGraph()).flags&DG_UPD_TRANSLATION) {

@@ -29,9 +29,9 @@ struct DynagraphThread {
 	ChangingGraph<Graph> &world_;
 	ChangeProcessor<Graph> *engine_;
 	boost::thread *thread_;
-	typename ChangeProcessor<Graph>::Function purpose_;
+	typename ChangeProcessing::Function purpose_;
 
-	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine,typename ChangeProcessor<Graph>::Function purpose) :
+	DynagraphThread(ChangingGraph<Graph> &world,ChangeProcessor<Graph> *engine,typename ChangeProcessing::Function purpose) :
 	  world_(world),engine_(engine),purpose_(purpose) {
 		thread_ = new boost::thread(boost::bind(&DynagraphThread::go,this));
 	}

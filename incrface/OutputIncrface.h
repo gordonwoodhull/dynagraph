@@ -21,31 +21,31 @@
 namespace Dynagraph {
 
 template<typename Graph>
-struct OutputIncrface : LinkedChangeProcessor<Graph> {
+struct OutputIncrface : ChangeProcessor<Graph> {
 	dgr::reportType reportType_;
-	OutputIncrface(ChangingGraph<Graph> *world,dgr::reportType report_type) : LinkedChangeProcessor<Graph>(world),reportType_(report_type) {}
+	OutputIncrface(ChangingGraph<Graph> *world,dgr::reportType report_type) : ChangeProcessor<Graph>(world),reportType_(report_type) {}
 	// ChangeProcessor
-	void Open() {
+	void Open(ChangeProcessing *next) {
 		if(reports.enabled(reportType_)) {
 			LOCK_REPORT(reportType_);
 			reports[reportType_] << "open graph " << gd<Name>(&this->world_->whole_) << " " << gd<StrAttrs>(&this->world_->whole_) << std::endl;
 		}
 		this->NextOpen();
 	}
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		if(reports.enabled(reportType_)) {
 			LOCK_REPORT(reportType_);
 			emitChanges(reports[reportType_],this->world_->Q_);
 		}
 		this->NextProcess();
 	}
-	void Close() {
+	void Close(ChangeProcessing *next) {
 		if(reports.enabled(reportType_)) {
 			LOCK_REPORT(reportType_);
 			reports[reportType_] << "close graph " << gd<Name>(&this->world_->whole_) << std::endl;
 		}
 	}
-	void Pulse(const StrAttrs &attrs) {
+	void Pulse(ChangeProcessing *next,const StrAttrs &attrs) {
 		if(reports.enabled(reportType_)) {
 			LOCK_REPORT(reportType_);
 			reports[reportType_] << "pulse graph " << gd<Name>(&this->world_->whole_) << " " << attrs << std::endl;

@@ -99,7 +99,7 @@ inline void readPos(FDPLayout::Node *n) {
 	fdpn.pos[0] = pos.x;
 	fdpn.pos[1] = pos.y;
 }
-void FDPServer::Process() {
+void FDPServer::Process(ChangeProcessing *next) {
 	ChangeQueue<FDPLayout> &Q = this->world_->Q_;
 	// this is not incremental, really: just respond to events, run,
 	// and then say "everything changed"!

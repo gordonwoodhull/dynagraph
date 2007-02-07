@@ -401,7 +401,7 @@ normalize(graph_t *g)
 	}
 }
 */
-void VoronoiServer::Process() {
+void VoronoiServer::Process(ChangeProcessing *next) {
 	ChangeQueue<FDP::FDPLayout> &Q = this->world_->Q_;
     makeInfo();
 

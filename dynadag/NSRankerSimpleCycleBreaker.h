@@ -23,7 +23,7 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerSimpleCycleBreaker : ChangeProcessor<NSRankerModel> {
-	void Process() {
+	void Process(ChangeProcessing *next) {
 
 		NextProcess();
 	}

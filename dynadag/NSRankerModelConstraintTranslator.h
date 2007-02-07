@@ -28,7 +28,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Llel
 	typedef GoingQueueTransition<NSRankerModel,LlelConstraintGraph> Transition;
 	NSRankerModelToConstraintTranslator(LlelConstraintGraph *whole,LlelConstraintGraph *current)
 		: transition_(whole,current) {}
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
@@ -112,7 +112,7 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Llel
 // currently this is just to keep the processor chain alive
 struct ConstraintToNSRankerModelTranslator : ChangeTranslator<LlelConstraintGraph,NSRankerModel> {
 	typedef ReturningQueueTransition<LlelConstraintGraph,NSRankerModel> Transition;
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
 	}

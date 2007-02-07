@@ -21,16 +21,16 @@
 
 namespace Dynagraph {
 template<typename Graph,typename ChangeActions>
-struct InternalTranslator : LinkedChangeProcessor<Graph> {
+struct InternalTranslator : ChangeProcessor<Graph> {
 	ChangeActions actions_;
 	InternalTranslator(ChangingGraph<Graph> *world,const ChangeActions &action) 
-		: LinkedChangeProcessor<Graph>(world),actions_(action) {}
-	virtual void Open() {
+		: ChangeProcessor<Graph>(world),actions_(action) {}
+	virtual void Open(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.OpenGraph(Q.ModGraph(),Q.ModGraph());
 		this->NextOpen();
 	}
-	virtual void Process() {
+	virtual void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.ModifyGraph(Q.ModGraph());
 		for(typename Graph::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)
@@ -49,16 +49,16 @@ struct InternalTranslator : LinkedChangeProcessor<Graph> {
 	}
 };
 template<typename Graph,typename ChangeActions>
-struct InternalTranslator2 : LinkedChangeProcessor<Graph> {
+struct InternalTranslator2 : ChangeProcessor<Graph> {
 	ChangeActions actions_;
 	InternalTranslator2(ChangingGraph<Graph> *world,const ChangeActions &action) 
-		: LinkedChangeProcessor<Graph>(world),actions_(action) {}
-	virtual void Open() {
+		: ChangeProcessor<Graph>(world),actions_(action) {}
+	virtual void Open(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.OpenGraph(Q.ModGraph(),Q.ModGraph());
 		this->NextOpen();
 	}
-	virtual void Process() {
+	virtual void Process(ChangeProcessing *next) {
 		ChangeQueue<Graph> &Q = this->world_->Q_;
 		actions_.ModifyGraph(Q.ModGraph(),Q.ModGraph());
 		for(typename Graph::node_iter ni = Q.insN.nodes().begin(); ni!=Q.insN.nodes().end(); ++ni)

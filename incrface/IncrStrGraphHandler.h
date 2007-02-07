@@ -59,7 +59,7 @@ struct IncrStrGraphHandler : IncrLangEvents {
 			delete watcher_;
 	}
 
-	bool maybe_go(typename ChangeProcessor<NGraph>::Function purpose = &ChangeProcessor<NGraph>::Process);
+	bool maybe_go(typename ChangeProcessing::Function purpose = &ChangeProcessing::Process);
 	void wait_thread();
 
 	typename NGraph::Node *fetch_node(DString name,bool create) {
@@ -103,7 +103,7 @@ struct IncrStrGraphHandler : IncrLangEvents {
     void incr_ev_load_strgraph(StrGraph *sg,bool merge, bool del);
 };
 template<typename NGraph>
-bool IncrStrGraphHandler<NGraph>::maybe_go(typename ChangeProcessor<NGraph>::Function purpose) {
+bool IncrStrGraphHandler<NGraph>::maybe_go(typename ChangeProcessing::Function purpose) {
 	if(locks_>0)
 		return false;
 	if(engine_) {
@@ -152,7 +152,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_open_graph(DString graph,const StrAttr
 			reports[dgr::input_cooked] << ' ' << attrs;
 		reports[dgr::input_cooked] << std::endl;
 	}
-	maybe_go(&ChangeProcessor<NGraph>::Open);
+	maybe_go(&ChangeProcessing::Open);
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {
@@ -161,7 +161,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_close_graph() {
 		LOCK_REPORT(dgr::input_cooked);
 		reports[dgr::input_cooked] << "close graph " << gd<Name>(&world_->current_) << std::endl;
 	}
-	maybe_go(&ChangeProcessor<NGraph>::Close);
+	maybe_go(&ChangeProcessing::Close);
 	wait_thread(); // don't allow parent to delete me until i'm finished! (why thread this cmd then? foolish consistency?)
 }
 template<typename NGraph>

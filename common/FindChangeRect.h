@@ -28,10 +28,10 @@ struct FCRData {
 	FCRData(ChangingGraph<Layout> *world) : changeN(&world->whole_),changeE(&world->whole_),world(world) {}
 };
 template<typename Layout>
-struct FCRBefore : LinkedChangeProcessor<Layout> {
+struct FCRBefore : ChangeProcessor<Layout> {
     FCRData<Layout> *data;
-	FCRBefore(FCRData<Layout> *data) : LinkedChangeProcessor<Layout>(data->world),data(data) {}
-	void Process() {
+	FCRBefore(FCRData<Layout> *data) : ChangeProcessor<Layout>(data->world),data(data) {}
+	void Process(ChangeProcessing *next) {
 		ChangeQueue<Layout> &Q = this->world_->Q_;
 		data->changeN = Q.insN|Q.modN|Q.delN;
 		data->changeE = Q.insE|Q.modE|Q.delE;
@@ -39,13 +39,13 @@ struct FCRBefore : LinkedChangeProcessor<Layout> {
 	}
 };
 template<typename Layout>
-struct FCRAfter : LinkedChangeProcessor<Layout> {
+struct FCRAfter : ChangeProcessor<Layout> {
     FCRData<Layout> *data;
-	FCRAfter(FCRData<Layout> *data) : LinkedChangeProcessor<Layout>(data->world),data(data) {}
+	FCRAfter(FCRData<Layout> *data) : ChangeProcessor<Layout>(data->world),data(data) {}
     ~FCRAfter() {
         delete data;
     }
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		Bounds changerect;
 		for(typename Layout::node_iter ni = data->changeN.nodes().begin(); ni!=data->changeN.nodes().end(); ++ni)
 			changerect |= gd<NodeGeom>(*ni).BoundingBox();

@@ -25,11 +25,11 @@
 namespace Dynagraph {
 
 template<typename Layout>
-struct ObAvSplinerEngine : LinkedChangeProcessor<Layout> {
+struct ObAvSplinerEngine : ChangeProcessor<Layout> {
 	ObAvSplinerEngine(ChangingGraph<Layout> *world) 
-		: LinkedChangeProcessor<Layout>(world) {}
+		: ChangeProcessor<Layout>(world) {}
 	// ChangeProcessor
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		ChangeQueue<Layout> &Q = this->world_->Q_;
 		if(CalculateBounds(Q.current))
 			ModifyFlags(Q) |= Update(DG_UPD_BOUNDS);

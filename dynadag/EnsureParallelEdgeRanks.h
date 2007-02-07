@@ -23,11 +23,11 @@ namespace DynaDAG {
 
 // (Layout supports NSRankerNode,NSRankerEdge,Suppression)
 template<typename Layout>
-struct EnsureParallelEdgeRanks : LinkedChangeProcessor<Layout> {
-	EnsureParallelEdgeRanks(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
+struct EnsureParallelEdgeRanks : ChangeProcessor<Layout> {
+	EnsureParallelEdgeRanks(ChangingGraph<Layout> *world) : ChangeProcessor<Layout>(world) {}
 
 	typedef FlexiRankXlator<Layout> RankXlator;
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		for(typename Layout::graphedge_iter ei = this->world_->current_.edges().begin(); ei!=this->world_->current_.edges().end(); ++ei) {
 			typename Layout::Node *t = (*ei)->tail, *h = (*ei)->head;
 			typename Layout::headedge_iter_pair hip = this->world_->current_.find_edge(t,h);

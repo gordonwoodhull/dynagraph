@@ -26,24 +26,24 @@ namespace Dynagraph {
 
 // Simple helper for when a chain is not really a chain
 template<typename Graph>
-struct SkipEngine : LinkedChangeProcessor<Graph> {
-	SkipEngine(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0) 
-		: LinkedChangeProcessor<Graph>(world,next) {}
+struct SkipEngine : ChangeProcessor<Graph> {
+	SkipEngine(ChangingGraph<Graph> *world,ChangeProcessor<Graph> *next=0) 
+		: ChangeProcessor<Graph>(world,next) {}
 	~SkipEngine() {
 		this->next_ = 0; // do not chain deletion (?!)
 	}
-	void Process() {
-		this->next_->next_->Process();
+	void Process(ChangeProcessing *next) {
+		this->next_->next_->Process(ChangeProcessor<> *next);
 	}
 };
 
 template<typename OuterLayout,typename InnerLayout,typename InTranslator,typename OutTranslator>
-struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
+struct WorldInABox : ChangeProcessor<OuterLayout> {
 	ChangingGraph<InnerLayout> *innerWorld_;
-	LinkedChangeProcessor<OuterLayout> *inXlator_;
+	ChangeProcessor<OuterLayout> *inXlator_;
 
 	WorldInABox(ChangingGraph<OuterLayout> *outerWorld,ChangingGraph<InnerLayout> *innerWorld) 
-		: LinkedChangeProcessor<OuterLayout>(outerWorld),innerWorld_(innerWorld),inXlator_(0) {
+		: ChangeProcessor<OuterLayout>(outerWorld),innerWorld_(innerWorld),inXlator_(0) {
 	}
 	~WorldInABox() {
 		// continue chain of deletion in
@@ -51,7 +51,7 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 			delete inXlator_;
 		// deletion continues through outTranslator but stops at SkipEngine
 		delete innerWorld_;
-		// then continues in my ~LinkedChangeProcessor to my next_
+		// then continues in my ~ChangeProcessor to my next_
 	}
 	// all of this seems like it should be Configurator work
 	void assignEngine(EnginePair<InnerLayout> innerEngines,Transform *transform) {
@@ -78,15 +78,15 @@ struct WorldInABox : LinkedChangeProcessor<OuterLayout> {
 		innerEngines.Prepend(static_cast<DestProcessor<InnerLayout>*>(inTranslator));
 		innerEngines.Append(static_cast<SrcProcessor<InnerLayout>*>(outTranslator));
 		// something to clear outside world's changes
-		LinkedChangeProcessor<OuterLayout> *okayEngine  = new OkayEngine<OuterLayout>(this->world_);
+		ChangeProcessor<OuterLayout> *okayEngine  = new OkayEngine<OuterLayout>(this->world_);
 		// and something to tie back to my next_
-		LinkedChangeProcessor<OuterLayout> *delegator = new SkipEngine<OuterLayout>(this->world_,this);
+		ChangeProcessor<OuterLayout> *delegator = new SkipEngine<OuterLayout>(this->world_,this);
 		static_cast<DestProcessor<OuterLayout>*>(outTranslator)->next_ = okayEngine;
 		okayEngine->next_ = delegator;
 		inXlator_ = static_cast<SrcProcessor<OuterLayout>*>(inTranslator);
 	}
-	void Process() {
-		inXlator_->Process();
+	void Process(ChangeProcessing *next) {
+		inXlator_->Process(ChangeProcessor<> *next);
 	}
 };
 

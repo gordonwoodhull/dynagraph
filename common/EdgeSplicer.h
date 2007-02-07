@@ -30,12 +30,12 @@ struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
 	LayoutToLayoutTranslator<Layout1,Layout2> actions_;
 	EdgeSplicer(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2)
 		: ChangeTranslator<Layout1,Layout2>(world1,world2) {}
-	void Open() {
+	void Open(ChangeTranslating *next) {
 		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		actions_.OpenGraph(srcQ.current,destQ.current);
 	}
-	void Process() {
+	void Process(ChangeTranslating *next) {
 		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		actions_.ModifyGraph(srcQ.ModGraph(),destQ.ModGraph());

@@ -23,14 +23,14 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 template<typename Layout>
-struct NSRanker : LinkedChangeProcessor<Layout> {
+struct NSRanker : ChangeProcessor<Layout> {
 	NSRanker(ChangingGraph<Graph> *world) 
-		: LinkedChangeProcessor<Graph>(world),
+		: ChangeProcessor<Graph>(world),
 		rankXlate_(gd<GraphGeom>(world->current).resolution.y),
 		current_(world->current)
 	{}
 	~NSRanker();
-	void Process();
+	void Process(ChangeProcessing *next);
 private:
 	FlexiRankXlator rankXlate_;
 	Layout *current_;
@@ -209,7 +209,7 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
-void NSRanker<Layout>::Process() {
+void NSRanker<Layout>::Process(ChangeProcessing *next) {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
 	LlelConstraintGraph::Edge *c = cg_.create_edge(top_,cg_.anchor).first;

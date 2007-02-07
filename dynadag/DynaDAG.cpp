@@ -248,7 +248,7 @@ const char *g_dynadagPhases[] = {"update","untangle","xopt","finish"};
 const int g_nDynadagPhases = sizeof(g_dynadagPhases)/sizeof(const char*);
 PhaseMinder g_dynadagPhaseMinder(g_dynadagPhases,g_nDynadagPhases);
 
-void DynaDAGServer::Process() {
+void DynaDAGServer::Process(ChangeProcessing *next) {
 	ChangeQueue<DynaDAGLayout> &Q = this->world_->Q_;
 	loops.Field(dgr::dynadag,"nodes inserted - input",Q.insN.nodes().size());
 	loops.Field(dgr::dynadag,"edges inserted - input",Q.insE.edges().size());

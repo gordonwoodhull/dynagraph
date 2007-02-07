@@ -25,56 +25,37 @@ namespace Dynagraph {
 // ChangeProcessor, a.k.a. Engine
 // a ChangeProcessor client should send changes on without expecting any response
 // the server is allowed to change the Q and is expected to eventually realize the changes
+
+// Each method has a parameter next that points to an implementation in the layout manager that knows what to call next
+// That implementation should ignore the next parameter
+// It is imperative, and the default behavior, to call next 
+// (In order to allow multiple call-forwards, manager can't do that.)
+
+// the virtual methods, implemented by both manager and processor
+struct ChangeProcessing {
+	virtual ~ChangeProcessor() = 0; // look! a virtual destructor that actually gets used!
+	virtual void Open(ChangeProcessing *next) = 0;
+	virtual void Process(ChangeProcessing *next) = 0;
+	virtual void Close(ChangeProcessing *next) = 0;
+	virtual void Pulse(ChangeProcessing *next,const StrAttrs &attrs) = 0;
+	typedef virtual void (ChangeProcessor::*Function)(ChangeProcessing *next);
+};
 template<typename Graph>
-struct ChangeProcessor {
+struct ChangeProcessor : ChangeProcessing {
     ChangingGraph<Graph> * const world_;
 	typedef Graph GraphType;
 	ChangeProcessor(ChangingGraph<Graph> *world) : world_(world) {}
-	virtual void Open() = 0;
-	virtual void Process() = 0;
-	virtual void Close() = 0;
-	virtual void Pulse(const StrAttrs &attrs) = 0;
-	virtual ~ChangeProcessor() {}
-	typedef void (ChangeProcessor::*Function)();
-};
-
-template<typename Graph>
-struct LinkedChangeProcessor : ChangeProcessor<Graph> {
-	LinkedChangeProcessor<Graph> *next_;
-	LinkedChangeProcessor(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0)
-		: ChangeProcessor<Graph>(world),next_(next) {}
-	virtual ~LinkedChangeProcessor() {
-		if(next_)
-			delete next_;
+	virtual void Open(ChangeProcessing *next) {
+		next->Open(0);
 	}
-	void NextOpen() {
-		if(next_)
-			next_->Open();
+	virtual void Process(ChangeProcessing *next) {
+		next->Process(0);
 	}
-	void NextProcess() {
-		if(next_)
-			next_->Process();
+	virtual void Close(ChangeProcessing *next) {
+		next->Close(0);
 	}
-	void NextClose() {
-		if(next_)
-			next_->Close();
-	}
-	void NextPulse(const StrAttrs &attrs) {
-		if(next_)
-			next_->Pulse(attrs);
-	}
-	// default implementations (almost no one cares about Open or Close)
-	void Open() {
-		NextOpen();
-	}
-	void Process() {
-		NextProcess();
-	}
-	void Close() {
-		NextClose();
-	}
-	void Pulse(const StrAttrs &attrs) {
-		NextPulse(attrs);
+	virtual void Pulse(ChangeProcessing *next,const StrAttrs &attrs) {
+		next->Pulse(0,attrs);
 	}
 };
 

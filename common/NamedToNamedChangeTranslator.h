@@ -32,12 +32,12 @@ struct NamedToNamedChangeTranslator : ChangeTranslator<Graph1,Graph2> {
 	ChangeActions actions_;
 	NamedToNamedChangeTranslator(ChangingGraph<Graph1> *world1,ChangingGraph<Graph2> *world2,const ChangeActions &action = ChangeActions()) 
 		: ChangeTranslator<Graph1,Graph2>(world1,world2),actions_(action) {}
-	virtual void Open() {
+	virtual void Open(ChangeTranslating *next) {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
 		actions_.OpenGraph(srcQ.ModGraph(),destQ.ModGraph());
 	}
-	virtual void Process() {
+	virtual void Process(ChangeTranslating *next) {
 		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
 		actions_.ModifyGraph(srcQ.ModGraph(),destQ.ModGraph());

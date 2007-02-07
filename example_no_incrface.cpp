@@ -47,7 +47,7 @@ void main() {
 	queue.InsNode(m);
 
 	reports[dgr::output] << "step 1" << endl;
-	server->Process();
+	server->Process(ChangeProcessor<> *next);
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;
@@ -56,7 +56,7 @@ void main() {
 	queue.InsEdge(e);
 
 	reports[dgr::output] << "step 2" << endl;
-	server->Process();
+	server->Process(ChangeProcessor<> *next);
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;
@@ -65,7 +65,7 @@ void main() {
 	ModifyNode(queue,n,DG_UPD_MOVE);
 
 	reports[dgr::output] << "step 3" << endl;
-	server->Process();
+	server->Process(ChangeProcessor<> *next);
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;
@@ -73,7 +73,7 @@ void main() {
 	queue.DelNode(n);
 
 	reports[dgr::output] << "step 4" << endl;
-	server->Process();
+	server->Process(ChangeProcessor<> *next);
 	printChanges(queue);
 	queue.Execute(true);
 	ModifyFlags(queue) = 0;

@@ -20,9 +20,9 @@
 namespace Dynagraph {
 
 template<typename Layout>
-struct ShapeGenerator : LinkedChangeProcessor<Layout> {
-	ShapeGenerator(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
-	void Process() {
+struct ShapeGenerator : ChangeProcessor<Layout> {
+	ShapeGenerator(ChangingGraph<Layout> *world) : ChangeProcessor<Layout>(world) {}
+	void Process(ChangeProcessing *next) {
 		Layout *subs[2] = {&this->world_->Q_.insN,&this->world_->Q_.modN};
 		for(int i=0; i<2; ++i)
 			for(typename Layout::node_iter ni = subs[i]->nodes().begin(); ni !=subs[i]->nodes().end(); ++ni) {

@@ -26,9 +26,9 @@
 namespace Dynagraph {
 namespace Voronoi {
 
-// this could actually be templated on FDP::FDPLayout, which would turn all of voronoi
-// into a template library.  i'm trying to focus on more useful things at the moment.
-struct VoronoiServer : LinkedChangeProcessor<FDP::FDPLayout> {
+// this could actually be templated on Layout, which would turn all of voronoi
+// into a template library.  i'm trying to focus on more useful things at the moment. :)
+struct VoronoiServer : ChangeProcessor<FDP::FDPLayout> {
 	double margin;     /* Create initial bounding box by adding
                         * margin * dimension around box enclosing
                         * nodes.
@@ -46,13 +46,13 @@ struct VoronoiServer : LinkedChangeProcessor<FDP::FDPLayout> {
 	const int N;
 
 	VoronoiServer(ChangingGraph<FDP::FDPLayout> *world) 
-		: LinkedChangeProcessor<FDP::FDPLayout>(world),
+		: ChangeProcessor<FDP::FDPLayout>(world),
 		margin(0.05),incr(0.025),pmargin(5.0/72),iterations(-1),useIter(false),
 		N(400), infos(N),sites(N),edges(sites,infos,bounds,N),hedges(sites,N) {}
 
 
 	// ChangeProcessor
-	void Process();
+	void Process(ChangeProcessing *next);
 
 private:
 	Infos infos;

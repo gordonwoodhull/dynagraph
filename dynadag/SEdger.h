@@ -152,12 +152,12 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 			break;
 		}
 	}
-	void Open() {
+	void Open(ChangeProcessing *next) {
 		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		actions_.OpenGraph(srcQ.current,destQ.current);
 	}
-	void Process() {
+	void Process(ChangeProcessing *next) {
 		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		actions_.ModifyGraph(srcQ.ModGraph(),destQ.ModGraph());

@@ -22,9 +22,9 @@
 namespace Dynagraph {
 
 template<typename Layout>
-struct ColorByAge : LinkedChangeProcessor<Layout> {
-	ColorByAge(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
-	void Process();
+struct ColorByAge : ChangeProcessor<Layout> {
+	ColorByAge(ChangingGraph<Layout> *world) : ChangeProcessor<Layout>(world) {}
+	void Process(ChangeProcessing *next);
 };
 
 template<typename GO>
@@ -39,7 +39,7 @@ inline void rotateColor(std::vector<DString> colors, GO *go) {
 		}
 }
 template<typename Layout>
-void ColorByAge<Layout>::Process() {
+void ColorByAge<Layout>::Process(ChangeProcessor<Layout> *next) {
     StrAttrs::iterator ai = gd<StrAttrs>(&this->world_->current_).find("agecolors");
     if(ai==gd<StrAttrs>(&this->world_->current_).end())
         return;
