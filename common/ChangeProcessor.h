@@ -26,10 +26,10 @@ namespace Dynagraph {
 // a ChangeProcessor client should send changes on without expecting any response
 // the server is allowed to change the Q and is expected to eventually realize the changes
 
-// Each method has a parameter next that points to an implementation in the layout manager that knows what to call next
-// That implementation should ignore the next parameter
-// It is imperative, and the default behavior, to call next 
-// (In order to allow multiple call-forwards, manager can't do that.)
+// Each method has a parameter next that points to what to call next
+// This is how a processor calls forward to whatever is next
+// It's not the actual next thing, but a handler in the manager
+// The manager implementation should ignore the next parameter 
 
 // the virtual methods, implemented by both manager and processor
 struct ChangeProcessing {

@@ -20,23 +20,9 @@
 
 namespace Dynagraph {
 
-/* translators are different from processors in that
-	* they have both a source and destination world
-	* they are not chained
-  the first difference is obvious.  the second one is debatable.
-  it does not allow e.g. intermediate translations.
-  it does make InternalWorld slightly easier to implement, but not so much so.
-  we'll see.
-*/
-struct ChangeTranslating {
-	virtual ~ChangeTranslating() = 0; // look! a virtual destructor that actually gets used!
-	virtual void Open(ChangeTranslating *next) = 0;
-	virtual void Process(ChangeTranslating *next) = 0;
-	virtual void Close(ChangeTranslating *next) = 0;
-	virtual void Pulse(ChangeTranslating *next,const StrAttrs &attrs) = 0;
-};
+// translators are different from processors in that they have both a source and destination world
 template<typename SourceGraph,typename DestGraph>
-struct ChangeTranslator : ChangeTranslating {
+struct ChangeTranslator : ChangeProcessor {
 	ChangingGraph<SourceGraph> *sourceWorld_;
 	ChangingGraph<DestGraph> *destWorld_;
 	ChangeTranslator(ChangingGraph<SourceGraph> *sourceWorld,ChangingGraph<DestGraph> *destWorld)
