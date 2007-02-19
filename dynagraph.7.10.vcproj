@@ -232,9 +232,6 @@
 				RelativePath=".\DuplicateStream.cpp">
 			</File>
 			<File
-				RelativePath="dynagraph.rc">
-			</File>
-			<File
 				RelativePath="example_no_incrface.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -290,15 +287,15 @@
 				RelativePath=".\dynagraph.version.h">
 			</File>
 			<File
-				RelativePath=".\dynagraph.version.rc.h">
-			</File>
-			<File
 				RelativePath=".\TestTraversals.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			<File
+				RelativePath="dynagraph.rc">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

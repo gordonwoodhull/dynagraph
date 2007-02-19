@@ -210,6 +210,7 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		}
 		else
 			headpt = (direction==reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();
+
 		Line region;
 		dgassert(e->tail!=e->head); // DynaDAGServer should draw self-edges
 		if(direction==flat) { // flat edge

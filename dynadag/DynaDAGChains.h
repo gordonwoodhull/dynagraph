@@ -232,11 +232,15 @@ inline DDModel::Node *cutNode(DDPath *path) {
 	*/
 	return 0;
 }
+struct CutOutOfBounds : DGException {
+	CutOutOfBounds() : DGException("inconsistency in stub edge: suppressRank is outside of edge chain") {}
+};
 inline Position cutPos(DDPath *path) {
 	Position ret;
-	if(DDModel::Node *n = cutNode(path))
-		ret = gd<DDNode>(n).cur;
-	return ret;
+	DDModel::Node *n = cutNode(path);
+	if(!n)
+		throw CutOutOfBounds();
+	return gd<DDNode>(n).cur;
 }
 
 } // namespace Dynagraph

@@ -323,7 +323,12 @@ private:
 	bool sameSide(const Coord &p0, const Coord &p1, int seg) const;
 };
 // check that e.g. YIntersection exists
-inline Coord checkPos(Position p) { dgassert(p.valid); return p; }
+
+struct PositionNotValid : DGException {
+	PositionNotValid() : DGException("an undefined position was referenced",true) {}
+};
+
+inline Coord checkPos(Position p) { if(!p.valid) throw PositionNotValid(); return p; }
 
 } // namespace Dynagraph
 
