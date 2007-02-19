@@ -33,12 +33,12 @@ namespace Dynagraph {
 
 // the virtual methods, implemented by both manager and processor
 struct ChangeProcessing {
-	virtual ~ChangeProcessor() = 0; // look! a virtual destructor that actually gets used!
+	virtual ~ChangeProcessing() = 0; // look! a virtual destructor that actually gets used!
 	virtual void Open(ChangeProcessing *next) = 0;
 	virtual void Process(ChangeProcessing *next) = 0;
 	virtual void Close(ChangeProcessing *next) = 0;
 	virtual void Pulse(ChangeProcessing *next,const StrAttrs &attrs) = 0;
-	typedef virtual void (ChangeProcessor::*Function)(ChangeProcessing *next);
+	typedef void (ChangeProcessing::*Function)(ChangeProcessing *next);
 };
 template<typename Graph>
 struct ChangeProcessor : ChangeProcessing {
