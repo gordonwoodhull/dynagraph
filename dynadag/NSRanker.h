@@ -46,6 +46,7 @@ private:
 	void stabilizePositionedNodes(ChangeQueue<Layout> &changeQ);
 	void insertNewEdges(Layout &insE);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
+	void checkEdgeLengths(ChangeQueue<Layout> &changeQ);
 };
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
@@ -144,8 +145,6 @@ void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
 	LlelConstraintGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
 		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
 	LlelConstraintGraph::Edge *heightC = cg_.fiat_edge(tv,bv);
-	 // one-node chains cause trouble; make sure there's one edge
-	//std::max(1,
 	LlelNS::NSd(heightC).minlen = RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height()));
 	LlelNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
@@ -279,6 +278,24 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
+void NSRanker<Layout>::checkEdgeLengths(ChangeQueue<Layout> &changeQ) {
+	for(typename Layout::graphedge_iter ei = changeQ.current->edges().begin(); ei!=changeQ.current->edges().end(); ++ei) {
+		typename Layout::Edge *e = *ei;
+		EdgeGeom &eg = gd<EdgeGeom>(e);
+		NSRankerNode &tr = gd<NSRankerNode>(e->tail),
+			&hr = gd<NSRankerNode>(e->head);
+		NSRankerEdge &er = gd<NSRankerEdge>(e);
+		if(er.strong) {
+			int minlen = RankXlator::HeightToDRank(&this->world_->whole_,eg.minLength*gd<GraphGeom>(e->g).separation.y);
+			dgassert(LlelNS::NSd(er.strong).minlen==minlen);
+			if(eg.backward)
+				dgassert((tr.newTopRank - hr.newBottomRank) >= minlen);
+			else
+				dgassert((hr.newTopRank - tr.newBottomRank) >= minlen);
+		}
+	}
+}
+template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
 	// this connection is just to keep the graph connected
@@ -295,6 +312,7 @@ void NSRanker<Layout>::Process() {
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(Q);
 	recomputeRanks(Q);
+	checkEdgeLengths(Q);
 	this->NextProcess();
 }
 

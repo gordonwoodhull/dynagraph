@@ -36,15 +36,25 @@ struct EdgeSuppressor : LinkedChangeProcessor<Layout> {
 				suppression = Suppression::suppressed;
 			else {
 				suppression = Suppression::tailSuppressed;
-				suppressRank = getEdgeDirection(e)==reversed
-					? gd<NSRankerNode>(h).newBottomRank+thirrank
-					: gd<NSRankerNode>(h).newTopRank-thirrank;
+				if(getEdgeDirection(e)==reversed) {
+					suppressRank = gd<NSRankerNode>(h).newBottomRank+thirrank;
+					dgassert(suppressRank < gd<NSRankerNode>(t).newTopRank);
+				}
+				else {
+					suppressRank = gd<NSRankerNode>(h).newTopRank-thirrank;
+					dgassert(suppressRank > gd<NSRankerNode>(t).newBottomRank);
+				}
 			}
 		else if(gd<NodeGeom>(h).suppressed) {
 			suppression = Suppression::headSuppressed;
-			suppressRank = getEdgeDirection(e)==reversed
-				? gd<NSRankerNode>(t).newTopRank-thirrank
-				: gd<NSRankerNode>(t).newBottomRank+thirrank;
+			if(getEdgeDirection(e)==reversed) {
+				suppressRank = gd<NSRankerNode>(t).newTopRank-thirrank;
+				dgassert(suppressRank > gd<NSRankerNode>(h).newBottomRank);
+			}
+			else {
+				suppressRank = gd<NSRankerNode>(t).newBottomRank+thirrank;
+				dgassert(suppressRank < gd<NSRankerNode>(h).newTopRank);
+			}
 		}
 		else suppression = Suppression::unsuppressed;
 		/*

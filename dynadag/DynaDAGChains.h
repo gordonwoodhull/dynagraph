@@ -224,16 +224,16 @@ inline DDModel::Node *cutNode(DDPath *path) {
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
 		if(gd<DDNode>(*ni).rank==suppressRank) 
 			return *ni;
-	/*
-	std::cerr << "no suppressRank " << suppressRank << " in ";
+	reports[dgr::bug] << "no suppressRank " << suppressRank << " in ";
+	reports[dgr::bug] << gd<DDNode>(path->first->tail).rank << " - ";
 	for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
-		std::cerr << gd<DDNode>(*ni).rank << ' ';
-	std::cerr << std::endl;
-	*/
+		reports[dgr::bug] << gd<DDNode>(*ni).rank << ' ';
+	reports[dgr::bug] << "- " << gd<DDNode>(path->last->head).rank;
+	reports[dgr::bug] << std::endl;
 	return 0;
 }
 struct CutOutOfBounds : DGException {
-	CutOutOfBounds() : DGException("inconsistency in stub edge: suppressRank is outside of edge chain") {}
+	CutOutOfBounds() : DGException("inconsistency in stub edge: suppressRank is not in edge chain (BUG)",true) {}
 };
 inline Position cutPos(DDPath *path) {
 	Position ret;
