@@ -46,7 +46,7 @@ private:
 	void stabilizePositionedNodes(ChangeQueue<Layout> &changeQ);
 	void insertNewEdges(Layout &insE);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
-	void checkEdgeLengths(ChangeQueue<Layout> &changeQ);
+	void doubleCheckModel(ChangeQueue<Layout> &changeQ);
 };
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
@@ -264,6 +264,8 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 		typename Layout::Node *n = *ni;
 		if(changeQ.delN.find(n))
 			continue;
+		dgassert(gd<NSRankerNode>(n).newTopRank == gd<NSRankerNode>(n).oldTopRank);
+		dgassert(gd<NSRankerNode>(n).newBottomRank == gd<NSRankerNode>(n).oldBottomRank);
 		int newTopRank = LlelNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
 			newBottomRank = LlelNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
 		dgassert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
@@ -278,7 +280,9 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
-void NSRanker<Layout>::checkEdgeLengths(ChangeQueue<Layout> &changeQ) {
+void NSRanker<Layout>::doubleCheckModel(ChangeQueue<Layout> &changeQ) {
+#ifndef NDEBUG
+	int anchorRank = LlelNS::NSd(cg_.anchor).rank;
 	for(typename Layout::graphedge_iter ei = changeQ.current->edges().begin(); ei!=changeQ.current->edges().end(); ++ei) {
 		typename Layout::Edge *e = *ei;
 		EdgeGeom &eg = gd<EdgeGeom>(e);
@@ -288,12 +292,24 @@ void NSRanker<Layout>::checkEdgeLengths(ChangeQueue<Layout> &changeQ) {
 		if(er.strong) {
 			int minlen = RankXlator::HeightToDRank(&this->world_->whole_,eg.minLength*gd<GraphGeom>(e->g).separation.y);
 			dgassert(LlelNS::NSd(er.strong).minlen==minlen);
-			if(eg.backward)
+			dgassert(LlelNS::NSd(er.strong).minlen <= LlelNS::NSd(er.strong->head).rank - LlelNS::NSd(er.strong->tail).rank);
+			if(eg.backward) {
+				dgassert(er.strong->head == tr.topC.n);
+				dgassert(er.strong->tail == hr.bottomC.n);
+				dgassert(LlelNS::NSd(er.strong->head).rank-anchorRank == tr.newTopRank);
+				dgassert(LlelNS::NSd(er.strong->tail).rank-anchorRank == hr.newBottomRank);
 				dgassert((tr.newTopRank - hr.newBottomRank) >= minlen);
-			else
+			}
+			else {
+				dgassert(er.strong->head == hr.topC.n);
+				dgassert(er.strong->tail == tr.bottomC.n);
+				dgassert(LlelNS::NSd(er.strong->head).rank-anchorRank == hr.newTopRank);
+				dgassert(LlelNS::NSd(er.strong->tail).rank-anchorRank == tr.newBottomRank);
 				dgassert((hr.newTopRank - tr.newBottomRank) >= minlen);
+			}
 		}
 	}
+#endif //NDEBUG
 }
 template<typename Layout>
 void NSRanker<Layout>::Process() {
@@ -312,7 +328,7 @@ void NSRanker<Layout>::Process() {
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(Q);
 	recomputeRanks(Q);
-	checkEdgeLengths(Q);
+	doubleCheckModel(Q);
 	this->NextProcess();
 }
 

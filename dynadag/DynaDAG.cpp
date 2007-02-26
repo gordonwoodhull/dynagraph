@@ -230,6 +230,8 @@ void DynaDAGServer::rememberOld() {
 		if(!n)
 			continue; // deleted
 		//n->coordFixed = true;
+		dgassert(gd<NSRankerNode>(*vni).newTopRank == gd<DDNode>(n->top()).rank);
+		dgassert(gd<NSRankerNode>(*vni).newBottomRank == gd<DDNode>(n->bottom()).rank);
 		gd<NSRankerNode>(*vni).oldTopRank = gd<DDNode>(n->top()).rank;
 		gd<NSRankerNode>(*vni).oldBottomRank = gd<DDNode>(n->bottom()).rank;
 	}
