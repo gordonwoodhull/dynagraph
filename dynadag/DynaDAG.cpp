@@ -219,21 +219,24 @@ void DynaDAGServer::moveNodesBasedOnModel(DDChangeQueue &changeQ) {
 	loops.Field(dgr::stability,"node x movement",moved.x);
 	loops.Field(dgr::stability,"node y movement",moved.y);
 }
-void DynaDAGServer::rememberOld() { 
+void DynaDAGServer::rememberOldRanks() {
+	for(DynaDAGLayout::node_iter vni = world_->current_.nodes().begin(); vni!=world_->current_.nodes().end(); ++vni) {
+		NSRankerNode &nsrn = gd<NSRankerNode>(*vni);
+		nsrn.oldTopRank = nsrn.newTopRank;
+		nsrn.oldBottomRank = nsrn.newBottomRank;
+	}
+}
+void DynaDAGServer::rememberOldPositions() { 
+	// this sets up stuff which is never used - leaving it in in case I ever figure out what *Fixed was supposed to do
 	for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
 		DDNode &ddn = gd<DDNode>(*ni);
-		ddn.prev = ddn.cur;
+		ddn.prev = ddn.cur; // prev only gets used in unfixSingletons which again only sets disabled coordFixed
 		// ddn.orderFixed = true;
 	}
 	for(DynaDAGLayout::node_iter vni = world_->current_.nodes().begin(); vni!=world_->current_.nodes().end(); ++vni) {
 		DDMultiNode *n = DDp(*vni);
-		if(!n)
-			continue; // deleted
-		//n->coordFixed = true;
-		dgassert(gd<NSRankerNode>(*vni).newTopRank == gd<DDNode>(n->top()).rank);
-		dgassert(gd<NSRankerNode>(*vni).newBottomRank == gd<DDNode>(n->bottom()).rank);
-		gd<NSRankerNode>(*vni).oldTopRank = gd<DDNode>(n->top()).rank;
-		gd<NSRankerNode>(*vni).oldBottomRank = gd<DDNode>(n->bottom()).rank;
+		dgassert(n); // deleted?!?
+		// n->coordFixed = true;
 	}
 }
 void DynaDAGServer::dumpModel() {
@@ -274,6 +277,9 @@ void DynaDAGServer::Process() {
 	loops.Field(dgr::dynadag,"model nodes",model.nodes().size());
 	timer.LoopPoint(dgr::timing,"update model graph");
 
+	// Update has accounted for the new..Ranks, so they are now old..Ranks
+	rememberOldRanks();
+
 	if(gd<GraphGeom>(&world_->current_).reportIntermediate) {
 		moveNodesBasedOnModel(Q);
 		drawIntermediateEdges(Q);
@@ -289,7 +295,7 @@ void DynaDAGServer::Process() {
 	if(gd<Interruptible>(&world_->current_).interrupt 
 			&& gd<GraphGeom>(&world_->current_).reportIntermediate
 			&& g_dynadagPhaseMinder.HasPassed(gd<Interruptible>(&world_->current_).attrs,"update","done")) {
-		rememberOld();
+		rememberOldPositions();
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "update";
 		pulseAttrs["step"] = "done";
@@ -305,7 +311,7 @@ void DynaDAGServer::Process() {
 			&& gd<GraphGeom>(&world_->current_).reportIntermediate
 			&& g_dynadagPhaseMinder.HasPassed(gd<Interruptible>(&world_->current_).attrs,"untangle","done")) {
 		//makeXConsistent(); // this horror superceded by horrible x_backup 
-		rememberOld();
+		rememberOldPositions();
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "untangle";
 		pulseAttrs["step"] = "done";
@@ -323,7 +329,7 @@ void DynaDAGServer::Process() {
 	if(gd<Interruptible>(&world_->current_).interrupt 
 			&& gd<GraphGeom>(&world_->current_).reportIntermediate
 			&& g_dynadagPhaseMinder.HasPassed(gd<Interruptible>(&world_->current_).attrs,"xopt","done")) {
-		rememberOld();
+		rememberOldPositions();
 		StrAttrs pulseAttrs;
 		pulseAttrs["phase"] = "xopt";
 		pulseAttrs["step"] = "done";
@@ -341,8 +347,7 @@ void DynaDAGServer::Process() {
 
 	timer.LoopPoint(dgr::timing,"draw splines");
 
-	// reset flags
-	rememberOld();
+	rememberOldPositions();
 
 	dumpModel();
 

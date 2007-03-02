@@ -264,8 +264,6 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 		typename Layout::Node *n = *ni;
 		if(changeQ.delN.find(n))
 			continue;
-		dgassert(gd<NSRankerNode>(n).newTopRank == gd<NSRankerNode>(n).oldTopRank);
-		dgassert(gd<NSRankerNode>(n).newBottomRank == gd<NSRankerNode>(n).oldBottomRank);
 		int newTopRank = LlelNS::NSd(gd<NSRankerNode>(n).topC.n).rank - anchorRank,
 			newBottomRank = LlelNS::NSd(gd<NSRankerNode>(n).bottomC.n).rank - anchorRank;
 		dgassert(!RankXlator::Below(changeQ.whole,newTopRank,newBottomRank));
@@ -314,6 +312,11 @@ void NSRanker<Layout>::doubleCheckModel(ChangeQueue<Layout> &changeQ) {
 template<typename Layout>
 void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
+	for(typename Layout::node_iter ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni) {
+		typename Layout::Node *n = *ni;
+		dgassert(gd<NSRankerNode>(n).newTopRank == gd<NSRankerNode>(n).oldTopRank);
+		dgassert(gd<NSRankerNode>(n).newBottomRank == gd<NSRankerNode>(n).oldBottomRank);
+	}
 	// this connection is just to keep the graph connected
 	LlelConstraintGraph::Edge *c = cg_.fiat_edge(top_,cg_.anchor);
 	LlelNS::NSd(c).minlen = LlelNS::NSd(c).weight = 0;

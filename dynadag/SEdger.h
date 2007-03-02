@@ -24,9 +24,16 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
+// this and its counterpart EdgeSplicer are probably the only translators which should copy NSRankerNode
+struct SEdgerCopyPolicy : LayoutToLayoutCopyAllPolicy {
+	enum {
+		CopyRanks = true,
+	};
+};
+
 template<typename Layout1,typename Layout2>
 struct SEdger : ChangeTranslator<Layout1,Layout2> {
-	LayoutToLayoutTranslator<Layout1,Layout2> actions_;
+	LayoutToLayoutTranslator<Layout1,Layout2,SEdgerCopyPolicy> actions_;
 	SEdger(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2)
 		: ChangeTranslator<Layout1,Layout2>(world1,world2)
 	{}

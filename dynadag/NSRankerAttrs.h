@@ -33,11 +33,10 @@ struct NSRankerNode {
 
 	NSRankerNode() : hit(false),newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0),rankFixed(false) {}
 	// do not copy constraints or hit-flag
-	NSRankerNode(const NSRankerNode &other) :
-		hit(false),
-		newTopRank(other.newTopRank),newBottomRank(other.newBottomRank),oldTopRank(other.oldTopRank),oldBottomRank(other.oldBottomRank),
-		rankFixed(other.rankFixed) {}
-	NSRankerNode &operator=(NSRankerNode &other) {
+	NSRankerNode(const NSRankerNode &other) {
+		*this = other;
+	}
+	NSRankerNode &operator=(const NSRankerNode &other) {
 		hit = false;
 		newTopRank = other.newTopRank;
 		newBottomRank = other.newBottomRank;
