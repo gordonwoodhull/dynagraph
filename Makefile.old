@@ -13,20 +13,20 @@ INCS = -I. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-BASELIBS = -Lcommon -ldynagraph \
-       -L$(GRAPHVIZ_LIB) \
+GVIZLIBS = -L$(GRAPHVIZ_LIB) \
        -lagraph -lpathplan -lcdt
 
-GLIBS = -Lcommon -ldynagraph \
-       -L/usr/local/graphviz/lib \
-       -lcdt -lagraph
-
-OTHERLIBS = -Lincrface -lincrface \
+DGLIBS = -Lincrface -lincrface \
 	-Ldynadag -ldynadag \
 	-Lpathplot -lpathplot \
 	-Lfdp -lfdp \
 	-Lshortspline -lshortspline \
-	-Lvoronoi -lvoronoi
+	-Lvoronoi -lvoronoi \
+    -Lcommon -ldynagraph
+
+GGLIBS = -Lcommon -ldynagraph \
+       -L/usr/local/graphviz/lib \
+       -lcdt -lagraph
 
 OBJS = main.o IncrCalledBack.o DuplicateStream.o createConfiguration.o
 
@@ -34,8 +34,8 @@ MANS =
 
 GET_VERSION = `./dynagraph --v3rs10n`
 
-dynagraph-whole : $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
-	$(CPPSLD) $(LDFLAGS) $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-whole
+dynagraph-whole : $(OBJS) common/libdynagraph.a dynadag/libdynadag.a incrface/libincrface.a pathplot/libpathplot.a fdp/libfdp.a voronoi/libvoronoi.a shortspline/libshortspline.a
+	$(CPPSLD) $(LDFLAGS) $(OBJS) $(DGLIBS) $(GVIZLIBS) $(THREADLIBS) -o dynagraph-whole
 
 dynagraph: dynagraph-whole
 	strip dynagraph-whole -o dynagraph
@@ -45,31 +45,31 @@ release: dynagraph
 
 #*.o: *.h common/*.h incrface/*.h fdp/*.h dynadag/*.h voronoi/*.h shortspline/*.h pathplot/*.h
 
-gengraph : gengraph.o libdynagraph.a
-	$(CPPSLD) $(LDFLAGS) gengraph.o $(GLIBS) $(THREADLIBS) -o gengraph
+gengraph : gengraph.o common/libdynagraph.a
+	$(CPPSLD) $(LDFLAGS) gengraph.o $(GGLIBS) $(THREADLIBS) -o gengraph
 
 graphsearch/graphsearch :
 	(cd graphsearch; make)
 
-libdynagraph.a :
+common/libdynagraph.a :
 	(cd common; make)
 
-libdynadag.a :
+dynadag/libdynadag.a :
 	(cd dynadag; make)
 
-libincrface.a :
+incrface/libincrface.a :
 	(cd incrface; make)
 
-libpathplot.a :
+pathplot/libpathplot.a :
 	(cd pathplot; make)
 
-libfdp.a :
+fdp/libfdp.a :
 	(cd fdp; make)
 
-libvoronoi.a :
+voronoi/libvoronoi.a :
 	(cd voronoi; make)
 
-libshortspline.a :
+shortspline/libshortspline.a :
 	(cd shortspline; make)
 
 install: dynagraph gengraph

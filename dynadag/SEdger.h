@@ -168,7 +168,7 @@ struct SEdger : ChangeTranslator<Layout1,Layout2> {
 		ChangeQueue<Layout1> &srcQ = this->sourceWorld_->Q_;
 		ChangeQueue<Layout2> &destQ = this->destWorld_->Q_;
 		actions_.ModifyGraph(srcQ.ModGraph(),destQ.ModGraph());
-		int thirrank = RankXlator::HeightToDRank(&this->destWorld_->whole_,gd<GraphGeom>(&this->destWorld_->whole_).separation.y/3.);
+		int thirrank = RankXlator::SeparationFrac(&this->destWorld_->whole_,3);
 		for(typename Layout1::node_iter ni = srcQ.insN.nodes().begin(); ni!=srcQ.insN.nodes().end(); ++ni)
 			if(typename Layout2::Node *n2 = destQ.whole->fetch_node(gd<Name>(*ni),true).first) {
 				typename Layout2::Node *n2i = destQ.InsNode(n2,false).object;

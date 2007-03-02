@@ -18,6 +18,7 @@
 #include "DynaDAG.h"
 #include "pathplot/PathPlot.h"
 #include "common/SVG.h"
+#include <sstream>
 
 using namespace std;
 
@@ -193,7 +194,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			tailpt = checkPos(cutPos(path));
 			double ehei = fabs(tailpt.y - gd<DDNode>(path->last->head).cur.y),
 				limhei = gd<GraphGeom>(config.current).separation.y/3;
-			dgassert(ehei <= limhei);
+            if(ehei>limhei) {
+                ostringstream s;
+                s << "edge height " << ehei << " is greater than sep/3 == " << limhei << endl;
+                throw DGException(s.str(),true);
+            }
 		}
 		else
 			tailpt = (direction==reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
@@ -202,7 +207,11 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 			headpt = checkPos(cutPos(path));
 			double ehei = fabs(headpt.y - gd<DDNode>(path->first->tail).cur.y),
 				limhei = gd<GraphGeom>(config.current).separation.y/3;
-			dgassert(ehei <= limhei);
+            if(ehei>limhei) {
+                ostringstream s;
+                s << "edge height " << ehei << " is greater than sep/3 == " << limhei << endl;
+                throw DGException(s.str(),true);
+            }
 		}
 		else
 			headpt = (direction==reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();

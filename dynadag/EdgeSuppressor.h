@@ -69,7 +69,7 @@ struct EdgeSuppressor : LinkedChangeProcessor<Layout> {
 		return ret;
 	}
 	void Process() {
-		int thirrank = RankXlator::HeightToDRank(&this->world_->whole_,gd<GraphGeom>(&this->world_->whole_).separation.y/3.);
+		int thirrank = RankXlator::SeparationFrac(&this->world_->whole_,3);
 		for(typename Layout::graphedge_iter ei = this->world_->current_.edges().begin(); ei!=this->world_->current_.edges().end(); ++ei) {
 			if(findEdgeSuppression(*ei,thirrank))
 				ModifyEdge(this->world_->Q_,*ei,DG_UPD_SUPPRESSION);

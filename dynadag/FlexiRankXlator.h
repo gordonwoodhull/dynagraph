@@ -46,6 +46,10 @@ struct FlexiRankXlator {
 	static index HeightToDRank(Layout *l,double dy) {
 		return ROUND(dy/gd<GraphGeom>(l).resolution.y);
 	}
+    // a standard way to get a fraction of vertical separation
+    static index SeparationFrac(Layout *l,int denom) {
+        return HeightToDRank(l,gd<GraphGeom>(l).separation.y)/denom;    
+    }
 };
 
 } // namespace DynaDAG
