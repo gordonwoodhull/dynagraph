@@ -191,22 +191,18 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 		if(gd<Suppression>(e).suppression==Suppression::tailSuppressed&&direction==forward
 			|| gd<Suppression>(e).suppression==Suppression::headSuppressed&&direction==reversed) {
 			tailpt = checkPos(cutPos(path));
-			/*
-			double ehei = fabs(gd<DDNode>(cutNode(path)).cur.y - gd<DDNode>(path->last->head).cur.y),
+			double ehei = fabs(tailpt.y - gd<DDNode>(path->last->head).cur.y),
 				limhei = gd<GraphGeom>(config.current).separation.y/3;
 			dgassert(ehei <= limhei);
-			*/
 		}
 		else
 			tailpt = (direction==reversed?eg.tailPort:eg.headPort).pos + gd<DDNode>(tl).multi->pos();
 		if(gd<Suppression>(e).suppression==Suppression::headSuppressed&&direction==forward
 			|| gd<Suppression>(e).suppression==Suppression::tailSuppressed&&direction==reversed) {
 			headpt = checkPos(cutPos(path));
-			/*
-			double ehei = fabs(gd<DDNode>(cutNode(path)).cur.y - gd<DDNode>(path->first->tail).cur.y),
+			double ehei = fabs(headpt.y - gd<DDNode>(path->first->tail).cur.y),
 				limhei = gd<GraphGeom>(config.current).separation.y/3;
 			dgassert(ehei <= limhei);
-			*/
 		}
 		else
 			headpt = (direction==reversed?eg.headPort:eg.tailPort).pos + gd<DDNode>(hd).multi->pos();

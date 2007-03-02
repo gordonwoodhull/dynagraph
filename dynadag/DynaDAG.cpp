@@ -281,6 +281,7 @@ void DynaDAGServer::Process() {
 	rememberOldRanks();
 
 	if(gd<GraphGeom>(&world_->current_).reportIntermediate) {
+		config.SetYs();
 		moveNodesBasedOnModel(Q);
 		drawIntermediateEdges(Q);
 		updateBounds(Q);
