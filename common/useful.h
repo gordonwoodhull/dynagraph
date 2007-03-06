@@ -103,7 +103,7 @@ struct Assertion : DGException {
 #define dgassert(expr) do { if(!(expr)) throw Assertion(#expr,__FILE__,__LINE__); } while(0)
 #define dgcheck(expr) do { if(!(expr)) throw Assertion(#expr,__FILE__,__LINE__); } while(0)
 #else
-#define dgassert(X)
+#define dgassert(X) ((void)0)
 #define dgcheck(X) (X)
 #endif
 

@@ -26,6 +26,7 @@ struct LayoutToLayoutCopyAllPolicy {
 		CopyNodeRegion = true,
 		CopyEdgePos = true,
 		CopyBounds = true,
+		CopyRanks = false,
 	};
 };
 template<typename Layout1,typename Layout2,typename CopyPolicy = LayoutToLayoutCopyAllPolicy>
@@ -44,7 +45,8 @@ struct LayoutToLayoutTranslator {
 		gd<NodeGeom>(ln2).freezeInOrder = gd<NodeGeom>(ln1).freezeInOrder;
 		gd<NodeLabels>(ln2) = gd<NodeLabels>(ln1);
 		gd<IfPolyDef>(ln2) = gd<IfPolyDef>(ln1);
-		gd<DynaDAG::NSRankerNode>(ln2) = gd<DynaDAG::NSRankerNode>(ln1);
+		if(CopyPolicy::CopyRanks)
+			gd<DynaDAG::NSRankerNode>(ln2) = gd<DynaDAG::NSRankerNode>(ln1);
 
 		igd<Update>(ln2) = igd<Update>(ln1);
 	}

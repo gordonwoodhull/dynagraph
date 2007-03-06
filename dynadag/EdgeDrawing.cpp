@@ -87,10 +87,10 @@ void DynaDAGServer::drawStraightEdge(DynaDAGLayout::Edge *e) {
 	uncl.degree = 3;
 	Coord tp = checkPos(gd<Suppression>(e).suppression==Suppression::tailSuppressed ? cutPos(path) : tg.pos),
 		hp = checkPos(gd<Suppression>(e).suppression==Suppression::headSuppressed ? cutPos(path) : hg.pos);
-	uncl.push_back(tg.pos);
+	uncl.push_back(tp);
 	uncl.push_back((2.*tp+hp)/3.);
 	uncl.push_back((tp+2.*hp)/3.);
-	uncl.push_back(hg.pos);
+	uncl.push_back(hp);
 	clipEdge(e);
 }
 void DynaDAGServer::drawEdgeSimply(DynaDAGLayout::Edge *e) {

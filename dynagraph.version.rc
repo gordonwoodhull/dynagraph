@@ -26,7 +26,7 @@ BEGIN
             VALUE "FileDescription", "Dynagraph graph layout server"
             VALUE "FileVersion", DYNAGRAPH_VERSION_DOTS_QUOTED
             VALUE "InternalName", "dynagraph"
-            VALUE "LegalCopyright", "Copyright © 2005 Various Folks"
+            VALUE "LegalCopyright", "Copyright © 2007 Various Folks"
             VALUE "OriginalFilename", "dynagraph.exe"
             VALUE "ProductName", "Dynagraph"
             VALUE "ProductVersion", DYNAGRAPH_VERSION_DOTS_QUOTED

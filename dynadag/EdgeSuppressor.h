@@ -36,15 +36,25 @@ struct EdgeSuppressor : ChangeProcessor<Layout> {
 				suppression = Suppression::suppressed;
 			else {
 				suppression = Suppression::tailSuppressed;
-				suppressRank = getEdgeDirection(e)==reversed
-					? gd<NSRankerNode>(h).newBottomRank+thirrank
-					: gd<NSRankerNode>(h).newTopRank-thirrank;
+				if(getEdgeDirection(e)==reversed) {
+					suppressRank = gd<NSRankerNode>(h).newBottomRank+thirrank;
+					dgassert(suppressRank < gd<NSRankerNode>(t).newTopRank);
+				}
+				else {
+					suppressRank = gd<NSRankerNode>(h).newTopRank-thirrank;
+					dgassert(suppressRank > gd<NSRankerNode>(t).newBottomRank);
+				}
 			}
 		else if(gd<NodeGeom>(h).suppressed) {
 			suppression = Suppression::headSuppressed;
-			suppressRank = getEdgeDirection(e)==reversed
-				? gd<NSRankerNode>(t).newTopRank-thirrank
-				: gd<NSRankerNode>(t).newBottomRank+thirrank;
+			if(getEdgeDirection(e)==reversed) {
+				suppressRank = gd<NSRankerNode>(t).newTopRank-thirrank;
+				dgassert(suppressRank > gd<NSRankerNode>(h).newBottomRank);
+			}
+			else {
+				suppressRank = gd<NSRankerNode>(t).newBottomRank+thirrank;
+				dgassert(suppressRank < gd<NSRankerNode>(h).newTopRank);
+			}
 		}
 		else suppression = Suppression::unsuppressed;
 		/*
@@ -59,7 +69,7 @@ struct EdgeSuppressor : ChangeProcessor<Layout> {
 		return ret;
 	}
 	void Process(ChangeProcessing *next) {
-		int thirrank = RankXlator::HeightToDRank(&this->world_->whole_,gd<GraphGeom>(&this->world_->whole_).separation.y/3.);
+		int thirrank = RankXlator::SeparationFrac(&this->world_->whole_,3);
 		for(typename Layout::graphedge_iter ei = this->world_->current_.edges().begin(); ei!=this->world_->current_.edges().end(); ++ei) {
 			if(findEdgeSuppression(*ei,thirrank))
 				ModifyEdge(this->world_->Q_,*ei,DG_UPD_SUPPRESSION);

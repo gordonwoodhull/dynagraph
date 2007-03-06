@@ -90,7 +90,8 @@ private:
 	void drawFinalEdges(DDChangeQueue &changeQ,bool force);
 	void drawIntermediateEdges(DDChangeQueue &changeQ);
 
-	void rememberOld();
+	void rememberOldRanks();
+	void rememberOldPositions();
 	void dumpModel();
 };
 

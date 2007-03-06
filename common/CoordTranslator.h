@@ -96,6 +96,7 @@ struct CoordTranslatorCopyPolicy : LayoutToLayoutCopyAllPolicy {
 		CopyEdgePos = false,
 		CopyNodeRegion = false,
 		CopyBounds = false,
+		//CopyRanks = false,
 	};
 };
 // the implementation is based on the NamedToNamedChangeTranslator, with LayoutToLayoutTranslator actions

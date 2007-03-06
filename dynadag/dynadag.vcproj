@@ -458,22 +458,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NSRankerModel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NSRankerModelConstraintTranslator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NSRankerModelTranslator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NSRankerSimpleCycleBreaker.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Optimizer.h"
 				>
 			</File>

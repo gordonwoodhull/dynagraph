@@ -324,7 +324,7 @@ struct MedianPass : PassBase<CrossCount> {
 	MedianPass(Config &config,ConstraintMatrixSwitchable &switchable) : 
 		Base(config,switchable),
 		median_(DOWN,false),
-		crossing_(config_,matrix_,false,Matrix::all) 
+		crossing_(Base::config_,Base::matrix_,false,Matrix::all) 
 	{}
 	int Pass(int pass) {
 		median_.allowEqual_ = pass%8>4;
@@ -342,11 +342,11 @@ struct MedianPass : PassBase<CrossCount> {
 
 		bubblePass(this->config_,this->matrix_,dir,way,this->switchable_,median_);
 
-		unsigned score2 = Score(),prevScore;
+		unsigned score2 = this->Score(),prevScore;
 		do {
 			prevScore = score2;
 			bubblePass(this->config_,this->matrix_,dir,way,this->switchable_,crossing_);
-			score2 = Score();
+			score2 = this->Score();
 			dgassert(score2<=prevScore);
 		}
 		while(score2<prevScore);
@@ -360,14 +360,14 @@ struct CrossPass : PassBase<CrossCount> {
 	Compare<Matrix> crossing_;
 	CrossPass(Config &config,ConstraintMatrixSwitchable &switchable) :
 		Base(config,switchable),
-		crossing_(config_,matrix_,false,Matrix::all) 
+		crossing_(Base::config_,Base::matrix_,false,Matrix::all) 
 	{}
 	int Pass(int pass) {
 		LeftRight way = (pass%2) ? RIGHT : LEFT;
 		UpDown dir = (pass&2) ? UP : DOWN;
 		crossing_.allowEqual_ = pass%3;
-		bubblePass(config_,matrix_,dir,way,switchable_,crossing_);
-		return Score();
+		bubblePass(this->config_,this->matrix_,dir,way,this->switchable_,crossing_);
+		return this->Score();
 	}
 };
 template<typename CrossCount,template<typename Matrix> class Compare,int Repeat>
@@ -377,7 +377,7 @@ struct CrossPassSames : PassBase<CrossCount> {
 	Compare<Matrix> crossing_;
 	CrossPassSames(Config &config,ConstraintMatrixSwitchable &switchable) : 
 		Base(config,switchable),
-		crossing_(config_,matrix_,false,Matrix::all) 
+		crossing_(Base::config_,Base::matrix_,false,Matrix::all) 
 	{}
 	int Pass(int pass) {
 		LeftRight way = ((pass/Repeat)%2) ? RIGHT : LEFT;

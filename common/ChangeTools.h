@@ -41,7 +41,6 @@ void ClearStrAttrChanges(ChangeQueue<Layout> &Q) {
 	for(typename Layout::graphedge_iter ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei) 
 		igd<StrAttrChanges>(*ei).clear();
 }
-// again this seems like something any layout engine might want
 template<typename Layout>
 bool ChangesAreRelevant(ChangeQueue<Layout> &Q) {
 	if(Q.Empty())

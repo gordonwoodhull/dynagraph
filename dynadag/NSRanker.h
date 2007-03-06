@@ -23,13 +23,13 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 template<typename Layout>
-struct NSRanker : ChangeProcessor<Layout> {
+struct NSRanker : LinkedChangeProcessor<Layout> {
 	NSRanker(ChangingGraph<Layout> *world) : 
-		ChangeProcessor<Layout>(world),
+		LinkedChangeProcessor<Layout>(world),
 		top_(cg_.create_node())
 	{}
 	~NSRanker();
-	void Process(ChangeProcessing *next);
+	void Process();
 private:
 	LlelConstraintGraph cg_;
 	LlelConstraintGraph::Node *top_; // to pull loose nodes upward
@@ -46,6 +46,7 @@ private:
 	void stabilizePositionedNodes(ChangeQueue<Layout> &changeQ);
 	void insertNewEdges(Layout &insE);
 	void recomputeRanks(ChangeQueue<Layout> &changeQ);
+	void doubleCheckModel(ChangeQueue<Layout> &changeQ);
 };
 template<typename Layout>
 NSRanker<Layout>::~NSRanker() {
@@ -144,8 +145,6 @@ void NSRanker<Layout>::doNodeHeight(typename Layout::Node *n) {
 	LlelConstraintGraph::Node *tv = cg_.GetVar(gd<NSRankerNode>(n).topC),
 		*bv = cg_.GetVar(gd<NSRankerNode>(n).bottomC);
 	LlelConstraintGraph::Edge *heightC = cg_.fiat_edge(tv,bv);
-	 // one-node chains cause trouble; make sure there's one edge
-	//std::max(1,
 	LlelNS::NSd(heightC).minlen = RankXlator::HeightToDRank(&this->world_->whole_,ROUND(gd<NodeGeom>(n).region.boundary.Height()));
 	LlelNS::NSd(heightC).weight = NODEHEIGHT_PENALTY;
 }
@@ -279,8 +278,45 @@ void NSRanker<Layout>::recomputeRanks(ChangeQueue<Layout> &changeQ) {
 	}
 }
 template<typename Layout>
-void NSRanker<Layout>::Process(ChangeProcessing *next) {
+void NSRanker<Layout>::doubleCheckModel(ChangeQueue<Layout> &changeQ) {
+#ifndef NDEBUG
+	int anchorRank = LlelNS::NSd(cg_.anchor).rank;
+	for(typename Layout::graphedge_iter ei = changeQ.current->edges().begin(); ei!=changeQ.current->edges().end(); ++ei) {
+		typename Layout::Edge *e = *ei;
+		EdgeGeom &eg = gd<EdgeGeom>(e);
+		NSRankerNode &tr = gd<NSRankerNode>(e->tail),
+			&hr = gd<NSRankerNode>(e->head);
+		NSRankerEdge &er = gd<NSRankerEdge>(e);
+		if(er.strong) {
+			int minlen = RankXlator::HeightToDRank(&this->world_->whole_,eg.minLength*gd<GraphGeom>(e->g).separation.y);
+			dgassert(LlelNS::NSd(er.strong).minlen==minlen);
+			dgassert(LlelNS::NSd(er.strong).minlen <= LlelNS::NSd(er.strong->head).rank - LlelNS::NSd(er.strong->tail).rank);
+			if(eg.backward) {
+				dgassert(er.strong->head == tr.topC.n);
+				dgassert(er.strong->tail == hr.bottomC.n);
+				dgassert(LlelNS::NSd(er.strong->head).rank-anchorRank == tr.newTopRank);
+				dgassert(LlelNS::NSd(er.strong->tail).rank-anchorRank == hr.newBottomRank);
+				dgassert((tr.newTopRank - hr.newBottomRank) >= minlen);
+			}
+			else {
+				dgassert(er.strong->head == hr.topC.n);
+				dgassert(er.strong->tail == tr.bottomC.n);
+				dgassert(LlelNS::NSd(er.strong->head).rank-anchorRank == hr.newTopRank);
+				dgassert(LlelNS::NSd(er.strong->tail).rank-anchorRank == tr.newBottomRank);
+				dgassert((hr.newTopRank - tr.newBottomRank) >= minlen);
+			}
+		}
+	}
+#endif //NDEBUG
+}
+template<typename Layout>
+void NSRanker<Layout>::Process() {
 	ChangeQueue<Layout> &Q = this->world_->Q_;
+	for(typename Layout::node_iter ni = Q.current->nodes().begin(); ni!=Q.current->nodes().end(); ++ni) {
+		typename Layout::Node *n = *ni;
+		dgassert(gd<NSRankerNode>(n).newTopRank == gd<NSRankerNode>(n).oldTopRank);
+		dgassert(gd<NSRankerNode>(n).newBottomRank == gd<NSRankerNode>(n).oldBottomRank);
+	}
 	// this connection is just to keep the graph connected
 	LlelConstraintGraph::Edge *c = cg_.fiat_edge(top_,cg_.anchor);
 	LlelNS::NSd(c).minlen = LlelNS::NSd(c).weight = 0;
@@ -295,7 +331,8 @@ void NSRanker<Layout>::Process(ChangeProcessing *next) {
 		ModifyEdge(Q,*ei,DG_UPD_MOVE);
 	stabilizePositionedNodes(Q);
 	recomputeRanks(Q);
-	next->Process(0);
+	doubleCheckModel(Q);
+	this->NextProcess();
 }
 
 } // namespace DynaDAG

@@ -25,9 +25,14 @@ namespace Dynagraph {
 struct EdgeSplicerEndsDontMatch : DGException {
 	EdgeSplicerEndsDontMatch() : DGException("attempt to splice together two edge splines that don't share an endpoint",true) {}
 };
+struct EdgeSplicerCopyPolicy : LayoutToLayoutCopyAllPolicy {
+	enum {
+		CopyRanks = true,
+	};
+};
 template<typename Layout1,typename Layout2>
 struct EdgeSplicer : ChangeTranslator<Layout1,Layout2> {
-	LayoutToLayoutTranslator<Layout1,Layout2> actions_;
+	LayoutToLayoutTranslator<Layout1,Layout2,EdgeSplicerCopyPolicy> actions_;
 	EdgeSplicer(ChangingGraph<Layout1> *world1,ChangingGraph<Layout2> *world2)
 		: ChangeTranslator<Layout1,Layout2>(world1,world2) {}
 	void Open(ChangeTranslating *next) {
