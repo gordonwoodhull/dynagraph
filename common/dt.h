@@ -271,7 +271,7 @@ struct tree {
 	iterator insert(T *o) {
 		Dtlink_t *link = m_acc[o];
 		restore();
-		Dtlink_t *link2 = reinterpret_cast<Dtlink_t*>(dtinsert(m_dict,link));
+		Dtlink_t *link2 = v2l(dtinsert(m_dict,link));
 		T *r = m_acc[link2];
 		extract();
 		return iter(r);
@@ -319,7 +319,7 @@ struct ordering : Tree,Sequence {
 	}
 	// kind of anomalous method for cdt.
 	iterator find(T *o) {
-		typename Tree::iterator i = Tree::find(o); // could also just look at Dtlink_t with Tree::m_acc[*o] !
+		typename Tree::iterator i = Tree::find(o); // could also just look at Dtlink_t with Tree::m_acc[o] !
 		if(i!=Tree::end())
 			return Sequence::iter(*i);
 		else

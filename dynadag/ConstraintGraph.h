@@ -28,21 +28,21 @@ struct ConstraintType {
 };
 struct DDCNodeData : NS::NSNode<void*,void*>, ConstraintType {};
 
-template<bool AllowParallel>
+template<class ParallelEdgePolicy>
 struct DDCGraph {
-	typedef LGraph<ADTisCDT,AllowParallel,NS::NSData<void*,void*>,DDCNodeData,NS::NSEdge<void*,void*> > Graph;
+	typedef LGraph<ADTisCDT,ParallelEdgePolicy,NS::NSData<void*,void*>,DDCNodeData,NS::NSEdge<void*,void*> > Graph;
 };
 
-template<bool AllowParallel>
-struct NSCG : NS::NS<typename DDCGraph<AllowParallel>::Graph,NS::AccessNoAttr<typename DDCGraph<AllowParallel>::Graph > > {};
+template<class ParallelEdgePolicy>
+struct NSCG : NS::NS<typename DDCGraph<ParallelEdgePolicy>::Graph,NS::AccessNoAttr<typename DDCGraph<ParallelEdgePolicy>::Graph > > {};
 
 typedef NSCG<true> LlelNS;
 typedef NSCG<false> UniqNS;
 
-template<bool AllowParallel>
-struct ConstraintGraph : DDCGraph<AllowParallel>::Graph {
+template<class ParallelEdgePolicy>
+struct ConstraintGraph : DDCGraph<ParallelEdgePolicy>::Graph {
 	typename ConstraintGraph::Node *anchor;
-	typedef NSCG<AllowParallel> MyNS;
+	typedef NSCG<ParallelEdgePolicy> MyNS;
 
 	struct NodeConstraints {
 		typename ConstraintGraph::Node *n, // the variable
