@@ -9,7 +9,7 @@ SUBDIRS = common dynadag incrface pathplot shortspline graphsearch fdp shortspli
 
 INCS = -I. \
 	-I.. -I../cdt \
-	-I/usr/local/graphviz/include
+	-I$(GRAPHVIZ_INC)
 
 DEFINES = -DHAVE_CONFIG_H
 
@@ -25,7 +25,7 @@ DGLIBS = -Lincrface -lincrface \
     -Lcommon -ldynagraph
 
 GGLIBS = -Lcommon -ldynagraph \
-       -L/usr/local/graphviz/lib \
+       -L$(GRAPHVIZ_LIB) \
        -lcdt -lagraph
 
 OBJS = main.o IncrCalledBack.o DuplicateStream.o createConfiguration.o
