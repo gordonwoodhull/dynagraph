@@ -131,7 +131,7 @@
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="debug\dynadag/dynadag.pch"
@@ -279,10 +279,12 @@
 				>
 			</File>
 			<File
-				RelativePath="ConstraintGraph.cpp">
+				RelativePath="ConstraintGraph.cpp"
+				>
 			</File>
 			<File
-				RelativePath="DotlikeOptimizer.cpp">
+				RelativePath="DotlikeOptimizer.cpp"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
