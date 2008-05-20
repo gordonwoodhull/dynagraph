@@ -1,18 +1,17 @@
 # configuration for good old make.
 # select an architecture from makearch/*
 # ...one of:  sgi.mips3 sgi.mips2 sol.sun4 sol6.sun4 sun4 osx linux.i386
-ARCH=linux.i386
+ARCH=osx
 
 # specify root directory for installation
-INSTALLROOT=/usr/local/dynagraph
+INSTALLROOT=/usr/local
 
 # specify where to find graphviz 
-GRAPHVIZ_INC = /usr/local/graphviz/include
-GRAPHVIZ_LIB = /usr/local/graphviz/lib
+GRAPHVIZ_INC = /usr/local/include/graphviz
+GRAPHVIZ_LIB = /usr/local/lib/graphviz
 
 # specify where to find boost
 BOOST_INC = /usr/local/include
-
 
 # automatic dependencies
 DEPDIR = .deps

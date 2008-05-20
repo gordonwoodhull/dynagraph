@@ -246,4 +246,10 @@ void incr_abort(int code) {
     incr_error(code,0);
 }
 
+
+
 } // namespace Dynagraph
+
+extern "C" int incr_yywrap (void ) {
+  return true;
+}
