@@ -28,6 +28,7 @@
 #ifndef DYNAGRAPH_NO_THREADS
 #define STRHANDLER_DO_THREADS
 #endif
+
 #ifdef STRHANDLER_DO_THREADS
 #include "common/DynagraphThread.h"
 #endif

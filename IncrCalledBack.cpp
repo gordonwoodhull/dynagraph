@@ -49,22 +49,22 @@ void IncrCalledBack::incr_cb_destroy_handler(IncrLangEvents *h) {
 }
 // echo all fulfils (prob from another server, not client)
 void IncrCalledBack::incr_cb_fulfil_graph(DString name,StrGraph *sg) {
-	LOCK_REPORT(dgr::output);
-    reports[dgr::output] << "fulfil graph " << name << endl;
-    reports[dgr::output] << *sg;
+	LOCK_REPORT(dgr::incrface);
+    reports[dgr::incrface] << "fulfil graph " << name << endl;
+    reports[dgr::incrface] << *sg;
 }
 void IncrCalledBack::incr_cb_fulfil_node(DString graphname,DString nodename,const StrAttrs &attrs) {
-	LOCK_REPORT(dgr::output);
-    reports[dgr::output] << "fulfil node " << graphname << ' ' << nodename << attrs << endl;
+	LOCK_REPORT(dgr::incrface);
+    reports[dgr::incrface] << "fulfil node " << graphname << ' ' << nodename << attrs << endl;
 }
 void IncrCalledBack::incr_cb_fulfil_edge(DString graphname,DString edgename,const StrAttrs &attrs) {
-	LOCK_REPORT(dgr::output);
-    reports[dgr::output] << "fulfil edge " << graphname << ' ' << edgename << attrs << endl;
+	LOCK_REPORT(dgr::incrface);
+    reports[dgr::incrface] << "fulfil edge " << graphname << ' ' << edgename << attrs << endl;
 }
 void IncrCalledBack::incr_cb_message(const char *msg) {
-	LOCK_REPORT(dgr::output);
+	LOCK_REPORT(dgr::incrface);
     // pass through
-    reports[dgr::output] << "message \"" << msg << '"' << endl;
+    reports[dgr::incrface] << "message \"" << msg << '"' << endl;
 }
 
 } // namespace Dynagraph;

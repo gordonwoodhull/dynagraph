@@ -28,16 +28,6 @@ namespace Dynagraph {
 #define	GEMS_DO_INTERSECT      1
 #define GEMS_COLLINEAR         2
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE (!TRUE)
-#endif
-
-#define MAX(a,b)	((a)>(b)?(a):(b))
-#define MIN(a,b)	((a)<(b)?(a):(b))
-
-#define NIL(t) (t)0
-
 Coord origin;
 
 Coord mysincos(double rads) {
@@ -167,7 +157,7 @@ struct FindScaling {
   FindScaling() : s(0.0) {}
   inline bool grok(Coord box,Position P) {
     if(P.valid)
-      s = MAX(s,fabs(box.x/P.x/2.0));
+      s = std::max(s,fabs(box.x/P.x/2.0));
     return true;
   }
 };
@@ -435,7 +425,7 @@ void makePeripheries(int peris,double perispace,bool inward,Lines &out) {
 }
 void genpoly(const PolyDef &arg,Lines &out) {
   Coord scaling;
-  int symmetric;
+  bool symmetric;
 
   // must specify at least one bound, no one-dimensional or negative bounds
   if(!((arg.interior_box.x && arg.interior_box.y) ||
@@ -471,10 +461,10 @@ void genpoly(const PolyDef &arg,Lines &out) {
     regpolygon(startsize,arg.sides,first);
   }
   if(arg.skew != 0.0 || arg.distortion != 0.0) {
-    symmetric = FALSE;
+    symmetric = false;
     skew_and_distort(first,arg.skew,arg.distortion);
   }
-  else symmetric = TRUE;
+  else symmetric = true;
   if(arg.rotation != 0.0)
     rotate(first,arg.rotation);
 
@@ -485,7 +475,7 @@ void genpoly(const PolyDef &arg,Lines &out) {
     if(arg.regular) {
       double s = scale_for_interior(first,arg.interior_box);
       scaling = Coord(s,s);
-      scaling.x = scaling.y = MAX(scaling.x,scaling.y); // (actually already ==)
+      scaling.x = scaling.y = std::max(scaling.x,scaling.y); // (actually already ==)
     }
     else {
       /*
@@ -517,7 +507,7 @@ void genpoly(const PolyDef &arg,Lines &out) {
       }
       scaling.y *= factor;
       */
-      double m = MIN(arg.interior_box.x,arg.interior_box.y);
+      double m = std::min(arg.interior_box.x,arg.interior_box.y);
       double s = scale_for_interior(first,Coord(m,m));
       if(arg.interior_box.x>arg.interior_box.y) {
 	scaling.y = s;
@@ -534,7 +524,7 @@ void genpoly(const PolyDef &arg,Lines &out) {
     scaling = scale_for_exterior(first,arg.exterior_box);
     inward = true;
     if(arg.regular)
-      scaling.x = scaling.y = MIN(scaling.x,scaling.y);
+      scaling.x = scaling.y = std::min(scaling.x,scaling.y);
   }
 
   // first shape will be model for rest

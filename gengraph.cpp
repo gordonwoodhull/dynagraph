@@ -38,8 +38,8 @@ void usage() {
 int main(int narg,char *argh[]) {
 	// enable basic dynagraph report streams
 	reports.enable(dgr::error,&cerr);
-	reports.enable(dgr::cmdline);
-	reports.enable(dgr::output);
+	reports.enable(dgr::cmdline,&cout);
+	reports.enable(dgr::output,&cout);
 
 	int V = 100, E = 100;
 	bool colors = false;
