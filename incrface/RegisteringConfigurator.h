@@ -20,6 +20,7 @@
 #include "IncrStrGraphHandler.h"
 #include "TextWatcherOutput.h"
 #include "OutputIncrface.h"
+#include "OutputDot.h"
 
 namespace Dynagraph {
 
@@ -31,8 +32,9 @@ struct RegisteringConfigurator {
 		IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
 		// its handler (request command deferred)
 		handler->watcher_ =  new TextWatcherOutput<Layout>;
-		// incrface output at end of chain
-		engines.Append(new OutputIncrface<Layout>(world,dgr::output));
+		// output engines at end of chain
+		engines.Append(new OutputIncrface<Layout>(world,dgr::incrface));
+		engines.Append(new OutputDot<Layout>(world));
 		// start chain
 		handler->engine_ = engines.first;
 		// and we're go!

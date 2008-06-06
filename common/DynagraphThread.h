@@ -43,23 +43,23 @@ struct DynagraphThread {
 			(engine_->*purpose_)();
 		}
 		catch(Assertion sert) {
-			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << std::endl;
+			LOCK_REPORT(dgr::incrface);
+			reports[dgr::incrface] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << std::endl;
 			exit(23);
 		}
 		catch(DGException2 dgx) {
-			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << std::endl;
+			LOCK_REPORT(dgr::incrface);
+			reports[dgr::incrface] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << std::endl;
 			exit(23);
 		}
 		catch(DGException dgx) {
-			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) " << dgx.exceptype << '"' << std::endl;
+			LOCK_REPORT(dgr::incrface);
+			reports[dgr::incrface] << "message \"(exception) " << dgx.exceptype << '"' << std::endl;
 			exit(23);
 		}
 		catch(...) {
-			LOCK_REPORT(dgr::output);
-			reports[dgr::output] << "message \"(exception) unknown exception\"" << std::endl;
+			LOCK_REPORT(dgr::incrface);
+			reports[dgr::incrface] << "message \"(exception) unknown exception\"" << std::endl;
 			exit(23);
 		}
 	}

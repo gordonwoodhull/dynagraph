@@ -12,10 +12,13 @@ extern "C" {
 #define isatty(x)	1
 
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
-	/* this is a workaround for linux flex */
+
+#ifdef NEED_TO_DEFINE_YYWRAP
 #ifndef yywrap
 #define yywrap() 1
 #endif
+#endif
+
 static int line_num = 1;
 
 /* buffer for arbitrary length strings (longer than BUFSIZ) */

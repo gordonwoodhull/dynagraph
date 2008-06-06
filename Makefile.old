@@ -53,40 +53,40 @@ gengraph : gengraph.o libdynagraph.a
 	$(CPPSLD) $(LDFLAGS) gengraph.o $(GLIBS) $(THREADLIBS) -o gengraph
 
 graphsearch/graphsearch :
-	(cd graphsearch; make)
+	(cd graphsearch; $(MAKE))
 
 libdynagraph.a :
-	(cd common; make)
+	(cd common; $(MAKE))
 
 libdynadag.a :
-	(cd dynadag; make)
+	(cd dynadag; $(MAKE))
 
 libincrface.a :
-	(cd incrface; make)
+	(cd incrface; $(MAKE))
 
 libpathplot.a :
-	(cd pathplot; make)
+	(cd pathplot; $(MAKE))
 
 libfdp.a :
-	(cd fdp; make)
+	(cd fdp; $(MAKE))
 
 libvoronoi.a :
-	(cd voronoi; make)
+	(cd voronoi; $(MAKE))
 
 libshortspline.a :
-	(cd shortspline; make)
+	(cd shortspline; $(MAKE))
 
 install: dynagraph gengraph
-	(for i in ${SUBDIRS}; do (cd $$i; make install); done)       
+	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE) install); done)       
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dynagraph $(BINDIR)
 
 test: 
-	(cd tests; make run)
+	(cd tests; $(MAKE) run)
 
 distclean clean:
-	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)     
-	(cd tests; make clean)  
+	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE) $@); done)     
+	(cd tests; $(MAKE) clean)  
 	$(RM) *.o core dynagraph gengraph
 
 -include $(OBJS:%.o=$(DEPDIR)/%.P)

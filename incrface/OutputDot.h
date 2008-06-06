@@ -13,33 +13,34 @@
 *                       Many thanks.                      *
 **********************************************************/
 
+#ifndef OutputDot_h
+#define OutputDot_h
 
-#ifndef TextWatcherOutput_h
-#define TextWatcherOutput_h
-
-#include "IncrViewWatcher.h"
-#include "common/emitGraph.h"
+#include "incrout.h"
 
 namespace Dynagraph {
 
 template<typename Graph>
-struct TextWatcherOutput : IncrViewWatcher<Graph> {
-	// IncrViewWatcher
-	void FulfilGraph(Graph *g) {
-		LOCK_REPORT(dgr::incrface);
-		reports[dgr::incrface] << "fulfil graph " << gd<Name>(g) << std::endl;
-		emitGraph(reports[dgr::incrface],g);
+struct OutputDot : LinkedChangeProcessor<Graph> {
+	OutputDot(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
+	// ChangeProcessor
+	void Open() {
+		if(reports.enabled(dgr::dotout)) {
+			LOCK_REPORT(dgr::dotout);
+            emitGraph(reports[dgr::dotout],&this->world_->current_);
+		}
+		this->NextOpen();
 	}
-	void FulfilNode(typename Graph::Node *n) {
-		LOCK_REPORT(dgr::incrface);
-		reports[dgr::incrface] << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << std::endl;
+	void Process() {
+		if(reports.enabled(dgr::dotout)) {
+			LOCK_REPORT(dgr::dotout);
+            emitGraph(reports[dgr::dotout],&this->world_->current_);
+		}
+		this->NextProcess();
 	}
-	void FulfilEdge(typename Graph::Edge *e) {
-		LOCK_REPORT(dgr::incrface);
-		reports[dgr::incrface] << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << std::endl;
-	}
+	// no way to express Close or Pulse
 };
 
 } // namespace Dynagraph
 
-#endif //TextWatcherOutput_h
+#endif //OutputDot_h
