@@ -23,6 +23,8 @@
 #include "common/Transform.h"
 #include "incrface/incrparse.h"
 #include "incrface/IncrLangEvents.h"
+#include "common/ag2str.h"
+#include "incrface/incrcmds.h"
 
 #include "common/time-o-matic.h"
 #include "DuplicateStream.h"
@@ -150,7 +152,7 @@ int main(int argc, char *args[]) {
 	int random_seed = -1;
     typedef map<dgr::reportType,int> report_dest_map;
     report_dest_map reportDests;
-	char *dotfile = 0;
+	char *dotfile = 0, *incrfile = 0;
 	ostream *outfile[10];
 	FILE *input_file = stdin;
 	for(int i = 0;i<10;++i) outfile[i] = 0;
@@ -207,7 +209,8 @@ int main(int argc, char *args[]) {
 					"   -s filename: use script in filename (instead of stdin)" << endl;
 				return 1;
 			}
-			if(!(input_file = fopen(args[++i],"r"))) {
+            incrfile = args[++i];
+			if(!(input_file = fopen(incrfile,"r"))) {
 				reports[dgr::error] << "could not open input script " << args[i] << endl;
 				return 1;
 			}
@@ -326,9 +329,9 @@ int main(int argc, char *args[]) {
 			char c = '0' + dest_stream_id;
 			char outfilename[120];
 			if(dotfile && strlen(dotfile)<100)
-			    sprintf(outfilename,"%s.out.%c",dotfile,c);
-			else
-			    sprintf(outfilename,"dynagraph.out.%c",c);
+			    sprintf(outfilename,"%s.%c.out",dotfile,c);
+			else if(incrfile && strlen(incrfile)<100)
+			    sprintf(outfilename,"dynagraph.%c.out",c);
 			reports[dgr::error] << "outfile " << c << " not specified; opening " << outfilename << endl;
 			outfile[dest_stream_id] = new fstream(outfilename,fstream::out);
 			if(outfile[dest_stream_id]->fail()) {
@@ -367,30 +370,51 @@ int main(int argc, char *args[]) {
 		g_transform = new Transform(Coord(1,1),Coord(1,1));
 	while(1) {
 		try {
-			incr_yyparse(); 
+		    if(dotfile) {
+                g_xeptFatal = true; // no infinite loops please
+                FILE *f = fopen(dotfile,"r");
+                if(!f) {
+    				reports[dgr::error] << "couldn't open " << dotfile << " for reading" << endl;
+                    return 1;
+                }
+                StrGraph *sg = readStrGraph(f);
+                if(!sg) {
+    				reports[dgr::error] << "couldn't read dot file " << dotfile << endl;
+                    return 1;
+                }
+                incr_open_graph(gd<Name>(sg).c_str());
+                incr_get_handler(gd<Name>(sg))->incr_ev_load_strgraph(sg,true,true);
+		    }
+		    else {
+    			incr_yyparse(); 
+			}
 			break; // end of stream
 		}
 		catch(Assertion sert) {
 			LOCK_REPORT(dgr::incrface);
 			reports[dgr::incrface] << "message \"(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << '"' << endl;
+			reports[dgr::error] << "(exception) Assertion: " << sert.expr << "; " << sert.file << ", " << sert.line << endl;
 			if(g_xeptFatal||sert.fatal)
 				exit(23);
 		}
 		catch(DGException2 dgx) {
 			LOCK_REPORT(dgr::incrface);
 			reports[dgr::incrface] << "message \"(exception) " << dgx.exceptype << ": " << dgx.param << '"' << endl;
+			reports[dgr::error] << "(exception) " << dgx.exceptype << ": " << dgx.param << endl;
 			if(g_xeptFatal||dgx.fatal)
 				exit(23);
 		}
 		catch(DGException dgx) {
 			LOCK_REPORT(dgr::incrface);
 			reports[dgr::incrface] << "message \"(exception) " << dgx.exceptype << '"' << endl;
+			reports[dgr::error] << "(exception) " << dgx.exceptype << endl;
 			if(g_xeptFatal||dgx.fatal)
 				exit(23);
 		}
 		catch(...) {
 			LOCK_REPORT(dgr::incrface);
 			reports[dgr::incrface] << "message \"(exception) unknown exception\"" << endl;
+			reports[dgr::error] << "(exception) unknown exception" << endl;
 			exit(23);
 		}
 	}
