@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
-	Name="shortspline"
-	ProjectGUID="{C70C8D5B-A390-40E5-94B8-EAD0ED4C9C39}"
-	RootNamespace="shortspline"
-	TargetFrameworkVersion="131072"
+	Version="8.00"
+	Name="dynagraph"
+	ProjectGUID="{08770A00-374D-484A-B4E4-9168297EBA07}"
 	>
 	<Platforms>
 		<Platform
@@ -17,9 +15,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="debug\shortspline"
-			IntermediateDirectory="debug\shortspline"
-			ConfigurationType="4"
+			OutputDirectory="debug"
+			IntermediateDirectory="debug"
+			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -46,17 +44,17 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="debug\shortspline/shortspline.pch"
-				AssemblerListingLocation="debug\shortspline/"
-				ObjectFile="debug\shortspline/"
-				ProgramDataBaseFileName="debug\shortspline/"
+				PrecompiledHeaderFile="debug/dynagraph.pch"
+				AssemblerListingLocation="debug/"
+				ObjectFile="debug/"
+				ProgramDataBaseFileName="debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
@@ -76,12 +74,20 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="debug\shortspline\shortspline.lib"
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				OutputFile="debug\dynagraph.exe"
+				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
+				SubSystem="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -93,14 +99,20 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="release\shortspline"
-			IntermediateDirectory="release\shortspline"
-			ConfigurationType="4"
+			OutputDirectory="release"
+			IntermediateDirectory="release"
+			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -130,16 +142,17 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="NOMINMAX,WIN32,NDEBUG"
+				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
+				PreprocessorDefinitions="NDEBUG,_CONSOLE,__IMPORT__=extern,WIN32"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="release\shortspline/shortspline.pch"
-				AssemblerListingLocation="release\shortspline/"
-				ObjectFile="release\shortspline/"
-				ProgramDataBaseFileName="release\shortspline/"
+				PrecompiledHeaderFile="release/dynagraph.pch"
+				AssemblerListingLocation="release/"
+				ObjectFile="release/"
+				ProgramDataBaseFileName="release/"
+				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -158,12 +171,21 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="release\shortspline\shortspline.lib"
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				OutputFile="release\dynagraph.exe"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				SubSystem="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -175,6 +197,12 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -182,7 +210,7 @@
 			Name="Static|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -214,16 +242,17 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,WIN32,NDEBUG,_LIB"
+				AdditionalIncludeDirectories="../graphviz/lib/agraph;../graphviz/lib/cdt;../fauxunix;../graphviz/lib/pathplan"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,NDEBUG,_CONSOLE,__IMPORT__=extern,WIN32"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="static\shortspline/shortspline.pch"
-				AssemblerListingLocation="static\shortspline/"
-				ObjectFile="static\shortspline/"
-				ProgramDataBaseFileName="static\shortspline/"
+				PrecompiledHeaderFile="static/dynagraph.pch"
+				AssemblerListingLocation="static/"
+				ObjectFile="static/"
+				ProgramDataBaseFileName="static/"
+				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -242,12 +271,21 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="static\shortspline\shortspline.lib"
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				OutputFile="static\dynagraph.exe"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				SubSystem="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -257,6 +295,12 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -271,7 +315,79 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="legal_arrangement.c"
+				RelativePath=".\createConfiguration.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DuplicateStream.cpp"
+				>
+			</File>
+			<File
+				RelativePath="dynagraph.rc"
+				>
+			</File>
+			<File
+				RelativePath="example_no_incrface.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Static|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="example_with_incrface.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Static|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\IncrCalledBack.cpp"
+				>
+			</File>
+			<File
+				RelativePath="main.cpp"
 				>
 			</File>
 		</Filter>
@@ -280,17 +396,22 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath=".\ObAvSplinerEngine.h"
+				RelativePath=".\dynagraph.version.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ObstacleAvoiderSpliner.h"
+				RelativePath=".\dynagraph.version.rc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\simple.h"
+				RelativePath=".\TestTraversals.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>

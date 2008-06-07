@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
-	Name="shortspline"
-	ProjectGUID="{C70C8D5B-A390-40E5-94B8-EAD0ED4C9C39}"
-	RootNamespace="shortspline"
-	TargetFrameworkVersion="131072"
+	Version="8.00"
+	Name="incrface"
+	ProjectGUID="{1AB54830-C666-44F0-9043-5CF787071E67}"
+	Keyword="Win32Proj"
 	>
 	<Platforms>
 		<Platform
@@ -17,12 +16,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="debug\shortspline"
-			IntermediateDirectory="debug\shortspline"
+			OutputDirectory="debug\incrface"
+			IntermediateDirectory="debug\incrface"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			>
 			<Tool
@@ -46,22 +43,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="debug\shortspline/shortspline.pch"
-				AssemblerListingLocation="debug\shortspline/"
-				ObjectFile="debug\shortspline/"
-				ProgramDataBaseFileName="debug\shortspline/"
-				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
-				CompileAs="0"
 				DisableSpecificWarnings="4068;"
 			/>
 			<Tool
@@ -69,16 +60,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="debug\shortspline\shortspline.lib"
-				SuppressStartupBanner="true"
+				OutputFile="debug\incrface\incrface.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -98,12 +86,10 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="release\shortspline"
-			IntermediateDirectory="release\shortspline"
+			OutputDirectory="release\incrface"
+			IntermediateDirectory="release\incrface"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			>
 			<Tool
@@ -128,22 +114,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
 				InlineFunctionExpansion="2"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="NOMINMAX,WIN32,NDEBUG"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="release\shortspline/shortspline.pch"
-				AssemblerListingLocation="release\shortspline/"
-				ObjectFile="release\shortspline/"
-				ProgramDataBaseFileName="release\shortspline/"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				CompileAs="0"
 				DisableSpecificWarnings="4068;"
 			/>
 			<Tool
@@ -151,16 +133,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="release\shortspline\shortspline.lib"
-				SuppressStartupBanner="true"
+				OutputFile="release\incrface\incrface.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -184,8 +163,6 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			>
 			<Tool
@@ -210,24 +187,20 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,WIN32,NDEBUG,_LIB"
+				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile="static\shortspline/shortspline.pch"
-				AssemblerListingLocation="static\shortspline/"
-				ObjectFile="static\shortspline/"
-				ProgramDataBaseFileName="static\shortspline/"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				CompileAs="0"
 				DisableSpecificWarnings="4068;"
 			/>
 			<Tool
@@ -235,16 +208,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="static\shortspline\shortspline.lib"
-				SuppressStartupBanner="true"
+				OutputFile="static\incrface\incrface.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -268,29 +238,114 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="legal_arrangement.c"
+				RelativePath="incrcmds.cpp"
+				>
+			</File>
+			<File
+				RelativePath="incrgram.cpp"
+				>
+			</File>
+			<File
+				RelativePath="incrscan.cpp"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
+			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath=".\ObAvSplinerEngine.h"
+				RelativePath=".\AbsGraphHandler.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ObstacleAvoiderSpliner.h"
+				RelativePath=".\createStringHandlers.h"
 				>
 			</File>
 			<File
-				RelativePath=".\simple.h"
+				RelativePath=".\DinoMachine.h"
 				>
 			</File>
+			<File
+				RelativePath=".\DinoMachineHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DinoMachineTranslator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DinoPatternLook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DinoSearchLook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynaView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\incrcmds.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IncrLangEvents.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IncrMappings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\incrout.h"
+				>
+			</File>
+			<File
+				RelativePath=".\incrparse.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IncrStrGraphHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IncrViewWatcher.h"
+				>
+			</File>
+			<File
+				RelativePath=".\incrxep.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LabelToNameTranslator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MatchNames.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OutputIncrface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\two_way_map.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WorldInABox.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>
