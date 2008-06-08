@@ -50,7 +50,7 @@
 				InlineFunctionExpansion="2"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
-				PreprocessorDefinitions="NOMINMAX,WIN32,NDEBUG"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK,NOMINMAX,WIN32,NDEBUGNOMINMAX,_WINDOWS,WIN32,NDEBUG;_SCL_SECURE_NO_DEPRECATE, _CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -130,7 +130,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
-				PreprocessorDefinitions="NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK;_DLL;NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -216,7 +216,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix;../../graphviz/lib/pathplan"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,_LIB,__IMPORT__=extern,WIN32"
+				PreprocessorDefinitions="_SCL_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;NOMINMAX;WIN32"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -516,6 +516,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\pathplot\pathplot.vcproj"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
