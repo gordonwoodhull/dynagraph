@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="dynagraphlib"
 	ProjectGUID="{099FC3A1-5508-44EF-A60A-C0E27DD5CA7A}"
+	RootNamespace="dynagraphlib"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -45,10 +47,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK;_DLL;NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				PrecompiledHeaderFile="debug\dynagraphlib/dynagraphlib.pch"
 				AssemblerListingLocation="debug\dynagraphlib/"
@@ -128,7 +130,7 @@
 				InlineFunctionExpansion="2"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_LIB,__IMPORT__=extern,WIN32"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK,NOMINMAX,WIN32,NDEBUGNOMINMAX,_WINDOWS,WIN32,NDEBUG;_SCL_SECURE_NO_DEPRECATE, _CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -212,7 +214,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,_LIB,__IMPORT__=extern,WIN32"
+				PreprocessorDefinitions="_SCL_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;NOMINMAX;WIN32"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

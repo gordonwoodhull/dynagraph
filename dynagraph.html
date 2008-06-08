@@ -46,7 +46,7 @@
 
 <BODY>
 <h1>Dynagraph</h1>
-<p>Welcome to the documentation for Dynagraph 1.1.5.0.</p>
+<p>Welcome to the documentation for Dynagraph 1.1.6.3</p>
 <p>(As Dynagraph is... well, dynamic... be sure this matches the version of Dynagraph you are using!)</p>
 <ol type=I>
 	<li><a href="#introduction">Introduction</a></li>
@@ -153,28 +153,34 @@ There are helpful functions to navigate between these objects in the Shared dire
 The Dynagraph executable can be run in two modes:
 <ul>
 <li>If no source is specified, the program expects <A href="#incrface_language">incrface commands</A> on stdin, and issues incrface events on stdout.  Or incrface input can come from a script with the <a href="#cmdline_input_incrface">-s incrface script</a> command line option.
-<li>When a source is specified with <a href="#cmdline_input_dotfile">-i dot file input</a>, Dynagraph calculates a new layout based on the input.  It will generate output dot files if -oL is specified.
+<li>When a source is specified with <a href="#cmdline_input_dotfile">-i dot file input</a>, Dynagraph calculates a new layout based on the input.  Dot output is specified with -oT.
 </ul>
 
 <h3><a name="command_line_options"/>Command line options</h3>
 <dl>
-	<dt><a name="cmdline_version"/>-v (--version) print version number</dt>
-	<dd>Prints the version number only.  Dynagraph version numbers consist of four numbers separated by periods.  The final number is a build number&mdash;versions that differ only by this last number should only vary in their reliability, not in their functionality.</dd>
-	<dt><a name="cmdline_help"/>-h (--help) print help</dt>
+	<dt><a name="cmdline_version"/>
+		-v (--version) print version number</dt>
+	<dd>Prints the version number only.  Dynagraph version numbers consist of four numbers separated by periods.  The third number designates a branch of development, fourth is build number.</dd>
+	<dt><a name="cmdline_help"/>
+		-h (--help) print help</dt>
 	<dd>Prints a summary of <a href="#command_line_options">command line options</a> and syntax only.</dt>
-	<dt><a name="cmdline_dot_coords"/>-d use dot-compatible coordinates</dt>
-	<dd>Dynagraph internally uses dimensionless coordinates, but <b>dot</b> used points for coordinates and inches for node sizes.  With this option, the node width, height, and labelsize attributes will be multiplied by 72.  This option also affects default attributes, setting the default <a href="#graph_resolution">resolution</a> to 1x5 instead of 0.1x0.1; the default <a href="#graph_separation">separation</a> to 24x24 instead of 0.5x0.5; and the default <a href="#graph_defaultsize">minimum width and height</a> to 54x36 instead of 1.5x1.</dd>
-	<dt><a name="cmdline_default_attribute"/>-a <i>attr</i>=<i>value</i> set default graph attribute</dt>
+	<dt><a name="cmdline_dot_coords"/>
+		-d use dot-compatible coordinates</dt>
+	<dd>Dynagraph internally uses dimensionless coordinates, but <b>dot</b> uses points for coordinates and inches for node sizes.  With this option, the node width, height, and labelsize attributes will be multiplied by 72.  This option also affects default attributes, setting the default <a href="#graph_resolution">resolution</a> to 1x5 instead of 0.1x0.1; the default <a href="#graph_separation">separation</a> to 24x24 instead of 0.5x0.5; and the default <a href="#graph_defaultsize">minimum width and height</a> to 54x36 instead of 1.5x1.</dd>
+	<dt><a name="cmdline_default_attribute"/>
+		-a <i>attr</i>=<i>value</i> set default graph attribute</dt>
 	<dd>Sets the initial value of a graph attribute for all graphs that are opened in this session.</dd>
-	<dt><a name="cmdline_input_dotfile"/>-i<I> filename</I> specify input dot file</dt>
+	<dt><a name="cmdline_input_dotfile"/>
+		-i<I> filename</I> specify input dot file</dt>
 	<dd>Specifies a file for batch layout.</dd>
-	<dt><a name="cmdline_input_incrface"/>-s<i> filename</i> specify input incrface file</dt>
+	<dt><a name="cmdline_input_incrface"/>
+		-s<i> filename</i> specify input incrface file</dt>
 	<dd>Specifies an input file in the <a href="#incrface_language">incrface language</a>.</dd>
-	<dt><a name="cmdline_output_stream"/>-o<i>N filename</i> output stream <i>N</i> to <i>filename</i></dt>
+	<dt><a name="cmdline_output_stream"/>
+		-o<i>N filename</i> output stream <i>N</i> to <i>filename</i></dt>
 	<dd>Writes report stream <i>N</i> to <i>filename</i>.  See <a href="#cmdline_report">-r report</a>.</dd>
-	<dt><a name="cmdline_output_layouts"/>-oL<i> filename</i></dt>
-	<dd>Outputs the layout at each step to <i>filename</i>1.dot, <i>filename</i>2.dot, etc.  A dot file will be generated every time a re-layout happens; that is, whenever a change happens and the lock count is zero, or after changes when the lock count drops to zero.</dd>
-	<dt><a name="cmdline_report"/>-r<i>aN</i> report on <i>a</i> to stream <i>N</i>
+	<dt><a name="cmdline_report"/>
+		-r<i>aN</i> report on <i>a</i> to stream <i>N</i>
 	<dd>Dynagraph can write logs to up to 10 files (output filenames specified with <a href="#cmdline_output_stream">-o output</a>).  <i>a</i> specifies one or more report types from the following:
 	<table width="100%">
 		<tr>
@@ -220,9 +226,11 @@ The Dynagraph executable can be run in two modes:
 			<td>u
 			<td>Inner engine output (useful for debugging emphasizeflow)
 	</table>
-	<dt><a name="cmdline_random_seed"/>-e <i>N</i> specify random number seed</dt>
+	<dt><a name="cmdline_random_seed"/>
+		-e <i>N</i> specify random number seed</dt>
 	<dd>Random numbers are not used very much in layout (except in fdp).  This has more effect on <a href="#cmdline_wait">-wr wait random amount</a>.
-	<dt><a name="cmdline_wait"/>-w[r] <i>N</i> wait [randomly up to] N nanoseconds before commands</dt>
+	<dt><a name="cmdline_wait"/>
+		-w[r] <i>N</i> wait [randomly up to] N nanoseconds before commands</dt>
 	<dd>Waits before each line of incrface code, allowing the layout engine to run instead of immediately interrupting it.  (May someday be) useful for debugging.</dd>
 </dl>
 

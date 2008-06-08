@@ -1,7 +1,6 @@
 X11LIB=/usr/X11R6/lib
 X11INC=/usr/X11R6/include
-BOOST_THREAD_LIB_PATH=/usr/local/bin/boost/libs/thread/build/libboost_thread.a/darwin/release
-BOOST_THREAD_LIB=boost_thread-1_33_1
+THREADLIBS=-lboost_thread-mt-1_35
 
 CC=cc
 CPP=gcc

@@ -110,7 +110,7 @@ struct Assertion : DGException {
 #pragma warning (disable : 4800)
 
 struct dgr {
-	enum reportType {none,input_raw,input_cooked,output,inner_input,inner_output,dynadag,cmdline,crossopt,wander,stats,error,
+	enum reportType {none,input_raw,input_cooked,output,incrface,dotout,inner_input,inner_output,dynadag,cmdline,crossopt,wander,stats,error,
 		splineRoute,shortestPath,grChange,timing,exchange,nsdump,
 		ranks,xsolver,modelDump,ranker,dumpQueue,stability,readability,progress,
 		bug,svg_bug
@@ -121,7 +121,7 @@ struct dgr {
 		else 
 			return null_stream();
 	}
-	void enable(reportType rt,std::ostream *str = &std::cout) {
+	void enable(reportType rt,std::ostream *str) {
 		if(unsigned(rt)>=streams_.size())
 			streams_.resize(rt+1,0);
 		streams_[rt] = str;

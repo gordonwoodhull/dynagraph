@@ -25,7 +25,7 @@ namespace Dynagraph {
 
 /*
 	CHANGE QUEUE
-*/
+*/ 
 template<typename Graph>
 struct ChangeQueue {
 	// the whole edits this supergraph of server's current layout

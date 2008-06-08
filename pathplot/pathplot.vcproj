@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="pathplot"
 	ProjectGUID="{32EA3BFB-21BF-48C0-A10F-918D394A46D8}"
+	RootNamespace="pathplot"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/cdt"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK;_DLL;NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -105,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/cdt"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK,NOMINMAX,WIN32,NDEBUGNOMINMAX,_WINDOWS,WIN32,NDEBUG;_SCL_SECURE_NO_DEPRECATE, _CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -172,7 +174,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="..;../../graphviz/lib/cdt"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="_SCL_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;NOMINMAX;WIN32;NDEBUG;_LIB"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

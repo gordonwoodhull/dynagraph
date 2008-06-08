@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="shortspline"
 	ProjectGUID="{C70C8D5B-A390-40E5-94B8-EAD0ED4C9C39}"
+	RootNamespace="shortspline"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -45,10 +47,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK;_DLL;NOMINMAX;_DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="debug\shortspline/shortspline.pch"
@@ -129,7 +131,7 @@
 				InlineFunctionExpansion="2"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
+				PreprocessorDefinitions="BOOST_ALL_DYN_LINK,NOMINMAX,WIN32,NDEBUGNOMINMAX,_WINDOWS,WIN32,NDEBUG;_SCL_SECURE_NO_DEPRECATE, _CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -213,7 +215,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="../../graphviz/lib/pathplan;..;../../graphviz/lib/agraph;../../graphviz/lib/cdt;../../fauxunix"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE,WIN32,NDEBUG,_LIB"
+				PreprocessorDefinitions="_SCL_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;NOMINMAX;WIN32;NDEBUG;_LIB"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

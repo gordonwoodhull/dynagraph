@@ -164,6 +164,7 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 	bool got = false;
 	double glb=0.0,grb=0.0;  
 	Rank *top=0,*bottom=0;
+    DynaDAGLayout edgeEdges(changeQ.current);
 	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
 		if((*ri)->order.size()) {
 			DDModel::Node *left = 0, *right = 0;
@@ -177,14 +178,30 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 			if(!top)
 				top = *ri;
 			bottom = *ri;
-			double lb = gd<DDNode>(left).cur.x - config.LeftExtent(left);
-			if(!got || glb > lb)
-				glb = lb;
-			double rb = gd<DDNode>(right).cur.x + config.RightExtent(right);
-			if(!got || grb < rb)
-				grb = rb;
+			
+			if(gd<DDNode>(left).amEdgePart())
+                edgeEdges.insert(gd<DDEdge>(*left->outs().begin()).path->layoutE);
+            else {
+    			double lb = gd<DDNode>(left).cur.x - config.LeftExtent(left);
+    			if(!got || glb > lb)
+    				glb = lb;
+			}
+			if(gd<DDNode>(right).amEdgePart())
+                edgeEdges.insert(gd<DDEdge>(*right->outs().begin()).path->layoutE);
+            else {
+    			double rb = gd<DDNode>(right).cur.x + config.RightExtent(right);
+    			if(!got || grb < rb)
+    				grb = rb;
+			}
 			got = true;
 		}
+    for(DynaDAGLayout::graphedge_iter ei = edgeEdges.edges().begin(); ei!= edgeEdges.edges().end(); ++ei)
+        for(Line::iterator pi = DDp(*ei)->unclippedPath.begin(); pi!=DDp(*ei)->unclippedPath.end(); ++pi) {
+			if(!got || glb > pi->x)
+				glb = pi->x;
+			if(!got || grb < pi->x)
+				grb = pi->x;
+        }            
 	Bounds bb;
 	if(got) {
 		bb.valid = true;
@@ -338,13 +355,13 @@ void DynaDAGServer::Process() {
 		return;
 	}
 
-	// calculate bounding rectangle
-	updateBounds(Q);
-
 	// find node & edge moves
 	moveNodesBasedOnModel(Q);
 	findFlowSlopes(Q);
 	drawFinalEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
+
+	// calculate bounding rectangle
+	updateBounds(Q);
 
 	timer.LoopPoint(dgr::timing,"draw splines");
 

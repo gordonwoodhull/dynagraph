@@ -76,6 +76,8 @@ void emitGraph2(std::ostream &os,G *g) {
 	for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
 		os << '\t' << mquote(nameOf[(*ei)->tail]) << " -> " << mquote(nameOf[(*ei)->head]);
 		os << ' ';
+		// this looks fishy - why does edge label get looked up in ndict?
+		// doesn't this replace id with label and is that a good idea?
 		StrAttrs::iterator ati = gd<StrAttrs>(*ei).find("label");
 		Name ename;
 		if(ati!=gd<StrAttrs>(*ei).end()&&!ndict[ati->second]) {

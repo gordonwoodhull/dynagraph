@@ -35,7 +35,7 @@ struct ShapeGenerator : LinkedChangeProcessor<Layout> {
 							genpoly(gd<PolyDef>(n),gd<Drawn>(n));
 					}
 					catch(GenPolyXep xep) {
-						reports[dgr::output] << "message \"" << xep.exceptype << '"' << std::endl;
+						reports[dgr::incrface] << "message \"" << xep.exceptype << '"' << std::endl;
 						// bad or incomplete definitions: just leave blank
 					}
 					ng.region.shape.Clear();
