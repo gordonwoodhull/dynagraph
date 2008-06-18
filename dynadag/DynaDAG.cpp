@@ -160,11 +160,10 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 		loops.Field(dgr::dynadag,"layout edges for crossopt",outE.edges().size());
 	}
 }
-void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
+void DynaDAGServer::findBounds(DDChangeQueue &changeQ) {
 	bool got = false;
 	double glb=0.0,grb=0.0;  
 	Rank *top=0,*bottom=0;
-    DynaDAGLayout edgeEdges(changeQ.current);
 	for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
 		if((*ri)->order.size()) {
 			DDModel::Node *left = 0, *right = 0;
@@ -179,29 +178,14 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 				top = *ri;
 			bottom = *ri;
 			
-			if(gd<DDNode>(left).amEdgePart())
-                edgeEdges.insert(gd<DDEdge>(*left->outs().begin()).path->layoutE);
-            else {
-    			double lb = gd<DDNode>(left).cur.x - config.LeftExtent(left);
-    			if(!got || glb > lb)
-    				glb = lb;
-			}
-			if(gd<DDNode>(right).amEdgePart())
-                edgeEdges.insert(gd<DDEdge>(*right->outs().begin()).path->layoutE);
-            else {
-    			double rb = gd<DDNode>(right).cur.x + config.RightExtent(right);
-    			if(!got || grb < rb)
-    				grb = rb;
-			}
-			got = true;
+			double lb = gd<DDNode>(left).cur.x - config.LeftExtent(left);
+			if(!got || lb < glb)
+				glb = lb;
+			double rb = gd<DDNode>(right).cur.x + config.RightExtent(right);
+			if(!got || rb > grb)
+				grb = rb;
+            got = true;
 		}
-    for(DynaDAGLayout::graphedge_iter ei = edgeEdges.edges().begin(); ei!= edgeEdges.edges().end(); ++ei)
-        for(Line::iterator pi = DDp(*ei)->unclippedPath.begin(); pi!=DDp(*ei)->unclippedPath.end(); ++pi) {
-			if(!got || glb > pi->x)
-				glb = pi->x;
-			if(!got || grb < pi->x)
-				grb = pi->x;
-        }            
 	Bounds bb;
 	if(got) {
 		bb.valid = true;
@@ -210,6 +194,23 @@ void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
 		bb.r = grb;
 		bb.b = bottom->yBelow(0);
 	}
+	if(assign_unclose(gd<GraphGeom>(&world_->current_).bounds,bb))
+		ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
+}
+void DynaDAGServer::expandBoundsToEdges(DDChangeQueue &changeQ) {
+    Bounds bb = gd<GraphGeom>(&world_->current_).bounds;
+    // bezier control points form convex hull - use that to expand bounds
+    for(DynaDAGLayout::graphedge_iter ei = changeQ.current->edges().begin(); ei!= changeQ.current->edges().end(); ++ei)
+        for(Line::iterator pi = DDp(*ei)->unclippedPath.begin(); pi!=DDp(*ei)->unclippedPath.end(); ++pi) {
+			if(pi->x < bb.l)
+				bb.l = pi->x;
+			if(pi->x > bb.r)
+				bb.r = pi->x;
+			if(pi->y > bb.t)
+                bb.t = pi->y;
+            if(pi->y < bb.b)
+                bb.b = pi->y;
+        }          
 	if(assign_unclose(gd<GraphGeom>(&world_->current_).bounds,bb))
 		ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
 }
@@ -301,7 +302,7 @@ void DynaDAGServer::Process() {
 		config.SetYs();
 		moveNodesBasedOnModel(Q);
 		drawIntermediateEdges(Q);
-		updateBounds(Q);
+		findBounds(Q);
 		NextProcess();
 		// client has heard about inserts so they're now mods, 
 		// and deletes can be blown away (should someone Higher do this?)
@@ -355,13 +356,15 @@ void DynaDAGServer::Process() {
 		return;
 	}
 
+	// calculate initial bounding rectangle
+	findBounds(Q);
+
 	// find node & edge moves
 	moveNodesBasedOnModel(Q);
 	findFlowSlopes(Q);
 	drawFinalEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
-
-	// calculate bounding rectangle
-	updateBounds(Q);
+	
+    expandBoundsToEdges(Q);
 
 	timer.LoopPoint(dgr::timing,"draw splines");
 

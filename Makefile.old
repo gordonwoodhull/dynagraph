@@ -1,11 +1,8 @@
-all : dynagraph gengraph
-#graphsearch/graphsearch
-
 ROOT=.
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
-SUBDIRS = common dynadag incrface pathplot shortspline graphsearch fdp shortspline voronoi
+SUBDIRS = common dynadag incrface pathplot shortspline fdp shortspline voronoi
 
 INCS = -I. \
 	-I.. -I../cdt \
@@ -34,6 +31,11 @@ MANS =
 
 GET_VERSION = `./dynagraph --v3rs10n`
 
+all : build-libs dynagraph gengraph
+
+build-libs:
+	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE)); done)       
+
 dynagraph-whole : $(OBJS) common/libdynagraph.a dynadag/libdynadag.a incrface/libincrface.a pathplot/libpathplot.a fdp/libfdp.a voronoi/libvoronoi.a shortspline/libshortspline.a
 	$(CPPSLD) $(LDFLAGS) $(OBJS) $(DGLIBS) $(GVIZLIBS) $(THREADLIBS) -o dynagraph-whole
 
@@ -48,30 +50,6 @@ release: dynagraph
 gengraph : gengraph.o common/libdynagraph.a
 	$(CPPSLD) $(LDFLAGS) gengraph.o $(GGLIBS) $(THREADLIBS) -o gengraph
 
-graphsearch/graphsearch :
-	(cd graphsearch; $(MAKE))
-
-common/libdynagraph.a :
-	(cd common; $(MAKE))
-
-dynadag/libdynadag.a :
-	(cd dynadag; $(MAKE))
-
-incrface/libincrface.a :
-	(cd incrface; $(MAKE))
-
-pathplot/libpathplot.a :
-	(cd pathplot; $(MAKE))
-
-fdp/libfdp.a :
-	(cd fdp; $(MAKE))
-
-voronoi/libvoronoi.a :
-	(cd voronoi; $(MAKE))
-
-shortspline/libshortspline.a :
-	(cd shortspline; $(MAKE))
-
 install: dynagraph gengraph
 	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE) install); done)       
 	$(MKPATH) $(BINDIR)
@@ -83,6 +61,6 @@ test:
 distclean clean:
 	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE) $@); done)     
 	(cd tests; $(MAKE) clean)  
-	$(RM) *.o core dynagraph gengraph
+	$(RM) *.o core dynagraph dynagraph-whole gengraph
 
 -include $(OBJS:%.o=$(DEPDIR)/%.P)

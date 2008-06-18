@@ -14,7 +14,8 @@ OPT_DOTCO=-d
 
 OUTDIR=results
 
-run: *.incr showem
+run: *.incr
+	$(MAKE) showem
 
 showem:
 	@echo Searching output for exceptions...

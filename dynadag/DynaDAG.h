@@ -76,7 +76,8 @@ private:
 	void closeLayoutEdge(DynaDAGLayout::Edge *e);
 	void executeDeletions(DDChangeQueue &changeQ);
 	void findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &outN,DynaDAGLayout &outE);
-	void updateBounds(DDChangeQueue &changeQ);
+	void findBounds(DDChangeQueue &changeQ);
+	void expandBoundsToEdges(DDChangeQueue &changeQ);
 	void moveNodesBasedOnModel(DDChangeQueue &changeQ);
 
 	void sketchEdge(DynaDAGLayout::Edge *e); 

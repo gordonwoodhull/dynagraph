@@ -14,7 +14,7 @@ void header(ostream &out) {
 		"\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">" << endl;
 	out << "<svg width=\"100%%\" height=\"100%%\">" << endl;
 }
-void line(ostream &out,const Line &shape,Coord ul,Coord ofs) {
+void line(ostream &out,const Line &shape,Coord ul,Coord ofs,std::string const& color) {
 	if(shape.size()) {
 		out << "<path d=\"M" << shape[0].x+ofs.x-ul.x << ' ' << ul.y-(shape[0].y+ofs.y) << ' ';
 		switch(shape.degree) {
@@ -31,7 +31,7 @@ void line(ostream &out,const Line &shape,Coord ul,Coord ofs) {
 				out << ' ';
 		}
 		out << '"' << endl <<
-			"style=\"fill:none;stroke:rgb(0,0,0);stroke-width:0.1\"/>" << endl;
+			"style=\"fill:none;stroke:"<<color<<";stroke-width:0.3\"/>" << endl;
 	}
 }
 void footer(ostream &out) {

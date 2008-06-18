@@ -254,18 +254,40 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 				return true;
 			case DG_SPLINELEVEL_SHORTEST:
 			case DG_SPLINELEVEL_SPLINE: {
+				Line polylineRoute;
 				try {
-					Line polylineRoute;
-					try {
-						PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
-					}
-					catch(PathPlot::InvalidBoundary) {
-						SVG::header(reports[dgr::svg_bug]);
-						SVG::line(reports[dgr::svg_bug],region,tailpt);
-						SVG::footer(reports[dgr::svg_bug]);
-						throw;
-					}
-					if(level==DG_SPLINELEVEL_SPLINE) {
+					PathPlot::Shortest(region,Segment(tailpt,headpt),polylineRoute);
+				}
+				catch(...) {
+				    if(reports.enabled(dgr::svg_bug)) {
+    					SVG::header(reports[dgr::svg_bug]);
+                        Line boundary = region;
+                        boundary.push_back(boundary[0]);
+    					SVG::line(reports[dgr::svg_bug],boundary,tailpt,"rgb(234,2,77)");
+    					
+                        Bounds &bounds = gd<GraphGeom>(e->g).bounds;
+                        Line canvas_bounds(5);
+                        canvas_bounds.degree = 1;
+                        canvas_bounds[0] = bounds.NW();
+                        canvas_bounds[1] = bounds.NE();
+                        canvas_bounds[2] = bounds.SE();
+                        canvas_bounds[3] = bounds.SW();
+                        canvas_bounds[4] = bounds.NW();
+                        SVG::line(reports[dgr::svg_bug],canvas_bounds,tailpt,"rgb(4,187,67)");
+    					SVG::footer(reports[dgr::svg_bug]);
+    				}
+					
+					// punt and just draw straight line - this error is unacceptable but continuable
+					// (maybe message warning?)
+        			unclipped.degree = 1;
+        			unclipped.push_back(tailpt);
+        			unclipped.push_back(headpt);
+                    break;
+				}
+				if(level==DG_SPLINELEVEL_SHORTEST)
+					unclipped = polylineRoute;
+				else
+    				try {
 						PathPlot::SegmentV barriers;
 						PathPlot::PolyBarriers(PathPlot::LineV(1,region),barriers);
 
@@ -281,12 +303,10 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 						}
 						dgcheck(PathPlot::Route(barriers,polylineRoute,endSlopes,unclipped));
 					}
-					else
-						unclipped = polylineRoute;
-				}
-				catch(...) {
-					//return false;
-				}
+					catch(...) {
+					    // again unacceptable bug but continuable
+                        unclipped = polylineRoute;
+					}
 				for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
 					if(config.IsSuppressed(*ni)) 
 						gd<DDNode>(*ni).actualXValid = false;
