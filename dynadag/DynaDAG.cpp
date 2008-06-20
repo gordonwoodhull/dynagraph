@@ -20,6 +20,7 @@
 #include "common/time-o-matic.h"
 #include "common/PhaseMinder.h"
 #include "common/ChangeTools.h"
+#include "common/CalculateBounds.h"
 
 using namespace std;
 
@@ -197,7 +198,8 @@ void DynaDAGServer::findBounds(DDChangeQueue &changeQ) {
 	if(assign_unclose(gd<GraphGeom>(&world_->current_).bounds,bb))
 		ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
 }
-void DynaDAGServer::expandBoundsToEdges(DDChangeQueue &changeQ) {
+void DynaDAGServer::findObjectBounds(DDChangeQueue &changeQ) {
+    /*
     Bounds bb = gd<GraphGeom>(&world_->current_).bounds;
     // bezier control points form convex hull - use that to expand bounds
     for(DynaDAGLayout::graphedge_iter ei = changeQ.current->edges().begin(); ei!= changeQ.current->edges().end(); ++ei)
@@ -210,8 +212,9 @@ void DynaDAGServer::expandBoundsToEdges(DDChangeQueue &changeQ) {
                 bb.t = pi->y;
             if(pi->y < bb.b)
                 bb.b = pi->y;
-        }          
-	if(assign_unclose(gd<GraphGeom>(&world_->current_).bounds,bb))
+        }
+        */
+    if(CalculateBounds(changeQ.current))          
 		ModifyFlags(changeQ) |= DG_UPD_BOUNDS;
 }
 void DynaDAGServer::moveNodesBasedOnModel(DDChangeQueue &changeQ) {
@@ -356,7 +359,7 @@ void DynaDAGServer::Process() {
 		return;
 	}
 
-	// calculate initial bounding rectangle
+	// calculate bounding rectangle for splines
 	findBounds(Q);
 
 	// find node & edge moves
@@ -364,7 +367,8 @@ void DynaDAGServer::Process() {
 	findFlowSlopes(Q);
 	drawFinalEdges(Q,ModifyFlags(Q).flags&DG_UPD_EDGESTYLE);
 	
-    expandBoundsToEdges(Q);
+	// calculate actual bounding rectangle of all objects
+    findObjectBounds(Q);
 
 	timer.LoopPoint(dgr::timing,"draw splines");
 
