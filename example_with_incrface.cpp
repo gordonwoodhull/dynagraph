@@ -55,7 +55,7 @@ struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
 #endif
 		// this flag is necessary if the application is going to call incr_ev_open_graph
 		// or createServer and then also process an "open graph" incrface command
-		// as this example does and e.g. when receiving from graphsearch
+		// as this example does 
         m_allowOneReopen = true;
 	}
 };

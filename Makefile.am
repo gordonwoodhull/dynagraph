@@ -12,7 +12,7 @@ CFLAGS = @CFLAGS@ -DDATE="\"`date`\""
 
 noinst_HEADERS = 
 
-SUBDIRS = common dynadag fdp graphsearch incrface shortspline voronoi
+SUBDIRS = common dynadag fdp incrface shortspline voronoi
 
 bin_PROGRAMS = dynagraph
 
