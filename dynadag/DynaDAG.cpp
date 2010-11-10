@@ -156,9 +156,11 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 		for(DynaDAGLayout::nodeedge_iter ei = (*ni)->alledges().begin(); ei!=(*ni)->alledges().end(); ++ei)
 			outE.insert(*ei);
 	if(reports.enabled(dgr::dynadag)) {
+	    /*
 		loops.Field(dgr::dynadag,"number of layout nodes",world_->current_.nodes().size());
 		loops.Field(dgr::dynadag,"layout nodes for crossopt",outN.nodes().size());
 		loops.Field(dgr::dynadag,"layout edges for crossopt",outE.edges().size());
+		*/
 	}
 }
 void DynaDAGServer::findBounds(DDChangeQueue &changeQ) {
@@ -276,26 +278,35 @@ PhaseMinder g_dynadagPhaseMinder(g_dynadagPhases,g_nDynadagPhases);
 
 void DynaDAGServer::Process() {
 	ChangeQueue<DynaDAGLayout> &Q = this->world_->Q_;
+	
+    loops.Start(dgr::dynadag);
+    /*
 	loops.Field(dgr::dynadag,"nodes inserted - input",Q.insN.nodes().size());
 	loops.Field(dgr::dynadag,"edges inserted - input",Q.insE.edges().size());
 	loops.Field(dgr::dynadag,"nodes modified - input",Q.modN.nodes().size());
 	loops.Field(dgr::dynadag,"edges modified - input",Q.modE.edges().size());
 	loops.Field(dgr::dynadag,"nodes deleted - input",Q.delN.nodes().size());
 	loops.Field(dgr::dynadag,"edges deleted - input",Q.delE.nodes().size());
+	*/
+	
+    loops.Start(dgr::timing);
 	
 	if(!ChangesAreRelevant(Q)) {
 		NextProcess();
 		Q.Clear(); 
 		return;
 	}
+	timer.LoopPoint(dgr::timing,"preliminary");
+    loops.Field(dgr::dynadag,"layout nodes", Q.current->nodes().size());
+    loops.Field(dgr::dynadag,"layout edges", Q.current->edges().size());
 
 	// erase model objects for everything that's getting deleted
 	executeDeletions(Q);
-	timer.LoopPoint(dgr::timing,"preliminary");
 
 	// synch model graph with changes
 	config.Update(Q);
 	loops.Field(dgr::dynadag,"model nodes",model.nodes().size());
+	loops.Field(dgr::dynadag,"model edges",model.edges().size());
 	timer.LoopPoint(dgr::timing,"update model graph");
 
 	// Update has accounted for the new..Ranks, so they are now old..Ranks
@@ -371,17 +382,23 @@ void DynaDAGServer::Process() {
     findObjectBounds(Q);
 
 	timer.LoopPoint(dgr::timing,"draw splines");
+    loops.Finish(dgr::timing);
 
 	rememberOldPositions();
 
 	dumpModel();
 
+/*
 	loops.Field(dgr::dynadag,"nodes inserted - output",Q.insN.nodes().size());
 	loops.Field(dgr::dynadag,"edges inserted - output",Q.insE.edges().size());
 	loops.Field(dgr::dynadag,"nodes modified - output",Q.modN.nodes().size());
 	loops.Field(dgr::dynadag,"edges modified - output",Q.modE.edges().size());
 	loops.Field(dgr::dynadag,"nodes deleted - output",Q.delN.nodes().size());
 	loops.Field(dgr::dynadag,"edges deleted - output",Q.delE.nodes().size());
+*/
+	
+	loops.Finish(dgr::dynadag);
+    
 	if(reports.enabled(dgr::readability)) {
 		Crossings cc = calculateCrossings(config);
 		loops.Field(dgr::readability,"edge-edge crossings",cc.edgeEdgeCross);

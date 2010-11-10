@@ -14,8 +14,12 @@
 **********************************************************/
 
 #include "DuplicateStream.h"
+#include <cstring>
 
 namespace Dynagraph {
+
+int g_maxWait=-1;
+bool g_randomizeWait = false;
 
 DuplicateIn::DuplicateIn(FILE *input, std::ostream &log) : input_(input), log_(log),RAND_MULT(2*g_maxWait/RAND_MAX) {
 	int fd[2];
@@ -42,7 +46,7 @@ void DuplicateIn::go() {
 				}
 				//else boost::thread().yield();
 			}
-			log_.write(buf,strlen(buf));
+			log_.write(buf,std::strlen(buf));
 			fputs(buf,toPipe_);
 		}
 	}

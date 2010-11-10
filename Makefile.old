@@ -25,19 +25,19 @@ GGLIBS = -Lcommon -ldynagraph \
        -L$(GRAPHVIZ_LIB) \
        -lcdt -lagraph
 
-OBJS = main.o IncrCalledBack.o DuplicateStream.o createConfiguration.o
+OBJS = IncrCalledBack.o DuplicateStream.o createConfiguration.o
 
 MANS = 
 
 GET_VERSION = `./dynagraph --v3rs10n`
 
-all : build-libs dynagraph gengraph
+all : build-libs dynagraph gengraph example
 
 build-libs:
 	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE)); done)       
 
-dynagraph-whole : $(OBJS) common/libdynagraph.a dynadag/libdynadag.a incrface/libincrface.a pathplot/libpathplot.a fdp/libfdp.a voronoi/libvoronoi.a shortspline/libshortspline.a
-	$(CPPSLD) $(LDFLAGS) $(OBJS) $(DGLIBS) $(GVIZLIBS) $(THREADLIBS) -o dynagraph-whole
+dynagraph-whole : main.o $(OBJS) common/libdynagraph.a dynadag/libdynadag.a incrface/libincrface.a pathplot/libpathplot.a fdp/libfdp.a voronoi/libvoronoi.a shortspline/libshortspline.a
+	$(CPPSLD) $(LDFLAGS) main.o $(OBJS) $(DGLIBS) $(GVIZLIBS) $(THREADLIBS) -o dynagraph-whole
 
 dynagraph: dynagraph-whole
 	strip dynagraph-whole -o dynagraph
@@ -49,6 +49,9 @@ release: dynagraph
 
 gengraph : gengraph.o common/libdynagraph.a
 	$(CPPSLD) $(LDFLAGS) gengraph.o $(GGLIBS) $(THREADLIBS) -o gengraph
+	
+example : cpp_interface_example.o $(OBJS)
+	$(CPPSLD) $(LDFLAGS) cpp_interface_example.o $(OBJS) $(DGLIBS) $(GVIZLIBS) $(THREADLIBS) -o example
 
 install: dynagraph gengraph
 	(for i in ${SUBDIRS}; do (cd $$i; $(MAKE) install); done)       

@@ -1,4 +1,4 @@
-open graph GRAPH1 [intermediate=true]
+open graph GRAPH1 []
 lock graph GRAPH1
 insert node GRAPH1 0 [shape=box, height=0.4444444444444444, width=0.3333333333333333, suppressed=true, color=-3604536, stroke_clr=-3604536, thickness=0]
 modify node GRAPH1 0 [suppressed=false]

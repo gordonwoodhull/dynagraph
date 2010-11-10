@@ -25,9 +25,10 @@
 namespace Dynagraph {
 
 struct RegisteringConfigurator {
-	template<typename Configurators,typename Layout> 
+	template<typename ConfigRange,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		BOOST_MPL_ASSERT((boost::mpl::empty<Configurators>)); // must be end of line
+		BOOST_MPL_ASSERT((typename boost::is_same<typename boost::mpl::first<ConfigRange>::type, 
+    	                                        typename boost::mpl::second<ConfigRange>::type>)); // must be end of line
 		// handler for parser
 		IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
 		// its handler (request command deferred)

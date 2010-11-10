@@ -1,7 +1,7 @@
 #!/bin/sh
 exts=
-opts=-x
-for i in $4 $5 $6 $7 $8 $9
+opts="-x $4"
+for i in $5 $6 $7 $8 $9
 do 
 	if test $i = dotco
 	then opts="$opts -d"

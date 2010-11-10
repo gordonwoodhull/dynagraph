@@ -16,6 +16,8 @@
 #ifndef EnginePair_h
 #define EnginePair_h
 
+#include "common/ChangeProcessor.h"
+
 namespace Dynagraph {
 
 template<typename Graph>
@@ -61,6 +63,9 @@ struct EnginePair : std::pair<LinkedChangeProcessor<Graph>*,LinkedChangeProcesso
 		this->second = other.second;
 		if(!this->first)
 			this->first = other.first;
+	}
+	ChangingGraph<Graph> *world() {
+        return this->first?this->first->world_:0;            
 	}
 };
 

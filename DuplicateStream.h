@@ -32,11 +32,11 @@ inline void pipe(int fd[2]) {
 #include <unistd.h>
 #endif
 
-extern bool g_xeptFatal;
-extern int g_maxWait;
-extern bool g_randomizeWait;
 
 namespace Dynagraph {
+
+extern int g_maxWait;
+extern bool g_randomizeWait;
 
 struct DuplicateIn {
 	DuplicateIn(FILE *input, std::ostream &log);

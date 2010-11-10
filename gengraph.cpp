@@ -94,7 +94,7 @@ int main(int narg,char *argh[]) {
 		sprintf(name,"%d",E);
 		StrGraph::Edge *e = g.create_edge(ez[t],ez[h],name).first;
 		if(colors) {
-			char *color=0;
+			const char *color=0;
 			switch(rand()%3) {
 				case 0: color = "red";
 					break;

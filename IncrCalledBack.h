@@ -35,6 +35,7 @@ struct IncrCalledBack : IncrCallbacks {
     void incr_cb_message(const char *msg);
 };
 extern IncrCalledBack g_incrPhone;
+extern StrAttrs g_defaultGraphAttrs;
 
 struct HandlerCreationFailed : DGException {
 	HandlerCreationFailed() : DGException("failed to create layout or engines",true) {}

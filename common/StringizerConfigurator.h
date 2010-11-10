@@ -22,11 +22,6 @@
 
 namespace Dynagraph {
 
-// these globals should get folded into graph attributes, eliminating much useless code
-extern Transform *g_transform;
-extern bool g_useDotDefaults;
-
-
 struct StringizerConfigurator {
 	template<typename Configurators,typename Layout> 
 	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {

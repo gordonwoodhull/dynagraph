@@ -13,47 +13,63 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-#include "LayoutChooserConfigurator.h"
-#include "dynadag/EdgeSuppressorConfigurator.h"
-#include "dynadag/EnsureParallelEdgeRanksConfigurator.h"
-#include "dynadag/ClearExtraRanksConfigurator.h"
-#include "dynadag/EmphasizeFlowConfigurator.h"
-#include "dynadag/RankerConfigurator.h"
-#include "common/CoordTranslatorConfigurator.h"
-#include "common/ShapeGeneratorConfigurator.h"
-#include "common/ColorByAgeConfigurator.h"
-#include "common/FindChangeRectsConfigurator.h"
-#include "common/UpdateCurrentConfigurator.h"
+#include "LayoutConfigurators.h"
 #include "common/StringizerConfigurator.h"
 #include "incrface/RegisteringConfigurator.h"
 
-#include <boost/mpl/list.hpp>
+#include <boost/mpl/joint_view.hpp>
 
 namespace mpl = boost::mpl;
 
 namespace Dynagraph {
+    
+typedef boost::mpl::joint_view<LayoutConfigurators, 
+    mpl::list<StringizerConfigurator,RegisteringConfigurator> > IncrConfigurators;
 
-// the order of configurators is "magic" 
-// a more clever (perhaps too clever) way to do this might be to specify 
-// dependencies and order constraints on configurators(?)
-typedef mpl::list<
-	LayoutChooserConfigurator,
-	DynaDAG::EdgeSuppressorConfigurator,
-	DynaDAG::EnsureParallelEdgeRanksConfigurator,
-	DynaDAG::ClearExtraRanksConfigurator,
-	DynaDAG::EmphasizeFlowConfigurator,
-	DynaDAG::RankerConfigurator,
-	CoordTranslatorConfigurator,
-	ShapeGeneratorConfigurator,
-	ColorByAgeConfigurator,
-	FindChangeRectsConfigurator,
-	UpdateCurrentConfigurator,
-	StringizerConfigurator,
-	RegisteringConfigurator
-> Configurators;
-
-void createConfiguration(Name name,StrAttrs &attrs) {
-	configureLayout<Configurators>(name,attrs);
+void createIncrConfiguration(Name name,StrAttrs &attrs) {
+	configureLayout<IncrConfigurators>(name,attrs);
 }
+
+template<typename InTranslator, typename OutTranslator, typename OuterLayout, typename InnerLayout>
+EnginePair<OuterLayout> wrapWorld(ChangingGraph<InnerLayout> *innerWorld, EnginePair<InnerLayout> innerEngines) {
+	typedef InternalWorld<OuterLayout, InnerLayout> InWorld;
+	ChangingGraph<OuterLayout> *outerWorld = new ChangingGraph<GeneralLayout>;
+	InWorld *inWorld = new InWorld(outerWorld,innerWorld);
+	inWorld->inTranslators_.push_back(new InTranslator(outerWorld,innerWorld));
+	inWorld->outTranslators_.push_back(new OutTranslator(innerWorld,outerWorld));
+	innerEngines.Prepend(new UpdateCurrentProcessor<InnerLayout>(innerWorld));
+	inWorld->innerEngines_ = innerEngines;
+	inWorld->CompleteConfiguration();
+	EnginePair<OuterLayout> outerEngines;
+	outerEngines.Append(inWorld);
+	outerEngines.Append(new OkayEngine<OuterLayout>(outerWorld));
+    return outerEngines;
+}
+// the final type of layout is built up by the chain of templated configurators
+// this configurator wraps any layout/engines in all-purpose layout/engines
+struct GeneralizerConfigurator {
+    static EnginePair<GeneralLayout> s_outerEngines;
+    // possibly overload this for Layout already==GeneralLayout
+	template<typename ConfigRange,typename Layout> 
+	static void config(DString name,const StrAttrs &attrs, ChangingGraph<Layout> *innerWorld, EnginePair<Layout> innerEngines) {
+		BOOST_MPL_ASSERT((typename boost::is_same<typename boost::mpl::first<ConfigRange>::type, 
+    	                                        typename boost::mpl::second<ConfigRange>::type>)); // must be end of line
+		typedef LayoutToLayoutTranslator<GeneralLayout,Layout> InTranslator;
+		typedef LayoutToLayoutTranslator<Layout,GeneralLayout> OutTranslator;
+		gd<Name>(&innerWorld->whole_) = name+"_specific";
+        s_outerEngines = wrapWorld<InTranslator, OutTranslator, GeneralLayout>(innerWorld, innerEngines); // not thread-safe
+    }
+};
+EnginePair<GeneralLayout> GeneralizerConfigurator::s_outerEngines;
+
+typedef boost::mpl::push_back<LayoutConfigurators, GeneralizerConfigurator > 
+    CppConfigurators;
+
+EnginePair<GeneralLayout> createCppConfiguration(Name name,StrAttrs &attrs) {
+	configureLayout<IncrConfigurators>(name,attrs);
+    return GeneralizerConfigurator::s_outerEngines;
+}
+
+
 
 } // namespace Dynagraph

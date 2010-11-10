@@ -161,7 +161,7 @@ extern dgr reports;
 struct LoopMinder {
 	char sep;
 	void Start(dgr::reportType rt);
-	void Field(dgr::reportType rt,char *colname,double val);
+	void Field(dgr::reportType rt,const char *colname,double val);
 	void Finish(dgr::reportType rt);
 	void Cancel();
 private:
@@ -176,7 +176,7 @@ private:
 	FieldSet &getFieldSet(dgr::reportType rt) {
 		return m_fieldSets[&reports[rt]];
 	}
-	void doField(FieldSet &f,char *colname,double val);
+	void doField(FieldSet &f,const char *colname,double val);
 };
 extern LoopMinder loops;
 

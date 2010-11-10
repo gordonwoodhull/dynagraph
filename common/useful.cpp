@@ -58,7 +58,7 @@ void LoopMinder::Start(dgr::reportType rt) {
 		f.data.clear();
 	}
 }
-void LoopMinder::doField(FieldSet &f,char *colname,double val) {
+void LoopMinder::doField(FieldSet &f,const char *colname,double val) {
 	if(f.state==FieldSet::first)
 		f.names.push_back(colname);
 #ifdef _DEBUG
@@ -70,7 +70,7 @@ void LoopMinder::doField(FieldSet &f,char *colname,double val) {
 #endif
 	f.data.push_back(val);
 }
-void LoopMinder::Field(dgr::reportType rt,char *colname,double val) {
+void LoopMinder::Field(dgr::reportType rt,const char *colname,double val) {
 	if(rt==-1)
 		for(FieldSets::iterator fi = m_fieldSets.begin(); fi!=m_fieldSets.end(); ++fi)
 			doField(fi->second,colname,val);
@@ -89,6 +89,7 @@ void LoopMinder::Finish(dgr::reportType rt) {
 					reports[rt] << '"' << si->c_str() << '"' << sep;
 				else
 					reports[rt] << '"' << si->c_str() << '"';
+            reports[rt] << std::endl;
 		}
 		vector<double>::iterator di;
 		for(di = f.data.begin(); di!=f.data.end(); ++di)
@@ -96,6 +97,7 @@ void LoopMinder::Finish(dgr::reportType rt) {
 				reports[rt] << *di << sep;
 			else
 				reports[rt] << *di;
+        reports[rt] << std::endl;
 		f.state = FieldSet::done;
 	}
 }

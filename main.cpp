@@ -23,6 +23,7 @@
 #include "common/Transform.h"
 #include "incrface/incrparse.h"
 #include "incrface/IncrLangEvents.h"
+#include "IncrCalledBack.h"
 #include "common/ag2str.h"
 #include "incrface/incrcmds.h"
 
@@ -40,14 +41,6 @@ using namespace Dynagraph;
 char *g_outdot=0;
 int g_count=1;
 bool g_xeptFatal=false;
-int g_maxWait=-1;
-bool g_randomizeWait = false;
-
-namespace Dynagraph {
-	StrAttrs g_defaultGraphAttrs;
-	Transform *g_transform;
-	bool g_useDotDefaults;
-}
 
 struct CouldntOpen {};
 
@@ -58,7 +51,7 @@ template<typename V>
 struct switchval {
 	char c;
 	V v;
-	char *desc;
+	const char *desc;
 };
 switchval<dgr::reportType> g_reports[] = {
 	{'i',dgr::input_raw,"(raw) input"},

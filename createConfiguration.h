@@ -17,10 +17,15 @@
 #define createConfiguration_h
 
 #include "common/ChangingGraph.h"
+#include "common/GeneralLayout.h"
+#include "common/EnginePair.h"
 
 namespace Dynagraph {
 
-void createConfiguration(Name name,StrAttrs &attrs);
+void createIncrConfiguration(Name name,StrAttrs &attrs);
+EnginePair<GeneralLayout> createCppConfiguration(Name name,StrAttrs &attrs);
+
+/*
 template<typename SourceLayout>
 bool changeConfiguration(ChangingGraph<SourceLayout> *source,StrAttrs &attrs) {
 	if(attrs.look("layout")) {
@@ -30,6 +35,7 @@ bool changeConfiguration(ChangingGraph<SourceLayout> *source,StrAttrs &attrs) {
 	}
 	return false;
 }
+*/
 
 } // namespace Dynagraph
 

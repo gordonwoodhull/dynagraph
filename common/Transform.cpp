@@ -20,6 +20,8 @@
 
 namespace Dynagraph {
 
+Transform *g_transform;
+bool g_useDotDefaults;
 Transform g_dotRatios(Coord(72,72), // node sizes in inches
 						Coord(1,1)); // position in up-positive points (isn't this inverted from dot?)
 

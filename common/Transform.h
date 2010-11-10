@@ -58,6 +58,10 @@ public:
 };
 // dot transform: node size in inches
 extern Transform g_dotRatios;
+// it would be nice to make these ugly configuration globals go away!
+// program initialization must set them up
+extern Transform *g_transform;
+extern bool g_useDotDefaults;
 
 bool transformShape(Transform *trans,Line &shape);
 
