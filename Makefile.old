@@ -11,7 +11,7 @@ INCS = -I. \
 DEFINES = -DHAVE_CONFIG_H
 
 GVIZLIBS = -L$(GRAPHVIZ_LIB) \
-       -lagraph -lpathplan -lcdt
+       -lcgraph -lpathplan -lcdt
 
 DGLIBS = -Lincrface -lincrface \
 	-Ldynadag -ldynadag \
@@ -23,7 +23,7 @@ DGLIBS = -Lincrface -lincrface \
 
 GGLIBS = -Lcommon -ldynagraph \
        -L$(GRAPHVIZ_LIB) \
-       -lcdt -lagraph
+       -lcdt -lcgraph
 
 OBJS = IncrCalledBack.o DuplicateStream.o createConfiguration.o
 

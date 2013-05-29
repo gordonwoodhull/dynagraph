@@ -32,7 +32,9 @@
 // I'm sure there's a more modern way to do this....
 //#define STRINGDICT_USE_STL
 #ifndef STRINGDICT_USE_STL
+extern "C" {
 #include "cdt.h"
+}
 #else
 #include <map>
 #include <string>

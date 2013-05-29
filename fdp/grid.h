@@ -18,7 +18,9 @@
 #ifndef GRID_H
 #define GRID_H
 
+extern "C" {
 #include "cdt.h"
+}
 #include "common/derivable_dt.h"
 #include "common/freelist.h"
 #include <list>

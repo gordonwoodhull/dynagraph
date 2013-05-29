@@ -39,12 +39,12 @@ StrGraph *doSubgraph(Remem &remem,StrGraph *main,StrGraph *super,Agraph_t *g) {
 	StrGraph *ret = new StrGraph(super);
 	gd<Name>(ret) = agnameof(g);
 	Agnode_t *n;
-	for(n = agfstnode(g); n; n=agnxtnode(n)) {
+	for(n = agfstnode(g); n; n=agnxtnode(g,n)) {
 		Agnode_t *n0 = agsubnode(g->root,n,false);
 		StrGraph::Node *nn0 = remem[n0];
 		ret->insert(nn0);
 		Agedge_t *e;
-		for(e = agfstout(n); e; e = agnxtout(e)) {
+		for(e = agfstout(g,n); e; e = agnxtout(g,e)) {
 			Agnode_t *h0 = agsubnode(g->root,aghead(e),false);
 			StrGraph::Node *hh0 = remem[h0];
 			ret->insert(hh0);
@@ -66,7 +66,7 @@ StrGraph *ag2str(Agraph_t *g) {
 
 	int anonN(0);
 	Agnode_t *n;
-	for(n = agfstnode(g);n;n = agnxtnode(n)) {
+	for(n = agfstnode(g);n;n = agnxtnode(g,n)) {
 		char *name = agnameof(n),
 			buf[30];
 		if(!name || !name[0]) {
@@ -81,9 +81,9 @@ StrGraph *ag2str(Agraph_t *g) {
 				gd<StrAttrs>(nn)[sym->name] = val;
 		}
 	}
-	for(n = agfstnode(g);n;n = agnxtnode(n)) {
+	for(n = agfstnode(g);n;n = agnxtnode(g,n)) {
 		StrGraph::Node *tail = remem[n];
-		for(Agedge_t *e = agfstout(n); e; e = agnxtout(e)) {
+		for(Agedge_t *e = agfstout(g,n); e; e = agnxtout(g,e)) {
 			StrGraph::Node *head = remem[aghead(e)];
 			char *name = agnameof(e);
             NamedAttrs nattr(name);
@@ -112,7 +112,7 @@ Agraph_t *doSubgraph(Agraph_t *super,StrGraph *root,StrGraph *gg) {
 		Agnode_t *n0 = agnode(super->root,kc(gd<Name>(*ni).c_str()),false);
 		for(StrGraph::outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end(); ++ei) {
 			Agnode_t *h0 = agnode(super->root,kc(gd<Name>((*ei)->head).c_str()),false);
-			Agedge_t *e0 = agedge(n0,h0,kc(gd<Name>(*ei).c_str()),false);
+			Agedge_t *e0 = agedge(super->root,n0,h0,kc(gd<Name>(*ei).c_str()),false);
 			agsubedge(ret,e0,true);
 		}
 	}
@@ -140,7 +140,7 @@ Agraph_t *str2ag(StrGraph *gg) {
     Agnode_t *tail = agnode(g,kc(gd<Name>(*ni).c_str()),false);
     for(StrGraph::outedge_iter ei = (*ni)->outs().begin(); ei!=(*ni)->outs().end(); ++ei) {
       Agnode_t *head = agnode(g,kc(gd<Name>((*ei)->head).c_str()),false);
-      Agedge_t *e = agedge(tail,head,kc(gd<Name>(*ei).c_str()),true);
+      Agedge_t *e = agedge(g,tail,head,kc(gd<Name>(*ei).c_str()),true);
 	  if(e) // self edges lost
 		  for(StrAttrs::iterator mi = gd<StrAttrs>(*ei).begin(); mi!=gd<StrAttrs>(*ei).end(); ++mi)
 		SetAttr(e,AGEDGE,mi->first.c_str(),mi->second.c_str());

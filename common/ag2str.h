@@ -23,7 +23,7 @@
 #include "StrAttr.h"
 
 extern "C" {
-	#include "agraph.h"
+	#include "cgraph.h"
 };
 
 namespace Dynagraph {

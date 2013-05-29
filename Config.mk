@@ -7,8 +7,8 @@ ARCH=osx
 INSTALLROOT=/usr/local
 
 # specify where to find graphviz 
-GRAPHVIZ_INC = /usr/local/graphviz/include
-GRAPHVIZ_LIB = /usr/local/graphviz/lib
+GRAPHVIZ_INC = /usr/local/include/graphviz
+GRAPHVIZ_LIB = /usr/local/lib
 
 # specify where to find boost
 BOOST_INC = /usr/local/include

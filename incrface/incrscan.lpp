@@ -3,7 +3,7 @@
 #pragma prototyped
 #include <stdio.h>
 extern "C" {
-#include "agraph.h"
+#include "cgraph.h"
 }
 #include "incrface/incrgram.h"
 #include "common/StringDict.h"
