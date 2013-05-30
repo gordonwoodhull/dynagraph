@@ -279,7 +279,7 @@ struct NamedGraph : LGraph<ADTPolicy,AllowParallel,GData,NData,EData,GIData,NIDa
 			*h = fetch_node(head);
 		if(!t || !h)
 			return 0;
-		return first_edge(t,h);
+		return this->first_edge(t,h);
 	}
 	Edge *fetch_edge(Node *tail,Node *head,DString name) {
 		return fetch_edge(tail,head,name,false).first;

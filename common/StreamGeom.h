@@ -55,7 +55,7 @@ inline std::ostream & operator <<(std::ostream &os,const Position &write) {
 	return os;
 }
 inline std::istream & operator >>(std::istream &is, Position &read) {
-	if(read.valid = !is.eof())
+        if((read.valid = !is.eof()))
 		is >> (Coord &)read;
 	return is;
 }
@@ -87,7 +87,7 @@ inline std::ostream & operator <<(std::ostream &os,const Bounds &write) {
 	return os;
 }
 inline std::istream & operator >>(std::istream &is, Bounds &read) {
-	if(read.valid = !is.eof())
+	if((read.valid = !is.eof()))
 		is >> (Rect &)read;
 	return is;
 }

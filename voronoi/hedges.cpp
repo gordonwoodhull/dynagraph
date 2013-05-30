@@ -160,7 +160,7 @@ Halfedge *Halfedges::leftbnd(Coord c) {
     Halfedge *he;
 
 /* Use hash table to get close to desired halfedge */
-    unsigned bucket = unsigned((c.x - range.l)/range.Width() * hash.size());
+    int bucket = (c.x - range.l)/range.Width() * hash.size();
     if(bucket<0)
 		bucket =0;
     if(bucket>=hash.size())

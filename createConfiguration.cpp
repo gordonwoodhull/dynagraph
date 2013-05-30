@@ -16,6 +16,7 @@
 #include "LayoutConfigurators.h"
 #include "common/StringizerConfigurator.h"
 #include "incrface/RegisteringConfigurator.h"
+#include "common/NamedToNamedChangeTranslator.h"
 
 #include <boost/mpl/joint_view.hpp>
 
@@ -37,7 +38,7 @@ EnginePair<OuterLayout> wrapWorld(ChangingGraph<InnerLayout> *innerWorld, Engine
 	InWorld *inWorld = new InWorld(outerWorld,innerWorld);
 	inWorld->inTranslators_.push_back(new InTranslator(outerWorld,innerWorld));
 	inWorld->outTranslators_.push_back(new OutTranslator(innerWorld,outerWorld));
-	innerEngines.Prepend(new UpdateCurrentProcessor<InnerLayout>(innerWorld));
+	//innerEngines.Prepend(new UpdateCurrentProcessor<InnerLayout>(innerWorld));
 	inWorld->innerEngines_ = innerEngines;
 	inWorld->CompleteConfiguration();
 	EnginePair<OuterLayout> outerEngines;
@@ -54,19 +55,19 @@ struct GeneralizerConfigurator {
 	static void config(DString name,const StrAttrs &attrs, ChangingGraph<Layout> *innerWorld, EnginePair<Layout> innerEngines) {
 		BOOST_MPL_ASSERT((typename boost::is_same<typename boost::mpl::first<ConfigRange>::type, 
     	                                        typename boost::mpl::second<ConfigRange>::type>)); // must be end of line
-		typedef LayoutToLayoutTranslator<GeneralLayout,Layout> InTranslator;
-		typedef LayoutToLayoutTranslator<Layout,GeneralLayout> OutTranslator;
-		gd<Name>(&innerWorld->whole_) = name+"_specific";
-        s_outerEngines = wrapWorld<InTranslator, OutTranslator, GeneralLayout>(innerWorld, innerEngines); // not thread-safe
+		typedef NamedToNamedChangeTranslator<GeneralLayout,Layout,LayoutToLayoutTranslator<GeneralLayout,Layout>,false> InTranslator;
+		typedef NamedToNamedChangeTranslator<Layout,GeneralLayout,LayoutToLayoutTranslator<Layout,GeneralLayout>,false> OutTranslator;
+		gd<Name>(&innerWorld->whole_) = std::string(name)+"_specific";
+                s_outerEngines = wrapWorld<InTranslator, OutTranslator, GeneralLayout>(innerWorld, innerEngines); // not thread-safe
     }
 };
 EnginePair<GeneralLayout> GeneralizerConfigurator::s_outerEngines;
 
-typedef boost::mpl::push_back<LayoutConfigurators, GeneralizerConfigurator > 
+  typedef boost::mpl::joint_view<LayoutConfigurators, mpl::list<GeneralizerConfigurator> >
     CppConfigurators;
 
 EnginePair<GeneralLayout> createCppConfiguration(Name name,StrAttrs &attrs) {
-	configureLayout<IncrConfigurators>(name,attrs);
+    configureLayout<CppConfigurators>(name,attrs);
     return GeneralizerConfigurator::s_outerEngines;
 }
 

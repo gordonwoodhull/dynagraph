@@ -100,7 +100,7 @@ void SiftMatrix<WeighFun>::recompute() {
 		for(unsigned o = 0; o<wid; ++o) {
 			l[o].resize(wid);
 			for(unsigned o2 = 0; o2<wid; ++o2) {
-				CrossCount cr = make_pair(weigh_(uvcross(rank->order[o],rank->order[o2],true,false)),
+                                CrossCount cr = std::make_pair(weigh_(uvcross(rank->order[o],rank->order[o2],true,false)),
 					weigh_(uvcross(rank->order[o],rank->order[o2],false,true)));
 				dgassert(cr.first>=0);
 				dgassert(cr.second>=0);

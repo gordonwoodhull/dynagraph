@@ -100,7 +100,7 @@ struct ConstraintGraph : DDCGraph<AllowParallel>::Graph {
 	}
 	void Unstabilize(NodeConstraints &nc) {
 		if(nc.stab) {
-			erase_node(nc.stab);
+			this->erase_node(nc.stab);
 			nc.stab = 0;
 		}
 		/*if (nd->con[csys].n)
@@ -108,11 +108,11 @@ struct ConstraintGraph : DDCGraph<AllowParallel>::Graph {
 	}
 	void RemoveNodeConstraints(NodeConstraints &nc) {
 		if(nc.n) {
-			erase_node(nc.n);
+			this->erase_node(nc.n);
 			nc.n = 0;
 		}
 		if(nc.stab) {
-			erase_node(nc.stab);
+			this->erase_node(nc.stab);
 			nc.stab = 0;
 		}
 	}

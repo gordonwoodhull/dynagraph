@@ -33,7 +33,7 @@ struct EmphasizeFlowConfigurator {
 				typedef SEdger<GeneralLayout,DynaDAGLayout> InTranslator;
 				typedef EdgeSplicer<DynaDAGLayout,GeneralLayout> OutTranslator;
 				typedef InternalWorld<GeneralLayout,DynaDAGLayout> InWorld;
-				gd<Name>(&innerWorld->whole_) = name+"_flowed";
+				gd<Name>(&innerWorld->whole_) = std::string(name)+"_flowed";
 				ChangingGraph<GeneralLayout> *outerWorld = new ChangingGraph<GeneralLayout>;
 				InWorld *inWorld = new InWorld(outerWorld,innerWorld);
 				inWorld->inTranslators_.push_back(new InTranslator(outerWorld,innerWorld));

@@ -96,7 +96,7 @@ StrGraph *ag2str(Agraph_t *g) {
 					    ((StrAttrs&)nattr)[sym->name] = val;
 			}
 			try {
-				gg->create_edge(tail,head,nattr).first;
+				gg->create_edge(tail,head,nattr);
 			}
 			catch(DGParallelEdgesNotSupported) {
 			}

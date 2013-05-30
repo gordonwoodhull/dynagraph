@@ -34,7 +34,7 @@ struct CoordTranslatorConfigurator {
 			typedef CoordTranslatorOut<Layout,GeneralLayout> OutCoTranslator;
 			typedef InternalWorld<GeneralLayout,Layout> InWorld;
 			ChangingGraph<GeneralLayout> *outerWorld = new ChangingGraph<GeneralLayout>;
-			gd<Name>(&innerWorld->whole_) = name+"_xlated";
+			gd<Name>(&innerWorld->whole_) = std::string(name)+"_xlated";
 			InWorld *inWorld = new InWorld(outerWorld,innerWorld);
 			innerEngines.Prepend(new UpdateCurrentProcessor<Layout>(innerWorld)); // this...
 			inWorld->innerEngines_ = innerEngines;
