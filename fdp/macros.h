@@ -15,13 +15,13 @@
 **********************************************************/
 
 
-#define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
-#define RADIANS(deg)	((deg)/180.0 * PI)
-#define DEGREES(rad)	((rad)/PI * 180.0)
+#define BETWEEN(a,b,c)  (((a) <= (b)) && ((b) <= (c)))
+#define RADIANS(deg)    ((deg)/180.0 * PI)
+#define DEGREES(rad)    ((rad)/PI * 180.0)
 #define DIST(x1,y1,x2,y2) (sqrt(((x1) - (x2))*((x1) - (x2)) + ((y1) - (y2))*((y1) - (y2))))
 
 #ifndef streq
-#define streq(s,t)		(!strcmp((s),(t)))
+#define streq(s,t)      (!strcmp((s),(t)))
 #endif
 #ifndef NOTUSED
 #define NOTUSED(var)      (void) var

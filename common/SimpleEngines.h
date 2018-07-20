@@ -24,28 +24,28 @@ namespace Dynagraph {
 // so every world needs an engine that does clear changes.  dynadag does.  or this does:
 template<typename Graph>
 struct OkayEngine : LinkedChangeProcessor<Graph> {
-	OkayEngine(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
-	void Open() {
-		this->NextOpen();
-		this->world_->Q_.Clear();
-	}
-	void Process() {
-		this->NextProcess();
-		this->world_->Q_.ExecuteDeletions();
-		this->world_->Q_.Clear();
-	}
+    OkayEngine(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
+    void Open() {
+        this->NextOpen();
+        this->world_->Q_.Clear();
+    }
+    void Process() {
+        this->NextProcess();
+        this->world_->Q_.ExecuteDeletions();
+        this->world_->Q_.Clear();
+    }
 };
 
 // simple server that just updates the current subgraph based on changes.
 // this must be done only once, that's why individual layout servers can't be responsible.
 template<typename Graph>
 struct UpdateCurrentProcessor : LinkedChangeProcessor<Graph> {
-	UpdateCurrentProcessor(ChangingGraph<Graph> *world) 
-		: LinkedChangeProcessor<Graph>(world) {}
-	void Process() {
-		this->world_->Q_.UpdateCurrent();
-		this->NextProcess();
-	}
+    UpdateCurrentProcessor(ChangingGraph<Graph> *world) 
+        : LinkedChangeProcessor<Graph>(world) {}
+    void Process() {
+        this->world_->Q_.UpdateCurrent();
+        this->NextProcess();
+    }
 };
 
 } // namespace Dynagraph

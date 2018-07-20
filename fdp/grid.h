@@ -27,7 +27,7 @@ namespace Dynagraph {
 namespace FDP {
 
 struct gridpt {
-	int i, j;
+    int i, j;
 };
 typedef std::list<FDPModel::Node*> node_list;
 // this extra struct is to evade gcc3 warnings, which
@@ -40,24 +40,24 @@ struct Cell : PODCell {
   node_list nodes;
 };
 struct Grid : derivable_dt { // cells indexed by (i,j)
-	Freelist<Cell> cells; // this is wasteful; isn't deque supposed to not realloc if you just push?
-	Grid(int size);
-	~Grid() {
-		close();
-	}
-	Cell *getCell();
-	void clear() {
-		dtclear(this);
-		cells.clear();
-	}
-	void add(int i, int j, FDPModel::Node*);
-	Cell* find(int i, int j);
-	void walk(int(*walkf)(Dt_t *dt,void *cell,void *grid));
-	struct Visitor {
-		virtual ~Visitor() {} // gcc, this is totally unnecessary!
-		virtual int VisitCell(Cell *cell,Grid *grid) = 0;
-	};
-	void walk(Visitor *visitor);
+    Freelist<Cell> cells; // this is wasteful; isn't deque supposed to not realloc if you just push?
+    Grid(int size);
+    ~Grid() {
+        close();
+    }
+    Cell *getCell();
+    void clear() {
+        dtclear(this);
+        cells.clear();
+    }
+    void add(int i, int j, FDPModel::Node*);
+    Cell* find(int i, int j);
+    void walk(int(*walkf)(Dt_t *dt,void *cell,void *grid));
+    struct Visitor {
+        virtual ~Visitor() {} // gcc, this is totally unnecessary!
+        virtual int VisitCell(Cell *cell,Grid *grid) = 0;
+    };
+    void walk(Visitor *visitor);
 };
 
 extern int gLength (Cell* p);

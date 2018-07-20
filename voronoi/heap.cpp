@@ -94,7 +94,7 @@ void Halfedges::PQinitialize() {
     PQmin = 0;
     PQhash.resize(PQhashsize);
     for(i=0; i<PQhashsize; i+=1)
-		PQhash[i].PQnext = 0;
+        PQhash[i].PQnext = 0;
 }
 
 /*

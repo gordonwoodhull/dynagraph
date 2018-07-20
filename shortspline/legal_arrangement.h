@@ -15,4 +15,4 @@
 **********************************************************/
 
 
-int Plegal_arrangement( Ppoly_t	**polys, int	n_polys);
+int Plegal_arrangement( Ppoly_t **polys, int    n_polys);

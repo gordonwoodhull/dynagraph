@@ -21,15 +21,15 @@ namespace Dynagraph {
 
 template<typename Graph1>
 struct GoingQueueTransition {
-	static bool CheckRedundancy() {
-		return true;
-	}
+    static bool CheckRedundancy() {
+        return true;
+    }
 };
 template<typename Graph1>
 struct ReturningQueueTransition {
-	static bool CheckRedundancy() {
-		return false;
-	}
+    static bool CheckRedundancy() {
+        return false;
+    }
 };
 
 } // namespace Dynagraph

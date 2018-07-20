@@ -35,15 +35,15 @@ inline bool between(Coord a, Coord b, Coord c) {
     if(ccw(a, b, c) != ISON)
         return false;
     Coord p1 = b-a,
-		p2 = c-a;
+        p2 = c-a;
     return p2%p1 >= 0 && p2%p2 <= p1%p1;
 }
 // this one appears to work better:
 inline bool between2(Coord a, Coord b, Coord c) {
     if(ccw(a, b, c) != ISON)
         return false;
-	return (a.x<=b.x && b.x <= c.x || c.x<=b.x && b.x<=a.x) &&
-		(a.y<=b.y && b.y<=c.y || c.y<=b.y && b.y<=a.y);
+    return (a.x<=b.x && b.x <= c.x || c.x<=b.x && b.x<=a.x) &&
+        (a.y<=b.y && b.y<=c.y || c.y<=b.y && b.y<=a.y);
 }
 
 /* line to line intersection */
@@ -55,9 +55,9 @@ inline bool segsIntersect(Coord a, Coord b, Coord c, Coord d) {
             return true;
     } else {
         bool ccw1 = ccw(a, b, c) == ISCCW,
-			ccw2 = ccw(a, b, d) == ISCCW,
-			ccw3 = ccw(c, d, a) == ISCCW,
-			ccw4 = ccw(c, d, b) == ISCCW;
+            ccw2 = ccw(a, b, d) == ISCCW,
+            ccw3 = ccw(c, d, a) == ISCCW,
+            ccw4 = ccw(c, d, b) == ISCCW;
         return(ccw1 ^ ccw2) && (ccw3 ^ ccw4);
     }
     return false;
@@ -68,7 +68,7 @@ inline double tri_area_2(Coord a, Coord b, Coord c ) {
             b.x * c.y - c.x * b.y;
 }
 inline double tri_area(Coord a, Coord b, Coord c) {
-	return fabs(tri_area_2(a,b,c))/2.0;
+    return fabs(tri_area_2(a,b,c))/2.0;
 }
  /* centroidOf:
   * Compute centroid of triangle with vertices a, b, c.
@@ -78,7 +78,7 @@ inline Coord centroid(Coord a,Coord b,Coord c) {
     return Coord((a.x + b.x + c.x)/3,(a.y + b.y + c.y)/3);
 }
 inline bool leftOf(Coord a, Coord b, Coord c) {
-	return tri_area_2( a, b, c ) > 0;
+    return tri_area_2( a, b, c ) > 0;
 }
 
 inline Position intersection( Coord a, Coord b, Coord c, Coord d) {
@@ -104,7 +104,7 @@ inline Position intersection( Coord a, Coord b, Coord c, Coord d) {
            c.x * ( b.y - a.y )
          ) / denom;
 
-	Position ret;
+    Position ret;
     ret.x = a.x + s * ( b.x - a.x );
     ret.y = a.y + s * ( b.y - a.y );
 
@@ -112,7 +112,7 @@ inline Position intersection( Coord a, Coord b, Coord c, Coord d) {
         (0.0 <= t) && (t <= 1.0))
                 ret.valid = true;
     else ret.valid = false;
-	return ret;
+    return ret;
 }
 
 } // namespace Dynagraph

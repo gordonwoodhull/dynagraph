@@ -43,7 +43,7 @@ static int ijcmpf(Dt_t *d, void *key1, void *key2, Dtdisc_t *disc) {
 
 static void *newCell(Dt_t *d, void *obj, Dtdisc_t *disc) {
     Cell *cellp = reinterpret_cast<Cell*>(obj),
-		*newp;
+        *newp;
 
     NOTUSED(disc);
     newp = static_cast<Grid*>(d)->getCell();
@@ -65,10 +65,10 @@ static Dtdisc_t gridDisc = {
     NIL(Dtevent_f)
 } ;
 Grid::Grid(int size) : cells(ROUND(sqrt((double)size))){
-	open(&gridDisc, Dtoset);
+    open(&gridDisc, Dtoset);
 }
 Cell *Grid::getCell() {
-	return cells.alloc();
+    return cells.alloc();
 }
 void Grid::add(int i, int j, FDPModel::Node *n) {
     Cell *cellp;
@@ -78,11 +78,11 @@ void Grid::add(int i, int j, FDPModel::Node *n) {
     key.p.j = j;
     cellp = reinterpret_cast<Cell*>(dtinsert(this, &key));
     cellp->nodes.push_front(n);
-	/*
+    /*
     if(Verbose >= 3) {
       reports[dgr::error] <<  "grid(" << i << ',' << j << "): " << gd<Name>(n) << endl;
     }
-	*/
+    */
 }
 Cell *Grid::find(int i, int j) {
     Cell key;
@@ -96,18 +96,18 @@ void Grid::walk(int(*walkf)(Dt_t*,void*,void*)) {
     dtwalk(this, walkf, this);
 }
 int visitingWalk(Dt_t *dt,void *obj,void *parm) {
-	Grid *grid = static_cast<Grid*>(dt);
-	Cell *cell = reinterpret_cast<Cell*>(obj);
-	Grid::Visitor *visitor = reinterpret_cast<Grid::Visitor*>(parm);
-	return visitor->VisitCell(cell,grid);
+    Grid *grid = static_cast<Grid*>(dt);
+    Cell *cell = reinterpret_cast<Cell*>(obj);
+    Grid::Visitor *visitor = reinterpret_cast<Grid::Visitor*>(parm);
+    return visitor->VisitCell(cell,grid);
 }
 void Grid::walk(Visitor *visitor) {
-	dtwalk(this,visitingWalk,visitor);
+    dtwalk(this,visitingWalk,visitor);
 }
 
 
 int gLength(Cell *p) {
-	return p->nodes.size();
+    return p->nodes.size();
 }
 
 } // namespace FDP

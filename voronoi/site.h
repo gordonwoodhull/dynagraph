@@ -25,21 +25,21 @@ namespace Dynagraph {
 namespace Voronoi {
 
 struct Site {
-	Coord coord;
-	int sitenbr;
-	int refcnt;
-	Site() : sitenbr(-1),refcnt(0) {}
+    Coord coord;
+    int sitenbr;
+    int refcnt;
+    Site() : sitenbr(-1),refcnt(0) {}
 };
 
 struct Sites {
-	Freelist<Site> fsites;
-	int nvertices;
-	Site *getsite();
-	void makevertex(Site*);     /* Transform a site into a vertex */
-	void deref(Site*);
-	void ref(Site*);
+    Freelist<Site> fsites;
+    int nvertices;
+    Site *getsite();
+    void makevertex(Site*);     /* Transform a site into a vertex */
+    void deref(Site*);
+    void ref(Site*);
 
-	Sites(int N) : fsites(ROUND(sqrt((double)N))), nvertices(0) {}
+    Sites(int N) : fsites(ROUND(sqrt((double)N))), nvertices(0) {}
 
 };
 

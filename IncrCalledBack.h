@@ -25,7 +25,7 @@ struct IncrCalledBack : IncrCallbacks {
         g_incrCallback = this;
     }
     ~IncrCalledBack() {
-		g_incrCallback = 0;
+        g_incrCallback = 0;
     }
     void incr_cb_create_handler(Name name,StrAttrs &attrs);
     void incr_cb_destroy_handler(IncrLangEvents *h);
@@ -37,7 +37,7 @@ struct IncrCalledBack : IncrCallbacks {
 extern IncrCalledBack g_incrPhone;
 
 struct HandlerCreationFailed : DGException {
-	HandlerCreationFailed() : DGException("failed to create layout or engines",true) {}
+    HandlerCreationFailed() : DGException("failed to create layout or engines",true) {}
 };
 
 } // namespace Dynagraph

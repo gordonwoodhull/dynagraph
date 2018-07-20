@@ -47,49 +47,49 @@ inline std::ostream &operator <<(std::ostream &os,LGraph<ADTisCDT,GD,ND,ED,GID,N
 // try to substitute labels for names to make dotfile more pleasant
 template<typename G>
 void emitGraph2(std::ostream &os,G *g) {
-	typedef std::map<DString,typename G::Node*> node_dict;
-	typedef std::map<typename G::Node*,DString> node_reverse_dict;
-	typedef std::map<DString,typename G::Edge*> edge_dict;
-	node_dict ndict;
-	node_reverse_dict nameOf;
-	StrAttrs::iterator ati = gd<StrAttrs>(g).find("label");
-	Name &gname = (ati!=gd<StrAttrs>(g).end())?ati->second:gd<Name>(g);
+    typedef std::map<DString,typename G::Node*> node_dict;
+    typedef std::map<typename G::Node*,DString> node_reverse_dict;
+    typedef std::map<DString,typename G::Edge*> edge_dict;
+    node_dict ndict;
+    node_reverse_dict nameOf;
+    StrAttrs::iterator ati = gd<StrAttrs>(g).find("label");
+    Name &gname = (ati!=gd<StrAttrs>(g).end())?ati->second:gd<Name>(g);
 
-	os << "digraph " << mquote(gname);
+    os << "digraph " << mquote(gname);
     os << " {" << std::endl;
     StrAttrs gattrs = gd<StrAttrs>(g);
     if(!gattrs.empty())
         os << "\tgraph " << gattrs << std::endl;
-	for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {
-		StrAttrs::iterator ati = gd<StrAttrs>(*ni).find("label");
-		Name nname;
-		if(ati!=gd<StrAttrs>(*ni).end()&&!ndict[ati->second]) {
-			ndict[ati->second] = *ni;
-			nameOf[*ni] = ati->second;
-			nname = ati->second;
-		}
-		else
-			ndict[nameOf[*ni] = nname = gd<Name>(*ni)] = *ni;
+    for(typename G::node_iter ni = g->nodes().begin(); ni!=g->nodes().end(); ++ni) {
+        StrAttrs::iterator ati = gd<StrAttrs>(*ni).find("label");
+        Name nname;
+        if(ati!=gd<StrAttrs>(*ni).end()&&!ndict[ati->second]) {
+            ndict[ati->second] = *ni;
+            nameOf[*ni] = ati->second;
+            nname = ati->second;
+        }
+        else
+            ndict[nameOf[*ni] = nname = gd<Name>(*ni)] = *ni;
         os << '\t' << mquote(nname) << ' ' << gd<StrAttrs>(*ni) << std::endl;
-	}
-	edge_dict edict;
-	for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
-		os << '\t' << mquote(nameOf[(*ei)->tail]) << " -> " << mquote(nameOf[(*ei)->head]);
-		os << ' ';
-		// this looks fishy - why does edge label get looked up in ndict?
-		// doesn't this replace id with label and is that a good idea?
-		StrAttrs::iterator ati = gd<StrAttrs>(*ei).find("label");
-		Name ename;
-		if(ati!=gd<StrAttrs>(*ei).end()&&!ndict[ati->second]) {
-			edict[ati->second] = *ei;
-			ename = ati->second;
-		}
-		else
-			edict[ename = gd<Name>(*ei)] = *ei;
-		emitAttrs(os,gd<StrAttrs>(*ei),ename);
+    }
+    edge_dict edict;
+    for(typename G::graphedge_iter ei = g->edges().begin(); ei!=g->edges().end(); ++ei) {
+        os << '\t' << mquote(nameOf[(*ei)->tail]) << " -> " << mquote(nameOf[(*ei)->head]);
+        os << ' ';
+        // this looks fishy - why does edge label get looked up in ndict?
+        // doesn't this replace id with label and is that a good idea?
+        StrAttrs::iterator ati = gd<StrAttrs>(*ei).find("label");
+        Name ename;
+        if(ati!=gd<StrAttrs>(*ei).end()&&!ndict[ati->second]) {
+            edict[ati->second] = *ei;
+            ename = ati->second;
+        }
+        else
+            edict[ename = gd<Name>(*ei)] = *ei;
+        emitAttrs(os,gd<StrAttrs>(*ei),ename);
         os << std::endl;
-	}
-	os << "}\n";
+    }
+    os << "}\n";
 }
 
 } // namespace Dynagraph

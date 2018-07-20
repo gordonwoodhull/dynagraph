@@ -40,9 +40,9 @@ Edge *Edges::bisect(Site *s1, Site *s2) {
     ady = absol(dy);
     newedge -> c = s1->coord.x * dx + s1->coord.y * dy + (dx*dx + dy*dy)*0.5;
     if (adx>ady)
-    {	newedge -> a = 1.0; newedge -> b = dy/dx; newedge -> c /= dx;}
+    {   newedge -> a = 1.0; newedge -> b = dy/dx; newedge -> c /= dx;}
     else
-    {	newedge -> b = 1.0; newedge -> a = dx/dy; newedge -> c /= dy;};
+    {   newedge -> b = 1.0; newedge -> a = dx/dy; newedge -> c /= dy;};
 
     newedge -> edgenbr = nedges;
     nedges += 1;
@@ -51,10 +51,10 @@ Edge *Edges::bisect(Site *s1, Site *s2) {
 
 
 void Edges::doSeg (Edge *e, double x1, double y1, double x2, double y2) {
-	infos.addVertex (e->reg[0], Coord(x1, y1));
-	infos.addVertex (e->reg[0], Coord(x2, y2));
-	infos.addVertex (e->reg[1], Coord(x1, y1));
-	infos.addVertex (e->reg[1], Coord(x2, y2));
+    infos.addVertex (e->reg[0], Coord(x1, y1));
+    infos.addVertex (e->reg[0], Coord(x2, y2));
+    infos.addVertex (e->reg[1], Coord(x1, y1));
+    infos.addVertex (e->reg[1], Coord(x2, y2));
 }
 void Edges::clip_line(Edge *e) {
     Site *s1, *s2;
@@ -73,9 +73,9 @@ void Edges::clip_line(Edge *e) {
         if (s1!=(Site *)0) {
           y1 = s1->coord.y;
           if (y1 > bounds.t) {
-			  y1 = bounds.t;
+              y1 = bounds.t;
             x1 = e -> c - e -> b * y1;
-		  }
+          }
           else if (y1 >= bounds.b) x1 = s1->coord.x;
           else {
             y1 = bounds.b;
@@ -90,9 +90,9 @@ void Edges::clip_line(Edge *e) {
         if (s2!=(Site *)0) {
           y2 = s2->coord.y;
           if(y2<bounds.b) {
-			  y2 = bounds.b;
+              y2 = bounds.b;
             x2 = e -> c - e -> b * y2;
-		  }
+          }
           else if (y2 <= bounds.t) x2 = s2->coord.x;
           else {
             y2 = bounds.t;
@@ -105,7 +105,7 @@ void Edges::clip_line(Edge *e) {
         }
 
         if ((x1> bounds.r && x2>bounds.r) || (x1<bounds.l&&x2<bounds.l))
-			return;
+            return;
         if(x1> bounds.r)
         {    x1 = bounds.r; y1 = (e -> c - x1)/e -> b;};
         if(x1<bounds.l)
@@ -119,9 +119,9 @@ void Edges::clip_line(Edge *e) {
         if (s1!=(Site *)0) {
           x1 = s1->coord.x;
           if(x1>bounds.r) {
-			x1 = bounds.r;
-  			y1 = e -> c - e -> a * x1;
-		  }
+            x1 = bounds.r;
+            y1 = e -> c - e -> a * x1;
+          }
           else if (x1 >= bounds.l) y1 = s1->coord.y;
           else {
             x1 = bounds.l;
@@ -136,9 +136,9 @@ void Edges::clip_line(Edge *e) {
         if (s2!=(Site *)0) {
           x2 = s2->coord.x;
           if(x2<bounds.l) {
-			  x2 = bounds.l;
+              x2 = bounds.l;
             y2 = e -> c - e -> a * x2;
-		  }
+          }
           else if (x2 <= bounds.r) y2 = s2->coord.y;
           else {
             x2 = bounds.r;
@@ -151,7 +151,7 @@ void Edges::clip_line(Edge *e) {
         }
 
         if ((y1> bounds.t && y2>bounds.t) || (y1<bounds.b && y2<bounds.b))
-			return;
+            return;
         if(y1> bounds.t)
         {    y1 = bounds.t; x1 = (e -> c - y1)/e -> a;};
         if(y1<bounds.b)
@@ -166,7 +166,7 @@ void Edges::clip_line(Edge *e) {
         if (s1!=(Site *)0) {
           y1 = s1->coord.y;
           if (y1 > bounds.t)
-			  return;
+              return;
           else if (y1 >= bounds.b) x1 = s1->coord.x;
           else {
             y1 = bounds.b;
@@ -181,7 +181,7 @@ void Edges::clip_line(Edge *e) {
         if (s2!=(Site *)0) {
           y2 = s2->coord.y;
           if(y2<bounds.b)
-			  return;
+              return;
           else if (y2 <= bounds.t) x2 = s2->coord.x;
           else {
             y2 = bounds.t;
@@ -194,7 +194,7 @@ void Edges::clip_line(Edge *e) {
         }
 
         if ((x1> bounds.r && x2>bounds.r) || (x1<bounds.l&&x2<bounds.l))
-			return;
+            return;
         if(x1> bounds.r)
         {    x1 = bounds.r; y1 = (e -> c - x1)/e -> b;};
         if(x1<bounds.l)
@@ -208,7 +208,7 @@ void Edges::clip_line(Edge *e) {
         if (s1!=(Site *)0) {
           x1 = s1->coord.x;
           if(x1>bounds.r)
-			  return;
+              return;
           else if (x1 >= bounds.l) y1 = s1->coord.y;
           else {
             x1 = bounds.l;
@@ -223,7 +223,7 @@ void Edges::clip_line(Edge *e) {
         if (s2!=(Site *)0) {
           x2 = s2->coord.x;
           if(x2<bounds.l)
-			  return;
+              return;
           else if (x2 <= bounds.r) y2 = s2->coord.y;
           else {
             x2 = bounds.r;
@@ -236,7 +236,7 @@ void Edges::clip_line(Edge *e) {
         }
 
         if ((y1> bounds.t && y2>bounds.t) || (y1<bounds.b && y2<bounds.b))
-			return;
+            return;
         if(y1> bounds.t)
         {    y1 = bounds.t; x1 = (e -> c - y1)/e -> a;};
         if(y1<bounds.b)
@@ -249,12 +249,12 @@ void Edges::clip_line(Edge *e) {
 #endif
     doSeg(e,x1,y1,x2,y2);
 #ifdef VORLINES_CLIPEDGES
-	Layout *l = infos.nodes.front().layoutN->g;
-	Line seg;
-	seg.degree = 1;
-	seg.push_back(Coord(x1,y1));
-	seg.push_back(Coord(x2,y2));
-	gd<Drawn>(l).push_back(seg);
+    Layout *l = infos.nodes.front().layoutN->g;
+    Line seg;
+    seg.degree = 1;
+    seg.push_back(Coord(x1,y1));
+    seg.push_back(Coord(x2,y2));
+    gd<Drawn>(l).push_back(seg);
 #endif
 #ifdef STANDALONE
     if (doPS) line (x1,y1,x2,y2);

@@ -23,12 +23,12 @@
 
 template<typename T>
 struct NData {
-	int id,dist;
-	T *pred;
+    int id,dist;
+    T *pred;
 };
 struct EData {
-	int weight;
-	EData() : weight(2) {}
+    int weight;
+    EData() : weight(2) {}
 };
 typedef LGraph<ADTisCDT,Nothing,NData<void>,EData> DijGraph;
 
@@ -44,21 +44,21 @@ typedef boost::MemberAccessor<DijGraph::Node*,DijData,int,&DijData::id> IndexAcc
 
 using namespace boost;
 int main() {
-	function_requires< VertexListGraphConcept<DijGraph> >();
-	function_requires< BidirectionalGraphConcept<DijGraph> >();
-	function_requires< MutableGraphConcept<DijGraph> >();
+    function_requires< VertexListGraphConcept<DijGraph> >();
+    function_requires< BidirectionalGraphConcept<DijGraph> >();
+    function_requires< MutableGraphConcept<DijGraph> >();
 
-	DijGraph g;
+    DijGraph g;
 
-	DijGraph::Node *n[30];
-	for(int i=0; i<30; ++i) {
-		n[i] = g.create_node();
-		gd<DijData>(n[i]).id = i;
-	}
-	for(int i=0; i<30; ++i)
-		g.create_edge(n[i],n[(i+5)%30]);
+    DijGraph::Node *n[30];
+    for(int i=0; i<30; ++i) {
+        n[i] = g.create_node();
+        gd<DijData>(n[i]).id = i;
+    }
+    for(int i=0; i<30; ++i)
+        g.create_edge(n[i],n[(i+5)%30]);
 
-	dijkstra_shortest_paths(g,n[0],PredAcc(),DistAcc(),WeightAcc(),IndexAcc(),
-		std::less<int>(),std::plus<int>(),std::numeric_limits<int>::max(),0,dijkstra_visitor<null_visitor>());
-	return 0;
+    dijkstra_shortest_paths(g,n[0],PredAcc(),DistAcc(),WeightAcc(),IndexAcc(),
+        std::less<int>(),std::plus<int>(),std::numeric_limits<int>::max(),0,dijkstra_visitor<null_visitor>());
+    return 0;
 }

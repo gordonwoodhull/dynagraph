@@ -21,10 +21,10 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct FlexiSpliner {
-	FlexiSpliner(Config &config) : config(config) {}
-	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);//,ObstacleAvoiderSpliner<DynaDAGLayout> &obav);
+    FlexiSpliner(Config &config) : config(config) {}
+    bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);//,ObstacleAvoiderSpliner<DynaDAGLayout> &obav);
 private:
-	Config &config;
+    Config &config;
 };
 
 } // namespace DynaDAG

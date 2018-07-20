@@ -27,7 +27,7 @@ struct NEID {
     bool isEdge;
     DString name;
     NEID() : isEdge(false),name() {}
-	NEID(bool isE,Name n) : isEdge(isE),name(n) {}
+    NEID(bool isE,Name n) : isEdge(isE),name(n) {}
     bool operator <(NEID o) const {
         return isEdge!=o.isEdge ? isEdge<o.isEdge : name<o.name;
     }
@@ -49,7 +49,7 @@ struct DinoInternalChanges {
 
 struct DinoMachNode : NamedAttrs {
     IncrLangEvents *handler;
-	bool allowOneReopen,alreadyOpen;
+    bool allowOneReopen,alreadyOpen;
     DinoMachNode(Name name = Name()) : NamedAttrs(name),handler(0),allowOneReopen(false),alreadyOpen(false) {}
     ~DinoMachNode() {
         if(handler&&g_incrCallback)
@@ -112,23 +112,23 @@ struct DinoMachEdge : NamedAttrs {
     }
 };
 struct DinoMachine : NamedGraph<ADTisCDT,NamedAttrs,DinoMachNode,DinoMachEdge> {
-	// eventually this will be a real data flow model
-	// for now, it's a mess of cascading events
-	// the only check is: it won't return to the starting node
-	Node *m_start;
-	DinoMachine() : m_start(0) {}
+    // eventually this will be a real data flow model
+    // for now, it's a mess of cascading events
+    // the only check is: it won't return to the starting node
+    Node *m_start;
+    DinoMachine() : m_start(0) {}
     void changed(DString nodename) {
         Node *n = lookNode(nodename);
-		if(!m_start)
-			m_start = n;
-		else if(m_start==n)
-			return;
+        if(!m_start)
+            m_start = n;
+        else if(m_start==n)
+            return;
         dgassert(n);
         for(outedge_iter oi = n->outs().begin(); oi!=n->outs().end(); ++oi)
             if(DinoInternalChanges *handler = gd<DinoMachEdge>(*oi).handler)
                 handler->GraphChanged();
-		if(m_start==n)
-			m_start = 0;
+        if(m_start==n)
+            m_start = 0;
     }
 };
 extern DinoMachine g_dinoMachine;

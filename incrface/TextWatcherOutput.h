@@ -24,20 +24,20 @@ namespace Dynagraph {
 
 template<typename Graph>
 struct TextWatcherOutput : IncrViewWatcher<Graph> {
-	// IncrViewWatcher
-	void FulfilGraph(Graph *g) {
-		LOCK_REPORT(dgr::incrface);
-		reports[dgr::incrface] << "fulfil graph " << gd<Name>(g) << std::endl;
-		emitGraph(reports[dgr::incrface],g);
-	}
-	void FulfilNode(typename Graph::Node *n) {
-		LOCK_REPORT(dgr::incrface);
-		reports[dgr::incrface] << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << std::endl;
-	}
-	void FulfilEdge(typename Graph::Edge *e) {
-		LOCK_REPORT(dgr::incrface);
-		reports[dgr::incrface] << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << std::endl;
-	}
+    // IncrViewWatcher
+    void FulfilGraph(Graph *g) {
+        LOCK_REPORT(dgr::incrface);
+        reports[dgr::incrface] << "fulfil graph " << gd<Name>(g) << std::endl;
+        emitGraph(reports[dgr::incrface],g);
+    }
+    void FulfilNode(typename Graph::Node *n) {
+        LOCK_REPORT(dgr::incrface);
+        reports[dgr::incrface] << "fulfil node " << gd<Name>(n->g) << " " << gd<Name>(n) << " " << gd<StrAttrs>(n) << std::endl;
+    }
+    void FulfilEdge(typename Graph::Edge *e) {
+        LOCK_REPORT(dgr::incrface);
+        reports[dgr::incrface] << "fulfil edge " << gd<Name>(e->g) << " " << gd<Name>(e) << " " << gd<StrAttrs>(e) << std::endl;
+    }
 };
 
 } // namespace Dynagraph

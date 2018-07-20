@@ -58,17 +58,17 @@ void incr_lexeof();
 void incr_yyerror(const char *str);
 int incr_yylex(void);
 
-//#define IF_ERR_UNKNOWN			0
-//#define IF_ERR_ALREADY_OPEN		1
-//#define IF_ERR_NOT_OPEN			2
-//#define IF_ERR_NAME_MISMATCH	3
-#define IF_ERR_SYNTAX			4
-//#define IF_ERR_DUPLICATE_ID		5
-//#define IF_ERR_NOT_IMPLEMENTED	6
+//#define IF_ERR_UNKNOWN            0
+//#define IF_ERR_ALREADY_OPEN       1
+//#define IF_ERR_NOT_OPEN           2
+//#define IF_ERR_NAME_MISMATCH  3
+#define IF_ERR_SYNTAX           4
+//#define IF_ERR_DUPLICATE_ID       5
+//#define IF_ERR_NOT_IMPLEMENTED    6
 //#define IF_ERR_OBJECT_DOESNT_EXIST 7
-#define IF_MAX_ERR				8
+#define IF_MAX_ERR              8
 
-#define IF_MAXATTR				128
+#define IF_MAXATTR              128
 
 #ifdef offsetof
 #undef offsetof

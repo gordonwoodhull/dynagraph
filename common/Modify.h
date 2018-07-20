@@ -24,19 +24,19 @@ namespace Dynagraph {
 
 template<typename Layout>
 inline void ModifyNode(ChangeQueue<Layout> &Q,typename Layout::Node *n,Update upd) {
-	typename ChangeQueue<Layout>::NodeResult result = Q.ModNode(n);
-	if(result.action==ChangeQueue<Layout>::modified) 
-		igd<Update>(result.object) |= upd;
+    typename ChangeQueue<Layout>::NodeResult result = Q.ModNode(n);
+    if(result.action==ChangeQueue<Layout>::modified) 
+        igd<Update>(result.object) |= upd;
 }
 template<typename Layout>
 inline void ModifyEdge(ChangeQueue<Layout> &Q,typename Layout::Edge *e,Update upd) {
-	typename ChangeQueue<Layout>::EdgeResult result = Q.ModEdge(e);
-	if(result.action==ChangeQueue<Layout>::modified)
-		igd<Update>(result.object) |= upd;
+    typename ChangeQueue<Layout>::EdgeResult result = Q.ModEdge(e);
+    if(result.action==ChangeQueue<Layout>::modified)
+        igd<Update>(result.object) |= upd;
 }
 template<typename Layout>
 inline Update &ModifyFlags(ChangeQueue<Layout> &Q) {
-	return igd<Update>(Q.ModGraph());
+    return igd<Update>(Q.ModGraph());
 }
 
 } // namespace Dynagraph

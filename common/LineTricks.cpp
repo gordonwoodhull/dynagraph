@@ -32,7 +32,7 @@ inline void points2coeff(double v0, double v1, double v2, double v3,double coeff
 inline int addroot(double root, double roots[4], int rootn)  {
     if(root >= 0 && root <= 1)
         roots[rootn++] = root;
-	return rootn;
+    return rootn;
 }
 int splineIntersectsLine(const Coord *sps, Segment seg,double *roots) {
     double scoeff[4], xcoeff[2], ycoeff[2];

@@ -22,17 +22,17 @@
 namespace Dynagraph {
 
 struct FindChangeRectsConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		if(attrs.look("findchangerects","false")=="true") {
-			FCRData<Layout> *fcrdata = new FCRData<Layout>(world);
-			FCRBefore<Layout> *fcrbefore = new FCRBefore<Layout>(fcrdata);
-			FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(fcrdata);
-			engines.Prepend(fcrbefore);
-			engines.Append(fcrafter);
-		}
-		configureLayout<Configurators>(name,attrs,world,engines);
-	}
+    template<typename Configurators,typename Layout> 
+    static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+        if(attrs.look("findchangerects","false")=="true") {
+            FCRData<Layout> *fcrdata = new FCRData<Layout>(world);
+            FCRBefore<Layout> *fcrbefore = new FCRBefore<Layout>(fcrdata);
+            FCRAfter<Layout> *fcrafter = new FCRAfter<Layout>(fcrdata);
+            engines.Prepend(fcrbefore);
+            engines.Append(fcrafter);
+        }
+        configureLayout<Configurators>(name,attrs,world,engines);
+    }
 };
 
 } // namespace Dynagraph

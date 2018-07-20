@@ -25,28 +25,28 @@ namespace Dynagraph {
 // overload >> DString for better-delimited tokens
 // returns one token or one delimeter
 inline std::istream &operator>>(std::istream &in,DString &s) {
-	static const std::string delim = "=,[]; \t\n\r";
-	std::string temp;
-	in >> std::ws;
-	while(!in.eof()) {
-		int c = in.get();
-		if(c<0)
-			break; // why does eof() delay?
-		unsigned i;
-		for(i=0; i<delim.length(); ++i)
-			if(delim[i]==c) {
-				if(temp.empty())
-					temp += c;
-				else
-					in.putback(c);
-				break;
-			}
-		if(i<delim.length())
-			break;
-		temp += c;
-	}
-	s = temp.c_str();
-	return in;
+    static const std::string delim = "=,[]; \t\n\r";
+    std::string temp;
+    in >> std::ws;
+    while(!in.eof()) {
+        int c = in.get();
+        if(c<0)
+            break; // why does eof() delay?
+        unsigned i;
+        for(i=0; i<delim.length(); ++i)
+            if(delim[i]==c) {
+                if(temp.empty())
+                    temp += c;
+                else
+                    in.putback(c);
+                break;
+            }
+        if(i<delim.length())
+            break;
+        temp += c;
+    }
+    s = temp.c_str();
+    return in;
 }
 struct ParseEOF : DGException {
     ParseEOF() : DGException("the parser encountered an end-of-file") {}
@@ -66,61 +66,61 @@ struct ParseExpected : DGException {
   }
 };
 struct must {
-	DString s;
-	must(DString s) : s(s) {}
+    DString s;
+    must(DString s) : s(s) {}
 };
 inline std::istream &operator>>(std::istream &in,const must &m) {
-	DString s;
-	in >> s;
-	if(s!=m.s)
-		throw ParseExpected(m.s,s);
-	return in;
+    DString s;
+    in >> s;
+    if(s!=m.s)
+        throw ParseExpected(m.s,s);
+    return in;
 }
 struct quote {
-	const std::string &s;
-	quote(const std::string &s) : s(s) {}
+    const std::string &s;
+    quote(const std::string &s) : s(s) {}
 };
 inline std::ostream &operator<<(std::ostream &out,quote &o) {
   out << '"';
   if(!o.s.empty())
     for(unsigned i = 0; i<o.s.length(); ++i)
       if(o.s[i]=='"') // " => \"
-	out << "\\\"";
+          out << "\\\"";
       else if(o.s[i]=='\\') // \ => \\       .
-	out << "\\\\";
+          out << "\\\\";
       else
-	out << o.s[i];
+          out << o.s[i];
   out << '"';
   return out;
 }
 struct unquote {
-	std::string &s;
-	unquote(std::string &s) : s(s) {}
+    std::string &s;
+    unquote(std::string &s) : s(s) {}
 };
 inline std::istream &operator>>(std::istream &in,unquote &o) {
-	char c;
-	in >> std::ws;
-	in.get(c);
-	if(c!='"')
-		throw ParseExpected('"',c);
-	o.s.erase();
-	while(1) {
-		in.get(c);
-		if(c=='\\')
-			in.get(c);
-		else if(c=='"')
-			break;
-		o.s += c;
-	}
-	return in;
+    char c;
+    in >> std::ws;
+    in.get(c);
+    if(c!='"')
+        throw ParseExpected('"',c);
+    o.s.erase();
+    while(1) {
+        in.get(c);
+        if(c=='\\')
+            in.get(c);
+        else if(c=='"')
+            break;
+        o.s += c;
+    }
+    return in;
 }
 /*
 from the agraph & incrface lexers
 LETTER [A-Za-z_\200-\377]
-DIGIT	[0-9]
-NAME	{LETTER}({LETTER}|{DIGIT})*
-NUMBER	[-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+))
-ID		({NAME}|{NUMBER})
+DIGIT   [0-9]
+NAME    {LETTER}({LETTER}|{DIGIT})*
+NUMBER  [-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+))
+ID      ({NAME}|{NUMBER})
 
 absurd solution follows.  really should modernize the
 lexer so it'd be safe to use it here.
@@ -130,7 +130,7 @@ inline bool isletter(int C) {
 }
 // signed chars become bad int characters
 inline bool isletter(char c) {
-	return isletter(int(static_cast<unsigned char>(c)));
+    return isletter(int(static_cast<unsigned char>(c)));
 }
 template<typename C>
 inline bool needsQuotes(const C *s) {
@@ -187,22 +187,22 @@ inline bool needsQuotes(const C *s) {
 /* this wasn't good enough
 template<typename C>
 inline bool needsQuotes(const C *s) {
-	static const char g_badChars[] = "\" ,[]-+";
-	static const int g_nBads = sizeof(g_badChars);
-	if(isdigit(s[0]))
-		return true;
-	// didn't work in gcc: find_first_of(s.begin(),s.end(),g_badChars,g_badChars+g_nBads)!=s.end()
-	for(const C *i=s; *i; ++i)
-		for(int i2 = 0; i2<g_nBads; ++i2)
-			if(*i==g_badChars[i2])
-				return true;
-	return false;
+    static const char g_badChars[] = "\" ,[]-+";
+    static const int g_nBads = sizeof(g_badChars);
+    if(isdigit(s[0]))
+        return true;
+    // didn't work in gcc: find_first_of(s.begin(),s.end(),g_badChars,g_badChars+g_nBads)!=s.end()
+    for(const C *i=s; *i; ++i)
+        for(int i2 = 0; i2<g_nBads; ++i2)
+            if(*i==g_badChars[i2])
+                return true;
+    return false;
 }
 */
 bool needsQuotes(const DString &s);
 struct mquote { // quote if needed
-	const DString &s;
-	mquote(const DString &s) : s(s) {}
+    const DString &s;
+    mquote(const DString &s) : s(s) {}
 };
 std::ostream &operator<<(std::ostream &,const mquote &);
 // match e.g. braces.  throws outers away (this isn't general yet)

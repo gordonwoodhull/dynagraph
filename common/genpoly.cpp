@@ -24,14 +24,14 @@ namespace Dynagraph {
 
 //#include <limits>
 
-#define	GEMS_DONT_INTERSECT    0
-#define	GEMS_DO_INTERSECT      1
+#define GEMS_DONT_INTERSECT    0
+#define GEMS_DO_INTERSECT      1
 #define GEMS_COLLINEAR         2
 
 Coord origin;
 
 Coord mysincos(double rads) {
-  Coord		rv;
+  Coord     rv;
   rv.y = sin(rads);
   rv.x = sqrt(1.0 - rv.y * rv.y);
   if((rads > M_PI_2) && (rads < M_PI + M_PI_2)) rv.x = -rv.x;
@@ -41,15 +41,15 @@ Coord mysincos(double rads) {
 /* flat side on bottom */
 void regpolygon(double size,int nsides,Line &out) {
 
-  double		t,theta;
-  int			i;
+  double        t,theta;
+  int           i;
 
   dgassert (nsides >= 3);
   out.clear();
   out.degree = 1;
 
   theta = (2.0 * M_PI) / nsides;
-  t = (1.5 * M_PI) + (theta / 2.0);	/* starting place */
+  t = (1.5 * M_PI) + (theta / 2.0); /* starting place */
   for(i = 0; i < nsides; i++) {
     out.push_back(mysincos(t)*size);
     t = t + theta;
@@ -59,9 +59,9 @@ void regpolygon(double size,int nsides,Line &out) {
 }
 
 static void rotate(Line &poly, double rot) {
-  unsigned	i;
-  double		r,theta,new_theta;
-  Coord		p;
+  unsigned  i;
+  double        r,theta,new_theta;
+  Coord     p;
 
   for(i = 0; i < poly.size(); i++) {
     p = poly[i];
@@ -79,9 +79,9 @@ static void rotate(Line &poly, double rot) {
 }
 /*
   static void skew_and_distort(polyline_t *poly, double skew, double distortion) {
-  int			i;
-  Coord		p;
-  double		skewdist;
+  int           i;
+  Coord     p;
+  double        skewdist;
 
   skewdist = hypot(fabs(distortion)+fabs(skew),1.);
 
@@ -100,9 +100,9 @@ static void rotate(Line &poly, double rot) {
   (and the bottom always moves equal and opposite)
 */
 static void skew_and_distort(Line &poly, double skew, double distortion) {
-  unsigned	i;
-  Coord		p;
-  double		scale;
+  unsigned  i;
+  Coord     p;
+  double        scale;
 
   // get the general size of poly:
   scale = hypot(poly[0].x,poly[0].y);
@@ -133,7 +133,7 @@ static void skew_and_distort(Line &poly, double skew, double distortion) {
 #define quadrant(cd) ((((cd).x>0)?1:0)|(((cd).y>0)?2:0))
 /*  mirror a coord into a quadrant: */
 #define quadrantize(cd,q) (cd).x = (q&1)?fabs((cd).x):(-fabs((cd).x));\
-						  (cd).y = (q&2)?fabs((cd).y):(-fabs((cd).y));
+                          (cd).y = (q&2)?fabs((cd).y):(-fabs((cd).y));
 #endif
 
 template<typename Reaction>
@@ -191,7 +191,7 @@ static bool box_hits_poly(Line &poly,Coord box) {
 */
 Coord polysize(const Line &poly) {
   unsigned i;
-  Coord	low,high,p,rv;
+  Coord low,high,p,rv;
 
   low = high = poly[0];
   for(i = 1; i < poly.size(); i++) {
@@ -208,7 +208,7 @@ Coord polysize(const Line &poly) {
 }
 
 static Coord scale_for_exterior(const Line &poly, Coord external_box) {
-  Coord		size = polysize(poly),
+  Coord     size = polysize(poly),
     rv;
 
   rv.x = external_box.x / size.x;
@@ -217,7 +217,7 @@ static Coord scale_for_exterior(const Line &poly, Coord external_box) {
 }
 
 static void scalexy(Line &poly, Coord scale) {
-  unsigned	i;
+  unsigned  i;
 
   for(i = 0; i < poly.size(); i++) {
     poly[i].x *= scale.x;
@@ -274,8 +274,8 @@ inline double slope(Segment L) {
 }
 // calc a point that is dist from pt along the line with this slope, either toward or away origin
 static Coord distance_along_line(Coord pt,double slope,double dist,bool toward) {
-  double	a,b,c,	/* coeffs of -b/2a +/- sqrt(sqr(b)-4ac)/2a */
-    ofs,	/* for y = slope*x + ofs of this line */
+  double    a,b,c,  /* coeffs of -b/2a +/- sqrt(sqr(b)-4ac)/2a */
+    ofs,    /* for y = slope*x + ofs of this line */
     tmp,tmp2;
   Coord rv;
 
@@ -359,20 +359,20 @@ static void calc_periphery(const Line &poly,double dist,bool inward,Line &out) {
       /* intersect y = mx + b, y = (lm)x + (lb) */
       Coord c;
       if(leps(m-lm))
-	c = (lq + q)/2.0;
+    c = (lq + q)/2.0;
       else {
-	if(m==Infinity||m==-Infinity) { // this calls out for a general line lib!
-	  c.x = q.x;
-	  c.y = lm*c.x+lb;
-	}
-	else if(lm==Infinity||lm==-Infinity) {
-	  c.x = lq.x;
-	  c.y = m*c.x+b;
-	}
-	else {
-	  c.x = (lb - b) / (m - lm);
-	  c.y = m*c.x+b;
-	}
+    if(m==Infinity||m==-Infinity) { // this calls out for a general line lib!
+      c.x = q.x;
+      c.y = lm*c.x+lb;
+    }
+    else if(lm==Infinity||lm==-Infinity) {
+      c.x = lq.x;
+      c.y = m*c.x+b;
+    }
+    else {
+      c.x = (lb - b) / (m - lm);
+      c.y = m*c.x+b;
+    }
       }
       dgassert(c.y<1e5 && c.y>-1e5);
       out.push_back(c);
@@ -411,12 +411,12 @@ void makePeripheries(int peris,double perispace,bool inward,Lines &out) {
     for(int i = 0; i < peris; i++) {
       Line *next;
       if(inward) {
-	out.push_back(Line());
-	next = &out.back();
+    out.push_back(Line());
+    next = &out.back();
       }
       else {
-	out.push_front(Line());
-	next = &out.front();
+    out.push_front(Line());
+    next = &out.front();
       }
       calc_periphery(*last,perispace,inward,*next);
       last = next;
@@ -510,12 +510,12 @@ void genpoly(const PolyDef &arg,Lines &out) {
       double m = std::min(arg.interior_box.x,arg.interior_box.y);
       double s = scale_for_interior(first,Coord(m,m));
       if(arg.interior_box.x>arg.interior_box.y) {
-	scaling.y = s;
-	scaling.x = s*arg.interior_box.x/arg.interior_box.y;
+    scaling.y = s;
+    scaling.x = s*arg.interior_box.x/arg.interior_box.y;
       }
       else {
-	scaling.x = s;
-	scaling.y = s*arg.interior_box.y/arg.interior_box.x;
+    scaling.x = s;
+    scaling.y = s*arg.interior_box.y/arg.interior_box.x;
       }
 
     }

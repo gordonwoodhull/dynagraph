@@ -28,54 +28,54 @@ namespace Dynagraph {
 template<typename Graph>
 struct ChangeProcessor {
     ChangingGraph<Graph> * const world_;
-	typedef Graph GraphType;
-	ChangeProcessor(ChangingGraph<Graph> *world) : world_(world) {}
-	virtual void Open() = 0;
-	virtual void Process() = 0;
-	virtual void Close() = 0;
-	virtual void Pulse(const StrAttrs &attrs) = 0;
-	virtual ~ChangeProcessor() {}
-	typedef void (ChangeProcessor::*Function)();
+    typedef Graph GraphType;
+    ChangeProcessor(ChangingGraph<Graph> *world) : world_(world) {}
+    virtual void Open() = 0;
+    virtual void Process() = 0;
+    virtual void Close() = 0;
+    virtual void Pulse(const StrAttrs &attrs) = 0;
+    virtual ~ChangeProcessor() {}
+    typedef void (ChangeProcessor::*Function)();
 };
 
 template<typename Graph>
 struct LinkedChangeProcessor : ChangeProcessor<Graph> {
-	LinkedChangeProcessor<Graph> *next_;
-	LinkedChangeProcessor(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0)
-		: ChangeProcessor<Graph>(world),next_(next) {}
-	virtual ~LinkedChangeProcessor() {
-		if(next_)
-			delete next_;
-	}
-	void NextOpen() {
-		if(next_)
-			next_->Open();
-	}
-	void NextProcess() {
-		if(next_)
-			next_->Process();
-	}
-	void NextClose() {
-		if(next_)
-			next_->Close();
-	}
-	void NextPulse(const StrAttrs &attrs) {
-		if(next_)
-			next_->Pulse(attrs);
-	}
-	// default implementations (almost no one cares about Open or Close)
-	void Open() {
-		NextOpen();
-	}
-	void Process() {
-		NextProcess();
-	}
-	void Close() {
-		NextClose();
-	}
-	void Pulse(const StrAttrs &attrs) {
-		NextPulse(attrs);
-	}
+    LinkedChangeProcessor<Graph> *next_;
+    LinkedChangeProcessor(ChangingGraph<Graph> *world,LinkedChangeProcessor<Graph> *next=0)
+        : ChangeProcessor<Graph>(world),next_(next) {}
+    virtual ~LinkedChangeProcessor() {
+        if(next_)
+            delete next_;
+    }
+    void NextOpen() {
+        if(next_)
+            next_->Open();
+    }
+    void NextProcess() {
+        if(next_)
+            next_->Process();
+    }
+    void NextClose() {
+        if(next_)
+            next_->Close();
+    }
+    void NextPulse(const StrAttrs &attrs) {
+        if(next_)
+            next_->Pulse(attrs);
+    }
+    // default implementations (almost no one cares about Open or Close)
+    void Open() {
+        NextOpen();
+    }
+    void Process() {
+        NextProcess();
+    }
+    void Close() {
+        NextClose();
+    }
+    void Pulse(const StrAttrs &attrs) {
+        NextPulse(attrs);
+    }
 };
 
 } // namespace Dynagraph

@@ -21,13 +21,13 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 inline const char *type(DDModel::Node *mn) {
-	return gd<DDNode>(mn).amEdgePart()?"path":"multinode";
+    return gd<DDNode>(mn).amEdgePart()?"path":"multinode";
 }
 inline void *thing(DDModel::Node *mn) {
-	if(gd<DDNode>(mn).multi)
-		return gd<DDNode>(mn).multi;
-	else
-		return gd<DDEdge>(*mn->ins().begin()).path;
+    if(gd<DDNode>(mn).multi)
+        return gd<DDNode>(mn).multi;
+    else
+        return gd<DDEdge>(*mn->ins().begin()).path;
 }
 
 typedef ChangeQueue<DynaDAGLayout> DDChangeQueue;
@@ -37,21 +37,21 @@ struct BadXConstraints : DGException {
 };
 
 inline bool userDefinedMove(DynaDAGLayout::Edge *ve) {
-	return gd<EdgeGeom>(ve).manualRoute;
-	//return flags & DG_UPD_MOVE && !gd<EdgeGeom>(ve).pos.Empty();
+    return gd<EdgeGeom>(ve).manualRoute;
+    //return flags & DG_UPD_MOVE && !gd<EdgeGeom>(ve).pos.Empty();
 }
 
 typedef std::vector<DynaDAGLayout::Node*> LNodeV; // mneh
 // vertical constraint weights
 #define UPWARD_TENDENCY 0 // try to pull children toward parents
-#define	STABILITY_FACTOR_Y	1 // keep nodes near where they were
+#define STABILITY_FACTOR_Y  1 // keep nodes near where they were
 #define EDGELENGTH_WEIGHT 10 // try to shorten edges
-#define	BACKEDGE_PENALTY	100  // try to point weak edges downward
-#define NODEHEIGHT_PENALTY	1000000 // don't stretch nodes
+#define BACKEDGE_PENALTY    100  // try to point weak edges downward
+#define NODEHEIGHT_PENALTY  1000000 // don't stretch nodes
 
 // horizontal constraint weights
 #define COMPACTION_STRENGTH 0 // how much to allow gaps between nodes
-#define	STABILITY_FACTOR_X	100 // keep nodes near where they were
+#define STABILITY_FACTOR_X  100 // keep nodes near where they were
 #define BEND_WEIGHT 1000 // keep adjacent v-nodes close
 
 #define MINCROSS_PASSES 12

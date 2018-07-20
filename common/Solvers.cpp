@@ -22,7 +22,7 @@
 namespace Dynagraph {
 
 inline bool near0(double x) {
-	return absol(x)<1E-7;
+    return absol(x)<1E-7;
 }
 // fwd
 int solve2(double coeff[3], double roots[2]);

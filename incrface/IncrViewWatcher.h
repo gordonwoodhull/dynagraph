@@ -24,10 +24,10 @@ namespace Dynagraph {
 // this is a weird interface that is slowly dwindling into nothing
 template<typename Graph>
 struct IncrViewWatcher {
-	virtual ~IncrViewWatcher() {}
-	virtual void FulfilGraph(Graph *g) = 0;
-	virtual void FulfilNode(typename Graph::Node *n) = 0;
-	virtual void FulfilEdge(typename Graph::Edge *e) = 0;
+    virtual ~IncrViewWatcher() {}
+    virtual void FulfilGraph(Graph *g) = 0;
+    virtual void FulfilNode(typename Graph::Node *n) = 0;
+    virtual void FulfilEdge(typename Graph::Edge *e) = 0;
 };
 
 } // namespace Dynagraph

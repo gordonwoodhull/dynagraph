@@ -26,94 +26,94 @@ namespace Dynagraph {
 namespace PathPlot {
 
 struct PnL {
-	const Coord *pp;
-	PnL *link;
-	PnL(const Coord *pp,PnL *link=0) : pp(pp),link(link) {}
+    const Coord *pp;
+    PnL *link;
+    PnL(const Coord *pp,PnL *link=0) : pp(pp),link(link) {}
 };
 struct Triangle;
 struct TriEdge {
     PnL *pnl0p,
-		*pnl1p;
+        *pnl1p;
     Triangle *ltp,
-		*rtp;
-	TriEdge() : pnl0p(0),pnl1p(0),ltp(0),rtp(0) {}
+        *rtp;
+    TriEdge() : pnl0p(0),pnl1p(0),ltp(0),rtp(0) {}
 };
 struct Triangle {
     int mark;
     struct TriEdge e[3];
 
-	Triangle(PnL *pnlap,PnL *pnlbp,PnL *pnlcp) : mark(0) {
-		e[0].pnl0p = pnlap; e[0].pnl1p = pnlbp;
-		e[1].pnl0p = pnlbp; e[1].pnl1p = pnlcp;
-		e[2].pnl0p = pnlcp; e[2].pnl1p = pnlap;
-		for(int i=0;i<3;++i)
-			e[i].ltp = this;
-	}
-	bool PointIn(Coord c) {
-	        int sum=0;
-		for(int ei = 0; ei < 3; ei++)
-			if(ccw(*e[ei].pnl0p->pp,*e[ei].pnl1p->pp,c) != ISCW)
-				sum++;
-		return sum == 3 || sum == 0;
-	}
+    Triangle(PnL *pnlap,PnL *pnlbp,PnL *pnlcp) : mark(0) {
+        e[0].pnl0p = pnlap; e[0].pnl1p = pnlbp;
+        e[1].pnl0p = pnlbp; e[1].pnl1p = pnlcp;
+        e[2].pnl0p = pnlcp; e[2].pnl1p = pnlap;
+        for(int i=0;i<3;++i)
+            e[i].ltp = this;
+    }
+    bool PointIn(Coord c) {
+            int sum=0;
+        for(int ei = 0; ei < 3; ei++)
+            if(ccw(*e[ei].pnl0p->pp,*e[ei].pnl1p->pp,c) != ISCW)
+                sum++;
+        return sum == 3 || sum == 0;
+    }
 };
 
 typedef vector<PnL> PnLV;
 typedef vector<PnL*> PnLPV;
 typedef vector<Triangle> TriangleV;
 struct PnLD {
-	PnLD(size_t n) : begin(n),end(n-1) {
-		impl.resize(n*2,0);
-	}
-	size_t apex;
-	PnL *front() {
-		dgassert(!empty());
-		return impl[begin];
-	}
-	PnL *back() {
-		dgassert(!empty());
-		return impl[end];
-	}
-	size_t add_front(PnL *pnlp) {
-		if(!empty())
-			pnlp->link = front();
-		impl[--begin] = pnlp;
-		return begin;
-	}
-	size_t add_back(PnL *pnlp) {
-		if(!empty())
-			pnlp->link = back();
-		impl[++end] = pnlp;
-		return end;
-	}
-	void split_back(size_t index) {
+    PnLD(size_t n) : begin(n),end(n-1) {
+        impl.resize(n*2,0);
+    }
+    size_t apex;
+    PnL *front() {
+        dgassert(!empty());
+        return impl[begin];
+    }
+    PnL *back() {
+        dgassert(!empty());
+        return impl[end];
+    }
+    size_t add_front(PnL *pnlp) {
+        if(!empty())
+            pnlp->link = front();
+        impl[--begin] = pnlp;
+        return begin;
+    }
+    size_t add_back(PnL *pnlp) {
+        if(!empty())
+            pnlp->link = back();
+        impl[++end] = pnlp;
+        return end;
+    }
+    void split_back(size_t index) {
         /* if the split is behind the apex, then reset apex */
-		if(index>apex)
-			apex = index;
-		begin = index;
-	}
-	void split_front(size_t index) {
+        if(index>apex)
+            apex = index;
+        begin = index;
+    }
+    void split_front(size_t index) {
         /* if the split is in front of the apex, then reset apex */
-		if(index<apex)
-			apex = index;
-		end = index;
-	}
-	size_t findSplit(PnL *pnlp) {
-		size_t index;
-		for(index = begin; index < apex; index++)
-			if(ccw(*impl[index+1]->pp, *impl[index]->pp, *pnlp->pp) == ISCCW)
-				return index;
-		for(index = end; index > apex; index--)
-			if(ccw(*impl[index-1]->pp, *impl[index]->pp, *pnlp->pp) == ISCW)
-				return index;
-		return apex;
-	}
+        if(index<apex)
+            apex = index;
+        end = index;
+    }
+    size_t findSplit(PnL *pnlp) {
+        size_t index;
+        for(index = begin; index < apex; index++)
+            if(ccw(*impl[index+1]->pp, *impl[index]->pp, *pnlp->pp) == ISCCW)
+                return index;
+        for(index = end; index > apex; index--)
+            if(ccw(*impl[index-1]->pp, *impl[index]->pp, *pnlp->pp) == ISCW)
+                return index;
+        return apex;
+    }
 private:
-	PnLPV impl;
-	size_t begin,end;
-	bool empty() {
-		return end<begin;
-	}
+    PnLPV impl;
+    size_t begin,end;
+    bool empty() {
+        return end<begin;
+    }
 };
 
 static void triangulate(PnLPV &pnls,TriangleV &out);
@@ -122,76 +122,76 @@ static void connectTris(Triangle &tri1, Triangle &tri2);
 static bool markTriPath(Triangle &tri1, Triangle &tri2);
 
 void Shortest(const Line &boundary, Segment endpoints, Line &out) {
-	// former globals(!!!)
-	PnLV pnls;
-	PnLPV pnlps;
-	TriangleV tris;
-	PnLD dq(boundary.size());
+    // former globals(!!!)
+    PnLV pnls;
+    PnLPV pnlps;
+    TriangleV tris;
+    PnLD dq(boundary.size());
 
     /* make sure polygon is CCW and load pnls array */
-	pnls.reserve(boundary.size());
-	double minx = HUGE_VAL;
-	int minpi = -1;
+    pnls.reserve(boundary.size());
+    double minx = HUGE_VAL;
+    int minpi = -1;
     for(unsigned pi = 0; pi < boundary.size(); pi++)
         if(minx > boundary[pi].x)
             minx = boundary[pi].x, minpi = pi;
-	if(minpi<0)
-		throw InvalidBoundary();
+    if(minpi<0)
+        throw InvalidBoundary();
     Coord p2 = boundary[minpi],
-		p1 = boundary[minpi == 0 ? boundary.size()-1 : minpi - 1],
-		p3 = boundary[minpi == int(boundary.size()) - 1 ? 0 : minpi + 1];
+        p1 = boundary[minpi == 0 ? boundary.size()-1 : minpi - 1],
+        p3 = boundary[minpi == int(boundary.size()) - 1 ? 0 : minpi + 1];
     if(p1.x == p2.x && p2.x == p3.x && p3.y > p2.y ||
             ccw(p1, p2, p3) != ISCCW)
         for(Line::const_reverse_iterator pi = boundary.rbegin(); pi != boundary.rend(); pi++) {
             if(pi != boundary.rbegin() && *pi == pi[-1])
                 continue;
-			pnls.push_back(&*pi);
-			pnlps.push_back(&pnls.back());
+            pnls.push_back(&*pi);
+            pnlps.push_back(&pnls.back());
         }
     else
         for(Line::const_iterator pi = boundary.begin(); pi!=boundary.end(); ++pi) {
             if(pi != boundary.begin() && *pi == pi[-1])
                 continue;
-			pnls.push_back(&*pi);
-			pnlps.push_back(&pnls.back());
+            pnls.push_back(&*pi);
+            pnlps.push_back(&pnls.back());
         }
 
-	if(reports.enabled(dgr::shortestPath)) {
-		reports[dgr::shortestPath] << "shortest: points (" << (int)pnlps.size() << ')' << endl;
-		for(PnLPV::iterator pnli = pnlps.begin(); pnli!=pnlps.end(); ++pnli)
-			reports[dgr::shortestPath] << (*pnli)->pp << endl;
-	}
+    if(reports.enabled(dgr::shortestPath)) {
+        reports[dgr::shortestPath] << "shortest: points (" << (int)pnlps.size() << ')' << endl;
+        for(PnLPV::iterator pnli = pnlps.begin(); pnli!=pnlps.end(); ++pnli)
+            reports[dgr::shortestPath] << (*pnli)->pp << endl;
+    }
 
     /* generate list of triangles */
     triangulate(pnlps,tris);
 
-	if(reports.enabled(dgr::shortestPath)) {
-		reports[dgr::shortestPath] << "triangles " << (int)tris.size() << endl;
-		for(TriangleV::iterator trii = tris.begin(); trii!=tris.end(); ++trii) {
-			for(int ei = 0; ei < 3; ei++)
-				reports[dgr::shortestPath] << "(" << trii->e[ei].pnl0p->pp << ") ";
-			reports[dgr::shortestPath] << endl;
-		}
-	}
+    if(reports.enabled(dgr::shortestPath)) {
+        reports[dgr::shortestPath] << "triangles " << (int)tris.size() << endl;
+        for(TriangleV::iterator trii = tris.begin(); trii!=tris.end(); ++trii) {
+            for(int ei = 0; ei < 3; ei++)
+                reports[dgr::shortestPath] << "(" << trii->e[ei].pnl0p->pp << ") ";
+            reports[dgr::shortestPath] << endl;
+        }
+    }
 
     /* connect all pairs of triangles that share an edge */
         TriangleV::iterator ti;
-	for(ti = tris.begin(); ti!=tris.end(); ++ti)
-		for(TriangleV::iterator tj = ti+1; tj!=tris.end(); ++tj)
+    for(ti = tris.begin(); ti!=tris.end(); ++ti)
+        for(TriangleV::iterator tj = ti+1; tj!=tris.end(); ++tj)
             connectTris(*ti,*tj);
 
     /* find first and last triangles */
-	TriangleV::iterator ftrii,ltrii;
+    TriangleV::iterator ftrii,ltrii;
     for(ti = tris.begin(); ti!=tris.end(); ++ti)
         if(ti->PointIn(endpoints.a))
             break;
-	if(ti==tris.end())
+    if(ti==tris.end())
         throw EndpointNotInPolygon(false);
-	ftrii = ti;
+    ftrii = ti;
     for(ti = tris.begin(); ti!=tris.end(); ++ti)
         if(ti->PointIn(endpoints.b))
             break;
-	if(ti==tris.end())
+    if(ti==tris.end())
         throw EndpointNotInPolygon(true);
     ltrii = ti;
 
@@ -200,26 +200,26 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
 
     /* if endpoints in same triangle, use a single line */
     if(ftrii == ltrii) {
-		out.Clear();
-		out.degree = 1;
-		out.push_back(endpoints.a);
-		out.push_back(endpoints.b);
+        out.Clear();
+        out.degree = 1;
+        out.push_back(endpoints.a);
+        out.push_back(endpoints.b);
         return;
     }
 
     /* build funnel and shortest path linked list(in add2dq) */
-	PnL epnls[2] = {&endpoints.a,&endpoints.b};
+    PnL epnls[2] = {&endpoints.a,&endpoints.b};
     dq.apex = dq.add_front(&epnls[0]);
-	Triangle *trii = &*ftrii;
+    Triangle *trii = &*ftrii;
     while(trii) {
-		trii->mark = 2;
+        trii->mark = 2;
 
         /* find the left and right points of the exiting edge */
-	int ei;
+    int ei;
         for(ei = 0; ei < 3; ei++)
             if(trii->e[ei].rtp && trii->e[ei].rtp->mark == 1)
                 break;
-		PnL *lpnlp,*rpnlp;
+        PnL *lpnlp,*rpnlp;
         if(ei == 3) { /* in last triangle */
             if(ccw(endpoints.b, *dq.front()->pp,*dq.back()->pp) == ISCCW)
                 lpnlp = dq.back(), rpnlp = &epnls[1];
@@ -241,17 +241,17 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
         } else {
             if(dq.front() != rpnlp && dq.back() != rpnlp) {
                 /* add right point to deque */
-				size_t splitindex = dq.findSplit(rpnlp);
+                size_t splitindex = dq.findSplit(rpnlp);
                 dq.split_back(splitindex);
-				dq.add_front(rpnlp);
+                dq.add_front(rpnlp);
             } else {
                 /* add left point to deque */
                 size_t splitindex = dq.findSplit(lpnlp);
                 dq.split_front(splitindex);
-				dq.add_back(lpnlp);
+                dq.add_back(lpnlp);
             }
         }
-		Triangle &tri = *trii;
+        Triangle &tri = *trii;
         trii = 0;
         for(ei = 0; ei < 3; ei++)
             if(tri.e[ei].rtp && tri.e[ei].rtp->mark == 1) {
@@ -260,17 +260,17 @@ void Shortest(const Line &boundary, Segment endpoints, Line &out) {
             }
     }
 
-	if(reports.enabled(dgr::shortestPath)) {
-		reports[dgr::shortestPath] << "polypath";
-		for(PnL *pnlp = &epnls[1]; pnlp; pnlp = pnlp->link)
-			reports[dgr::shortestPath] << " " << pnlp->pp;
-		reports[dgr::shortestPath] << endl;
-	}
+    if(reports.enabled(dgr::shortestPath)) {
+        reports[dgr::shortestPath] << "polypath";
+        for(PnL *pnlp = &epnls[1]; pnlp; pnlp = pnlp->link)
+            reports[dgr::shortestPath] << " " << pnlp->pp;
+        reports[dgr::shortestPath] << endl;
+    }
 
-	out.degree = 1;
-	for(PnL *pnlp = &epnls[1]; pnlp; pnlp = pnlp->link)
-		out.push_back(*pnlp->pp);
-	reverse(out.begin(),out.end());
+    out.degree = 1;
+    for(PnL *pnlp = &epnls[1]; pnlp; pnlp = pnlp->link)
+        out.push_back(*pnlp->pp);
+    reverse(out.begin(),out.end());
 }
 
 /* triangulate polygon */
@@ -278,10 +278,10 @@ static void triangulate(PnLPV &pnlps,TriangleV &out) {
     if(pnlps.size() > 3) {
         for(unsigned pnli = 0; pnli < pnlps.size(); pnli++) {
             unsigned pnlip1 =(pnli + 1) % pnlps.size(),
-				pnlip2 =(pnli + 2) % pnlps.size();
+                pnlip2 =(pnli + 2) % pnlps.size();
             if(isDiagonal(pnlps, pnli, pnlip2)) {
-				out.push_back(Triangle(pnlps[pnli], pnlps[pnlip1], pnlps[pnlip2]));
-				pnlps.erase(pnlps.begin()+pnlip1);
+                out.push_back(Triangle(pnlps[pnli], pnlps[pnlip1], pnlps[pnlip2]));
+                pnlps.erase(pnlps.begin()+pnlip1);
                 triangulate(pnlps, out);
                 return;
             }
@@ -295,9 +295,9 @@ static void triangulate(PnLPV &pnlps,TriangleV &out) {
 static bool isDiagonal(PnLPV &pnlps, unsigned pnli, unsigned pnlip2) {
     /* neighborhood test */
     int pnlip1 =(pnli + 1) % pnlps.size(),
-		pnlim1 =(pnli + pnlps.size() - 1) % pnlps.size();
+        pnlim1 =(pnli + pnlps.size() - 1) % pnlps.size();
     /* If P[pnli] is a convex vertex [ pnli+1 left of(pnli-1,pnli) ]. */
-	bool res;
+    bool res;
     if(ccw(*pnlps[pnlim1]->pp, *pnlps[pnli]->pp, *pnlps[pnlip1]->pp) == ISCCW)
         res = ccw(*pnlps[pnli]->pp, *pnlps[pnlip2]->pp,*pnlps[pnlim1]->pp) == ISCCW &&
                ccw(*pnlps[pnlip2]->pp, *pnlps[pnli]->pp,*pnlps[pnlip1]->pp) == ISCCW;
@@ -311,7 +311,7 @@ static bool isDiagonal(PnLPV &pnlps, unsigned pnli, unsigned pnlip2) {
     for(unsigned pnlj = 0; pnlj < pnlps.size(); pnlj++) {
         unsigned pnljp1 =(pnlj + 1) % pnlps.size();
         if(!(pnlj == pnli || pnljp1 == pnli ||
-			pnlj == pnlip2 || pnljp1 == pnlip2))
+            pnlj == pnlip2 || pnljp1 == pnlip2))
             if(segsIntersect(*pnlps[pnli]->pp, *pnlps[pnlip2]->pp,
                     *pnlps[pnlj]->pp, *pnlps[pnljp1]->pp))
                 return false;

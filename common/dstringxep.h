@@ -22,8 +22,8 @@
 namespace Dynagraph {
 
 struct DictStringLost : DGException2 {
-	// I don't *think* this could cause some horrible recursive crash..!?
-	DictStringLost(DString s) : DGException2("internal exception in StringDict: string lost",s,true) {}
+    // I don't *think* this could cause some horrible recursive crash..!?
+    DictStringLost(DString s) : DGException2("internal exception in StringDict: string lost",s,true) {}
 };
 
 } // namespace Dynagraph

@@ -38,27 +38,27 @@ namespace Voronoi {
  *   In the first two cases, check that graph fits in bounding box.
  */
 void VoronoiServer::chkBoundBox() {
-	bounds.valid = false;
+    bounds.valid = false;
     for(vector<Info>::iterator ii = infos.nodes.begin(); ii !=infos.nodes.end(); ii++)
-		bounds |= gd<NodeGeom>(ii->layoutN).BoundingBox();
+        bounds |= gd<NodeGeom>(ii->layoutN).BoundingBox();
 
-	if(bounds.valid) {
-		Coord delta = bounds.Size()*margin;
-		bounds = Rect(bounds.l-delta.x,bounds.t+delta.y,bounds.r+delta.x,bounds.b-delta.y);
-	}
+    if(bounds.valid) {
+        Coord delta = bounds.Size()*margin;
+        bounds = Rect(bounds.l-delta.x,bounds.t+delta.y,bounds.r+delta.x,bounds.b-delta.y);
+    }
 }
 
  /* makeInfo:
   * For each node in the graph, create a Info data structure
   */
 void VoronoiServer::makeInfo() {
-	int N = this->world_->current_.nodes().size();
+    int N = this->world_->current_.nodes().size();
     infos.nodes.resize(N);
 
-	FDPLayout::node_iter ni = this->world_->current_.nodes().begin();
+    FDPLayout::node_iter ni = this->world_->current_.nodes().begin();
     vector<Info>::iterator ii = infos.nodes.begin();
     for(; ni!=this->world_->current_.nodes().end(); ++ni,++ii) {
-		FDPLayout::Node *n = *ni;
+        FDPLayout::Node *n = *ni;
 
         ii->site.coord = gd<NodeGeom>(n).pos;
 
@@ -71,22 +71,22 @@ void VoronoiServer::makeInfo() {
 
 /* sort sites on y, then x, coord */
 struct scomp {
-	bool operator ()(Site *s1,Site *s2) {
-		if(s1 -> coord.y < s2 -> coord.y) return true;
-		if(s1 -> coord.y > s2 -> coord.y) return false;
-		if(s1 -> coord.x < s2 -> coord.x) return true;
-		return false;
-	}
+    bool operator ()(Site *s1,Site *s2) {
+        if(s1 -> coord.y < s2 -> coord.y) return true;
+        if(s1 -> coord.y > s2 -> coord.y) return false;
+        if(s1 -> coord.x < s2 -> coord.x) return true;
+        return false;
+    }
 };
  /* sortSites:
   * Fill array of pointer to sites and sort the sites using scomp
   */
 void VoronoiServer::sortSites(vector<Site*> &sort) {
-	int nsites = this->world_->current_.nodes().size();
+    int nsites = this->world_->current_.nodes().size();
     vector<Site*>::iterator sp;
     vector<Info>::iterator ip;
 
-	sort.resize(nsites);
+    sort.resize(nsites);
     sp = sort.begin();
     ip = infos.nodes.begin();
     for (; ip!=infos.nodes.end(); ++ip) {
@@ -95,43 +95,43 @@ void VoronoiServer::sortSites(vector<Site*> &sort) {
         ip->site.refcnt = 1;
     }
 
-	std::sort(sort.begin(),sort.end(),scomp());
+    std::sort(sort.begin(),sort.end(),scomp());
 }
 
 void VoronoiServer::geomUpdate (vector<Site*> &sort) {
     sortSites (sort);
 
     /* compute ranges */
-	hedges.range = Rect(sort[0]->coord);
+    hedges.range = Rect(sort[0]->coord);
     for(size_t i = 1; i < this->world_->current_.nodes().size(); i++)
-		hedges.range |= Rect(sort[i]->coord);
+        hedges.range |= Rect(sort[i]->coord);
 }
 int VoronoiServer::countOverlap(int iter) {
     int          count = 0;
     int          i;
 
-	int nsites = this->world_->current_.nodes().size();
+    int nsites = this->world_->current_.nodes().size();
     for (i = 0; i < nsites; ++i)
-		infos.nodes[i].overlaps = false;
+        infos.nodes[i].overlaps = false;
 
     for(vector<Info>::iterator ip = infos.nodes.begin(); ip!=infos.nodes.end(); ++ip)
-		for(vector<Info>::iterator jp = ip+1; jp!=infos.nodes.end(); ++jp)
-			if(gd<NodeGeom>(ip->layoutN).region.Overlaps(ip->site.coord,
-				jp->site.coord, gd<NodeGeom>(jp->layoutN).region)) {
-			  count++;
-			  ip->overlaps = jp->overlaps = true;
-			}
+        for(vector<Info>::iterator jp = ip+1; jp!=infos.nodes.end(); ++jp)
+            if(gd<NodeGeom>(ip->layoutN).region.Overlaps(ip->site.coord,
+                jp->site.coord, gd<NodeGeom>(jp->layoutN).region)) {
+              count++;
+              ip->overlaps = jp->overlaps = true;
+            }
 
-			/*
+            /*
     if (Verbose > 1)
       reports[dgr::error] <<  "overlap [" << iter << "] : " << count << endl;
-	  */
+      */
     return count;
 }
 
 void VoronoiServer::increaseBoundBox() {
     double ydelta = incr * bounds.Height(),
-		xdelta = incr * bounds.Width();
+        xdelta = incr * bounds.Width();
 
     bounds.r += xdelta;
     bounds.t += ydelta;
@@ -163,32 +163,32 @@ bool VoronoiServer::isInterior (Info* ip) {
   */
 void VoronoiServer::newpos(Info* ip) {
     PtItem*  anchor = ip->verts;
-	Coord ws(0,0);
+    Coord ws(0,0);
     double totalArea = 0.0;
 
 
-	if(anchor && anchor->next && anchor->next->next) {
+    if(anchor && anchor->next && anchor->next->next) {
 #ifdef VORLINES
-		{
-		FDPLayout *l = infos.nodes.front().layoutN->g;
-		Line seg;
-		seg.degree = 1;
-		for(PtItem *p = anchor; p; p = p->next)
-			seg.push_back(p->p);
-		seg.push_back(anchor->p);
-		gd<Drawn>(l).push_back(seg);
-		}
+        {
+        FDPLayout *l = infos.nodes.front().layoutN->g;
+        Line seg;
+        seg.degree = 1;
+        for(PtItem *p = anchor; p; p = p->next)
+            seg.push_back(p->p);
+        seg.push_back(anchor->p);
+        gd<Drawn>(l).push_back(seg);
+        }
 #endif
-		for(PtItem *p = anchor->next,*q = p->next;q;p = q,q = q->next) {
-			double area = tri_area(anchor->p, p->p, q->p);
-			Coord ctr = centroid(anchor->p, p->p, q->p);
-			ws += ctr*area;
-			totalArea += area;
-		}
-		ip->site.coord = ws/totalArea;
-	}
-	else
-		ip->site.coord.x += 1;
+        for(PtItem *p = anchor->next,*q = p->next;q;p = q,q = q->next) {
+            double area = tri_area(anchor->p, p->p, q->p);
+            Coord ctr = centroid(anchor->p, p->p, q->p);
+            ws += ctr*area;
+            totalArea += area;
+        }
+        ip->site.coord = ws/totalArea;
+    }
+    else
+        ip->site.coord.x += 1;
 }
 
  /* addCorners:
@@ -196,16 +196,16 @@ void VoronoiServer::newpos(Info* ip) {
   * A site gets a corner if it is the closest site to that corner.
   */
 void VoronoiServer::addCorners() {
-	vector<Info>::iterator ip = infos.nodes.begin(),
-		sws = ip,
-		nws = ip,
-		ses = ip,
-		nes = ip;
-	double   swd = dSquared(ip->site.coord, bounds.SW());
-	double   nwd = dSquared(ip->site.coord, bounds.NW());
-	double   sed = dSquared(ip->site.coord, bounds.SE());
-	double   ned = dSquared(ip->site.coord, bounds.NE());
-	double   d;
+    vector<Info>::iterator ip = infos.nodes.begin(),
+        sws = ip,
+        nws = ip,
+        ses = ip,
+        nes = ip;
+    double   swd = dSquared(ip->site.coord, bounds.SW());
+    double   nwd = dSquared(ip->site.coord, bounds.NW());
+    double   sed = dSquared(ip->site.coord, bounds.SE());
+    double   ned = dSquared(ip->site.coord, bounds.NE());
+    double   d;
 
     while(++ip!=infos.nodes.end()) {
         d = dSquared(ip->site.coord, bounds.SW());
@@ -248,7 +248,7 @@ void VoronoiServer::newPos() {
     addCorners ();
     for(vector<Info>::iterator ii = infos.nodes.begin(); ii!=infos.nodes.end(); ++ii)
         if (doAll || ii->overlaps)
-			newpos(&*ii);
+            newpos(&*ii);
 }
 
 bool VoronoiServer::vAdjust () {
@@ -264,9 +264,9 @@ bool VoronoiServer::vAdjust () {
     if ((overlapCnt == 0) || (iterations == 0))
       return 0;
 
-	doAll = false;
+    doAll = false;
 
-	vector<Site*> sort;
+    vector<Site*> sort;
     geomUpdate(sort);
     voronoi(sort);
     while (1) {
@@ -301,12 +301,12 @@ bool VoronoiServer::vAdjust () {
       voronoi(sort);
     }
 
-	/*
+    /*
     if (Verbose) {
       reports[dgr::error] <<  "Number of iterations = " << iterCnt << endl;
       reports[dgr::error] <<  "Number of increases = " << increaseCnt << endl;
     }
-	*/
+    */
 
     return 1;
 }
@@ -366,54 +366,54 @@ sAdjust ()
   */
 void VoronoiServer::updateLayout(ChangeQueue<FDPLayout> &Q) {
     for(vector<Info>::iterator ii = infos.nodes.begin(); ii!=infos.nodes.end(); ++ii) {
-		gd<NodeGeom>(ii->layoutN).pos = ii->site.coord;
-		ModifyNode(Q,ii->layoutN,DG_UPD_MOVE);
-	}
+        gd<NodeGeom>(ii->layoutN).pos = ii->site.coord;
+        ModifyNode(Q,ii->layoutN,DG_UPD_MOVE);
+    }
 }
 /*
 static void
 normalize(graph_t *g)
 {
-	node_t	*v;
-	edge_t	*e;
+    node_t  *v;
+    edge_t  *e;
 
-	double	theta;
-	pointf	p;
+    double  theta;
+    pointf  p;
 
-	if (!mapbool(agget(g,"normalize"))) return;
+    if (!mapbool(agget(g,"normalize"))) return;
 
-	v = agfstnode(g); p.x = v->u.pos[0]; p.y = v->u.pos[1];
-	for (v = agfstnode(g); v; v = agnxtnode(g,v))
-		{v->u.pos[0] -= p.x; v->u.pos[1] -= p.y;}
+    v = agfstnode(g); p.x = v->u.pos[0]; p.y = v->u.pos[1];
+    for (v = agfstnode(g); v; v = agnxtnode(g,v))
+        {v->u.pos[0] -= p.x; v->u.pos[1] -= p.y;}
 
-	e = NULL;
-	for (v = agfstnode(g); v; v = agnxtnode(g,v))
-		if ((e = agfstout(g,v))) break;
-	if (e == NULL) return;
+    e = NULL;
+    for (v = agfstnode(g); v; v = agnxtnode(g,v))
+        if ((e = agfstout(g,v))) break;
+    if (e == NULL) return;
 
-	theta = -atan2(e->head->u.pos[1] - e->tail->u.pos[1],
-		e->head->u.pos[0] - e->tail->u.pos[0]);
+    theta = -atan2(e->head->u.pos[1] - e->tail->u.pos[1],
+        e->head->u.pos[0] - e->tail->u.pos[0]);
 
-	for (v = agfstnode(g); v; v = agnxtnode(g,v)) {
-		p.x = v->u.pos[0]; p.y = v->u.pos[1];
-		v->u.pos[0] = p.x * cos(theta) - p.y * sin(theta);
-		v->u.pos[1] = p.x * sin(theta) + p.y * cos(theta);
-	}
+    for (v = agfstnode(g); v; v = agnxtnode(g,v)) {
+        p.x = v->u.pos[0]; p.y = v->u.pos[1];
+        v->u.pos[0] = p.x * cos(theta) - p.y * sin(theta);
+        v->u.pos[1] = p.x * sin(theta) + p.y * cos(theta);
+    }
 }
 */
 void VoronoiServer::Process() {
-	ChangeQueue<FDP::FDPLayout> &Q = this->world_->Q_;
+    ChangeQueue<FDP::FDPLayout> &Q = this->world_->Q_;
     makeInfo();
 
       /* establish and verify bounding box */
     chkBoundBox();
 
     if(vAdjust())
-		updateLayout(Q);
+        updateLayout(Q);
 #ifdef VORLINES
-	Q.GraphUpdateFlags() |= DG_UPD_LINES;
+    Q.GraphUpdateFlags() |= DG_UPD_LINES;
 #endif
-	NextProcess();
+    NextProcess();
 }
 
 } // namespace Voronoi

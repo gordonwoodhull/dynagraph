@@ -29,31 +29,31 @@ namespace Dynagraph {
 namespace Voronoi {
 
 struct PtItem {           /* Point std::list */
-	PtItem*    next;
-	Coord             p;
-	PtItem() : next(0) {}
+    PtItem*    next;
+    Coord             p;
+    PtItem() : next(0) {}
 };
 struct Info {                  /* Info concerning site */
-	FDP::FDPLayout::Node *layoutN;     /* dynagraph node */
-	Site site;                 /* site used by voronoi code */
-	bool overlaps;             /* true if node overlaps other nodes */
-	PtItem *verts;             /* sorted std::list of vertices of */
-							   /* voronoi polygon */
-	Info() : layoutN(0),overlaps(false),verts(0) {}
+    FDP::FDPLayout::Node *layoutN;     /* dynagraph node */
+    Site site;                 /* site used by voronoi code */
+    bool overlaps;             /* true if node overlaps other nodes */
+    PtItem *verts;             /* sorted std::list of vertices of */
+                               /* voronoi polygon */
+    Info() : layoutN(0),overlaps(false),verts(0) {}
 };
 struct Infos {
-	Freelist<PtItem> fpoints;
+    Freelist<PtItem> fpoints;
 
 
-	std::vector<Info> nodes;			/* Array of node info */
+    std::vector<Info> nodes;            /* Array of node info */
 
-	Infos(int N) : fpoints(ROUND(sqrt((double)N))),nodes(N) {}
+    Infos(int N) : fpoints(ROUND(sqrt((double)N))),nodes(N) {}
 
-	/* Insert vertex into sorted std::list */
-	void addVertex (Site*, Coord);
+    /* Insert vertex into sorted std::list */
+    void addVertex (Site*, Coord);
 };
 inline double dist(Site *s, Site *t) {
-	return Dynagraph::dist(s->coord,t->coord);
+    return Dynagraph::dist(s->coord,t->coord);
 }
 
 } // namespace Voronoi

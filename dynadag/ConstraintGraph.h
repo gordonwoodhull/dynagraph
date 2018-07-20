@@ -21,13 +21,13 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct ConstraintGraph : DDCGraph {
-	Node *anchor;
+    Node *anchor;
 
-	ConstraintGraph();
-	Node *GetVar(NodeConstraints &nc);
-	void Stabilize(NodeConstraints &nc, int newrank, int weight);
-	void Unstabilize(NodeConstraints &nc);
-	void RemoveNodeConstraints(NodeConstraints &nc);
+    ConstraintGraph();
+    Node *GetVar(NodeConstraints &nc);
+    void Stabilize(NodeConstraints &nc, int newrank, int weight);
+    void Unstabilize(NodeConstraints &nc);
+    void RemoveNodeConstraints(NodeConstraints &nc);
 };
 
 } // namespace DynaDAG

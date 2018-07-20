@@ -55,37 +55,37 @@ extern void incr_set_allow_reopen(DString name,bool whether) {
     gd<DinoMachNode>(n).allowOneReopen = whether;
 }
 void incr_shutdown() {
-	// wait for all layout threads to terminate
-	for(DinoMachine::node_iter ni = g_dinoMachine.nodes().begin(); ni!=g_dinoMachine.nodes().end(); ++ni)
-		if(gd<DinoMachNode>(*ni).handler)
-			gd<DinoMachNode>(*ni).handler->incr_ev_shutdown();
+    // wait for all layout threads to terminate
+    for(DinoMachine::node_iter ni = g_dinoMachine.nodes().begin(); ni!=g_dinoMachine.nodes().end(); ++ni)
+        if(gd<DinoMachNode>(*ni).handler)
+            gd<DinoMachNode>(*ni).handler->incr_ev_shutdown();
 }
 void incr_open_graph(const char *graph) {
     DinoMachine::Node *n = g_dinoMachine.fetch_node(graph,true).first;
-	DinoMachNode &dmn = gd<DinoMachNode>(n);
-	if(dmn.alreadyOpen) {
-		if(!dmn.allowOneReopen)
-	        throw IncrReopenXep(graph);
-		dmn.allowOneReopen = false;
-	}
+    DinoMachNode &dmn = gd<DinoMachNode>(n);
+    if(dmn.alreadyOpen) {
+        if(!dmn.allowOneReopen)
+            throw IncrReopenXep(graph);
+        dmn.allowOneReopen = false;
+    }
     IncrLangEvents *&h = dmn.handler;
     if(!h)
         g_incrCallback->incr_cb_create_handler(graph,g_currAttrs);
     if(!h)
         return;
-	if(dmn.alreadyOpen)
-		h->incr_ev_mod_graph(g_currAttrs);
-	else
-		h->incr_ev_open_graph(graph,g_currAttrs);
-	if(!dmn.handler)
-		dmn.handler = h;
-	dmn.alreadyOpen = true;
+    if(dmn.alreadyOpen)
+        h->incr_ev_mod_graph(g_currAttrs);
+    else
+        h->incr_ev_open_graph(graph,g_currAttrs);
+    if(!dmn.handler)
+        dmn.handler = h;
+    dmn.alreadyOpen = true;
 }
 
 void incr_close_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_close_graph();
     g_dinoMachine.erase(g_dinoMachine.lookNode(graph)); // ~DinoMachNode will g_incrCallback->incr_cb_destroy_handler(h);
 }
@@ -93,35 +93,35 @@ void incr_close_graph(const char *graph) {
 void incr_mod_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_graph(g_currAttrs);
 }
 
 void incr_pulse(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
-	h->incr_ev_pulse(g_currAttrs);
+        throw IncrGraphNotOpen(graph);
+    h->incr_ev_pulse(g_currAttrs);
 }
 
 void incr_lock(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_lock();
 }
 
 void incr_unlock(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_unlock();
 }
 
 void incr_segue(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     //bufferGraphStream fix(incr_yyin);
     //dgassert(!feof(fix.fin));
     StrGraph *sg = readStrGraph(incr_yyin);
@@ -139,60 +139,60 @@ void incr_segue(const char *graph) {
 void incr_ins_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_ins_node(id,g_currAttrs,true);
 }
 
 void incr_ins_edge(const char *graph,const char *id, const char *tail, const char *head) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_ins_edge(id,tail,head,g_currAttrs);
 }
 
 void incr_mod_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_node(id,g_currAttrs);
 }
 
 void incr_mod_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_mod_edge(id,g_currAttrs);
 }
 
 void incr_del_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_del_node(id);
 }
 
 void incr_del_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_del_edge(id);
 }
 void incr_req_graph(const char *graph) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_req_graph();
 }
 void incr_req_node(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_req_node(id);
 }
 void incr_req_edge(const char *graph,const char *id) {
     IncrLangEvents *h = incr_get_handler(graph);
     if(!h)
-		throw IncrGraphNotOpen(graph);
+        throw IncrGraphNotOpen(graph);
     h->incr_ev_req_edge(id);
 }
 void incr_ful_graph(const char *graph) {

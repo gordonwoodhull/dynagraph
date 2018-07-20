@@ -23,12 +23,12 @@ namespace Dynagraph {
 void createConfiguration(Name name,StrAttrs &attrs);
 template<typename SourceLayout>
 bool changeConfiguration(ChangingGraph<SourceLayout> *source,StrAttrs &attrs) {
-	if(attrs.look("layout")) {
-		createConfiguration(gd<Name>(&source->whole_),attrs);
-		//for(typename SourceLayout::node_iter ni = source->whole_.nodes().begin(); ni!=source->whole_.nodes().end(); ++ni)
-		return true;
-	}
-	return false;
+    if(attrs.look("layout")) {
+        createConfiguration(gd<Name>(&source->whole_),attrs);
+        //for(typename SourceLayout::node_iter ni = source->whole_.nodes().begin(); ni!=source->whole_.nodes().end(); ++ni)
+        return true;
+    }
+    return false;
 }
 
 } // namespace Dynagraph

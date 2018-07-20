@@ -20,13 +20,13 @@ namespace Dynagraph {
 // These functions manipulate the queue to make it look like everything just moved
 // instead of being re-inserted
 inline void pre_engine_replacement(ChangeProcessor *oldEngine,ChangeQueue &Q,Layout &oldCurrent) {
-	// remember the current - will be used in post_engine_replacement
+    // remember the current - will be used in post_engine_replacement
     oldCurrent = *Q.current;
-	// erase old layout
-	ChangeQueue delQ(Q.whole,Q.current);
-	delQ.delN = delQ.delE = *Q.current;
-	oldEngine->Process();
-	dgassert(Q.current->empty());
+    // erase old layout
+    ChangeQueue delQ(Q.whole,Q.current);
+    delQ.delN = delQ.delE = *Q.current;
+    oldEngine->Process();
+    dgassert(Q.current->empty());
     // feed the current graph into insertion queues & remove dead links to old engine
     for(Layout::node_iter ni = oldCurrent.nodes().begin(); ni!=oldCurrent.nodes().end(); ++ni) {
         gd<ModelPointer>(*ni).model = 0;
@@ -42,12 +42,12 @@ inline void post_engine_replacement(ChangeQueue &Q,Layout &oldCurrent) {
     // (although there may be other changes)
     for(Layout::node_iter ni = oldCurrent.nodes().begin(); ni!=oldCurrent.nodes().end(); ++ni)
         if(Q.insN.erase(*ni)) // else it got deleted after the engine was replaced
-			ModifyNode(Q,*ni,DG_UPD_MOVE);
+            ModifyNode(Q,*ni,DG_UPD_MOVE);
     for(Layout::graphedge_iter ei = oldCurrent.edges().begin(); ei!=oldCurrent.edges().end(); ++ei) {
         if(Q.insE.erase(*ei))
-			ModifyEdge(Q,*ei,DG_UPD_MOVE);
+            ModifyEdge(Q,*ei,DG_UPD_MOVE);
     }
-	oldCurrent.clear();
+    oldCurrent.clear();
 }
 
 } // namespace Dynagraph

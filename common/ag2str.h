@@ -23,7 +23,7 @@
 #include "StrAttr.h"
 
 extern "C" {
-	#include "agraph.h"
+    #include "agraph.h"
 };
 
 namespace Dynagraph {
@@ -33,10 +33,10 @@ Agraph_t *str2ag(StrGraph *gg);
 
 // struct agreadError {};
 inline StrGraph *readStrGraph(FILE *f) {
-	Agraph_t *g = agread(f,0);
-	if(!g)
-		return 0;//throw agreadError();
-	return ag2str(g);
+    Agraph_t *g = agread(f,0);
+    if(!g)
+        return 0;//throw agreadError();
+    return ag2str(g);
 }
 
 } // namespace Dynagraph

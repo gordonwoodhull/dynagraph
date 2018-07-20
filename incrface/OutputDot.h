@@ -22,23 +22,23 @@ namespace Dynagraph {
 
 template<typename Graph>
 struct OutputDot : LinkedChangeProcessor<Graph> {
-	OutputDot(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
-	// ChangeProcessor
-	void Open() {
-		if(reports.enabled(dgr::dotout)) {
-			LOCK_REPORT(dgr::dotout);
+    OutputDot(ChangingGraph<Graph> *world) : LinkedChangeProcessor<Graph>(world) {}
+    // ChangeProcessor
+    void Open() {
+        if(reports.enabled(dgr::dotout)) {
+            LOCK_REPORT(dgr::dotout);
             emitGraph(reports[dgr::dotout],&this->world_->current_);
-		}
-		this->NextOpen();
-	}
-	void Process() {
-		if(reports.enabled(dgr::dotout)) {
-			LOCK_REPORT(dgr::dotout);
+        }
+        this->NextOpen();
+    }
+    void Process() {
+        if(reports.enabled(dgr::dotout)) {
+            LOCK_REPORT(dgr::dotout);
             emitGraph(reports[dgr::dotout],&this->world_->current_);
-		}
-		this->NextProcess();
-	}
-	// no way to express Close or Pulse
+        }
+        this->NextProcess();
+    }
+    // no way to express Close or Pulse
 };
 
 } // namespace Dynagraph

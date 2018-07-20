@@ -21,11 +21,11 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct ClearExtraRanksEngine : LinkedChangeProcessor<Layout> {
-	ClearExtraRanksEngine(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
-	void Process() {
-		gd<ExtraRanks>(&this->world_->whole_).extraRanks.clear();
-		this->NextProcess();
-	}
+    ClearExtraRanksEngine(ChangingGraph<Layout> *world) : LinkedChangeProcessor<Layout>(world) {}
+    void Process() {
+        gd<ExtraRanks>(&this->world_->whole_).extraRanks.clear();
+        this->NextProcess();
+    }
 };
 
 

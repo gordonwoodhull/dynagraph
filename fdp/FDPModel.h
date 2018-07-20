@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#ifndef	FDPMODEL_H
+#ifndef FDPMODEL_H
 #define FDPMODEL_H
 
 namespace Dynagraph {
@@ -24,21 +24,21 @@ namespace FDP {
 #define NDIM 2
 
 struct FDPEdge {
-	FDPLayout::Edge *layoutE;
+    FDPLayout::Edge *layoutE;
 
-	FDPEdge() : layoutE(0) {}
+    FDPEdge() : layoutE(0) {}
 };
 
 struct FDPNode {
-	FDPLayout::Node *layoutN;
+    FDPLayout::Node *layoutN;
     bool fixed; // true if node should not move
     double pos[NDIM], // new position
-		disp[NDIM]; // incremental displacement
+        disp[NDIM]; // incremental displacement
 
-	FDPNode() : layoutN(0),fixed(false) {
-		for(int i = 0; i<NDIM; ++i)
-			pos[i] = disp[i] = 0.0;
-	}
+    FDPNode() : layoutN(0),fixed(false) {
+        for(int i = 0; i<NDIM; ++i)
+            pos[i] = disp[i] = 0.0;
+    }
 };
 
 typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
@@ -46,16 +46,16 @@ typedef LGraph<ADTisCDT,Nothing,FDPNode,FDPEdge> FDPModel;
 // convolution to work around type-punning warnings
 // (but it's true in a way, and contains the badness in gd2)
 struct FDPModelNodePointer {
-	FDPModel::Node *model;
+    FDPModel::Node *model;
 };
 struct FDPModelEdgePointer {
-	FDPModel::Edge *model;
+    FDPModel::Edge *model;
 };
 inline FDPModel::Node *&modelP(FDPLayout::Node *n) {
-	return gd2<FDPModelNodePointer,ModelPointer>(n).model;
+    return gd2<FDPModelNodePointer,ModelPointer>(n).model;
 }
 inline FDPModel::Edge *&modelP(FDPLayout::Edge *e) {
-	return gd2<FDPModelEdgePointer,ModelPointer>(e).model;
+    return gd2<FDPModelEdgePointer,ModelPointer>(e).model;
 }
 
 } // namespace FDP

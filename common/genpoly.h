@@ -23,24 +23,24 @@
 namespace Dynagraph {
 
 /*
- *	shape generators
+ *  shape generators
  */
 struct PolyDef {
-	bool isEllipse;
-	double aspect; // for ellipses only (y/x)
-	int sides, // for polys only
-		peripheries;
-	double perispacing,
-		rotation,
-		skew,distortion;
-	bool regular;
-	Coord interior_box, // minimum inside size (e.g. for text)
-		exterior_box; // minimum outside size
-	Line input; // overrides sides,input
-	PolyDef() : isEllipse(false), aspect(1),sides(4),peripheries(0),perispacing(0),
-		rotation(0),skew(0),distortion(0),regular(false),
-		interior_box(0,0),exterior_box(0,0) {
-	}
+    bool isEllipse;
+    double aspect; // for ellipses only (y/x)
+    int sides, // for polys only
+        peripheries;
+    double perispacing,
+        rotation,
+        skew,distortion;
+    bool regular;
+    Coord interior_box, // minimum inside size (e.g. for text)
+        exterior_box; // minimum outside size
+    Line input; // overrides sides,input
+    PolyDef() : isEllipse(false), aspect(1),sides(4),peripheries(0),perispacing(0),
+        rotation(0),skew(0),distortion(0),regular(false),
+        interior_box(0,0),exterior_box(0,0) {
+    }
 };
 
 extern void genpoly(const PolyDef &arg,Lines &out);
@@ -48,7 +48,7 @@ Coord polysize(const Line &poly);
 
 // exceptions
 struct GenPolyXep : DGException {
-	GenPolyXep(const char *descrip) : DGException(descrip) {}
+    GenPolyXep(const char *descrip) : DGException(descrip) {}
 };
 struct BadPolyBounds : GenPolyXep {
   BadPolyBounds() : GenPolyXep("must specify internal or external box of poly; no one-dimensional or negative boxes") {}

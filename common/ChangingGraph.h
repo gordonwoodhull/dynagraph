@@ -24,9 +24,9 @@ namespace Dynagraph {
 // a.k.a. World
 template<typename Graph>
 struct ChangingGraph {
-	Graph whole_,current_;
-	ChangeQueue<Graph> Q_;
-	ChangingGraph() : current_(&whole_),Q_(&whole_,&current_) {}
+    Graph whole_,current_;
+    ChangeQueue<Graph> Q_;
+    ChangingGraph() : current_(&whole_),Q_(&whole_,&current_) {}
 };
 
 } // namespace Dynagraph

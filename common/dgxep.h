@@ -41,10 +41,10 @@ struct DGEdgeNameUsed : DGException2 {
     DGEdgeNameUsed(DString name) : DGException2("edge name has already been used",name) {}
 };
 struct DGEdgeTailDoesNotExist : DGException2 {
-	DGEdgeTailDoesNotExist(DString name) : DGException2("tail node does not exist",name) {}
+    DGEdgeTailDoesNotExist(DString name) : DGException2("tail node does not exist",name) {}
 };
 struct DGEdgeHeadDoesNotExist : DGException2 {
-	DGEdgeHeadDoesNotExist(DString name) : DGException2("head node does not exist",name) {}
+    DGEdgeHeadDoesNotExist(DString name) : DGException2("head node does not exist",name) {}
 };
 struct DGNodeDoesNotExist : DGException2 {
     DGNodeDoesNotExist(DString name) : DGException2("node does not exist",name) {}

@@ -36,22 +36,22 @@ namespace Dynagraph {
 // a more clever (perhaps too clever) way to do this might be to specify 
 // dependencies and order constraints on configurators(?)
 typedef mpl::list<
-	LayoutChooserConfigurator,
-	DynaDAG::EdgeSuppressorConfigurator,
-	DynaDAG::ClearExtraRanksConfigurator,
-	DynaDAG::EmphasizeFlowConfigurator,
-	DynaDAG::RankerConfigurator,
-	CoordTranslatorConfigurator,
-	ShapeGeneratorConfigurator,
-	ColorByAgeConfigurator,
-	FindChangeRectsConfigurator,
-	UpdateCurrentConfigurator,
-	StringizerConfigurator,
-	RegisteringConfigurator
+    LayoutChooserConfigurator,
+    DynaDAG::EdgeSuppressorConfigurator,
+    DynaDAG::ClearExtraRanksConfigurator,
+    DynaDAG::EmphasizeFlowConfigurator,
+    DynaDAG::RankerConfigurator,
+    CoordTranslatorConfigurator,
+    ShapeGeneratorConfigurator,
+    ColorByAgeConfigurator,
+    FindChangeRectsConfigurator,
+    UpdateCurrentConfigurator,
+    StringizerConfigurator,
+    RegisteringConfigurator
 > Configurators;
 
 void createConfiguration(Name name,StrAttrs &attrs) {
-	configureLayout<Configurators>(name,attrs);
+    configureLayout<Configurators>(name,attrs);
 }
 
 } // namespace Dynagraph

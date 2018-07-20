@@ -23,13 +23,13 @@ namespace Dynagraph {
 
 // all these exceptions are recoverable: report error to client and ignore
 struct IncrException : DGException2 {
-	IncrException(DString xep,DString parm) : DGException2(xep,parm,false) {}
+    IncrException(DString xep,DString parm) : DGException2(xep,parm,false) {}
 };
 struct IncrError : IncrException {
   IncrError(DString descrip) : IncrException("Incrface syntax error",descrip) {}
 };
 struct IncrGraphNotOpen : IncrException {
-	IncrGraphNotOpen(DString graph) : IncrException("Graph not open",graph) {}
+    IncrGraphNotOpen(DString graph) : IncrException("Graph not open",graph) {}
 };
 struct IncrReopenXep : IncrException {
     IncrReopenXep(DString name) : IncrException("Tried to reopen graph",name) {}

@@ -21,14 +21,14 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct Spliner {
-	Spliner(Config &config) : config(config) {}
-	friend struct TempRoute;
-	bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);//,ObstacleAvoiderSpliner<DynaDAGLayout> &obav);
+    Spliner(Config &config) : config(config) {}
+    friend struct TempRoute;
+    bool MakeEdgeSpline(DDPath *path,SpliningLevel splineLevel);//,ObstacleAvoiderSpliner<DynaDAGLayout> &obav);
 private:
-	Config &config;
-	void forwardEdgeRegion(DDModel::Node *tl, DDModel::Node *hd,DDPath *inp, Coord tp, Coord hp, Line &out);
-	void flatEdgeRegion(DDModel::Node *tl, DDModel::Node *hd, Coord tp, Coord hp, Line &out);
-	void adjustPath(DDPath *path);
+    Config &config;
+    void forwardEdgeRegion(DDModel::Node *tl, DDModel::Node *hd,DDPath *inp, Coord tp, Coord hp, Line &out);
+    void flatEdgeRegion(DDModel::Node *tl, DDModel::Node *hd, Coord tp, Coord hp, Line &out);
+    void adjustPath(DDPath *path);
 };
 
 } // namespace DynaDAG

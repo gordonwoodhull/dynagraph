@@ -21,31 +21,31 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct XSolver : XConstraintOwner {
-	XSolver(Config &config) : config(config) {}
-	virtual ~XSolver() {} 
-	void Place(DDChangeQueue &changeQ);
-	void RemoveEdgeConstraints(DDModel::Edge *e);
-	// XConstraintOwner
-	void RemoveNodeConstraints(DDModel::Node *n);
-	void InvalidateChainConstraints(DDChain *path);
-	void DeleteLRConstraint(DDModel::Node *u, DDModel::Node *v);
+    XSolver(Config &config) : config(config) {}
+    virtual ~XSolver() {} 
+    void Place(DDChangeQueue &changeQ);
+    void RemoveEdgeConstraints(DDModel::Edge *e);
+    // XConstraintOwner
+    void RemoveNodeConstraints(DDModel::Node *n);
+    void InvalidateChainConstraints(DDChain *path);
+    void DeleteLRConstraint(DDModel::Node *u, DDModel::Node *v);
 private:
-	Config &config;
-	ConstraintGraph cg;
-	void fixSeparation(DDModel::Node *mn);
-	void doNodesep(DynaDAGLayout *subLayout);
-	void doEdgesep(DynaDAGLayout *subLayout);
+    Config &config;
+    ConstraintGraph cg;
+    void fixSeparation(DDModel::Node *mn);
+    void doNodesep(DynaDAGLayout *subLayout);
+    void doEdgesep(DynaDAGLayout *subLayout);
 #ifndef REDO_ALL_XCONSTRAINTS
-	void restoreNodesep(DDChangeQueue &changeQ);
-	void restoreEdgeCost(DDChangeQueue &changeQ);
+    void restoreNodesep(DDChangeQueue &changeQ);
+    void restoreEdgeCost(DDChangeQueue &changeQ);
 #endif
-	void fixEdgeCost(DDModel::Edge *me);
-	void fixLostEdges(DynaDAGLayout *subLayout);
-	void doEdgeCost(DynaDAGLayout *subLayout);
-	void stabilizeNodes(DDChangeQueue &changeQ);
-	void readoutCoords();
-	void checkLRConstraints();
-	void checkEdgeConstraints();
+    void fixEdgeCost(DDModel::Edge *me);
+    void fixLostEdges(DynaDAGLayout *subLayout);
+    void doEdgeCost(DynaDAGLayout *subLayout);
+    void stabilizeNodes(DDChangeQueue &changeQ);
+    void readoutCoords();
+    void checkLRConstraints();
+    void checkEdgeConstraints();
 };
 
 } // namespace DynaDAG

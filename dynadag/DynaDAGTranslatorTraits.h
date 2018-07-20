@@ -24,8 +24,8 @@ namespace Dynagraph {
 
 template<>
 struct translator_traitses<GeneralLayout,DynaDAG::DynaDAGLayout> {
-	typedef DynaDAG::SEdger<GeneralLayout,DynaDAG::DynaDAGLayout> in_translator;
-	typedef EdgeSplicer<DynaDAG::DynaDAGLayout,GeneralLayout> out_translator;
+    typedef DynaDAG::SEdger<GeneralLayout,DynaDAG::DynaDAGLayout> in_translator;
+    typedef EdgeSplicer<DynaDAG::DynaDAGLayout,GeneralLayout> out_translator;
 };
 
 } // namespace Dynagraph

@@ -17,12 +17,12 @@
 
 template<typename T>
 struct DijNDataT {
-	int weight,dist;
-	T *prev;
+    int weight,dist;
+    T *prev;
 };
 struct DijEData {
-	int weight;
-	EData() : weight(0) {}
+    int weight;
+    EData() : weight(0) {}
 };
 
 struct GSNode : DijNData<void>,NamedAttrs {

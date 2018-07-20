@@ -23,38 +23,38 @@ namespace Dynagraph {
 
 template<typename Layout>
 struct FCRData {
-	Layout changeN,changeE; // subgraph union of ins,mod,del
-	ChangingGraph<Layout> *world;
-	FCRData(ChangingGraph<Layout> *world) : changeN(&world->whole_),changeE(&world->whole_),world(world) {}
+    Layout changeN,changeE; // subgraph union of ins,mod,del
+    ChangingGraph<Layout> *world;
+    FCRData(ChangingGraph<Layout> *world) : changeN(&world->whole_),changeE(&world->whole_),world(world) {}
 };
 template<typename Layout>
 struct FCRBefore : LinkedChangeProcessor<Layout> {
     FCRData<Layout> *data;
-	FCRBefore(FCRData<Layout> *data) : LinkedChangeProcessor<Layout>(data->world),data(data) {}
-	void Process() {
-		ChangeQueue<Layout> &Q = this->world_->Q_;
-		data->changeN = Q.insN|Q.modN|Q.delN;
-		data->changeE = Q.insE|Q.modE|Q.delE;
-		this->NextProcess();
-	}
+    FCRBefore(FCRData<Layout> *data) : LinkedChangeProcessor<Layout>(data->world),data(data) {}
+    void Process() {
+        ChangeQueue<Layout> &Q = this->world_->Q_;
+        data->changeN = Q.insN|Q.modN|Q.delN;
+        data->changeE = Q.insE|Q.modE|Q.delE;
+        this->NextProcess();
+    }
 };
 template<typename Layout>
 struct FCRAfter : LinkedChangeProcessor<Layout> {
     FCRData<Layout> *data;
-	FCRAfter(FCRData<Layout> *data) : LinkedChangeProcessor<Layout>(data->world),data(data) {}
+    FCRAfter(FCRData<Layout> *data) : LinkedChangeProcessor<Layout>(data->world),data(data) {}
     ~FCRAfter() {
         delete data;
     }
-	void Process() {
-		Bounds changerect;
-		for(typename Layout::node_iter ni = data->changeN.nodes().begin(); ni!=data->changeN.nodes().end(); ++ni)
-			changerect |= gd<NodeGeom>(*ni).BoundingBox();
-		for(typename Layout::graphedge_iter ei = data->changeE.edges().begin(); ei!=data->changeE.edges().end(); ++ei)
-			changerect |= gd<EdgeGeom>(*ei).pos.BoundingBox();
-		if(assign_unclose(gd<GraphGeom>(this->world_->Q_.ModGraph()).changerect,changerect))
-			ModifyFlags(this->world_->Q_) |= DG_UPD_CHANGERECT;
-		this->NextProcess();
-	}
+    void Process() {
+        Bounds changerect;
+        for(typename Layout::node_iter ni = data->changeN.nodes().begin(); ni!=data->changeN.nodes().end(); ++ni)
+            changerect |= gd<NodeGeom>(*ni).BoundingBox();
+        for(typename Layout::graphedge_iter ei = data->changeE.edges().begin(); ei!=data->changeE.edges().end(); ++ei)
+            changerect |= gd<EdgeGeom>(*ei).pos.BoundingBox();
+        if(assign_unclose(gd<GraphGeom>(this->world_->Q_.ModGraph()).changerect,changerect))
+            ModifyFlags(this->world_->Q_) |= DG_UPD_CHANGERECT;
+        this->NextProcess();
+    }
 };
 
 } // namespace Dynagraph

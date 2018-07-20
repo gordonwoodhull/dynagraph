@@ -26,10 +26,10 @@
 #endif
 
 inline double cbrt(double x) {
-	if(x<0.0)
-		return -pow(-x,1.0/3.0);
-	else
-		return pow(x,1.0/3.0);
+    if(x<0.0)
+        return -pow(-x,1.0/3.0);
+    else
+        return pow(x,1.0/3.0);
 }
 
 #endif //moremath_h

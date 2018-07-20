@@ -23,16 +23,16 @@
 // so, fool it: on open, allow it to allocate, then copy & free
 // on close, make a copy which it can free
 struct derivable_dt : Dt_t {
-	void open(Dtdisc_t* disc, Dtmethod_t* meth) {
-		Dt_t *dt = dtopen(disc,meth);
-		memcpy(static_cast<Dt_t*>(this),dt,sizeof(Dt_t));
-		free(dt);
-	}
-	void close() {
-		Dt_t *cp = (Dt_t*)malloc(sizeof(Dt_t));
-		memcpy(cp,this,sizeof(Dt_t));
-		dtclose(cp);
-	}
+    void open(Dtdisc_t* disc, Dtmethod_t* meth) {
+        Dt_t *dt = dtopen(disc,meth);
+        memcpy(static_cast<Dt_t*>(this),dt,sizeof(Dt_t));
+        free(dt);
+    }
+    void close() {
+        Dt_t *cp = (Dt_t*)malloc(sizeof(Dt_t));
+        memcpy(cp,this,sizeof(Dt_t));
+        dtclose(cp);
+    }
 };
 
 #endif //derivable_dt_h

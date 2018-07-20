@@ -25,23 +25,23 @@
 extern Transform *g_transform;
 
 struct LoggerConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		typedef InternalTranslator2<InnerLayout,LayoutToStringTranslator<InnerLayout,InnerLayout> > MakeStrings;
-		if(reports.enabled(dgr::inner_input)) {
-			OutputIncrface<InnerLayout> *logIn = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_input);
-			engines.Prepend(logIn);
-			MakeStrings *makeStrings = new MakeStrings(innerWorld_,g_transform);
-			engines.Prepend(makeStrings);
-		}
-		if(reports.enabled(dgr::inner_output)) {
-			MakeStrings *makeStrings = new MakeStrings(innerWorld_,g_transform);
-			engines.Append(makeStrings);
-			OutputIncrface<InnerLayout> *logOut = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_output);
-			engines.Append(logOut);
-		}
-		configureLayout<Configurators>(name,attrs,world,engines);
-	}
+    template<typename Configurators,typename Layout> 
+    static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+        typedef InternalTranslator2<InnerLayout,LayoutToStringTranslator<InnerLayout,InnerLayout> > MakeStrings;
+        if(reports.enabled(dgr::inner_input)) {
+            OutputIncrface<InnerLayout> *logIn = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_input);
+            engines.Prepend(logIn);
+            MakeStrings *makeStrings = new MakeStrings(innerWorld_,g_transform);
+            engines.Prepend(makeStrings);
+        }
+        if(reports.enabled(dgr::inner_output)) {
+            MakeStrings *makeStrings = new MakeStrings(innerWorld_,g_transform);
+            engines.Append(makeStrings);
+            OutputIncrface<InnerLayout> *logOut = new OutputIncrface<InnerLayout>(innerWorld_,dgr::inner_output);
+            engines.Append(logOut);
+        }
+        configureLayout<Configurators>(name,attrs,world,engines);
+    }
 };
 
 

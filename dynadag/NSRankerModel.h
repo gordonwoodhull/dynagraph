@@ -23,32 +23,32 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerModelNode {
-	NodeConstraints topC,bottomC;
-	bool hit, // for rank dfs
-		rankFixed; // whether nailed in Y
+    NodeConstraints topC,bottomC;
+    bool hit, // for rank dfs
+        rankFixed; // whether nailed in Y
 
-	NSRankerModelNode() : hit(false),rankFixed(false) {}
-	// do not copy constraints or hit-flag
-	NSRankerModelNode(const NSRankerModelNode &other) :
-		hit(false),
-		rankFixed(other.rankFixed) {}
-	NSRankerModelNode &operator=(NSRankerModelNode &other) {
-		hit = false;
-		rankFixed = other.rankFixed;
-		return *this;
-	}
+    NSRankerModelNode() : hit(false),rankFixed(false) {}
+    // do not copy constraints or hit-flag
+    NSRankerModelNode(const NSRankerModelNode &other) :
+        hit(false),
+        rankFixed(other.rankFixed) {}
+    NSRankerModelNode &operator=(NSRankerModelNode &other) {
+        hit = false;
+        rankFixed = other.rankFixed;
+        return *this;
+    }
 };
 struct NSRankerModelEdge {
-	int weight,backweight;
-	double length,backlength;
-	DDCGraph::Node *weak;
-	DDCGraph::Edge *strong;
-	NSRankerModelEdge() : weight(1),backweight(1),length(0.),backlength(.0),weak(0),strong(0) {}
+    int weight,backweight;
+    double length,backlength;
+    DDCGraph::Node *weak;
+    DDCGraph::Edge *strong;
+    NSRankerModelEdge() : weight(1),backweight(1),length(0.),backlength(.0),weak(0),strong(0) {}
 };
 struct NSRankerModelGraph {
-	ConstraintGraph cg;
-	ConstraintGraph::Node *top_; // to pull loose nodes upward
-	NSRankerModelGraph() : top_(cg_.create_node()) {}
+    ConstraintGraph cg;
+    ConstraintGraph::Node *top_; // to pull loose nodes upward
+    NSRankerModelGraph() : top_(cg_.create_node()) {}
 };
 
 struct NSRankerModelNodeData : Name,NSRankerModelNode {};

@@ -21,19 +21,19 @@ namespace Dynagraph {
 namespace PathPlot {
 
 void PolyBarriers(const LineV &polygons, SegmentV &out) {
-	size_t n = 0,i;
-	for(i = 0; i < polygons.size(); i++)
-		n += polygons[i].size();
+    size_t n = 0,i;
+    for(i = 0; i < polygons.size(); i++)
+        n += polygons[i].size();
 
-	out.reserve(n);
-	for(i = 0; i < polygons.size(); i++) {
-		const Line &pp = polygons[i];
-		for(unsigned j = 0; j < pp.size(); j++) {
-			int k = (j + 1)%pp.size();
-			out.push_back(Segment(pp[j],pp[k]));
-		}
-	}
-	dgassert(out.size() == n);
+    out.reserve(n);
+    for(i = 0; i < polygons.size(); i++) {
+        const Line &pp = polygons[i];
+        for(unsigned j = 0; j < pp.size(); j++) {
+            int k = (j + 1)%pp.size();
+            out.push_back(Segment(pp[j],pp[k]));
+        }
+    }
+    dgassert(out.size() == n);
 }
 
 } // namespace PathPlot

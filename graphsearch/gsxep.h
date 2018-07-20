@@ -17,12 +17,12 @@
 
 #include "common/dgxep.h"
 struct ParseError : DGException {
-	ParseError() : DGException("graphsearch parse error") {}
+    ParseError() : DGException("graphsearch parse error") {}
 };
 struct GSError : DGException {
-	GSError() : DGException("graphsearch error") {}
+    GSError() : DGException("graphsearch error") {}
 };
 // not yet implemented
 struct NYI : DGException {
-	NYI() : DGException("graphsearch ins/mod/del commands not yet implemented") {}
+    NYI() : DGException("graphsearch ins/mod/del commands not yet implemented") {}
 };

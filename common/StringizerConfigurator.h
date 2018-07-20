@@ -28,19 +28,19 @@ extern bool g_useDotDefaults;
 
 
 struct StringizerConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		// engine to translate strings to binary attrs
-		typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
-		StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(g_transform,g_useDotDefaults));
-		engines.Prepend(xlateIn);
+    template<typename Configurators,typename Layout> 
+    static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+        // engine to translate strings to binary attrs
+        typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;
+        StringsInEngine *xlateIn = new StringsInEngine(engines.first->world_,StringToLayoutTranslator<Layout,Layout>(g_transform,g_useDotDefaults));
+        engines.Prepend(xlateIn);
 
-		// engine to translate binary attrs to strings
-		typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
-		StringsOutEngine *xlateOut = new StringsOutEngine(engines.first->world_,g_transform);
-		engines.Append(xlateOut);
-		configureLayout<Configurators>(name,attrs,world,engines);
-	}
+        // engine to translate binary attrs to strings
+        typedef InternalTranslator2<Layout,LayoutToStringTranslator<Layout,Layout> > StringsOutEngine;
+        StringsOutEngine *xlateOut = new StringsOutEngine(engines.first->world_,g_transform);
+        engines.Append(xlateOut);
+        configureLayout<Configurators>(name,attrs,world,engines);
+    }
 };
 
 } // namespace Dynagraph

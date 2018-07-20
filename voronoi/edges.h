@@ -33,31 +33,31 @@ struct Edge {
 
 typedef enum EdgeEnds_ {le = 0, re = 1} EdgeEnd;
 inline EdgeEnd opp(EdgeEnd e) {
-	if(e==le)
-		return re;
-	else
-		return le;
+    if(e==le)
+        return re;
+    else
+        return le;
 }
 
 struct Edges {
-	Freelist<Edge> fedges;
-	int nedges;
-	Sites &sites;
-	Infos &infos;
-	Bounds &bounds;
+    Freelist<Edge> fedges;
+    int nedges;
+    Sites &sites;
+    Infos &infos;
+    Bounds &bounds;
 
-	Edges(Sites &sites,Infos &infos,Bounds &bounds,int N) :
-	  fedges(ROUND(sqrt((double)N))),
-	  nedges(0),
-	  sites(sites),
-	  infos(infos),
-	  bounds(bounds) {}
+    Edges(Sites &sites,Infos &infos,Bounds &bounds,int N) :
+      fedges(ROUND(sqrt((double)N))),
+      nedges(0),
+      sites(sites),
+      infos(infos),
+      bounds(bounds) {}
 
-	void endpoint(Edge*, EdgeEnd, Site*);
-	void clip_line(Edge *e);
-	Edge *bisect(Site*, Site*);
+    void endpoint(Edge*, EdgeEnd, Site*);
+    void clip_line(Edge *e);
+    Edge *bisect(Site*, Site*);
 private:
-	void doSeg (Edge *e, double x1, double y1, double x2, double y2);
+    void doSeg (Edge *e, double x1, double y1, double x2, double y2);
 };
 
 struct Whattux {};

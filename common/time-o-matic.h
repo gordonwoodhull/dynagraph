@@ -23,20 +23,20 @@
 namespace Dynagraph {
 
 struct Timer {
-	double Start();
-	double Elapsed(dgr::reportType rt,double start,char *s,...);
-	double Now(dgr::reportType rt,char *s,...);
+    double Start();
+    double Elapsed(dgr::reportType rt,double start,char *s,...);
+    double Now(dgr::reportType rt,char *s,...);
 
-	void LoopPoint(dgr::reportType rt,char *s);
-	Timer();
+    void LoopPoint(dgr::reportType rt,char *s);
+    Timer();
 private:
-	double currentTime();
-	double display(dgr::reportType rt,double last,char *format,char *s,va_list va);
+    double currentTime();
+    double display(dgr::reportType rt,double last,char *format,char *s,va_list va);
 #ifdef _WIN32
-	__int64 m_frequency,m_start;
+    __int64 m_frequency,m_start;
 #endif
-	double m_last;
-	std::vector<double> m_looplasts;
+    double m_last;
+    std::vector<double> m_looplasts;
 };
 extern Timer timer;
 

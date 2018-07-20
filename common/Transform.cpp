@@ -21,16 +21,16 @@
 namespace Dynagraph {
 
 Transform g_dotRatios(Coord(72,72), // node sizes in inches
-						Coord(1,1)); // position in up-positive points (isn't this inverted from dot?)
+                        Coord(1,1)); // position in up-positive points (isn't this inverted from dot?)
 
 bool transformShape(Transform *trans,Line &shape) {
-	bool nonzero = false;
-	for(Line::iterator pi = shape.begin(); pi!=shape.end(); ++pi) {
-		if(pi->x!=0 || pi->y!=0)
-			nonzero = true;
-		*pi = trans->in(*pi);
-	}
-	return nonzero;
+    bool nonzero = false;
+    for(Line::iterator pi = shape.begin(); pi!=shape.end(); ++pi) {
+        if(pi->x!=0 || pi->y!=0)
+            nonzero = true;
+        *pi = trans->in(*pi);
+    }
+    return nonzero;
 }
 
 } // namespace Dynagraph

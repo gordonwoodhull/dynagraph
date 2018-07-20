@@ -27,34 +27,34 @@ namespace Dynagraph {
 // multiplies by relevant ratios on read, divides on write
 // wouldn't it make sense to give this responsibility for default sizes too?
 class Transform {
-	Coord nodeRatio, // for node size
-		coordRatio; // for node position, edge coords, and bounding box
+    Coord nodeRatio, // for node size
+        coordRatio; // for node position, edge coords, and bounding box
 public:
-	Coord ll; // lower left corner
-	Transform(Coord nr,Coord cr) : nodeRatio(nr),coordRatio(cr),ll(Coord(0,0)) {}
+    Coord ll; // lower left corner
+    Transform(Coord nr,Coord cr) : nodeRatio(nr),coordRatio(cr),ll(Coord(0,0)) {}
 
-	Coord inSize(Coord c) const {
-		return Coord(c.x*nodeRatio.x,c.y*nodeRatio.y);
-	}
-	Coord outSize(Coord c) const {
-		return Coord(c.x/nodeRatio.x,c.y/nodeRatio.y);
-	}
-	Coord in(Coord c) const {
-		return Coord((c+ll).x*coordRatio.x,(c+ll).y*coordRatio.y);
-	}
-	Coord out(Coord c) const {
-		return Coord(c.x/coordRatio.x-ll.x,c.y/coordRatio.y-ll.y);
-	}
-	Rect in(Rect r) const {
-		Coord ul = in(Coord(r.l,r.t)),
-			lr = in(Coord(r.r,r.b));
-		return Rect(ul.x,ul.y,lr.x,lr.y);
-	}
-	Rect out(Rect r) const {
-		Coord ul = out(Coord(r.l,r.t)),
-			lr = out(Coord(r.r,r.b));
-		return Rect(ul.x,ul.y,lr.x,lr.y);
-	}
+    Coord inSize(Coord c) const {
+        return Coord(c.x*nodeRatio.x,c.y*nodeRatio.y);
+    }
+    Coord outSize(Coord c) const {
+        return Coord(c.x/nodeRatio.x,c.y/nodeRatio.y);
+    }
+    Coord in(Coord c) const {
+        return Coord((c+ll).x*coordRatio.x,(c+ll).y*coordRatio.y);
+    }
+    Coord out(Coord c) const {
+        return Coord(c.x/coordRatio.x-ll.x,c.y/coordRatio.y-ll.y);
+    }
+    Rect in(Rect r) const {
+        Coord ul = in(Coord(r.l,r.t)),
+            lr = in(Coord(r.r,r.b));
+        return Rect(ul.x,ul.y,lr.x,lr.y);
+    }
+    Rect out(Rect r) const {
+        Coord ul = out(Coord(r.l,r.t)),
+            lr = out(Coord(r.r,r.b));
+        return Rect(ul.x,ul.y,lr.x,lr.y);
+    }
 };
 // dot transform: node size in inches
 extern Transform g_dotRatios;

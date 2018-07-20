@@ -29,51 +29,51 @@ namespace Voronoi {
 // this could actually be templated on FDP::FDPLayout, which would turn all of voronoi
 // into a template library.  i'm trying to focus on more useful things at the moment.
 struct VoronoiServer : LinkedChangeProcessor<FDP::FDPLayout> {
-	double margin;     /* Create initial bounding box by adding
+    double margin;     /* Create initial bounding box by adding
                         * margin * dimension around box enclosing
                         * nodes.
                         */
-	double incr;       /* Increase bounding box by adding
+    double incr;       /* Increase bounding box by adding
                         * incr * dimension around box.
                         */
-	double pmargin;  /* Margin around polygons, in inches */
-	int iterations;  /* Number of iterations */
-	bool useIter;   /* Use specified number of iterations */
+    double pmargin;  /* Margin around polygons, in inches */
+    int iterations;  /* Number of iterations */
+    bool useIter;   /* Use specified number of iterations */
 
-	bool doAll;  /* Move all nodes, regardless of overlap */
-	Bounds bounds;
+    bool doAll;  /* Move all nodes, regardless of overlap */
+    Bounds bounds;
 
-	const int N;
+    const int N;
 
-	VoronoiServer(ChangingGraph<FDP::FDPLayout> *world) 
-		: LinkedChangeProcessor<FDP::FDPLayout>(world),
-		margin(0.05),incr(0.025),pmargin(5.0/72),iterations(-1),useIter(false),
-		N(400), infos(N),sites(N),edges(sites,infos,bounds,N),hedges(sites,N) {}
+    VoronoiServer(ChangingGraph<FDP::FDPLayout> *world) 
+        : LinkedChangeProcessor<FDP::FDPLayout>(world),
+        margin(0.05),incr(0.025),pmargin(5.0/72),iterations(-1),useIter(false),
+        N(400), infos(N),sites(N),edges(sites,infos,bounds,N),hedges(sites,N) {}
 
 
-	// ChangeProcessor
-	void Process();
+    // ChangeProcessor
+    void Process();
 
 private:
-	Infos infos;
-	Sites sites;
-	Edges edges;
-	Halfedges hedges;
+    Infos infos;
+    Sites sites;
+    Edges edges;
+    Halfedges hedges;
 
-	void chkBoundBox();
-	void makeInfo();
-	void sortSites(std::vector<Site*> &sort);
-	void geomUpdate(std::vector<Site*> &sort);
-	int countOverlap(int iter);
-	void increaseBoundBox();
-	bool isInterior (Info* ip);
-	void newpos(Info* ip);
-	void addCorners();
-	void newPos();
-	bool vAdjust();
-	void updateLayout(ChangeQueue<FDP::FDPLayout> &Q);
+    void chkBoundBox();
+    void makeInfo();
+    void sortSites(std::vector<Site*> &sort);
+    void geomUpdate(std::vector<Site*> &sort);
+    int countOverlap(int iter);
+    void increaseBoundBox();
+    bool isInterior (Info* ip);
+    void newpos(Info* ip);
+    void addCorners();
+    void newPos();
+    bool vAdjust();
+    void updateLayout(ChangeQueue<FDP::FDPLayout> &Q);
 
-	void voronoi(const std::vector<Site*> &order);
+    void voronoi(const std::vector<Site*> &order);
 };
 
 } // namespace Voronoi

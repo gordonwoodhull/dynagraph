@@ -20,9 +20,9 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct Suppression {
-	enum Suppressionness {unsuppressed,tailSuppressed,headSuppressed,suppressed} suppression;
-	int suppressRank;
-	Suppression() : suppression(unsuppressed),suppressRank(-17) {}
+    enum Suppressionness {unsuppressed,tailSuppressed,headSuppressed,suppressed} suppression;
+    int suppressRank;
+    Suppression() : suppression(unsuppressed),suppressRank(-17) {}
 };
 
 } // namespace DynaDAG

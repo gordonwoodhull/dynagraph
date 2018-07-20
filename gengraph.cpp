@@ -27,90 +27,90 @@ using namespace std;
 using namespace Dynagraph;
 
 void usage() {
-	reports[dgr::cmdline] << "gengraph" << endl <<
-		"\t-v N\tN vertices" << endl <<
-		"\t-e N\tN edges" << endl <<
-		"\t-c\tassign random colors (red,yellow,blue) to edges" << endl <<
-		"\t-w W\tassign random weights [0..W) to edges" << endl;
-	exit(-1);
+    reports[dgr::cmdline] << "gengraph" << endl <<
+        "\t-v N\tN vertices" << endl <<
+        "\t-e N\tN edges" << endl <<
+        "\t-c\tassign random colors (red,yellow,blue) to edges" << endl <<
+        "\t-w W\tassign random weights [0..W) to edges" << endl;
+    exit(-1);
 }
 
 int main(int narg,char *argh[]) {
-	// enable basic dynagraph report streams
-	reports.enable(dgr::error,&cerr);
-	reports.enable(dgr::cmdline,&cout);
-	reports.enable(dgr::output,&cout);
+    // enable basic dynagraph report streams
+    reports.enable(dgr::error,&cerr);
+    reports.enable(dgr::cmdline,&cout);
+    reports.enable(dgr::output,&cout);
 
-	int V = 100, E = 100;
-	bool colors = false;
-	int maxweight = 0;
-	for(int i = 1; i<narg; ++i) {
-		if(argh[i][0]!='-' || argh[i][2]!=0)
-			usage();
-		switch(tolower(argh[i][1])) {
-			case 'v':
-				if(++i==narg)
-					usage();
-				V = atoi(argh[i]);
-				break;
-			case 'e':
-				if(++i==narg)
-					usage();
-				E = atoi(argh[i]);
-				break;
-			case 'c':
-				colors = true;
-				break;
-			case 'w':
-				if(++i==narg)
-					usage();
-				maxweight = atoi(argh[i]);
-				break;
-			default:
-				usage();
-		}
-	}
-	unsigned seed = (unsigned)time(NULL);
-	srand(seed);
+    int V = 100, E = 100;
+    bool colors = false;
+    int maxweight = 0;
+    for(int i = 1; i<narg; ++i) {
+        if(argh[i][0]!='-' || argh[i][2]!=0)
+            usage();
+        switch(tolower(argh[i][1])) {
+            case 'v':
+                if(++i==narg)
+                    usage();
+                V = atoi(argh[i]);
+                break;
+            case 'e':
+                if(++i==narg)
+                    usage();
+                E = atoi(argh[i]);
+                break;
+            case 'c':
+                colors = true;
+                break;
+            case 'w':
+                if(++i==narg)
+                    usage();
+                maxweight = atoi(argh[i]);
+                break;
+            default:
+                usage();
+        }
+    }
+    unsigned seed = (unsigned)time(NULL);
+    srand(seed);
 
-	StrGraph g;
-	char buf[20];
-	sprintf(buf,"%d",seed);
-	gd<StrAttrs>(&g)["seed"] = buf;
-	vector<StrGraph::Node*> ez;
-	ez.resize(V);
-	int v = V;
-	while(v--) {
-		char name[10];
-		sprintf(name,"%d",v);
-		ez[v] = g.create_node(name);
-	}
-	while(E--) {
-		int t,h;
-		do
-			t = rand()%V, h = rand()%V;
-		while(t==h || g.find_edge(ez[t],ez[h]) || g.find_edge(ez[h],ez[t])); // play to dynagraph's weaknesses
-		char name[10];
-		sprintf(name,"%d",E);
-		StrGraph::Edge *e = g.create_edge(ez[t],ez[h],name).first;
-		if(colors) {
-			char *color=0;
-			switch(rand()%3) {
-				case 0: color = "red";
-					break;
-				case 1: color = "yellow";
-					break;
-				case 2: color = "blue";
-					break;
-			}
-			gd<StrAttrs>(e)["color"] = color;
-		}
-		if(maxweight) {
-			ostringstream os;
-			os << rand()%maxweight;
-			gd<StrAttrs>(e)["weight"] = os.str();
-		}
-	}
-	emitGraph(reports[dgr::output],&g);
-	return 0;
+    StrGraph g;
+    char buf[20];
+    sprintf(buf,"%d",seed);
+    gd<StrAttrs>(&g)["seed"] = buf;
+    vector<StrGraph::Node*> ez;
+    ez.resize(V);
+    int v = V;
+    while(v--) {
+        char name[10];
+        sprintf(name,"%d",v);
+        ez[v] = g.create_node(name);
+    }
+    while(E--) {
+        int t,h;
+        do
+            t = rand()%V, h = rand()%V;
+        while(t==h || g.find_edge(ez[t],ez[h]) || g.find_edge(ez[h],ez[t])); // play to dynagraph's weaknesses
+        char name[10];
+        sprintf(name,"%d",E);
+        StrGraph::Edge *e = g.create_edge(ez[t],ez[h],name).first;
+        if(colors) {
+            char *color=0;
+            switch(rand()%3) {
+                case 0: color = "red";
+                    break;
+                case 1: color = "yellow";
+                    break;
+                case 2: color = "blue";
+                    break;
+            }
+            gd<StrAttrs>(e)["color"] = color;
+        }
+        if(maxweight) {
+            ostringstream os;
+            os << rand()%maxweight;
+            gd<StrAttrs>(e)["weight"] = os.str();
+        }
+    }
+    emitGraph(reports[dgr::output],&g);
+    return 0;
 }

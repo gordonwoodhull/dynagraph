@@ -33,7 +33,7 @@ void Sites::makevertex(Site *v) {
 void Sites::deref(Site *v) {
     v -> refcnt -= 1;
     if (v -> refcnt == 0 )
-		fsites.free(v);
+        fsites.free(v);
 }
 
 void Sites::ref(Site *v) {

@@ -29,15 +29,15 @@ struct InvalidBoundary : DGException {
 struct EndpointNotInPolygon : DGException {
   bool which;
   EndpointNotInPolygon(bool which) :
-	DGException("end-points in shortest path algorithm input are not within the boundary polygon",true),
-	which(which) {}
+    DGException("end-points in shortest path algorithm input are not within the boundary polygon",true),
+    which(which) {}
 };
 /* find shortest euclidean path within a simple polygon */
 void Shortest(const Line &boundary, Segment endpoints, Line &out);
 
 /* fit a spline to an input polyline, without touching barrier segments */
 bool Route(const SegmentV &barriers, const Line &inputRoute,
-	Segment endSlopes,Line &out);
+    Segment endSlopes,Line &out);
 
 /* utility function to convert from a set of polygonal obstacles to barriers */
 void PolyBarriers(const LineV &polygons, SegmentV &out);

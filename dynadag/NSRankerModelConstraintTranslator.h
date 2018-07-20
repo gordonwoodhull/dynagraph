@@ -25,18 +25,18 @@ namespace DynaDAG {
 // but the return is handled exclusively by NSRankerModelToLayoutTranslator
 
 struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,ConstraintGraph> {
-	typedef GoingQueueTransition<NSRankerModel,ConstraintGraph> Transition;
-	NSRankerModelToConstraintTranslator(ConstraintGraph *whole,ConstraintGraph *current)
-		: transition_(whole,current) {}
-	void Process() {
-		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
-		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
+    typedef GoingQueueTransition<NSRankerModel,ConstraintGraph> Transition;
+    NSRankerModelToConstraintTranslator(ConstraintGraph *whole,ConstraintGraph *current)
+        : transition_(whole,current) {}
+    void Process() {
+        ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
+        ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
         for(NSRankerModel::graphedge_iter ei = changeQ.delE.edges().begin(); ei!=changeQ.delE.edges().end();++ei)
             removePathConstraints(*ei);
 
         for(NSRankerModel::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
             removeLayoutNodeConstraints(*ni);
-	}
+    }
     void removeLayoutNodeConstraints(NSRankerModel::Node *n) {
         ConstraintGraph &cg = gd<NSRankerModelGraph>(n->g);
         NSRankerModelNode &rn = gd<NSRankerModelNode>(n);
@@ -111,11 +111,11 @@ struct NSRankerModelToConstraintTranslator : ChangeTranslator<NSRankerModel,Cons
 
 // currently this is just to keep the processor chain alive
 struct ConstraintToNSRankerModelTranslator : ChangeTranslator<ConstraintGraph,NSRankerModel> {
-	typedef ReturningQueueTransition<ConstraintGraph,NSRankerModel> Transition;
-	void Process() {
-		ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
-		ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
-	}
+    typedef ReturningQueueTransition<ConstraintGraph,NSRankerModel> Transition;
+    void Process() {
+        ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;
+        ChangeQueue<Graph2> &destQ = this->destWorld_->Q_;
+    }
 
 } // namespace DynaDAG
 } // namespace Dynagraph

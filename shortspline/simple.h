@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include "pathplan.h"
 
-#define MAXINTS  10000	/* modify this line to reflect the max no. of
-	intersections you want reported -- 50000 seems to break the program */
+#define MAXINTS  10000  /* modify this line to reflect the max no. of
+    intersections you want reported -- 50000 seems to break the program */
 
 #define SLOPE(p,q) ( ( ( p.y ) - ( q.y ) ) / ( ( p.x ) - ( q.x ) ) )
 
@@ -30,18 +30,18 @@
 struct position  { float x,y; };
 
 
-struct vertex	{
-	struct position pos;
-	struct polygon *poly;
-	struct active_edge *active;
-		};
+struct vertex   {
+    struct position pos;
+    struct polygon *poly;
+    struct active_edge *active;
+        };
 
-struct polygon	{ struct vertex *start,*finish;};
+struct polygon  { struct vertex *start,*finish;};
 
 struct intersection   {
-	struct vertex *firstv,*secondv;
-	struct polygon *firstp,*secondp;
-	float x,y; } ;
+    struct vertex *firstv,*secondv;
+    struct polygon *firstp,*secondp;
+    float x,y; } ;
 
 struct active_edge { struct vertex *name; struct active_edge *next,*last; };
 struct active_edge_list { struct active_edge *first,*final ; int number ; } ;

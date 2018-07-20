@@ -23,64 +23,64 @@ namespace Dynagraph {
 namespace DynaDAG {
 
 struct NSRankerNode {
-	NodeConstraints topC,bottomC;
-	bool hit; // for rank dfs
-	int newTopRank,	// destination rank assignment
-		newBottomRank,
-		oldTopRank,	// previous rank assignment
-		oldBottomRank;
-	bool rankFixed; // whether nailed in Y
+    NodeConstraints topC,bottomC;
+    bool hit; // for rank dfs
+    int newTopRank, // destination rank assignment
+        newBottomRank,
+        oldTopRank, // previous rank assignment
+        oldBottomRank;
+    bool rankFixed; // whether nailed in Y
 
-	NSRankerNode() : hit(false),newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0),rankFixed(false) {}
-	// do not copy constraints or hit-flag
-	NSRankerNode(const NSRankerNode &other) :
-		hit(false),
-		newTopRank(other.newTopRank),newBottomRank(other.newBottomRank),oldTopRank(other.oldTopRank),oldBottomRank(other.oldBottomRank),
-		rankFixed(other.rankFixed) {}
-	NSRankerNode &operator=(NSRankerNode &other) {
-		hit = false;
-		newTopRank = other.newTopRank;
-		newBottomRank = other.newBottomRank;
-		oldTopRank = other.oldTopRank;
-		oldBottomRank = other.oldBottomRank;
-		rankFixed = other.rankFixed;
-		return *this;
-	}
+    NSRankerNode() : hit(false),newTopRank(0),newBottomRank(0),oldTopRank(0),oldBottomRank(0),rankFixed(false) {}
+    // do not copy constraints or hit-flag
+    NSRankerNode(const NSRankerNode &other) :
+        hit(false),
+        newTopRank(other.newTopRank),newBottomRank(other.newBottomRank),oldTopRank(other.oldTopRank),oldBottomRank(other.oldBottomRank),
+        rankFixed(other.rankFixed) {}
+    NSRankerNode &operator=(NSRankerNode &other) {
+        hit = false;
+        newTopRank = other.newTopRank;
+        newBottomRank = other.newBottomRank;
+        oldTopRank = other.oldTopRank;
+        oldBottomRank = other.oldBottomRank;
+        rankFixed = other.rankFixed;
+        return *this;
+    }
 };
 
 struct NSRankerEdge {
-	DDCGraph::Node *weak;
-	DDCGraph::Edge *strong;
-	// the second edge of 2-cycle should be ignored, mostly
-	bool secondOfTwo;
-	
-	NSRankerEdge() : weak(0),strong(0),secondOfTwo(false) {}
-	// do not copy constraints
-	NSRankerEdge(const NSRankerEdge &other) : weak(0),strong(0),
-		secondOfTwo(other.secondOfTwo) {}
-	NSRankerEdge &operator=(NSRankerEdge &other) {
-		secondOfTwo = other.secondOfTwo;
-		return *this;
-	}
+    DDCGraph::Node *weak;
+    DDCGraph::Edge *strong;
+    // the second edge of 2-cycle should be ignored, mostly
+    bool secondOfTwo;
+    
+    NSRankerEdge() : weak(0),strong(0),secondOfTwo(false) {}
+    // do not copy constraints
+    NSRankerEdge(const NSRankerEdge &other) : weak(0),strong(0),
+        secondOfTwo(other.secondOfTwo) {}
+    NSRankerEdge &operator=(NSRankerEdge &other) {
+        secondOfTwo = other.secondOfTwo;
+        return *this;
+    }
 };
 
 enum EdgeDirection {forward,flat,reversed};
 template<typename LayoutEdge>
 inline EdgeDirection getEdgeDirection(LayoutEdge *e) {
-	int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
-		hdr = gd<NSRankerNode>(e->head).newTopRank;
-	if(tlr==hdr)
-		return flat;
-	else if(tlr>hdr) {
-		tlr = gd<NSRankerNode>(e->head).newBottomRank;
-		hdr = gd<NSRankerNode>(e->tail).newTopRank;
-		if(tlr>hdr)
-			return flat;
-		else
-			return reversed;
-	}
-	else
-		return forward;
+    int tlr = gd<NSRankerNode>(e->tail).newBottomRank,
+        hdr = gd<NSRankerNode>(e->head).newTopRank;
+    if(tlr==hdr)
+        return flat;
+    else if(tlr>hdr) {
+        tlr = gd<NSRankerNode>(e->head).newBottomRank;
+        hdr = gd<NSRankerNode>(e->tail).newTopRank;
+        if(tlr>hdr)
+            return flat;
+        else
+            return reversed;
+    }
+    else
+        return forward;
 }
 
 

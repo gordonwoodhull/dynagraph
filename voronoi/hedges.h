@@ -35,46 +35,46 @@ struct Halfedge {
 };
 
 struct Halfedges {
-	Halfedge *leftend, *rightend;
-	Freelist<Halfedge> fhedges;
-	std::vector<Halfedge*> hash;
-	Rect range; // of site coords
-	Site *bottomsite; // weird to hold this here but this is the only class that uses it
-	Sites &sites;
+    Halfedge *leftend, *rightend;
+    Freelist<Halfedge> fhedges;
+    std::vector<Halfedge*> hash;
+    Rect range; // of site coords
+    Site *bottomsite; // weird to hold this here but this is the only class that uses it
+    Sites &sites;
 
-	Halfedges(Sites &sites,int N);
-	void init(int N);
-	Site *hintersect(Halfedge*, Halfedge*);
-	Halfedge *create(Edge*, EdgeEnd);
-	void insert(Halfedge *where, Halfedge *he);
-	Halfedge *leftbnd(Coord);
-	void erase(Halfedge *);
-	Halfedge *ELleftbnd(Coord);
-	Site *leftreg(Halfedge*), *rightreg(Halfedge*);
+    Halfedges(Sites &sites,int N);
+    void init(int N);
+    Site *hintersect(Halfedge*, Halfedge*);
+    Halfedge *create(Edge*, EdgeEnd);
+    void insert(Halfedge *where, Halfedge *he);
+    Halfedge *leftbnd(Coord);
+    void erase(Halfedge *);
+    Halfedge *ELleftbnd(Coord);
+    Site *leftreg(Halfedge*), *rightreg(Halfedge*);
 
-	void PQinitialize();
-	Halfedge * PQextractmin();
-	Coord PQ_min();
-	int PQempty();
-	void PQdelete(Halfedge*);
-	void PQinsert(Halfedge*, Site*, double);
+    void PQinitialize();
+    Halfedge * PQextractmin();
+    Coord PQ_min();
+    int PQempty();
+    void PQdelete(Halfedge*);
+    void PQinsert(Halfedge*, Site*, double);
 
 private:
-	Halfedge *gethash(int b);
+    Halfedge *gethash(int b);
 
-	std::vector<Halfedge> PQhash;
-	int PQhashsize;
-	int PQcount;
-	int PQmin;
+    std::vector<Halfedge> PQhash;
+    int PQhashsize;
+    int PQcount;
+    int PQmin;
 
-	int PQbucket(Halfedge *he);
+    int PQbucket(Halfedge *he);
 };
 bool right_of(Halfedge*, Coord);
 inline Halfedge *left(Halfedge*he) {
-	return he->ELleft;
+    return he->ELleft;
 }
 inline Halfedge *right(Halfedge*he) {
-	return he->ELright;
+    return he->ELright;
 }
 
 } // namespace Voronoi

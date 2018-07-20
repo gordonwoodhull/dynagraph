@@ -25,21 +25,21 @@
 namespace Dynagraph {
 
 struct RegisteringConfigurator {
-	template<typename Configurators,typename Layout> 
-	static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
-		BOOST_MPL_ASSERT((boost::mpl::empty<Configurators>)); // must be end of line
-		// handler for parser
-		IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
-		// its handler (request command deferred)
-		handler->watcher_ =  new TextWatcherOutput<Layout>;
-		// output engines at end of chain
-		engines.Append(new OutputIncrface<Layout>(world,dgr::incrface));
-		engines.Append(new OutputDot<Layout>(world));
-		// start chain
-		handler->engine_ = engines.first;
-		// and we're go!
-		incr_set_handler(name,handler);
-	}
+    template<typename Configurators,typename Layout> 
+    static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
+        BOOST_MPL_ASSERT((boost::mpl::empty<Configurators>)); // must be end of line
+        // handler for parser
+        IncrStrGraphHandler<Layout> *handler = new IncrStrGraphHandler<Layout>(world);
+        // its handler (request command deferred)
+        handler->watcher_ =  new TextWatcherOutput<Layout>;
+        // output engines at end of chain
+        engines.Append(new OutputIncrface<Layout>(world,dgr::incrface));
+        engines.Append(new OutputDot<Layout>(world));
+        // start chain
+        handler->engine_ = engines.first;
+        // and we're go!
+        incr_set_handler(name,handler);
+    }
 };
 
 } // namespace Dynagraph

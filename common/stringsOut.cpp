@@ -28,11 +28,11 @@ DString g_NLPNames[5] = {"center","right","top","left","bottom"};
 
 const double ln10 = 2.30258509299404568401799145468436;
 void initStream(std::ostringstream &o,const Coord &resolution) {
-	double lbase10 = log(resolution.x)/ln10;
-	int precX = int(-floor(lbase10));
-	o.flags(o.flags()|std::ios::fixed);
-	o.width(0);
-	o.precision(precX);
+    double lbase10 = log(resolution.x)/ln10;
+    int precX = int(-floor(lbase10));
+    o.flags(o.flags()|std::ios::fixed);
+    o.width(0);
+    o.precision(precX);
 }
 
 
