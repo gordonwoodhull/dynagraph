@@ -49,7 +49,7 @@ struct EdgeSuppressor : LinkedChangeProcessor<Layout> {
         else suppression = Suppression::unsuppressed;
         /*
         if(suppression)
-            std::cerr << "Suppression " << suppression << " suppressRank " << suppressRank << " direction " << getEdgeDirection(e)  << 
+            std::cerr << "Suppression " << suppression << " suppressRank " << suppressRank << " direction " << getEdgeDirection(e)  <<
                 " tail top " << gd<NSRankerNode>(t).newTopRank << " tail bottom " << gd<NSRankerNode>(t).newBottomRank <<
                 " head top " << gd<NSRankerNode>(h).newTopRank << " head bottom " << gd<NSRankerNode>(h).newBottomRank << std::endl;
                 */

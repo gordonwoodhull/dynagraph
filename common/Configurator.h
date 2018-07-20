@@ -33,9 +33,9 @@ namespace Dynagraph {
     Configurators are semi-autonomous builders of Engines and Worlds
     The configuration gets built from the inside out.
     Each Configurator (so far) either pre/appends Engines to the chain,
-    or boxes up a chain and world into an InternalWorld, 
+    or boxes up a chain and world into an InternalWorld,
     and creates a new world in which it's an Engine.
-    All of this sounds almost philosophical, no?  
+    All of this sounds almost philosophical, no?
     Unforch it craves better language; for now it's a mixed-up metaphor.
 
     Each configurator implements a method config(), which is templated both on

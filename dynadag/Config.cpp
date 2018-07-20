@@ -247,10 +247,10 @@ void Config::MoveNodeBefore(DDModel::Node *u,DDModel::Node *v) {
         dgassert(gd<DDNode>(u).rank==gd<DDNode>(v).rank);
         vpos = gd<DDNode>(v).order;
     }
-    else 
+    else
         vpos = order.size();
     if(upos+1==vpos)
-        return; 
+        return;
     if(upos+2==vpos) {
         Exchange(u,Right(u));
         return;

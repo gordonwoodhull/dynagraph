@@ -49,7 +49,7 @@ struct DynaDAGServer : LinkedChangeProcessor<DynaDAGLayout>,DynaDAGServices {
     XSolver xsolver;
     FlexiSpliner spliner;
 
-    DynaDAGServer(ChangingGraph<DynaDAGLayout> *world) 
+    DynaDAGServer(ChangingGraph<DynaDAGLayout> *world)
         : LinkedChangeProcessor<DynaDAGLayout>(world),
         model(),
         config(this,model,&world->whole_,&world->current_,&xsolver),
@@ -79,10 +79,10 @@ private:
     void updateBounds(DDChangeQueue &changeQ);
     void moveNodesBasedOnModel(DDChangeQueue &changeQ);
 
-    void sketchEdge(DynaDAGLayout::Edge *e); 
-    void drawStraightEdge(DynaDAGLayout::Edge *e); 
-    void drawSelfEdge(DynaDAGLayout::Edge *e); 
-    void drawEdgeSimply(DynaDAGLayout::Edge *e); 
+    void sketchEdge(DynaDAGLayout::Edge *e);
+    void drawStraightEdge(DynaDAGLayout::Edge *e);
+    void drawSelfEdge(DynaDAGLayout::Edge *e);
+    void drawEdgeSimply(DynaDAGLayout::Edge *e);
     void rescaleEdge(DynaDAGLayout::Edge *e);
 
     void findFlowSlopes(DDChangeQueue &changeQ);

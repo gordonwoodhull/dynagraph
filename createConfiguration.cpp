@@ -32,8 +32,8 @@ namespace mpl = boost::mpl;
 
 namespace Dynagraph {
 
-// the order of configurators is "magic" 
-// a more clever (perhaps too clever) way to do this might be to specify 
+// the order of configurators is "magic"
+// a more clever (perhaps too clever) way to do this might be to specify
 // dependencies and order constraints on configurators(?)
 typedef mpl::list<
     LayoutChooserConfigurator,

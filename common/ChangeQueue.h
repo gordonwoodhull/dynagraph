@@ -25,7 +25,7 @@ namespace Dynagraph {
 
 /*
     CHANGE QUEUE
-*/ 
+*/
 template<typename Graph>
 struct ChangeQueue {
     // the whole edits this supergraph of server's current layout
@@ -317,7 +317,7 @@ ChangeQueue<Graph> &ChangeQueue<Graph>::operator=(const ChangeQueue<Graph> &Q) {
     insE = Q.insE;
     modE = Q.modE;
     delE = Q.delE;
-    whole->idat = Q.whole->idat; 
+    whole->idat = Q.whole->idat;
     return *this;
 }
 template<typename Graph>
@@ -329,7 +329,7 @@ ChangeQueue<Graph> &ChangeQueue<Graph>::operator+=(const ChangeQueue<Graph> &Q) 
         InsNode(*ni);
     for(ei = Q.insE.edges().begin(); ei!=Q.insE.edges().end(); ++ei)
         InsEdge(*ei);
-    for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni) 
+    for(ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
         ModNode(*ni).object->idat = (*ni)->idat;
     for(ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
         ModEdge(*ei).object->idat = (*ei)->idat;

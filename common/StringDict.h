@@ -151,7 +151,7 @@ public:
         if(i==end())
             return npos;
         else
-            return i-begin();       
+            return i-begin();
     }
     DString substr(size_type pos,size_type len=npos) const {
         DString ret;

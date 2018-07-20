@@ -25,7 +25,7 @@ namespace Dynagraph {
 namespace FDP {
 
 struct FDPConfigurator {
-    template<typename Configurators,typename Layout> 
+    template<typename Configurators,typename Layout>
     static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *,EnginePair<Layout>) {
         BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this is a starterator (prob called by LayoutChooserConfigurator)
         ChangingGraph<FDPLayout> *world = new ChangingGraph<FDPLayout>;

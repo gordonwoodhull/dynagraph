@@ -22,7 +22,7 @@
 namespace Dynagraph {
 namespace DynaDAG {
 
-// until DynaDAGEngine becomes a template, this is the minimal graph type 
+// until DynaDAGEngine becomes a template, this is the minimal graph type
 // that can be used both for incrface and by the engine
 typedef NamedGraph<ADTisCDT,EverythingGraphAttrs,EverythingNodeAttrs,EverythingEdgeAttrs,
     LayoutUpdates,LayoutUpdates,LayoutUpdates> DynaDAGLayout;

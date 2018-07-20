@@ -272,8 +272,8 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
                 catch(...) {
                     //return false;
                 }
-                for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
-                    if(config.IsSuppressed(*ni)) 
+                for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni)
+                    if(config.IsSuppressed(*ni))
                         gd<DDNode>(*ni).actualXValid = false;
                     else {
                         double y = gd<DDNode>(*ni).cur.y,
@@ -296,5 +296,3 @@ bool FlexiSpliner::MakeEdgeSpline(DDPath *path,SpliningLevel level) { //,Obstacl
 
 } // namespace DynaDAG
 } // namespace Dynagraph
-
-

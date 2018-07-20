@@ -25,7 +25,7 @@ namespace FDP {
 // just to temporarily distinguish FDPLayout typedef from DynaDAGLayout until we get real metagraphs
 struct FDPGraphAttrs : EverythingGraphAttrs {};
 
-// until FDPEngine becomes a template, this is the minimal graph type 
+// until FDPEngine becomes a template, this is the minimal graph type
 // that can be used both for incrface and by the engine
 typedef NamedGraph<ADTisCDT,FDPGraphAttrs,EverythingNodeAttrs,EverythingEdgeAttrs,
     LayoutUpdates,LayoutUpdates,LayoutUpdates> FDPLayout;

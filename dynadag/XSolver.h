@@ -22,7 +22,7 @@ namespace DynaDAG {
 
 struct XSolver : XConstraintOwner {
     XSolver(Config &config) : config(config) {}
-    virtual ~XSolver() {} 
+    virtual ~XSolver() {}
     void Place(DDChangeQueue &changeQ);
     void RemoveEdgeConstraints(DDModel::Edge *e);
     // XConstraintOwner

@@ -36,9 +36,9 @@ void ClearInsDel(ChangeQueue<Layout> &Q) {
 template<typename Layout>
 void ClearStrAttrChanges(ChangeQueue<Layout> &Q) {
     igd<StrAttrChanges>(Q.ModGraph()).clear();
-    for(typename Layout::node_iter ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni) 
+    for(typename Layout::node_iter ni = Q.modN.nodes().begin(); ni!=Q.modN.nodes().end(); ++ni)
         igd<StrAttrChanges>(*ni).clear();
-    for(typename Layout::graphedge_iter ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei) 
+    for(typename Layout::graphedge_iter ei = Q.modE.edges().begin(); ei!=Q.modE.edges().end(); ++ei)
         igd<StrAttrChanges>(*ei).clear();
 }
 // again this seems like something any layout engine might want

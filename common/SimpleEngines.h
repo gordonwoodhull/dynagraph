@@ -13,8 +13,8 @@
 *                       Many thanks.                      *
 **********************************************************/
 
-#ifndef SimpleEngines_h 
-#define SimpleEngines_h 
+#ifndef SimpleEngines_h
+#define SimpleEngines_h
 
 #include "ChangeProcessor.h"
 
@@ -40,7 +40,7 @@ struct OkayEngine : LinkedChangeProcessor<Graph> {
 // this must be done only once, that's why individual layout servers can't be responsible.
 template<typename Graph>
 struct UpdateCurrentProcessor : LinkedChangeProcessor<Graph> {
-    UpdateCurrentProcessor(ChangingGraph<Graph> *world) 
+    UpdateCurrentProcessor(ChangingGraph<Graph> *world)
         : LinkedChangeProcessor<Graph>(world) {}
     void Process() {
         this->world_->Q_.UpdateCurrent();
@@ -50,4 +50,4 @@ struct UpdateCurrentProcessor : LinkedChangeProcessor<Graph> {
 
 } // namespace Dynagraph
 
-#endif // SimpleEngines_h 
+#endif // SimpleEngines_h

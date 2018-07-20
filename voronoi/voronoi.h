@@ -45,7 +45,7 @@ struct VoronoiServer : LinkedChangeProcessor<FDP::FDPLayout> {
 
     const int N;
 
-    VoronoiServer(ChangingGraph<FDP::FDPLayout> *world) 
+    VoronoiServer(ChangingGraph<FDP::FDPLayout> *world)
         : LinkedChangeProcessor<FDP::FDPLayout>(world),
         margin(0.05),incr(0.025),pmargin(5.0/72),iterations(-1),useIter(false),
         N(400), infos(N),sites(N),edges(sites,infos,bounds,N),hedges(sites,N) {}

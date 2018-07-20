@@ -213,12 +213,12 @@ struct LightPass {
     ConstraintMatrixSwitchable switchable_;
     MedianCompare median_;
     CrossingCompare crossing_;
-    LightPass(Config &config,SiftMatrix &matrix,ConstraintMatrixSwitchable &switchable) : 
+    LightPass(Config &config,SiftMatrix &matrix,ConstraintMatrixSwitchable &switchable) :
         config_(config),
         matrix_(matrix),
         switchable_(switchable),
         median_(DOWN,false),
-        crossing_(config_,matrix_,false) 
+        crossing_(config_,matrix_,false)
     {
         matrix_.light_ = true;
         matrix_.recompute();
@@ -262,7 +262,7 @@ struct HeavyPass {
         config_(config),
         matrix_(matrix),
         switchable_(switchable),
-        crossing_(config_,matrix_,false) 
+        crossing_(config_,matrix_,false)
     {
         matrix_.light_ = false;
         matrix_.recompute();
@@ -295,7 +295,7 @@ void DotlikeOptimizer::Reorder(DDChangeQueue &Q,DynaDAGLayout &nodes,DynaDAGLayo
     vector<int> affectedRanks;
     ConstraintMatrixSwitchable switchable;
     for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
-        switchable.initRank(Config::Ranks::Xlator::CoordToRank(config.current,((*ri)->yBase)), 
+        switchable.initRank(Config::Ranks::Xlator::CoordToRank(config.current,((*ri)->yBase)),
             (*ri)->order.size());
     {
         NodeV optimVec;

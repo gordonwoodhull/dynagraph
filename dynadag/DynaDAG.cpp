@@ -162,7 +162,7 @@ void DynaDAGServer::findOrdererSubgraph(DDChangeQueue &changeQ,DynaDAGLayout &ou
 }
 void DynaDAGServer::updateBounds(DDChangeQueue &changeQ) {
     bool got = false;
-    double glb=0.0,grb=0.0;  
+    double glb=0.0,grb=0.0;
     Rank *top=0,*bottom=0;
     for(Config::Ranks::iterator ri = config.ranking.begin(); ri!=config.ranking.end(); ++ri)
         if((*ri)->order.size()) {
@@ -219,7 +219,7 @@ void DynaDAGServer::moveNodesBasedOnModel(DDChangeQueue &changeQ) {
     loops.Field(dgr::stability,"node x movement",moved.x);
     loops.Field(dgr::stability,"node y movement",moved.y);
 }
-void DynaDAGServer::rememberOld() { 
+void DynaDAGServer::rememberOld() {
     for(DDModel::node_iter ni = model.nodes().begin(); ni!=model.nodes().end(); ++ni) {
         DDNode &ddn = gd<DDNode>(*ni);
         ddn.prev = ddn.cur;
@@ -256,10 +256,10 @@ void DynaDAGServer::Process() {
     loops.Field(dgr::dynadag,"edges modified - input",Q.modE.edges().size());
     loops.Field(dgr::dynadag,"nodes deleted - input",Q.delN.nodes().size());
     loops.Field(dgr::dynadag,"edges deleted - input",Q.delE.nodes().size());
-    
+
     if(!ChangesAreRelevant(Q)) {
         NextProcess();
-        Q.Clear(); 
+        Q.Clear();
         return;
     }
 
@@ -277,14 +277,14 @@ void DynaDAGServer::Process() {
         drawIntermediateEdges(Q);
         updateBounds(Q);
         NextProcess();
-        // client has heard about inserts so they're now mods, 
+        // client has heard about inserts so they're now mods,
         // and deletes can be blown away (should someone Higher do this?)
         ClearInsDel(Q);
         // and don't overreport attr changes
         ClearStrAttrChanges(Q);
     }
 
-    if(gd<Interruptible>(&world_->current_).interrupt 
+    if(gd<Interruptible>(&world_->current_).interrupt
             && gd<GraphGeom>(&world_->current_).reportIntermediate
             && g_dynadagPhaseMinder.HasPassed(gd<Interruptible>(&world_->current_).attrs,"update","done")) {
         rememberOld();
@@ -299,10 +299,10 @@ void DynaDAGServer::Process() {
     optimizer->Reorder(Q,world_->current_,world_->current_);
     timer.LoopPoint(dgr::timing,"crossing optimization");
 
-    if(gd<Interruptible>(&world_->current_).interrupt 
+    if(gd<Interruptible>(&world_->current_).interrupt
             && gd<GraphGeom>(&world_->current_).reportIntermediate
             && g_dynadagPhaseMinder.HasPassed(gd<Interruptible>(&world_->current_).attrs,"untangle","done")) {
-        //makeXConsistent(); // this horror superceded by horrible x_backup 
+        //makeXConsistent(); // this horror superceded by horrible x_backup
         rememberOld();
         StrAttrs pulseAttrs;
         pulseAttrs["phase"] = "untangle";
@@ -318,7 +318,7 @@ void DynaDAGServer::Process() {
     config.SetYs();
     timer.LoopPoint(dgr::timing,"optimize x coordinates");
 
-    if(gd<Interruptible>(&world_->current_).interrupt 
+    if(gd<Interruptible>(&world_->current_).interrupt
             && gd<GraphGeom>(&world_->current_).reportIntermediate
             && g_dynadagPhaseMinder.HasPassed(gd<Interruptible>(&world_->current_).attrs,"xopt","done")) {
         rememberOld();

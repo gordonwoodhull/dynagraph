@@ -49,7 +49,7 @@ struct FDPServer : LinkedChangeProcessor<FDPLayout>,Grid::Visitor {
         Rfact2, // Phase 2 RepFactor
         Radius2; // Radius of interaction squared. Anything outside of the radius has no effect on node
 
-    FDPServer(ChangingGraph<FDPLayout> *world) 
+    FDPServer(ChangingGraph<FDPLayout> *world)
         : LinkedChangeProcessor<FDPLayout>(world),
         numIters(40),
         useComp(false),

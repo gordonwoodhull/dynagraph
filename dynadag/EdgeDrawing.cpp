@@ -153,7 +153,7 @@ bool DynaDAGServer::edgeNeedsRedraw(DynaDAGLayout::Edge *e,DDChangeQueue &change
     dgassert(!changeQ.delE.find(e));
     if(path->unclippedPath.Empty())
         return true;
-    if(gd<EdgeGeom>(e).pos.Empty()) 
+    if(gd<EdgeGeom>(e).pos.Empty())
         return true;
     if(changeQ.insE.find(e))
         return true;

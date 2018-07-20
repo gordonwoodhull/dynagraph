@@ -25,7 +25,7 @@
 extern Transform *g_transform;
 
 struct LoggerConfigurator {
-    template<typename Configurators,typename Layout> 
+    template<typename Configurators,typename Layout>
     static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
         typedef InternalTranslator2<InnerLayout,LayoutToStringTranslator<InnerLayout,InnerLayout> > MakeStrings;
         if(reports.enabled(dgr::inner_input)) {

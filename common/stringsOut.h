@@ -74,7 +74,7 @@ void stringifyPos(const Position &p,Transform *trans,const Coord &res,GO *go) {
 }
 template<typename GO>
 void stringifyPolyDef(const PolyDef &pdef,Transform *trans,const Coord &res,GO *go) {
-    char buf[20]; 
+    char buf[20];
     PolyDef norm;
     if(pdef.isEllipse) {
         if(!norm.isEllipse)

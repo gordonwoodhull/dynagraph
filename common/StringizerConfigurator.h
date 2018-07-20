@@ -28,7 +28,7 @@ extern bool g_useDotDefaults;
 
 
 struct StringizerConfigurator {
-    template<typename Configurators,typename Layout> 
+    template<typename Configurators,typename Layout>
     static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
         // engine to translate strings to binary attrs
         typedef InternalTranslator2<Layout,StringToLayoutTranslator<Layout,Layout> > StringsInEngine;

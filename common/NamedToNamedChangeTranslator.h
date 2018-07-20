@@ -30,7 +30,7 @@ struct EdgeDoesntExistInconsistency : DGException2 {
 template<typename Graph1,typename Graph2,typename ChangeActions,bool CheckRedundancy>
 struct NamedToNamedChangeTranslator : ChangeTranslator<Graph1,Graph2> {
     ChangeActions actions_;
-    NamedToNamedChangeTranslator(ChangingGraph<Graph1> *world1,ChangingGraph<Graph2> *world2,const ChangeActions &action = ChangeActions()) 
+    NamedToNamedChangeTranslator(ChangingGraph<Graph1> *world1,ChangingGraph<Graph2> *world2,const ChangeActions &action = ChangeActions())
         : ChangeTranslator<Graph1,Graph2>(world1,world2),actions_(action) {}
     virtual void Open() {
         ChangeQueue<Graph1> &srcQ = this->sourceWorld_->Q_;

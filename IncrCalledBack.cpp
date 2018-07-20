@@ -31,7 +31,7 @@ using DynaDAG::DynaDAGLayout;
 using FDP::FDPLayout;
 extern bool g_useDotDefaults;
 extern Transform *g_transform;
-#endif 
+#endif
 
 extern StrAttrs g_defaultGraphAttrs;
 IncrCalledBack g_incrPhone;
@@ -42,7 +42,7 @@ void IncrCalledBack::incr_cb_create_handler(Name name,StrAttrs &attrs) {
     createConfiguration(name,attrs);
     // hopefully you'll get a more helpful error if something failed but this one is here if the configurator chain itself failed
     if(!incr_get_handler(name))
-        throw HandlerCreationFailed(); 
+        throw HandlerCreationFailed();
 }
 void IncrCalledBack::incr_cb_destroy_handler(IncrLangEvents *h) {
     delete h;

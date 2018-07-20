@@ -181,7 +181,7 @@ void IncrStrGraphHandler<NGraph>::incr_ev_pulse(const StrAttrs &attrs) {
     // WEIRD: received pulse becomes an interrupt which then should generate almost the same pulse as output!
     gd<Interruptible>(&world_->whole_).attrs = attrs; // qualify/restrict the kind of interrupt
     interrupt_thread();
-    gd<Interruptible>(&world_->whole_).attrs.clear(); // unqualify 
+    gd<Interruptible>(&world_->whole_).attrs.clear(); // unqualify
 }
 template<typename NGraph>
 void IncrStrGraphHandler<NGraph>::incr_ev_lock() {

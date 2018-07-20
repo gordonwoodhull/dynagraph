@@ -221,12 +221,12 @@ inline void clipEdge(DynaDAGLayout::Edge *e) {
 inline DDModel::Node *cutNode(DDPath *path) {
     Position ret;
     int suppressRank = gd<Suppression>(path->layoutE).suppressRank;
-    for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
-        if(gd<DDNode>(*ni).rank==suppressRank) 
+    for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni)
+        if(gd<DDNode>(*ni).rank==suppressRank)
             return *ni;
     /*
     std::cerr << "no suppressRank " << suppressRank << " in ";
-    for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni) 
+    for(DDPath::node_iter ni = path->nBegin(); ni!=path->nEnd(); ++ni)
         std::cerr << gd<DDNode>(*ni).rank << ' ';
     std::cerr << std::endl;
     */

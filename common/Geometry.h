@@ -216,7 +216,7 @@ struct Bounds : Rect {
         valid = false;
     }
     bool operator ==(const Bounds &b) const { // not recommended because floats are never equal
-        return valid?Rect::operator ==(b):!b.valid; 
+        return valid?Rect::operator ==(b):!b.valid;
     }
     bool operator !=(const Bounds &b) const { // not recommended because floats are never equal
         return !(*this==b);

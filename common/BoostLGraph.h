@@ -229,4 +229,4 @@ namespace boost {
     }
 } // namespace boost
 
-#endif // BoostLGraph_h 
+#endif // BoostLGraph_h

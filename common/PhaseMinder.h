@@ -28,7 +28,7 @@ struct PhaseMinder {
     bool HasPassed2
 #else
     bool HasPassed
-#endif 
+#endif
             (const StrAttrs &pulseAttrs,DString currPhase,DString currStep) {
         DString pulsePhase = pulseAttrs.look("phase");
         // if pulse/interrupt does not specify a phase, time limit has always passed
@@ -36,7 +36,7 @@ struct PhaseMinder {
             return true;
         PhaseList::iterator pi = find(phases_.begin(),phases_.end(),pulsePhase),
             ci = find(phases_.begin(),phases_.end(),currPhase);
-        // if either pulse or current phase is not in list, then limit has passed 
+        // if either pulse or current phase is not in list, then limit has passed
         if(pi==phases_.end() || ci==phases_.end())
             return true;
         // if pulse is earlier in list than current, then limit has passed

@@ -99,7 +99,7 @@ struct CoordTranslatorCopyPolicy : LayoutToLayoutCopyAllPolicy {
     };
 };
 // the implementation is based on the NamedToNamedChangeTranslator, with LayoutToLayoutTranslator actions
-// for the actions, in the interest of clarity, we define LayoutToLayoutTranslator as Base class 
+// for the actions, in the interest of clarity, we define LayoutToLayoutTranslator as Base class
 // and include them as members rather than using inheritance
 template<typename OuterLayout,typename InnerLayout>
 struct CoordTranslatorInActions {
@@ -138,7 +138,7 @@ struct CoordTranslatorInActions {
     void ModifyEdge(typename OuterLayout::Edge *oe,typename InnerLayout::Edge *ie) {
         base_.ModifyEdge(oe,ie);
         if(igd<Update>(oe).flags&DG_UPD_MOVE)
-            Trans::xlateIn(oe->g,true,gd<EdgeGeom>(oe).pos,gd<EdgeGeom>(ie).pos);           
+            Trans::xlateIn(oe->g,true,gd<EdgeGeom>(oe).pos,gd<EdgeGeom>(ie).pos);
     }
     void DeleteNode(typename OuterLayout::Node *on,typename InnerLayout::Node *in) {
         base_.DeleteNode(on,in);
@@ -178,7 +178,7 @@ struct CoordTranslatorOutActions {
     void ModifyEdge(typename InnerLayout::Edge *ie,typename OuterLayout::Edge *oe) {
         base_.ModifyEdge(ie,oe);
         if(igd<Update>(ie).flags&DG_UPD_MOVE)
-            Trans::xlateOut(oe->g,true,gd<EdgeGeom>(ie).pos,gd<EdgeGeom>(oe).pos);          
+            Trans::xlateOut(oe->g,true,gd<EdgeGeom>(ie).pos,gd<EdgeGeom>(oe).pos);
     }
     void DeleteNode(typename InnerLayout::Node *in,typename OuterLayout::Node *on) {
         base_.DeleteNode(in,on);
@@ -190,7 +190,7 @@ struct CoordTranslatorOutActions {
 template<typename OuterLayout,typename InnerLayout>
 struct CoordTranslatorIn : ChangeTranslator<OuterLayout,InnerLayout> {
     typedef typename CoordTranslatorInActions<OuterLayout,InnerLayout>::Trans Trans;
-    CoordTranslatorIn(ChangingGraph<OuterLayout> *world1,ChangingGraph<InnerLayout> *world2) 
+    CoordTranslatorIn(ChangingGraph<OuterLayout> *world1,ChangingGraph<InnerLayout> *world2)
         : ChangeTranslator<OuterLayout,InnerLayout>(world1,world2) {}
     // regular translation of ins,mod,del with above actions usually applies,
     // but when the translation itself has changed, ALL inner nodes' shapes need to be rerotated

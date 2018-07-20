@@ -24,7 +24,7 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
-    NSRanker(ChangingGraph<Layout> *world) : 
+    NSRanker(ChangingGraph<Layout> *world) :
         LinkedChangeProcessor<Layout>(world),
         top_(cg_.create_node())
     {}
@@ -77,10 +77,10 @@ void NSRanker<Layout>::doDeletions(ChangeQueue<Layout> &changeQ,Layout &extraI) 
         removePathConstraints(*ei);
         typename Layout::Edge *e = *ei;
         if(typename Layout::Edge *e2 = this->world_->current_.find_edge(e->head,e->tail))
-            if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false)) 
+            if(assign(gd<NSRankerEdge>(e2).secondOfTwo,false))
                 extraI.insert(e2);
     }
-    for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni) 
+    for(typename Layout::node_iter ni = changeQ.delN.nodes().begin(); ni!=changeQ.delN.nodes().end();++ni)
         removeLayoutNodeConstraints(*ni);
 }
 template<typename Layout>

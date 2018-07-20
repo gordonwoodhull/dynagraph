@@ -25,7 +25,7 @@ namespace Dynagraph {
 template<typename Layout>
 inline void ModifyNode(ChangeQueue<Layout> &Q,typename Layout::Node *n,Update upd) {
     typename ChangeQueue<Layout>::NodeResult result = Q.ModNode(n);
-    if(result.action==ChangeQueue<Layout>::modified) 
+    if(result.action==ChangeQueue<Layout>::modified)
         igd<Update>(result.object) |= upd;
 }
 template<typename Layout>

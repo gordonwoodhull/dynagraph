@@ -94,7 +94,7 @@ inline bool assign_unclose(T &a,const T &b) {
 struct Assertion : DGException {
     const char *expr,*file;
     int line;
-    Assertion(const char *expr,const char *file,int line) 
+    Assertion(const char *expr,const char *file,int line)
         : DGException("assertion failure",true),expr(expr),file(file),line(line) {}
 };
 #undef dgassert
@@ -118,7 +118,7 @@ struct dgr {
     std::ostream &operator [](reportType rt) {
         if(gotIt(rt))
             return *streams_[rt];
-        else 
+        else
             return null_stream();
     }
     void enable(reportType rt,std::ostream *str) {

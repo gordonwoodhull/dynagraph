@@ -10,8 +10,8 @@
 
 // The cleaner way to handle lifetimes of graphs is to let incrface do it
 // but many clients will want control, so the library uses create and destroy callbacks
-// this example demonstrates both paradigms; 
-// #define CREATE_YOURSELF 
+// this example demonstrates both paradigms;
+// #define CREATE_YOURSELF
 // selects the messier but more powerful client-control way
 
 using namespace std;
@@ -49,7 +49,7 @@ struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
     void FulfilNode(typename Graph::Node *n) {}
     void FulfilEdge(typename Graph::Edge *e) {}
     ExampleResponse(Name name) : DynaView(name,g_transform,g_useDotDefaults) {
-#ifdef CREATE_YOURSELF 
+#ifdef CREATE_YOURSELF
         // in DIY model, constructor always gets called before incrface "open graph" command
         incr_set_handler(gd<Name>(&layout),this);
 #endif
@@ -59,7 +59,7 @@ struct ExampleResponse : LinkedChangeProcessor<Layout>,IncrViewWatcher<Layout> {
         m_allowOneReopen = true;
     }
 };
-// incrface needs g_incrCallback to be filled; a global with initializer in the 
+// incrface needs g_incrCallback to be filled; a global with initializer in the
 // constructor is a simple way.
 struct IncrCalledBack : IncrCallbacks {
     IncrCalledBack() {
@@ -107,7 +107,7 @@ void main() {
     view->incr_ev_open_graph("Z",attrs);
     attrs.clear();
 
-    // now we have access to THREE APIs!  
+    // now we have access to THREE APIs!
     // ONE: access using strings through IncrLangEvents
     // this is pretty much just like using the incrface language
     reports[dgr::output] << "step 1" << endl;
@@ -115,7 +115,7 @@ void main() {
     attrs["width"] = attrs["height"] = "1";
     view->incr_ev_ins_node("m",attrs,false);
 
-    // TWO: access using C++ through DynaView.  
+    // TWO: access using C++ through DynaView.
     // this is the most powerful, direct, and efficient way
     // (but that's not always what's important)
     reports[dgr::output] << "step 2" << endl;
@@ -139,7 +139,7 @@ void main() {
 
     // THREE: the incrface language parser
     reports[dgr::output] << "step 3" << endl;
-    const char *incr_commands = 
+    const char *incr_commands =
         "open graph Z\n" // this is okay because the EgzampleView constructor set m_allowOneReopen
         "insert node Z o [shape=hexagon,height=2,width=2]\n"
         "insert edge Z f o n\n";

@@ -24,7 +24,7 @@ namespace DynaDAG {
 
 template<typename Layout>
 struct NSRanker : LinkedChangeProcessor<Layout> {
-    NSRanker(ChangingGraph<Graph> *world) 
+    NSRanker(ChangingGraph<Graph> *world)
         : LinkedChangeProcessor<Graph>(world),
         rankXlate_(gd<GraphGeom>(world->current).resolution.y),
         current_(world->current)

@@ -24,11 +24,11 @@
 namespace Dynagraph {
 
 struct LayoutChooserConfigurator {
-    template<typename Configurators,typename Layout> 
+    template<typename Configurators,typename Layout>
     static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
         BOOST_MPL_ASSERT((boost::is_same<Layout,void>)); // this Configurator must go first
         DString layout = attrs.look("layout","dynadag");
-        if(layout=="dynadag") 
+        if(layout=="dynadag")
             DynaDAG::DynaDAGConfigurator::config<Configurators>(name,attrs,world,engines);
         else if(layout=="fdp")
             FDP::FDPConfigurator::config<Configurators>(name,attrs,world,engines);
