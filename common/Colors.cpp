@@ -25,7 +25,7 @@ using namespace std;
 namespace Dynagraph {
 
 typedef struct hsbcolor_t {
-    char            *name;
+    const char      *name;
     unsigned char   h,s,b;
 } hsbcolor_t;
 

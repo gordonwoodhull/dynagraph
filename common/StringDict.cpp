@@ -57,8 +57,8 @@ static Dtdisc_t Refstrdisc = {
     ((Dtmemory_f)0),
     ((Dtevent_f)0)
 };
-StringDict::StringDict() : dict(0) { 
-    init(); 
+StringDict::StringDict() : dict(0) {
+    init();
 }
 
 void StringDict::init() {
@@ -137,9 +137,9 @@ int ds2int(const DString &s) {
 StringDict::StringDict() : strs(0) {
     init();
 }
-void StringDict::init() { 
+void StringDict::init() {
     LOCK_DICT();
-    strs = new mapstrs; 
+    strs = new mapstrs;
 }
 const char *StringDict::enter(const char *val) {
     LOCK_DICT();
@@ -171,4 +171,3 @@ void StringDict::ref(const char *val) {
     ++mi->second;
 }
 #endif // STRINGDICT_USE_STL
-

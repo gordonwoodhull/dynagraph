@@ -46,39 +46,39 @@ Update stringsIn(Transform *trans,bool useDotDefaults,Layout *l,const StrAttrs &
         if(name=="resolution") {
             if(value.empty())
                 value = useDotDefaults?"1,1":"0.1,0.1";
-            istringstream s(value);
+            istringstream stream((std::string(value)));
             Coord res;
-            s >> res;
+            stream >> res;
             if(assign_unclose(gd<GraphGeom>(l).resolution,res))
                 ret |= DG_UPD_RESOLUTION;
         }
         else if(name=="separation") {
             if(value.empty())
                 value = useDotDefaults?"24,24":"0.5,0.5";
-            istringstream s(value);
+            istringstream stream((std::string(value)));
             Coord sep;
-            s >> sep;
+            stream >> sep;
             if(assign_unclose(gd<GraphGeom>(l).separation,sep))
                 ret |= DG_UPD_SEPARATION;
         }
         else if(name=="edgeseparation") {
-            istringstream s(value);
+            istringstream stream((std::string(value)));
             double esep;
-            s >> esep;
+            stream >> esep;
             if(assign_unclose(gd<GraphGeom>(l).edgeSeparation,esep))
                 ret |= DG_UPD_SEPARATION;
         }
         else if(name=="defaultsize") {
             if(value.empty())
                 value = useDotDefaults?"54,36":"1.5,1";
-            istringstream s(value);
-            s >> gd<GraphGeom>(l).defaultSize;
+            istringstream stream((std::string(value)));
+            stream >> gd<GraphGeom>(l).defaultSize;
         }
         else if(name=="ticks") {
             if(value.empty())
                 value = "0";
-            istringstream s(value);
-            s >> gd<GraphGeom>(l).ticks;
+            istringstream stream((std::string(value)));
+            stream >> gd<GraphGeom>(l).ticks;
         }
         else if(name=="intermediate")
             gd<GraphGeom>(l).reportIntermediate = value=="true";
@@ -178,7 +178,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
                 ng.pos.valid = false;
             else {
                 ng.pos.valid = true;
-                istringstream stream(ai->second);
+                istringstream stream((std::string(ai->second)));
                 stream >> ng.pos;
                 ng.pos = trans->in(ng.pos);
             }
@@ -190,14 +190,14 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
             if(assign(ng.suppressed,ai->second=="true"))
                 ret.flags |= DG_UPD_POLYDEF|DG_UPD_MOVE|DG_UPD_SUPPRESSION;
         }
-        else if(ai->first=="freezeoutorder") 
+        else if(ai->first=="freezeoutorder")
             ng.freezeOutOrder = ai->second=="true";
-        else if(ai->first=="freezeinorder") 
+        else if(ai->first=="freezeinorder")
             ng.freezeInOrder = ai->second=="true";
         else if(ai->first.compare(0,9,"labelsize")==0) {
             int i=ds2int(ai->first.substr(9));
             if(i>=0) {
-                istringstream stream(ai->second);
+                istringstream stream((std::string(ai->second)));
                 stream >> gd<NodeLabels>(n)[i].size;
                 ret.flags |= DG_UPD_LABEL;
             }
@@ -212,7 +212,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
         else if(ai->first.compare(0,2,"labelbounds")==0) {
             int i=ds2int(ai->first.substr(9));
             if(i>=0) {
-                istringstream stream(ai->second);
+                istringstream stream((std::string(ai->second)));
                 stream >> gd<NodeLabels>(n)[i].bounds;
                 ret.flags |= DG_UPD_LABEL;
             }
@@ -223,7 +223,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
     if(ret.flags&(DG_UPD_REGION|DG_UPD_POLYDEF)) {
         if((ai = att.find("boundary"))!=att.end() && !ai->second.empty()) {
             const DString &s = ai->second;
-            istringstream stream(s);
+            istringstream stream((std::string(s)));
             ng.region.shape.Clear();
             stream >> ng.region.shape;
             ng.region.updateBounds();
@@ -236,7 +236,7 @@ Update stringsIn(Transform *trans,typename Layout::Node *n,const StrAttrs &attrs
             Coord size;
             ai = att.find("labelsize");
             if(ai != att.end()) {
-                istringstream stream(ai->second);
+                istringstream stream((std::string(ai->second)));
                 stream >> size;
             }
             else {
@@ -297,7 +297,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
                 if(i!=DString::npos)
                     end = i;
                 Line newline;
-                istringstream stream(s.substr(begin,end-begin));
+                istringstream stream((std::string(ai->second)));
                 stream >> newline;
                 if(transformShape(trans,newline)) {
                     eg.pos = newline;

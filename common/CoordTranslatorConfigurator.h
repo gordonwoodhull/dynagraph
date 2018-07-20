@@ -18,14 +18,14 @@
 
 #include "Configurator.h"
 #include "GeneralLayout.h"
-#include "InternalWorld.h" 
+#include "InternalWorld.h"
 #include "NamedToNamedChangeTranslator.h"
 #include "CoordTranslator.h"
 
 namespace Dynagraph {
 
 struct CoordTranslatorConfigurator {
-    template<typename Configurators,typename Layout> 
+    template<typename Configurators,typename Layout>
     static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *innerWorld,EnginePair<Layout> innerEngines) {
         if(attrs.look("coordtranslation","false")=="true"||attrs.look("rankdir")) {
             typedef NamedToNamedChangeTranslator<GeneralLayout,Layout,CoordTranslatorInActions<GeneralLayout,Layout>,true> InNaTranslator;
@@ -34,7 +34,7 @@ struct CoordTranslatorConfigurator {
             typedef CoordTranslatorOut<Layout,GeneralLayout> OutCoTranslator;
             typedef InternalWorld<GeneralLayout,Layout> InWorld;
             ChangingGraph<GeneralLayout> *outerWorld = new ChangingGraph<GeneralLayout>;
-            gd<Name>(&innerWorld->whole_) = name+"_xlated";
+            gd<Name>(&innerWorld->whole_) = std::string(name)+"_xlated";
             InWorld *inWorld = new InWorld(outerWorld,innerWorld);
             innerEngines.Prepend(new UpdateCurrentProcessor<Layout>(innerWorld)); // this...
             inWorld->innerEngines_ = innerEngines;

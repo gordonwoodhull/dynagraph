@@ -33,8 +33,8 @@ void DuplicateIn::go() {
                 int wait = g_maxWait?(g_randomizeWait?rand()*RAND_MULT%g_maxWait:g_maxWait):0;
                 if(wait) {
                     boost::xtime cur;
-                    int res = boost::xtime_get(&cur,boost::TIME_UTC);
-                    if(res==boost::TIME_UTC) {
+                    int res = boost::xtime_get(&cur,boost::TIME_UTC_);
+                    if(res==boost::TIME_UTC_) {
                         boost::xtime fin = cur;
                         fin.nsec += wait;
                         boost::thread().sleep(fin);

@@ -154,7 +154,7 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
     if((ai = attrs.find("sides"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "4";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.sides;
         if(ret.sides==0) //?
             attrs["shape"] = "plaintext";
@@ -162,19 +162,19 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
     if((ai = attrs.find("peripheries"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.peripheries;
     }
     if((ai = attrs.find("perispacing"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.perispacing;
     }
     if((ai = attrs.find("orientation"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         double degrees;
         stream >> degrees;
         ret.rotation = (degrees*M_PI)/180.0;
@@ -182,29 +182,29 @@ PolyDef readPolyDef(Transform *trans,StrAttrs &attrs) {
     if((ai = attrs.find("skew"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.skew;
     }
     if((ai = attrs.find("distortion"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.distortion;
     }
     if((ai = attrs.find("labelsize"))!=attrs.end()) {
         if(ai->second.empty())
             ai->second = "0,0";
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.interior_box;
     }
     if((ai = attrs.find("width"))!=attrs.end()) {
         dgassert(!ai->second.empty()); // this must be set up by assureattrs
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.exterior_box.x;
     }
     if((ai = attrs.find("height"))!=attrs.end()) {
         dgassert(!ai->second.empty()); // this must be set up by assureattrs
-        istringstream stream(ai->second);
+        istringstream stream(std::string(ai->second));
         stream >> ret.exterior_box.y;
     }
     ret.interior_box = trans->inSize(ret.interior_box);

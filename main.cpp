@@ -55,7 +55,7 @@ template<typename V>
 struct switchval {
     char c;
     V v;
-    char *desc;
+    const char *desc;
 };
 switchval<dgr::reportType> g_reports[] = {
     {'i',dgr::input_raw,"(raw) input"},
@@ -113,8 +113,8 @@ void print_v3rs10n() {
     reports[dgr::cmdline] << DYNAGRAPH_V3RS10N() << endl;
 }
 void print_help() {
-    reports[dgr::cmdline] << 
-        "dynagraph arguments:" << endl << 
+    reports[dgr::cmdline] <<
+        "dynagraph arguments:" << endl <<
         "   -v (--version) print version information only" << endl <<
         "   -h (-? --help) print this help" << endl <<
         "   -d use dot-compatible coordinates (position in points, node size in inches)" << endl <<
@@ -123,9 +123,9 @@ void print_help() {
         "   -s filename input .incr file (incrface dynamic layout)" << endl <<
         "   -oN filename write stream N to filename" << endl <<
         "   -ra{N} report on a to stream N, where N is [0-9] for -oN, + for stdout, or stderr if N unspecified" << endl;
-    for(int i = 0;i<g_nreports;++i) reports[dgr::cmdline] << 
+    for(int i = 0;i<g_nreports;++i) reports[dgr::cmdline] <<
         "      " << g_reports[i].c << ' ' << g_reports[i].desc << endl;
-    reports[dgr::cmdline] << 
+    reports[dgr::cmdline] <<
         "   -w[r] N wait [randomly up to] N nanoseconds before processing each line" << endl <<
         "   -e specify random number seed (for wait time or fdp)" << endl <<
         "   -x break on any exception" << endl;
@@ -136,7 +136,7 @@ void print_report_syntax() {
         "   -oN filename, N is [0-9], a file # specified in -r" << endl;
 }
 void print_attribute_syntax() {
-    reports[dgr::error] << 
+    reports[dgr::error] <<
         "-a: specify default graph attribute" << endl <<
         "   -a attr=value" << endl <<
         "   effectively attr=value is prepended onto every 'open graph' attribute list" << endl;
@@ -202,7 +202,7 @@ int main(int argc, char *args[]) {
             break;
         case 's': // dynamic script
             if(i==argc-1 || args[i][2]) {
-                reports[dgr::error] << 
+                reports[dgr::error] <<
                     "-s: specify input incrface script" << endl <<
                     "   -s filename: use script in filename (instead of stdin)" << endl;
                 return 1;
@@ -240,14 +240,14 @@ int main(int argc, char *args[]) {
             else if(isalpha(last))
                 o = -2;  // stderr
             else {
-                reports[dgr::error] << "-r: generate report" << endl << 
+                reports[dgr::error] << "-r: generate report" << endl <<
                                "   report destination " << last << " not recognized, must be 0=9 or +" << endl;
                 return 1;
             }
             for(int j = 2; args[i][j] && isalpha(args[i][j]); ++j) {
                 pair<bool,dgr::reportType> val = findSwitchVal(g_reports,g_nreports,args[i][j]);
                 if(!val.first) {
-                    reports[dgr::error] << "-r: generate report " << endl << 
+                    reports[dgr::error] << "-r: generate report " << endl <<
                                    "   report code '" << args[i][j] << "' not recognized" << endl;
                     return 1;
                 }
@@ -298,15 +298,15 @@ int main(int argc, char *args[]) {
     }
     if(random_seed<0)
         random_seed = time(NULL);
-    
+
     srand(random_seed);
-    
+
     // do not buffer std c files - ? - but i think only c++ iostreams are used?
-    // and why would you set buffering on stdin?  
+    // and why would you set buffering on stdin?
     setvbuf(stdin,0,_IONBF,0);
     setvbuf(stdout,0,_IONBF,0);
     setvbuf(stderr,0,_IONBF,0);
-    
+
     // open report output files
     bool cout_was_grabbed=false;
     for(report_dest_map::iterator ri = reportDests.begin(); ri!=reportDests.end(); ++ri) {
@@ -338,7 +338,7 @@ int main(int argc, char *args[]) {
         }
         reports.enable(ri->first,f);
     }
-    
+
     // reporting may influence behavior..
     // recording raw input and inserting delays both require this thread here
     if(reports.enabled(dgr::input_raw) || g_maxWait>=0) {
@@ -351,7 +351,7 @@ int main(int argc, char *args[]) {
     // send incrface to stdout if nothing else is going there
     if(!cout_was_grabbed) {
         // if incrface has output file, tee to cout
-        if(reports.enabled(dgr::incrface)) { 
+        if(reports.enabled(dgr::incrface)) {
             typedef boost::iostreams::tee_device<std::ostream,std::ostream> t_dev_t;
             typedef boost::iostreams::stream<t_dev_t> t_stream_t;
             t_dev_t *t_dev = new t_dev_t(reports[dgr::incrface],std::cout);
@@ -359,15 +359,15 @@ int main(int argc, char *args[]) {
             reports.enable(dgr::incrface,t_stream);
         }
         else
-            reports.enable(dgr::incrface, &cout); 
+            reports.enable(dgr::incrface, &cout);
     }
-    
+
     // default transform
     if(!g_transform)
         g_transform = new Transform(Coord(1,1),Coord(1,1));
     while(1) {
         try {
-            incr_yyparse(); 
+            incr_yyparse();
             break; // end of stream
         }
         catch(Assertion sert) {

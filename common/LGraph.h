@@ -169,8 +169,6 @@ struct LGraph {
             return s1 - s2;
         }
     };
-    struct Edge;
-    struct Node;
     typedef typename ADTPolicy::template defs<Edge,Node,SeqComp<Edge>,HeadSeqComp,SeqComp<Node> > ADTDefs;
     struct ND2 : NodeDatum, Seq {
         ND2(const NodeDatum &d) : NodeDatum(d) {}
@@ -546,11 +544,12 @@ public:
         return nodes().empty();
     }
     virtual bool erase_node(Node *n) {
-        if(n->g!=this)
+        if(n->g!=this) {
             if(Node *n2 = find_nodeimage(n))
                 n = n2;
             else
                 return false;
+        }
         for(typename subgraph_list::iterator i = m_subs.begin(); i!=m_subs.end(); ++i)
             (*i)->erase_node(n);
         while(!n->outs().empty())
@@ -566,11 +565,12 @@ public:
         return true;
     }
     virtual bool erase_edge(Edge *e) {
-        if(e->head->g!=this)
+        if(e->head->g!=this) {
             if(Edge *e2 = find_edgeimage(e))
                 e = e2;
             else
                 return false;
+        }
         for(typename subgraph_list::iterator i = m_subs.begin(); i!=m_subs.end(); ++i)
             (*i)->erase_edge(e);
         e->tail->outs().erase(e);
@@ -585,11 +585,12 @@ public:
     }
     // if this is end-nodes' only edge, erase them too
     bool inducing_erase_edge(Edge *e) {
-        if(e->head->g!=this)
+        if(e->head->g!=this) {
             if(Edge *e2 = find_edgeimage(e))
                 e = e2;
             else
                 return false;
+        }
         Node *t = e->tail,*h = e->head;
         erase(e);
         if(t->degree()==0)

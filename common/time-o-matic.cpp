@@ -47,9 +47,9 @@ double Timer::Start() {
 #endif
     return m_last = currentTime();
 }
-char *m_timeSinceLast = "%.4f (+%.4f): %s",
+const char *m_timeSinceLast = "%.4f (+%.4f): %s",
     *m_timeElapsed = "%.4f: %.4f elapsed since %s";
-double Timer::display(dgr::reportType rt,double last,char *format,char *s,va_list va) {
+double Timer::display(dgr::reportType rt,double last,const char *format,const char *s,va_list va) {
     char prebuf[2000],buf2[2000];
     double t = currentTime();
     sprintf(prebuf,format,t,t-last,s,prebuf);
@@ -57,17 +57,17 @@ double Timer::display(dgr::reportType rt,double last,char *format,char *s,va_lis
     reports[rt] << buf2;
     return t;
 }
-double Timer::Now(dgr::reportType rt,char *s,...) {
+double Timer::Now(dgr::reportType rt,const char *s,...) {
     va_list va;
     va_start(va,s);
     return m_last = display(rt,m_last,m_timeSinceLast,s,va);
 }
-double Timer::Elapsed(dgr::reportType rt,double start,char *s,...) {
+double Timer::Elapsed(dgr::reportType rt,double start,const char *s,...) {
     va_list va;
     va_start(va,s);
     return display(rt,start,m_timeElapsed,s,va);
 }
-void Timer::LoopPoint(dgr::reportType rt,char *s) {
+void Timer::LoopPoint(dgr::reportType rt,const char *s) {
     double t = currentTime(),
         dt;
     if(unsigned(rt)>=m_looplasts.size())

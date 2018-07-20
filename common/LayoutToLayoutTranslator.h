@@ -62,7 +62,7 @@ struct LayoutToLayoutTranslator {
         if(CopyPolicy::CopySecondOfTwo)
             gd<DynaDAG::NSRankerEdge>(le2).secondOfTwo = gd<DynaDAG::NSRankerEdge>(le1).secondOfTwo;
         gd<DynaDAG::Suppression>(le2) = gd<DynaDAG::Suppression>(le1);
-    
+
         igd<Update>(le2) = igd<Update>(le1);
     }
     void OpenGraph(Layout1 *l1,Layout2 *l2) {
@@ -75,7 +75,7 @@ struct LayoutToLayoutTranslator {
             gd<GraphGeom>(l2).bounds = gd<GraphGeom>(l1).bounds;
             gd<GraphGeom>(l2).changerect = gd<GraphGeom>(l1).changerect;
         }
-        gd<GraphGeom>(l2).splineLevel,
+        gd<GraphGeom>(l2).splineLevel = gd<GraphGeom>(l1).splineLevel;
         gd<GraphGeom>(l2).labelGap = gd<GraphGeom>(l1).labelGap;
         gd<GraphGeom>(l2).resolution = gd<GraphGeom>(l1).resolution;
         gd<GraphGeom>(l2).separation = gd<GraphGeom>(l1).separation;

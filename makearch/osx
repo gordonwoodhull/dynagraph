@@ -1,6 +1,6 @@
 X11LIB=/usr/X11R6/lib
 X11INC=/usr/X11R6/include
-THREADLIBS=-lboost_thread-mt-1_35
+THREADLIBS=-lboost_thread-mt -lboost_system-mt
 
 CC=cc
 CPP=gcc
@@ -30,4 +30,4 @@ TCLDOTLIBS=-ldl
 
 MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
 CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
-CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.cpp -o $@
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(CPPOPTS) $(DEFINES) $(INCS) $*.cpp -o $@

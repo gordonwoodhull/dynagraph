@@ -27,13 +27,13 @@ namespace DynaDAG {
 
 struct EmphasizeFlowConfigurator {
     struct EmphasizeFlowConfiguratorImpl {
-        template<typename Configurators> 
+        template<typename Configurators>
         static void config(DString name,const StrAttrs &attrs,ChangingGraph<DynaDAGLayout> *innerWorld,EnginePair<DynaDAGLayout> innerEngines) {
             if(attrs.look("emphasizeflow","false")=="true"||attrs.look("flowemphasizable","false")=="true") {
                 typedef SEdger<GeneralLayout,DynaDAGLayout> InTranslator;
                 typedef EdgeSplicer<DynaDAGLayout,GeneralLayout> OutTranslator;
                 typedef InternalWorld<GeneralLayout,DynaDAGLayout> InWorld;
-                gd<Name>(&innerWorld->whole_) = name+"_flowed";
+                gd<Name>(&innerWorld->whole_) = std::string(name)+"_flowed";
                 ChangingGraph<GeneralLayout> *outerWorld = new ChangingGraph<GeneralLayout>;
                 InWorld *inWorld = new InWorld(outerWorld,innerWorld);
                 inWorld->inTranslators_.push_back(new InTranslator(outerWorld,innerWorld));
@@ -50,7 +50,7 @@ struct EmphasizeFlowConfigurator {
                 configureLayout<Configurators>(name,attrs,innerWorld,innerEngines);
         }
     };
-    template<typename Configurators,typename Layout> 
+    template<typename Configurators,typename Layout>
     static void config(DString name,const StrAttrs &attrs,ChangingGraph<Layout> *world,EnginePair<Layout> engines) {
         boost::mpl::if_<boost::is_same<Layout,DynaDAGLayout>,EmphasizeFlowConfiguratorImpl,PassConfigurator>::type
             ::template config<Configurators>(name,attrs,world,engines);

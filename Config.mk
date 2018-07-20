@@ -6,9 +6,12 @@ ARCH=osx
 # specify root directory for installation
 INSTALLROOT=/usr/local
 
-# specify where to find graphviz 
+# compile options
+CPPOPTS=-Wno-logical-op-parentheses -Wno-dangling-else
+
+# specify where to find graphviz
 GRAPHVIZ_INC = /usr/local/include/graphviz
-GRAPHVIZ_LIB = /usr/local/lib/graphviz
+GRAPHVIZ_LIB = /usr/local/lib
 
 # specify where to find boost
 BOOST_INC = /usr/local/include

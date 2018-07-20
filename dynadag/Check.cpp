@@ -49,7 +49,7 @@ void Config::checkEdges(bool strict) {
         }
         Ranks::index tr = gd<DDNode>(t).rank,
             hr = gd<DDNode>(h).rank;
-        if(strict) 
+        if(strict)
             dgassert(ranking.Down(tr)==hr); // edges must span exactly one rank
         else
             dgassert(Ranks::Xlator::Above(whole,tr,hr)); // edges must point "downward"
@@ -119,7 +119,7 @@ void XSolver::checkLRConstraints() {
                 dgassert(l&&n);
                 DDCGraph::Edge *e = cg.find_edge(l,n);
                 if(!e) {
-                    reports[dgr::error] << 
+                    reports[dgr::error] <<
                         left << " (" << type(left) << ' ' << thing(left) << ") and " << *ni << " (" << type(*ni) << ' ' << thing(*ni) << ')' << endl;
                     missing = true;
                 }
@@ -146,7 +146,7 @@ void XSolver::checkEdgeConstraints() {
             dgassert(cn);
             dgassert(cn->ins().size()==0);
             if(cn->outs().size()!=2) {
-                reports[dgr::error] << "AARGH!  Why isn't node " << (*ei)->tail << " of " << 
+                reports[dgr::error] << "AARGH!  Why isn't node " << (*ei)->tail << " of " <<
                     (gd<DDNode>((*ei)->tail).amEdgePart()?"path":"multinode") << ' ' << thing((*ei)->tail) << " constrained with" << endl;
                 reports[dgr::error] << "node %p of %s %p????\n" << (*ei)->head << " of " <<
                     (gd<DDNode>((*ei)->head).amEdgePart()?"path":"multinode") << ' ' << thing((*ei)->head) << "???" << endl;
@@ -362,4 +362,3 @@ CLcnt++;
 
 } // namespace DynaDAG
 } // namespace Dynagraph
-

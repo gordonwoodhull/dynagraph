@@ -76,7 +76,7 @@ void Config::insertNode(DynaDAGLayout::Node *n) {
         //n->coordFixed = true;
     }
     else {
-        if(haveX = n->degree()!=0)
+        if((haveX = n->degree()!=0))
             x = xAvgOfNeighbors(current->find(n));
         //n->coordFixed = false;
     }
@@ -195,7 +195,7 @@ struct userX : autoX {
 void Config::userRouteEdge(DDPath *path) {
     DDModel::Node *t, *h;
     if(!getLayoutEndpoints(path->layoutE,&t,&h)) { // flat
-        dynaDAG->CloseChain(path,false); 
+        dynaDAG->CloseChain(path,false);
         return;
     }
     userX xgen(gd<DDNode>(t).multi->pos(),gd<DDNode>(h).multi->pos(),gd<EdgeGeom>(path->layoutE).pos);
@@ -343,7 +343,7 @@ void Config::autoAdjustChain(DDChain *chain,int otr,int ohr,int ntr,int nhr,Dyna
 void Config::autoAdjustEdge(DDPath *path) {
     DDModel::Node *t, *h;
     if(!getLayoutEndpoints(path->layoutE,&t,&h)) { // flat
-        dynaDAG->CloseChain(path,false); 
+        dynaDAG->CloseChain(path,false);
         return;
     }
     dgassert(gd<DDNode>(t).amNodePart()&&gd<DDNode>(h).amNodePart());
@@ -530,12 +530,12 @@ void Config::moveOldNodes(DDChangeQueue &changeQ) {
         if(igd<Dynagraph::Update>(*vni).flags&DG_UPD_MOVE)
             moveOrder.push_back(*vni);
     sort(moveOrder.begin(),moveOrder.end(),compOldRank());
-    for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni) 
+    for(LNodeV::iterator ni = moveOrder.begin(); ni != moveOrder.end(); ++ni)
         moveOldNode(*ni);
 }
 void Config::moveOldEdges(DDChangeQueue &changeQ) {
     for(DynaDAGLayout::graphedge_iter ei = changeQ.modE.edges().begin(); ei!=changeQ.modE.edges().end(); ++ei)
-        if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) { 
+        if(igd<Dynagraph::Update>(*ei).flags&DG_UPD_MOVE) {
             DynaDAGLayout::Edge *ve = whole->find(*ei);
             if((*ei)->head==(*ei)->tail)
                 ; // ignore self-edges
@@ -552,7 +552,7 @@ void Config::splitRank(DDChain *chain,DDModel::Edge *e,DynaDAGLayout::Node *vn, 
     if(newR==gd<DDNode>(e->head).rank)
         return; // already there
     dgassert(Ranks::Xlator::Above(whole,newR,gd<DDNode>(e->head).rank));
-    reports[dgr::ranks] << 
+    reports[dgr::ranks] <<
         (vn?"multinode ":"path ") << chain << ": chain split at " <<
         gd<DDNode>(e->tail).rank << "->" << gd<DDNode>(e->head).rank << ':' << endl;
     DDModel::Node *v = dynaDAG->OpenModelNode(vn).second;
