@@ -277,7 +277,7 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
             }
             else {
                 dgassert(s.length());
-                DString::size_type begin = 0,end=s.size();
+                DString::size_type begin = 0;
                 // grr i know i'll get this wrong in some obscure way...
                 // just sloppily trying to throw away the [e,x,y ][s,x,y ]
                 for(int j = 0; j<2; ++j) {
@@ -293,9 +293,6 @@ Update stringsIn(Transform *trans,typename Layout::Edge *e,const StrAttrs &attrs
                     }
                     while(s[begin]==' ') ++begin;
                 }
-                DString::size_type i = s.find(';',begin);
-                if(i!=DString::npos)
-                    end = i;
                 Line newline;
                 istringstream stream((std::string(ai->second)));
                 stream >> newline;

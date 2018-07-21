@@ -30,4 +30,4 @@ TCLDOTLIBS=-ldl
 
 MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
 CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
-CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(CPPOPTS) $(DEFINES) $(INCS) $*.cpp -o $@
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(CLANGOPTS) $(DEFINES) $(INCS) $*.cpp -o $@

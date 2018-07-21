@@ -14,6 +14,7 @@
 **********************************************************/
 
 #include "DuplicateStream.h"
+#include <stdio.h>
 
 namespace Dynagraph {
 

@@ -1,13 +1,14 @@
 # configuration for good old make.
 # select an architecture from makearch/*
 # ...one of:  sgi.mips3 sgi.mips2 sol.sun4 sol6.sun4 sun4 osx linux.i386
-ARCH=osx
+ARCH=linux.x86_64
 
 # specify root directory for installation
 INSTALLROOT=/usr/local
 
 # compile options
-CPPOPTS=-Wno-logical-op-parentheses -Wno-dangling-else
+CLANGOPTS=-Wno-logical-op-parentheses -Wno-dangling-else
+GCCOPTS=-Wno-parentheses -Wno-dangling-else
 
 # specify where to find graphviz
 GRAPHVIZ_INC = /usr/local/include/graphviz
