@@ -1,0 +1,36 @@
+X11LIB=/usr/X11R6/lib
+X11INC=/usr/X11R6/include
+THREADLIBS=-lboost_thread-mt -lboost_system-mt
+
+BOOST_INC = /opt/homebrew/include
+BOOST_LIB = /opt/homebrew/lib
+
+CC=emcc
+CPP=emcc
+CPPSLD=em++
+YACC=yacc
+FLEX=flex -8
+BISON=bison
+SED=sed
+LN=ln
+RM=rm -f
+RANLIB=ranlib
+MKDIR=mkdir
+MKPATH=mkdir -p
+AR=ar
+SHLIB_LD=ld -shared
+SHLIB_SUFFIX=.so
+MV=mv
+CP=cp
+AWK=awk
+SORT=sort
+INSTALL=cp
+
+CCFLAGS=-O -D__Mac_OSX__=1 -pthread -DHAVE_FILE_R=1 -DHAVE_TERMIOS_H=1
+LDFLAGS=-Wl,-L$(BOOST_LIB)
+# LEFTYLIBS=-lSM -lICE
+TCLDOTLIBS=-ldl
+
+MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
+CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
+CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(CLANGOPTS) $(DEFINES) $(INCS) $*.cpp -o $@
