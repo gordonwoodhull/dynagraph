@@ -40,7 +40,7 @@ namespace Dynagraph {
 // NGraph is LGraph containing at least StrAttrs2
 template<typename NGraph>
 struct IncrStrGraphHandler : IncrLangEvents {
-    std::auto_ptr<ChangingGraph<NGraph> > world_;
+    std::unique_ptr<ChangingGraph<NGraph> > world_;
     IncrViewWatcher<NGraph> *watcher_;
     ChangeProcessor<NGraph> *engine_;
 #ifdef STRHANDLER_DO_THREADS

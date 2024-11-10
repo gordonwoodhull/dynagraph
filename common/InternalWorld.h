@@ -67,15 +67,15 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
         innerEngines_.Append(new InnerCatcher(this));
     }
     void Open() {
-        std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Open));
+        std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fn(&InTranslator::Open));
         innerEngines_.first->Open();
     }
     void Process() {
-        std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Process));
+        std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fn(&InTranslator::Process));
         innerEngines_.first->Process();
     }
     void Close() {
-        std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fun(&InTranslator::Close));
+        std::for_each(inTranslators_.begin(),inTranslators_.end(),std::mem_fn(&InTranslator::Close));
         innerEngines_.first->Close();
     }
     void Pulse(const StrAttrs &attrs) {
@@ -83,15 +83,15 @@ struct InternalWorld : LinkedChangeProcessor<OuterLayout> {
         innerEngines_.first->Pulse(attrs);
     }
     void innerOpenOut() {
-        std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Open));
+        std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fn(&OutTranslator::Open));
         this->NextOpen();
     }
     void innerProcessOut() {
-        std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Process));
+        std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fn(&OutTranslator::Process));
         this->NextProcess();
     }
     void innerCloseOut() {
-        std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fun(&OutTranslator::Close));
+        std::for_each(outTranslators_.begin(),outTranslators_.end(),std::mem_fn(&OutTranslator::Close));
         this->NextClose();
     }
     void innerPulseOut(const StrAttrs &attrs) {

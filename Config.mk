@@ -7,7 +7,7 @@ ARCH=linux.x86_64
 INSTALLROOT=/usr/local
 
 # compile options
-CLANGOPTS=-Wno-logical-op-parentheses -Wno-dangling-else
+CLANGOPTS=-Wno-logical-op-parentheses -Wno-dangling-else --std=c++20
 GCCOPTS=-Wno-parentheses -Wno-dangling-else
 
 # specify where to find graphviz
