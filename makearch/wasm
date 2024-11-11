@@ -31,6 +31,8 @@ LDFLAGS=-Wl,-L$(BOOST_LIB)
 # LEFTYLIBS=-lSM -lICE
 TCLDOTLIBS=-ldl
 
+RANLIB=:
+
 MAKEDEPEND = gcc -M $(CPPFLAGS) $(DEFINES) $(INCS) -o $(df).d $<
 CCCOMMAND = $(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $*.c -o $@
 CPPCOMMAND = $(CPP) -c $(CCFLAGS) $(CLANGOPTS) $(DEFINES) $(INCS) $*.cpp -o $@
