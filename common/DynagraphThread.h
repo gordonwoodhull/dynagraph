@@ -57,6 +57,9 @@ struct DynagraphThread {
             reports[dgr::incrface] << "message \"(exception) " << dgx.exceptype << '"' << std::endl;
             exit(23);
         }
+        catch (const std::exception &exc) {
+            reports[dgr::incrface] << "message \"(exception) std::exception " << exc.what() << "\"" << std::endl;
+        }
         catch(...) {
             LOCK_REPORT(dgr::incrface);
             reports[dgr::incrface] << "message \"(exception) unknown exception\"" << std::endl;

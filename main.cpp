@@ -388,6 +388,9 @@ int main(int argc, char *args[]) {
             if(g_xeptFatal||dgx.fatal)
                 exit(23);
         }
+        catch (const std::exception &exc) {
+            reports[dgr::incrface] << "message \"(exception) std::exception " << exc.what() << "\"" << std::endl;
+        }
         catch(...) {
             LOCK_REPORT(dgr::incrface);
             reports[dgr::incrface] << "message \"(exception) unknown exception\"" << endl;

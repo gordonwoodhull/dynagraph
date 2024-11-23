@@ -1,9 +1,30 @@
 X11LIB=/usr/X11R6/lib
 X11INC=/usr/X11R6/include
-THREADLIBS=-lboost_thread-mt -lboost_system-mt
+THREADLIBS=-lboost_thread -lboost_system
 
-BOOST_INC = /opt/homebrew/include
-BOOST_LIB = /opt/homebrew/lib
+# assumes you have downloaded boost and graphviz to ~/src/ and building in those dirs
+SRC_DIR=$(HOME)/src
+BOOST_INC=$(SRC_DIR)/boost_1_86_0
+BOOST_THREAD_LIB=$(SRC_DIR)/boost_1_86_0/bin.v2/libs/thread/build/emscripten-3.1.71/release/link-static/target-os-none/threading-multi/visibility-hidden
+BOOST_SYSTEM_LIB=$(SRC_DIR)/boost_1_86_0/bin.v2/libs/system/build/emscripten-3.1.71/release/link-static/target-os-none/threading-multi/visibility-hidden
+# note the older graphviz - could be made to compile with latest type signatures
+# but there is little need since dynagraph only uses ancient features
+GRAPHVIZ_SRC_DIR=$(SRC_DIR)/graphviz-2.46.0
+GRAPHVIZ_CDT_LIB=$(GRAPHVIZ_SRC_DIR)/lib/cdt
+GRAPHVIZ_CGRAPH_LIB=$(GRAPHVIZ_SRC_DIR)/lib/cgraph
+GRAPHVIZ_PATHPLAN_LIB=$(GRAPHVIZ_SRC_DIR)/lib/pathplan
+
+# install simple Makefiles for graphviz wasm and build with those
+build-graphviz:
+	cp -R graphviz-makefiles/* $(GRAPHVIZ_SRC_DIR)/lib
+	cp -R makearch $(GRAPHVIZ_SRC_DIR)/lib/makearch/
+	(cd $(GRAPHVIZ_SRC_DIR)/lib; \
+	  cat cgraph/grammar.c | sed 's:<cghdr.h>:"cghdr.h":' > cgraph/grammar.c.new; mv cgraph/grammar.c.new cgraph/grammar.c; \
+	  cat cgraph/scan.c | sed 's:<cghdr.h>:"cghdr.h":' > cgraph/scan.c.new; mv cgraph/scan.c.new cgraph/scan.c; \
+	  cat cgraph/scan.c | sed 's:<grammar.h>:"grammar.h":' > cgraph/scan.c.new; mv cgraph/scan.c.new cgraph/scan.c; \
+	  cat cgraph/scan.c | sed 's:<agxbuf.h>:"agxbuf.h":' > cgraph/scan.c.new; mv cgraph/scan.c.new cgraph/scan.c; \
+	  ./configure.old; \
+	  make libcdt.a libcgraph.a libpathplan.a)  # all does not work
 
 CC=emcc
 CPP=emcc
@@ -26,8 +47,8 @@ AWK=awk
 SORT=sort
 INSTALL=cp
 
-CCFLAGS=-O -D__Mac_OSX__=1 -pthread -DHAVE_FILE_R=1 -DHAVE_TERMIOS_H=1
-LDFLAGS=-Wl,-L$(BOOST_LIB)
+CCFLAGS=-O -D__Mac_OSX__=1 -pthread -DHAVE_FILE_R=1 -DHAVE_TERMIOS_H=1 -fwasm-exceptions
+LDFLAGS=-Wl,-L$(BOOST_THREAD_LIB),-L$(BOOST_SYSTEM_LIB),-L$(GRAPHVIZ_CDT_LIB),-L$(GRAPHVIZ_CGRAPH_LIB),-L$(GRAPHVIZ_PATHPLAN_LIB)
 # LEFTYLIBS=-lSM -lICE
 TCLDOTLIBS=-ldl
 
