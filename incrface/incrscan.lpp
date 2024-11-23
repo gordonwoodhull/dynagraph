@@ -9,7 +9,7 @@ extern "C" {
 #include "common/StringDict.h"
 #include "incrface/incrxep.h"
 
-#define isatty(x)	1
+/* #define isatty(x)	1 */
 
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 
