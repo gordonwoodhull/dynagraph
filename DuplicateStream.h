@@ -17,9 +17,11 @@
 #ifndef DuplicateStream_h
 #define DuplicateStream_h
 
+#ifndef DYNAGRAPH_NO_THREADS
 #include <boost/thread/thread.hpp>
+#endif
 #include <boost/thread/xtime.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <fcntl.h>
 #ifdef WIN32
 #include <io.h>
@@ -41,7 +43,9 @@ namespace Dynagraph {
 struct DuplicateIn {
     DuplicateIn(FILE *input, std::ostream &log);
     ~DuplicateIn() {
+#ifndef DYNAGRAPH_NO_THREADS // this functionality also won't work
         delete thread_;
+#endif
     }
     FILE *getNewInput() {
         return fromPipe_;
@@ -49,7 +53,9 @@ struct DuplicateIn {
 private:
     FILE *input_,*toPipe_,*fromPipe_;
     std::ostream &log_;
+#ifndef DYNAGRAPH_NO_THREADS // this functionality also won't work
     boost::thread *thread_;
+#endif
     const int RAND_MULT;
     void go();
 };

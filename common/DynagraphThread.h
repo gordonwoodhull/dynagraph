@@ -17,7 +17,9 @@
 #ifndef DynagraphThread_h
 #define DynagraphThread_h
 
+#ifndef DYNAGRAPH_NO_THREADS
 #include <boost/thread/thread.hpp>
+#endif
 #include <boost/bind.hpp>
 
 extern bool g_xeptFatal;

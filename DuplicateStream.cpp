@@ -24,7 +24,9 @@ DuplicateIn::DuplicateIn(FILE *input, std::ostream &log) : input_(input), log_(l
     toPipe_ = fdopen(fd[1],"w");
     setvbuf(toPipe_,0,_IONBF,0);
     fromPipe_ = fdopen(fd[0],"r");
+#ifndef DYNAGRAPH_NO_THREADS
     thread_ = new boost::thread(boost::bind(&DuplicateIn::go,this));
+#endif
 }
 void DuplicateIn::go() {
     while(!feof(input_)) {
@@ -38,7 +40,9 @@ void DuplicateIn::go() {
                     if(res==boost::TIME_UTC_) {
                         boost::xtime fin = cur;
                         fin.nsec += wait;
+#ifndef DYNAGRAPH_NO_THREADS
                         boost::thread().sleep(fin);
+#endif
                     }
                 }
                 //else boost::thread().yield();
