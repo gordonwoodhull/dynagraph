@@ -14,6 +14,9 @@
 *                   http://dynagraph.org                  *
 **********************************************************/
 
+#ifdef DYNAGRAPH_WASM
+#include <emscripten.h>
+#endif
 
 #include <stdio.h>
 #include <fstream>
@@ -141,6 +144,18 @@ void print_attribute_syntax() {
         "   -a attr=value" << endl <<
         "   effectively attr=value is prepended onto every 'open graph' attribute list" << endl;
 }
+
+#ifdef DYNAGRAPH_WASM
+EM_JS(char*, get_incrface_input, (), {
+    if(window.incrface_input) {
+        let ii = window.incrface_input + '\n@'; // explicit EOF to close parser
+        window.incrface_input = null;
+        return stringToNewUTF8(ii);
+    }
+    return null;
+});
+#endif
+
 int main(int argc, char *args[]) {
     timer.Start();
     // enable basic dynagraph report streams
@@ -301,11 +316,11 @@ int main(int argc, char *args[]) {
 
     srand(random_seed);
 
-    // do not buffer std c files - ? - but i think only c++ iostreams are used?
-    // and why would you set buffering on stdin?
+#ifndef DYNAGRAPH_WASM
     setvbuf(stdin,0,_IONBF,0);
     setvbuf(stdout,0,_IONBF,0);
     setvbuf(stderr,0,_IONBF,0);
+#endif
 
     // open report output files
     bool cout_was_grabbed=false;
@@ -367,8 +382,17 @@ int main(int argc, char *args[]) {
         g_transform = new Transform(Coord(1,1),Coord(1,1));
     while(1) {
         try {
+#ifdef DYNAGRAPH_WASM
+            char *incrface_input = get_incrface_input();
+            if(incrface_input) {
+                incr_yyin = fmemopen(incrface_input, strlen(incrface_input), "r");
+                incr_yyparse();
+            }
+            emscripten_sleep(100);
+#else
             incr_yyparse();
             break; // end of stream
+#endif
         }
         catch(Assertion sert) {
             LOCK_REPORT(dgr::incrface);

@@ -40,7 +40,7 @@ MANS =
 GET_VERSION = `./dynagraph --v3rs10n`
 
 dynagraph : $(OBJS) libdynagraph.a libdynadag.a libincrface.a libpathplot.a libfdp.a libvoronoi.a libshortspline.a
-	$(CPPSLD) -fwasm-exceptions $(LDFLAGS) $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-wasm.html
+	$(CPPSLD) $(LDFLAGS) $(OBJS) $(OTHERLIBS) $(BASELIBS) $(THREADLIBS) -o dynagraph-wasm.html
 
 # dynagraph: dynagraph-whole
 # 	strip dynagraph-whole -o dynagraph
