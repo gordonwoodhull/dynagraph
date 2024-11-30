@@ -1,0 +1,6 @@
+*.[ao]
+.deps
+Makefile
+dynagraph-wasm.*
+gengraph
+gengraph.wasm
