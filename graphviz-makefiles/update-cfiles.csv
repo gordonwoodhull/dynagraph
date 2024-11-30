@@ -1,0 +1,9 @@
+cgraph/cghdr.h:cgraph.h
+cgraph/cgraph.h:cdt.h
+cgraph/grammar.c:cghdr.h
+cgraph/scan.c:cghdr.h
+cgraph/scan.c:grammar.h
+cgraph/scan.c:agxbuf.h
+cdt/dthdr.h:cdt.h
+pathplan/vispath.h:pathgeom.h
+pathplan/tri.h:pathgeom.h

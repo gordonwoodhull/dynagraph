@@ -4,7 +4,7 @@ ROOT=..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
-INCS =	-I.. -I../.. \
+INCS =	-I.. -I../.. -I../cdt \
 	-I$(GRAPHVIZ_INC) \
 	-I$(BOOST_INC)
 

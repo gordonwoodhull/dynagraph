@@ -5,7 +5,7 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I.. -I../.. \
-	-I$(GRAPHVIZ_INC) \
+	$(GRAPHVIZ_INCS) \
 	-I$(BOOST_INC) \
 	-I/usr/local/include
 	

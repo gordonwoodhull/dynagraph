@@ -9,7 +9,7 @@ SUBDIRS = common dynadag incrface pathplot shortspline graphsearch fdp shortspli
 
 INCS = -I. \
 	-I.. -I../cdt \
-	-I$(GRAPHVIZ_INC) \
+	$(GRAPHVIZ_INCS) \
 	-I$(BOOST_INC)
 
 DEFINES = -DHAVE_CONFIG_H
