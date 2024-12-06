@@ -17,12 +17,12 @@ _ "whitespace"
   
 cr = [\n\r]*
 
-open_graph = "open" _ "graph" _ graph:ID _ attrs:attrlist cr { return {action: 'open', kind: 'graph', graph: graph, attrs: attrs}; }
-modify_graph = "modify" _ "graph" _ graph:ID _ attrs:attrlist cr { return {action: 'modify', kind: 'graph', attrs: attrs}; }
-close_graph = "close" _ "graph" _ graph:ID cr { return {action: 'close', kind: 'graph', graph: graph}; }
-pulse_graph = "pulse" _ "graph" _ graph:ID _ attrs:attrlist cr { return {action: 'pulse', kind: 'graph', attrs: attrs}; }
-lock_graph = "lock" _ "graph" _ graph:ID cr { return {action: 'lock', kind: 'graph', graph: graph}; }
-unlock_graph = "unlock" _ "graph" _ graph:ID cr { return {action: 'unlock', kind: 'graph', graph: graph}; }
+open_graph = "open" _ "graph" _ graph:ID _ attrs:attrlist cr { return {action: 'open', kind: 'graph', graph, attrs}; }
+modify_graph = "modify" _ "graph" _ graph:ID _ attrs:attrlist cr { return {action: 'modify', kind: 'graph', graph, attrs}; }
+close_graph = "close" _ "graph" _ graph:ID cr { return {action: 'close', kind: 'graph', graph}; }
+pulse_graph = "pulse" _ "graph" _ graph:ID _ attrs:attrlist cr { return {action: 'pulse', kind: 'graph', graph, attrs}; }
+lock_graph = "lock" _ "graph" _ graph:ID cr { return {action: 'lock', kind: 'graph', graph}; }
+unlock_graph = "unlock" _ "graph" _ graph:ID cr { return {action: 'unlock', kind: 'graph', graph}; }
 
 insert_node = "insert" _ "node" _ graph:ID _ node:ID _ attrs:attrlist cr { return {action: 'insert', kind: 'node', graph, node, attrs}; }
 modify_node = "modify" _ "node" _ graph:ID _ node:ID _ attrs:attrlist cr { return {action: 'modify', kind: 'node', graph, node, attrs}; }
