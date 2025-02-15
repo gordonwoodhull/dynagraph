@@ -9,7 +9,7 @@ BOOST_THREAD_LIB=$(SRC_DIR)/boost_1_86_0/bin.v2/libs/thread/build/emscripten-3.1
 BOOST_SYSTEM_LIB=$(SRC_DIR)/boost_1_86_0/bin.v2/libs/system/build/emscripten-3.1.71/release/link-static/target-os-none/threading-multi/visibility-hidden
 # note the older graphviz - could be made to compile with latest type signatures
 # but there is little need since dynagraph only uses ancient features
-GRAPHVIZ_SRC_DIR=$(SRC_DIR)/graphviz-2.46.1
+GRAPHVIZ_SRC_DIR=$(SRC_DIR)/graphviz-2.46.0
 GRAPHVIZ_CDT_LIB=$(GRAPHVIZ_SRC_DIR)/lib/cdt
 GRAPHVIZ_CGRAPH_LIB=$(GRAPHVIZ_SRC_DIR)/lib/cgraph
 GRAPHVIZ_PATHPLAN_LIB=$(GRAPHVIZ_SRC_DIR)/lib/pathplan
@@ -48,7 +48,7 @@ SORT=sort
 INSTALL=cp
 
 CCFLAGS=-O3 -D__Mac_OSX__=1 -DHAVE_FILE_R=1 -DHAVE_TERMIOS_H=1 -pthread -DDYNAGRAPH_WASM -DDYNAGRAPH_NO_THREADS -I$(EMSDK)/upstream/emscripten/cache/sysroot/include -fexceptions
-LDFLAGS=-Wl,-L$(GRAPHVIZ_CDT_LIB),-L$(GRAPHVIZ_CGRAPH_LIB),-L$(GRAPHVIZ_PATHPLAN_LIB) -sASYNCIFY -sEXPORTED_RUNTIME_METHODS=stringToNewUTF8 -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$$stringToNewUTF8' -fexceptions --pre-js incrface-print.js
+LDFLAGS=-Wl,-L$(GRAPHVIZ_CDT_LIB),-L$(GRAPHVIZ_CGRAPH_LIB),-L$(GRAPHVIZ_PATHPLAN_LIB) -sASYNCIFY -sALLOW_MEMORY_GROWTH -sEXIT_RUNTIME=1 -sEXPORTED_RUNTIME_METHODS=stringToNewUTF8 -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$$stringToNewUTF8' -fexceptions --pre-js incrface-print.js
 # LEFTYLIBS=-lSM -lICE
 TCLDOTLIBS=-ldl
 
