@@ -28,7 +28,7 @@ struct OutputIncrface : LinkedChangeProcessor<Graph> {
     void Open() {
         if(reports.enabled(reportType_)) {
             LOCK_REPORT(reportType_);
-            reports[reportType_] << "open graph " << gd<Name>(&this->world_->whole_) << " " << gd<StrAttrs>(&this->world_->whole_) << std::endl;
+            reports[reportType_] << "open graph " << mquote(gd<Name>(&this->world_->whole_)) << " " << gd<StrAttrs>(&this->world_->whole_) << std::endl;
         }
         this->NextOpen();
     }
@@ -42,18 +42,18 @@ struct OutputIncrface : LinkedChangeProcessor<Graph> {
     void Close() {
         if(reports.enabled(reportType_)) {
             LOCK_REPORT(reportType_);
-            reports[reportType_] << "close graph " << gd<Name>(&this->world_->whole_) << std::endl;
+            reports[reportType_] << "close graph " << mquote(gd<Name>(&this->world_->whole_)) << std::endl;
         }
         this->NextClose();
     }
     void Pulse(const StrAttrs &attrs) {
         if(reports.enabled(reportType_)) {
             LOCK_REPORT(reportType_);
-            reports[reportType_] << "pulse graph " << gd<Name>(&this->world_->whole_) << " " << attrs << std::endl;
+            reports[reportType_] << "pulse graph " << mquote(gd<Name>(&this->world_->whole_)) << " " << attrs << std::endl;
         }
         if(reports.enabled(dgr::input_cooked)) {
             LOCK_REPORT(dgr::input_cooked);
-            reports[dgr::input_cooked] << "pulse graph " << gd<Name>(&this->world_->current_) << ' ' << attrs << std::endl;
+            reports[dgr::input_cooked] << "pulse graph " << mquote(gd<Name>(&this->world_->current_)) << ' ' << attrs << std::endl;
         }
         this->NextPulse(attrs);
     }
